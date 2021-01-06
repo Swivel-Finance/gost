@@ -10,6 +10,5 @@
    \:\_\ \ \  \:\_\ \ \ /____\:\  \::\ \ 
     \_____\/   \_____\/ \_____\/   \__\/ 
                                          
-
 ```
 ### Smart contract testing with Geth via the Golang ABIGEN
