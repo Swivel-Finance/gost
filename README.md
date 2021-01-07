@@ -1,6 +1,17 @@
-# gost
-Smart contract testing with Geth via the Golang ABIGEN
-
+##### Smart contract testing with Geth via the Golang ABIGEN
+```
+          _______                        
+         /______/\                       
+         \__::::\/                       
+ _______    ______   ______   _________  
+/______/\  /_____/\ /_____/\ /________/\ 
+\::::__\/__\:::_ \ \\::::_\/_\__.::.__\/ 
+ \:\ /____/\\:\ \ \ \\:\/___/\  \::\ \   
+  \:\\_  _\/ \:\ \ \ \\_::._\:\  \::\ \  
+   \:\_\ \ \  \:\_\ \ \ /____\:\  \::\ \ 
+    \_____\/   \_____\/ \_____\/   \__\/ 
+                                         
+```
 ## Getting Started
 This project contains a sample Erc20.sol contract file which has been compiled to its `abi` and `bin` components with those then transformed into
 golang bindings via the Geth `abigen` tool. You can see the commands used to perform those tasks in the `Makefile`.
