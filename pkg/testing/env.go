@@ -1,20 +1,28 @@
 package testing
 
 import (
+	"crypto/ecdsa"
+	"math/big"
+
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind/backends"
 	"github.com/ethereum/go-ethereum/core"
-	"math/big"
 )
+
+// Auth is a custom type which allows us easy access to the dynamically generated
+// ecdsa.PrivateKey along with the bind.TransactOpts
+type Auth struct {
+	PK   *ecdsa.PrivateKey
+	Opts *bind.TransactOpts
+}
 
 // Env, holds Auth objects capable of signing transactions.
 // Also holds the Geth simulated backend.
 type Env struct {
 	Alloc      core.GenesisAlloc
-	Owner      *bind.TransactOpts
-	Backend    *bind.TransactOpts
-	User1      *bind.TransactOpts
-	User2      *bind.TransactOpts
+	Owner      *Auth
+	User1      *Auth
+	User2      *Auth
 	Blockchain *backends.SimulatedBackend
 }
 
@@ -22,13 +30,11 @@ type Env struct {
 // Given a balance argument, it assigns this as the wallet balance for
 // each authorization object in the Ctx
 func NewEnv(b *big.Int) *Env {
-	owner := NewAuthObject()
-	backend := NewAuthObject()
-	u1 := NewAuthObject()
-	u2 := NewAuthObject()
+	pk, owner := NewAuth()
+	pk1, u1 := NewAuth()
+	pk2, u2 := NewAuth()
 	alloc := make(core.GenesisAlloc)
 	alloc[owner.From] = core.GenesisAccount{Balance: b}
-	alloc[backend.From] = core.GenesisAccount{Balance: b}
 	alloc[u1.From] = core.GenesisAccount{Balance: b}
 	alloc[u2.From] = core.GenesisAccount{Balance: b}
 	// 2nd arg is a gas limit, a uint64. we'll use 4.7 million
@@ -36,10 +42,9 @@ func NewEnv(b *big.Int) *Env {
 
 	return &Env{
 		Alloc:      alloc,
-		Owner:      owner,
-		Backend:    backend,
-		User1:      u1,
-		User2:      u2,
+		Owner:      &Auth{PK: pk, Opts: owner},
+		User1:      &Auth{PK: pk1, Opts: u1},
+		User2:      &Auth{PK: pk2, Opts: u2},
 		Blockchain: bc,
 	}
 }
