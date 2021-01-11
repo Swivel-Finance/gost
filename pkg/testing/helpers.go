@@ -1,15 +1,17 @@
 package testing
 
 import (
+	"crypto/ecdsa"
 	"fmt"
+	"math/big"
+
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/crypto"
-	"math/big"
 )
 
-func NewAuthObject() *bind.TransactOpts {
-	key, _ := crypto.GenerateKey()
-	return bind.NewKeyedTransactor(key)
+func NewAuth() (*ecdsa.PrivateKey, *bind.TransactOpts) {
+	pk, _ := crypto.GenerateKey()
+	return pk, bind.NewKeyedTransactor(pk)
 }
 
 // GenBytes32 is a convenience function for some tests where a "GetHash" method is not available.
