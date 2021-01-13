@@ -6,26 +6,18 @@ pragma solidity 0.8.0;
 // uint256[6] in this order [duration, rate, interest, principal, nonce, expiry]
 
 contract Swivel {
-  bytes32 SEPARATOR;
-  bytes32 constant DOMAIN_HASH = keccak256("");
-  bytes32 constant ORDER_HASH = keccak256("");
-
-  // NOTE seems to be a style to upcase enums
-  enum Sides { Fixed, Floating };
-
-  // TODO watch the order of the uint256 re: `params` calldata array...
   struct agreement {
+    bytes32 key;
+    bytes32 orderKey;
     address owner;
-    bytes key;
-    bytes orderKey;
     address underlying;
-    uint256 duration;
-    uint256 rate;
-    uint256 interest;
-    uint256 principal;
-    uint256 release;
+    bool fixed;
     uint256 initialRate;
-    Sides side;
+    uint256 rate;
+    uint256 principal;
+    uint256 interest;
+    uint256 duration;
+    uint256 release;
   }
 
   // only an Order can be cancelled
@@ -37,7 +29,7 @@ contract Swivel {
   Event Cancel(bytes key);
   Event Release(bytes orderKey, bytes agreementKey);
 
-  // function fillFixed(bytes orderKey, uint256[6] params, bytes agreementKey, bytes memory signature) public returns (bool) {}
+  // function fillFixed(bytes32 orderKey, uint256[6] params, bytes32 agreementKey, bytes memory signature) public returns (bool) {}
 
-  // function fillFloating(bytes orderKey, uint256[6] params, bytes agreementKey, bytes memory signature) public returns (bool) {}
+  // function fillFloating(bytes32 orderKey, uint256[6] params, bytes32 agreementKey, bytes memory signature) public returns (bool) {}
 }

@@ -39,13 +39,13 @@ func (s *sigTestSuite) TestSplit() {
 	assert.Nil(err)
 	assert.NotNil(sig)
 
-	vrs, err := s.Dep.Sig.Split(nil, sig)
+	vrs, err := s.Dep.SigTest.SplitTest(nil, sig)
 
 	assert.Nil(err)
 	assert.NotNil(vrs)
 }
 
-func (s *sigTestSuite) TestRecoverVRS() {
+func (s *sigTestSuite) TestRecover() {
 	assert := assert.New(s.T())
 
 	msg := []byte("Yo Dawg, heard u liek unit tests")
@@ -54,7 +54,7 @@ func (s *sigTestSuite) TestRecoverVRS() {
 	// sign with user1...
 	sig, err := crypto.Sign(hash.Bytes(), s.Env.User1.PK)
 	// the go bindings return a struct here
-	vrs, err := s.Dep.Sig.Split(nil, sig)
+	vrs, err := s.Dep.SigTest.SplitTest(nil, sig)
 
 	// crypto.Sign will produce a split whose V is 0 or 1
 	v := vrs.V
@@ -62,15 +62,14 @@ func (s *sigTestSuite) TestRecoverVRS() {
 	if v < 27 {
 		v += 27
 	}
-	// Recover0 allows for them to be passed indiviually if needed
-	// NOTE: the peculiar name is the result of the golang implementation of overloading
-	addr, err := s.Dep.Sig.Recover(nil, hash, v, vrs.R, vrs.S)
+
+	addr, err := s.Dep.SigTest.RecoverTest(nil, hash, v, vrs.R, vrs.S)
 
 	assert.Nil(err)
 	assert.NotNil(addr)
 	assert.Equal(addr, s.Env.User1.Opts.From)
 }
 
-func TestSuite(t *test.T) {
+func TestSigSuite(t *test.T) {
 	suite.Run(t, &sigTestSuite{})
 }
