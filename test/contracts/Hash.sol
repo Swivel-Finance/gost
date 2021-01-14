@@ -3,7 +3,8 @@
 pragma solidity 0.8.0;
 
 /**
-  @notice Encapsulation of the logic to produce both EIP712 hashed domain and messages.
+  @notice Encapsulation of the logic to produce EIP712 hashed domain and messages.
+  Also to produce / verify hashed and signed Orders.
   See https://github.com/ethereum/EIPs/blob/master/EIPS/eip-712.md
   See/attribute https://github.com/0xProject/0x-monorepo/blob/development/contracts/utils/contracts/src/LibEIP712.sol
 */

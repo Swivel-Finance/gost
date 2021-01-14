@@ -15,15 +15,15 @@ type sigTestSuite struct {
 	Dep *Dep
 }
 
-var deployErr error
-
 // SetupSuite serves as a 'beforeAll', hydrating both the Env and Dep objects
 func (s *sigTestSuite) SetupSuite() {
-	s.Env = NewEnv(big.NewInt(ONE_ETH)) // each of the wallets in the env will begin with this balance
-	s.Dep, deployErr = Deploy(s.Env)
+	var err error
 
-	if deployErr != nil {
-		panic(deployErr)
+	s.Env = NewEnv(big.NewInt(ONE_ETH)) // each of the wallets in the env will begin with this balance
+	s.Dep, err = Deploy(s.Env)
+
+	if err != nil {
+		panic(err)
 	}
 }
 
@@ -48,7 +48,7 @@ func (s *sigTestSuite) TestSplit() {
 func (s *sigTestSuite) TestRecover() {
 	assert := assert.New(s.T())
 
-	msg := []byte("Yo Dawg, heard u liek unit tests")
+	msg := []byte("So we put tests in your tests so you can test while you test")
 	hash := crypto.Keccak256Hash(msg)
 
 	// sign with user1...
