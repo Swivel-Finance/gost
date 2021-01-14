@@ -7,24 +7,37 @@ import (
 )
 
 type Dep struct {
-	SigAddress     common.Address
-	Sig            *swivel.Sig
-	SigTransaction *types.Transaction // in case we want to view the deployment gas cost etc...
+	SigTestAddress      common.Address
+	SigTest             *swivel.SigTest
+	SigTestTransaction  *types.Transaction // in case we want to view the deployment gas cost etc...
+	HashTestAddress     common.Address
+	HashTest            *swivel.HashTest
+	HashTestTransaction *types.Transaction // in case we want to view the deployment gas cost etc...
 }
 
 func Deploy(e *Env) (*Dep, error) {
-	// deploy with the owner auth object
-	address, tx, contract, err := swivel.DeploySig(e.Owner.Opts, e.Blockchain)
+	sigAddress, sigTx, sigContract, sigErr := swivel.DeploySigTest(e.Owner.Opts, e.Blockchain)
 
-	if err != nil {
-		return nil, err
+	if sigErr != nil {
+		return nil, sigErr
+	}
+
+	e.Blockchain.Commit()
+
+	hashAddress, hashTx, hashContract, hashErr := swivel.DeployHashTest(e.Owner.Opts, e.Blockchain)
+
+	if hashErr != nil {
+		return nil, hashErr
 	}
 
 	e.Blockchain.Commit()
 
 	return &Dep{
-		SigAddress:     address,
-		Sig:            contract,
-		SigTransaction: tx,
+		SigTestAddress:      sigAddress,
+		SigTest:             sigContract,
+		SigTestTransaction:  sigTx,
+		HashTestAddress:     hashAddress,
+		HashTest:            hashContract,
+		HashTestTransaction: hashTx,
 	}, nil
 }
