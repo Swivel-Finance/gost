@@ -16,9 +16,9 @@ library Hash {
   // keccak256(abi.encodePacked(
   //     'Order(',
   //     'bytes32 key,',
-  //     'address owner,',
+  //     'address maker,',
   //     'address underlying,',
-  //     'bool fixed',
+  //     'bool floating',
   //     'uint256 rate,',
   //     'uint256 principal,',
   //     'uint256 interest,',
@@ -28,7 +28,7 @@ library Hash {
   //     ')'
   // ));
   // TODO doube check
-  bytes32 constant internal ORDER_TYPEHASH = 0xb64e83290881c04f7b95baa5dd00436e04f41d002805882789a249a4defea5dc;
+  bytes32 constant internal ORDER_TYPEHASH = 0x982d366ee870e6c64d27e7b149dff6bf737fd1c909c2392b1b6dda92d31a24e2;
 
   // EIP712 Domain Separator typeHash
   // keccak256(abi.encodePacked(
@@ -75,21 +75,21 @@ library Hash {
   }
 
   /// @param k Key of the Order
-  /// @param o Owner of the order
+  /// @param m Maker of the order
   /// @param u Address of the underlying token contract
-  /// @param f Boolean indicating if the Order is fixed or not
+  /// @param f Boolean indicating if the Order is floating or not
   /// @param p Array of integers ordered as per the Params enum
-  function order(bytes32 k, address o, address u, bool f, uint256[6] calldata p) internal pure returns (bytes32) {
+  function order(bytes32 k, address m, address u, bool f, uint256[6] calldata p) internal pure returns (bytes32) {
     // TODO assembly
     return keccak256(abi.encode(
       ORDER_TYPEHASH,
-      k, o, u, f,
-      p[uint(Params.RATE)],
-      p[uint(Params.PRINCIPAL)],
-      p[uint(Params.INTEREST)],
-      p[uint(Params.DURATION)],
-      p[uint(Params.EXPIRY)],
-      p[uint(Params.NONCE)]
+      k, m, u, f,
+      p[uint256(Params.RATE)],
+      p[uint256(Params.PRINCIPAL)],
+      p[uint256(Params.INTEREST)],
+      p[uint256(Params.DURATION)],
+      p[uint256(Params.EXPIRY)],
+      p[uint256(Params.NONCE)]
     ));
   }
 }
