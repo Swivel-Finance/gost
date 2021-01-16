@@ -17,7 +17,7 @@ contract HashTest {
     return Hash.message(d, h);
   }
 
-  function orderTest(bytes32 k, address m, address u, bool f, uint256[6] calldata p) external pure returns (bytes32) {
-    return Hash.order(k,m,u,f,p);
+  function orderTest(Hash.Order calldata o) external pure returns (bytes32) {
+    return Hash.order(o);
   }
 }

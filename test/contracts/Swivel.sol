@@ -16,7 +16,7 @@ contract Swivel {
   /// @dev EIP712 domain separator.
   bytes32 public DOMAIN;
 
-  struct agreement {
+  struct Agreement {
     address maker;
     address taker;
     address underlying;
@@ -35,7 +35,7 @@ contract Swivel {
   /// @dev maps the key of an order to an amount representing its taken volume
   mapping (bytes32 => uint256) public filled;
   /// @dev maps an order key to a mapping of agreement Key -> agreement
-  mapping (bytes32 => mapping (bytes32 => agreement)) public agreements;
+  mapping (bytes32 => mapping (bytes32 => Agreement)) public agreements;
 
   event Initiate (bytes32 orderKey, bytes32 agreementKey);
   event Cancel (bytes32 key);
@@ -48,57 +48,47 @@ contract Swivel {
     DOMAIN = Hash.domain(NAME, VERSION, c, verifier);
   }
 
-  /// @param o Key of the order being filled by this new agreement
-  /// @param m address of the order's maker
-  /// @param p Params of the order.
-  /// @param a order volume this agreement is filling
+  /// @param o An offline Swivel.Order
+  /// @param a order volume amount this agreement is filling
   /// @param k Key of this new agreement
-  /// @param u address of the underlying token contract
-  /// @param v Signature verification bit
-  /// @param r First 32 bytes of a valid ECDSA Signature
-  /// @param s Next 32 bytes of a valid ECDSA Signature
+  /// @param c Components of a valid ECDSA signature
   function fillFixed(
-    bytes32 o,
-    address m,
-    uint256[6] calldata p,
+    Hash.Order calldata o,
     uint256 a,
     bytes32 k,
-    address u,
-    uint8 v,
-    bytes32 r,
-    bytes32 s
+    Sig.Components calldata c
   ) public returns (bool) {
-    require(cancelled[o] == false, 'order has been cancelled');
-    require(p[uint256(Hash.Params.EXPIRY)] >= block.timestamp, 'order has expired');
-    require(m == Sig.recover(Hash.message(DOMAIN, Hash.order(o, m, u, false, p)), v, r, s), 'invalid signature'); 
-    require(a <= (p[uint256(Hash.Params.INTEREST)] - filled[o]), 'taker amount > available volume');
+    require(cancelled[o.key] == false, 'order has been cancelled');
+    require(o.expiry >= block.timestamp, 'order has expired');
+    require(o.maker == Sig.recover(Hash.message(DOMAIN, Hash.order(o)), c), 'invalid signature'); 
+    require(a <= (o.interest - filled[o.key]), 'taker amount > available volume');
 
-    agreement memory newAgreement;
+    Agreement memory newAgreement;
     // .principal is principal * ratio / 1ETH were ratio is (a) * 1ETH / interest
-    newAgreement.principal = p[uint256(Hash.Params.PRINCIPAL)] * ((a * (1 ether)) / p[uint256(Hash.Params.INTEREST)]) / (1 ether);
+    newAgreement.principal = o.principal * ((a * (1 ether)) / o.interest) / (1 ether);
     newAgreement.interest = a;
 
     // transfer tokens to this contract
-    Erc20 uToken = Erc20(u);
-    require(uToken.transferFrom(m, address(this), newAgreement.principal), 'transfer from maker failed');
+    Erc20 uToken = Erc20(o.underlying);
+    require(uToken.transferFrom(o.maker, address(this), newAgreement.principal), 'transfer from maker failed');
     require(uToken.transferFrom(msg.sender, address(this), newAgreement.interest), 'transfer from taker failed');
     // mint compound
-    require(mintCToken(u, p[uint256(Hash.Params.PRINCIPAL)] + p[uint256(Hash.Params.INTEREST)]) > 0, 'CToken minting failed');
+    require(mintCToken(o.underlying, o.principal + o.interest) > 0, 'CToken minting failed');
 
     // finish setting new agreement props and store
     CErc20 cToken = CErc20(CTOKEN);
-    newAgreement.maker = m;
+    newAgreement.maker = o.maker;
     newAgreement.taker = msg.sender;
-    newAgreement.underlying = u; 
+    newAgreement.underlying = o.underlying; 
     newAgreement.floating = false;
     newAgreement.initialRate = cToken.exchangeRateCurrent();
-    newAgreement.rate = p[uint256(Hash.Params.RATE)];
-    newAgreement.duration = p[uint256(Hash.Params.DURATION)];
+    newAgreement.rate = o.rate;
+    newAgreement.duration = o.duration;
     newAgreement.release = newAgreement.duration + block.timestamp;
 
-    agreements[o][k] = newAgreement;
+    agreements[o.key][k] = newAgreement;
 
-    emit Initiate(o, k);
+    emit Initiate(o.key, k);
 
     return true;
   }

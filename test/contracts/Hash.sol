@@ -10,7 +10,17 @@ pragma solidity 0.8.0;
 */
 
 library Hash {
-  enum Params { RATE, PRINCIPAL, INTEREST, DURATION, EXPIRY, NONCE }
+  // EIP712 Domain Separator typeHash
+  // keccak256(abi.encodePacked(
+  //     'EIP712Domain(',
+  //     'string name,',
+  //     'string version,',
+  //     'uint256 chainId,',
+  //     'address verifyingContract',
+  //     ')'
+  // ));
+  // TODO double check
+  bytes32 constant internal DOMAIN_TYPEHASH = 0x8b73c3c69bb8fe3d512ecc4cf759cc79239f7b179b0ffacaa9a75d522b39400f;
 
   // EIP712 typeHash of an Order 
   // keccak256(abi.encodePacked(
@@ -30,17 +40,19 @@ library Hash {
   // TODO doube check
   bytes32 constant internal ORDER_TYPEHASH = 0x982d366ee870e6c64d27e7b149dff6bf737fd1c909c2392b1b6dda92d31a24e2;
 
-  // EIP712 Domain Separator typeHash
-  // keccak256(abi.encodePacked(
-  //     'EIP712Domain(',
-  //     'string name,',
-  //     'string version,',
-  //     'uint256 chainId,',
-  //     'address verifyingContract',
-  //     ')'
-  // ));
-  // TODO double check
-  bytes32 constant internal DOMAIN_TYPEHASH = 0x8b73c3c69bb8fe3d512ecc4cf759cc79239f7b179b0ffacaa9a75d522b39400f;
+  /// @dev struct represents the attributes of an offchain Swivel.Order
+  struct Order {
+    bytes32 key;
+    address maker;
+    address underlying;
+    bool floating;
+    uint256 rate;
+    uint256 principal;
+    uint256 interest;
+    uint256 duration;
+    uint256 expiry;
+    uint256 nonce;
+  }
 
   /// @param n EIP712 domain name
   /// @param version EIP712 semantic version string
@@ -74,22 +86,21 @@ library Hash {
     return hash;
   }
 
-  /// @param k Key of the Order
-  /// @param m Maker of the order
-  /// @param u Address of the underlying token contract
-  /// @param f Boolean indicating if the Order is floating or not
-  /// @param p Array of integers ordered as per the Params enum
-  function order(bytes32 k, address m, address u, bool f, uint256[6] calldata p) internal pure returns (bytes32) {
+  /// @param o A Swivel Order
+  function order(Order calldata o) internal pure returns (bytes32) {
     // TODO assembly
     return keccak256(abi.encode(
       ORDER_TYPEHASH,
-      k, m, u, f,
-      p[uint256(Params.RATE)],
-      p[uint256(Params.PRINCIPAL)],
-      p[uint256(Params.INTEREST)],
-      p[uint256(Params.DURATION)],
-      p[uint256(Params.EXPIRY)],
-      p[uint256(Params.NONCE)]
+      o.key,
+      o.maker,
+      o.underlying,
+      o.floating,
+      o.rate,
+      o.principal,
+      o.interest,
+      o.duration,
+      o.expiry,
+      o.nonce
     ));
   }
 }

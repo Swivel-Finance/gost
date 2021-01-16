@@ -3,18 +3,23 @@
 pragma solidity 0.8.0;
 
 library Sig {
+  /// @dev ECDSA V,R and S components encapsulated here as we may not always be able to accept a bytes signature
+  struct Components {
+    uint8 v;  
+    bytes32 r;
+    bytes32 s;
+  }
+
   /// @param h Hashed data which was originally signed
-  /// @param v Verifying bit taken from a valid ECDSA signature
-  /// @param r First 32bytes split from an ECDSA signature
-  /// @param s Next 32bytes split from an ECDSA signature
+  /// @param c signature struct containing V,R and S
   /// @return The recovered address
-  function recover(bytes32 h, uint8 v, bytes32 r, bytes32 s) internal pure returns (address) {
+  function recover(bytes32 h, Components calldata c) internal pure returns (address) {
     // EIP-2 and malleable signatures...
     // see https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/cryptography/ECDSA.sol
-    require(uint256(s) <= 0x7FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF5D576E7357A4501DDFE92F46681B20A0, 'invalid signature "s" value');
-    require(v == 27 || v == 28, 'invalid signature "v" value');
+    require(uint256(c.s) <= 0x7FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF5D576E7357A4501DDFE92F46681B20A0, 'invalid signature "s" value');
+    require(c.v == 27 || c.v == 28, 'invalid signature "v" value');
 
-    return ecrecover(h, v, r, s);
+    return ecrecover(h, c.v, c.r, c.s);
   }
 
   /// @param h Hashed data which was originally signed
