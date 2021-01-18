@@ -2,21 +2,18 @@ package testing
 
 import (
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/swivel-finance/gost/test/contracts/swivel"
+	"github.com/swivel-finance/gost/test/contracts/fakes"
 )
 
 type Dep struct {
-	SigTestAddress      common.Address
-	SigTest             *swivel.SigTest
-	SigTestTransaction  *types.Transaction // in case we want to view the deployment gas cost etc...
-	HashTestAddress     common.Address
-	HashTest            *swivel.HashTest
-	HashTestTransaction *types.Transaction // in case we want to view the deployment gas cost etc...
+	SigFakeAddress  common.Address
+	SigFake         *fakes.SigFake
+	HashFakeAddress common.Address
+	HashFake        *fakes.HashFake
 }
 
 func Deploy(e *Env) (*Dep, error) {
-	sigAddress, sigTx, sigContract, sigErr := swivel.DeploySigTest(e.Owner.Opts, e.Blockchain)
+	sigAddress, _, sigContract, sigErr := fakes.DeploySigFake(e.Owner.Opts, e.Blockchain)
 
 	if sigErr != nil {
 		return nil, sigErr
@@ -24,7 +21,7 @@ func Deploy(e *Env) (*Dep, error) {
 
 	e.Blockchain.Commit()
 
-	hashAddress, hashTx, hashContract, hashErr := swivel.DeployHashTest(e.Owner.Opts, e.Blockchain)
+	hashAddress, _, hashContract, hashErr := fakes.DeployHashFake(e.Owner.Opts, e.Blockchain)
 
 	if hashErr != nil {
 		return nil, hashErr
@@ -33,11 +30,9 @@ func Deploy(e *Env) (*Dep, error) {
 	e.Blockchain.Commit()
 
 	return &Dep{
-		SigTestAddress:      sigAddress,
-		SigTest:             sigContract,
-		SigTestTransaction:  sigTx,
-		HashTestAddress:     hashAddress,
-		HashTest:            hashContract,
-		HashTestTransaction: hashTx,
+		SigFakeAddress:  sigAddress,
+		SigFake:         sigContract,
+		HashFakeAddress: hashAddress,
+		HashFake:        hashContract,
 	}, nil
 }

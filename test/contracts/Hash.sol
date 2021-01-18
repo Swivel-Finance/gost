@@ -10,26 +10,6 @@ pragma solidity 0.8.0;
 */
 
 library Hash {
-  enum Params { RATE, PRINCIPAL, INTEREST, DURATION, EXPIRY, NONCE }
-
-  // EIP712 typeHash of an Order 
-  // keccak256(abi.encodePacked(
-  //     'Order(',
-  //     'bytes32 key,',
-  //     'address owner,',
-  //     'address underlying,',
-  //     'bool fixed',
-  //     'uint256 rate,',
-  //     'uint256 principal,',
-  //     'uint256 interest,',
-  //     'uint256 duration,',
-  //     'uint256 expiry,',
-  //     'uint256 nonce,',
-  //     ')'
-  // ));
-  // TODO doube check
-  bytes32 constant internal ORDER_TYPEHASH = 0xb64e83290881c04f7b95baa5dd00436e04f41d002805882789a249a4defea5dc;
-
   // EIP712 Domain Separator typeHash
   // keccak256(abi.encodePacked(
   //     'EIP712Domain(',
@@ -41,6 +21,38 @@ library Hash {
   // ));
   // TODO double check
   bytes32 constant internal DOMAIN_TYPEHASH = 0x8b73c3c69bb8fe3d512ecc4cf759cc79239f7b179b0ffacaa9a75d522b39400f;
+
+  // EIP712 typeHash of an Order 
+  // keccak256(abi.encodePacked(
+  //     'Order(',
+  //     'bytes32 key,',
+  //     'address maker,',
+  //     'address underlying,',
+  //     'bool floating',
+  //     'uint256 rate,',
+  //     'uint256 principal,',
+  //     'uint256 interest,',
+  //     'uint256 duration,',
+  //     'uint256 expiry,',
+  //     'uint256 nonce,',
+  //     ')'
+  // ));
+  // TODO doube check
+  bytes32 constant internal ORDER_TYPEHASH = 0x982d366ee870e6c64d27e7b149dff6bf737fd1c909c2392b1b6dda92d31a24e2;
+
+  /// @dev struct represents the attributes of an offchain Swivel.Order
+  struct Order {
+    bytes32 key;
+    address maker;
+    address underlying;
+    bool floating;
+    uint256 rate;
+    uint256 principal;
+    uint256 interest;
+    uint256 duration;
+    uint256 expiry;
+    uint256 nonce;
+  }
 
   /// @param n EIP712 domain name
   /// @param version EIP712 semantic version string
@@ -74,22 +86,21 @@ library Hash {
     return hash;
   }
 
-  /// @param k Key of the Order
-  /// @param o Owner of the order
-  /// @param u Address of the underlying token contract
-  /// @param f Boolean indicating if the Order is fixed or not
-  /// @param p Array of integers ordered as per the Params enum
-  function order(bytes32 k, address o, address u, bool f, uint256[6] calldata p) internal pure returns (bytes32) {
+  /// @param o A Swivel Order
+  function order(Order calldata o) internal pure returns (bytes32) {
     // TODO assembly
     return keccak256(abi.encode(
       ORDER_TYPEHASH,
-      k, o, u, f,
-      p[uint(Params.RATE)],
-      p[uint(Params.PRINCIPAL)],
-      p[uint(Params.INTEREST)],
-      p[uint(Params.DURATION)],
-      p[uint(Params.EXPIRY)],
-      p[uint(Params.NONCE)]
+      o.key,
+      o.maker,
+      o.underlying,
+      o.floating,
+      o.rate,
+      o.principal,
+      o.interest,
+      o.duration,
+      o.expiry,
+      o.nonce
     ));
   }
 }
