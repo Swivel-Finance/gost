@@ -7,6 +7,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
+	"github.com/swivel-finance/gost/test/contracts/fakes"
 )
 
 type hashTestSuite struct {
@@ -16,17 +17,20 @@ type hashTestSuite struct {
 	Separator [32]byte // keep a ref to prevent re calculating
 }
 
-// helper to return an array that can be used for order params
-// TODO move to a helper if warranted...
-func orderParams() [6]*big.Int {
+// helper to return a hydrated order. TODO move to a helper...
+func order(m common.Address, f bool) fakes.HashOrder { // abigen defined
 	// NOTE: none of the actual numbers used matter here for the purpose of this test.
-	return [6]*big.Int{
-		big.NewInt(5),         // rate
-		big.NewInt(1000),      // principal
-		big.NewInt(100),       // interest
-		big.NewInt(123456),    // duration
-		big.NewInt(123456789), // expiry
-		big.NewInt(1234),      // nonce
+	return fakes.HashOrder{
+		Key:        GenBytes32("abc123"),
+		Maker:      m,
+		Underlying: common.HexToAddress("0xbcd234"),
+		Floating:   f,
+		Rate:       big.NewInt(5),
+		Principal:  big.NewInt(1000),
+		Interest:   big.NewInt(100),
+		Duration:   big.NewInt(123456),
+		Expiry:     big.NewInt(123456789),
+		Nonce:      big.NewInt(1234),
 	}
 }
 
@@ -48,7 +52,7 @@ func (s *hashTestSuite) TestDomain() {
 
 	assert := assert.New(s.T())
 
-	s.Separator, err = s.Dep.HashTest.DomainTest(
+	s.Separator, err = s.Dep.HashFake.DomainTest(
 		nil,
 		"Swivel Finance",
 		"1.0.0",
@@ -64,14 +68,9 @@ func (s *hashTestSuite) TestDomain() {
 func (s *hashTestSuite) TestOrder() {
 	assert := assert.New(s.T())
 
-	hash, err := s.Dep.HashTest.OrderTest(
-		nil,
-		GenBytes32("abc123"),            // key
-		s.Env.Owner.Opts.From,           // owner
-		common.HexToAddress("0xbcd234"), // underlying
-		true,                            // fixed
-		orderParams(),
-	)
+	order := order(s.Env.Owner.Opts.From, false)
+
+	hash, err := s.Dep.HashFake.OrderTest(nil, order)
 
 	assert.Nil(err)
 	assert.NotNil(hash)
@@ -81,16 +80,11 @@ func (s *hashTestSuite) TestOrder() {
 func (s *hashTestSuite) TestMessage() {
 	assert := assert.New(s.T())
 	// get a hashed order
-	orderHash, _ := s.Dep.HashTest.OrderTest(
-		nil,
-		GenBytes32("bcd234"),
-		s.Env.Owner.Opts.From,
-		common.HexToAddress("0xcde345"),
-		false,
-		orderParams(),
-	)
 
-	messageHash, err := s.Dep.HashTest.MessageTest(nil, s.Separator, orderHash)
+	order := order(s.Env.Owner.Opts.From, false)
+	orderHash, _ := s.Dep.HashFake.OrderTest(nil, order)
+
+	messageHash, err := s.Dep.HashFake.MessageTest(nil, s.Separator, orderHash)
 
 	assert.Nil(err)
 	assert.NotNil(messageHash)

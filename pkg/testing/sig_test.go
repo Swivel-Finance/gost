@@ -39,7 +39,7 @@ func (s *sigTestSuite) TestSplit() {
 	assert.Nil(err)
 	assert.NotNil(sig)
 
-	vrs, err := s.Dep.SigTest.SplitTest(nil, sig)
+	vrs, err := s.Dep.SigFake.SplitTest(nil, sig)
 
 	assert.Nil(err)
 	assert.NotNil(vrs)
@@ -53,17 +53,16 @@ func (s *sigTestSuite) TestRecover() {
 
 	// sign with user1...
 	sig, err := crypto.Sign(hash.Bytes(), s.Env.User1.PK)
-	// the go bindings return a struct here
-	vrs, err := s.Dep.SigTest.SplitTest(nil, sig)
+	// the go bindings return a struct here -> { V: R: S: }
+	vrs, err := s.Dep.SigFake.SplitTest(nil, sig)
 
 	// crypto.Sign will produce a split whose V is 0 or 1
-	v := vrs.V
-	// 27 or 28 are acceptable
-	if v < 27 {
-		v += 27
+	// NOTE: 27 or 28 are acceptable
+	if vrs.V < 27 {
+		vrs.V += 27
 	}
 
-	addr, err := s.Dep.SigTest.RecoverTest(nil, hash, v, vrs.R, vrs.S)
+	addr, err := s.Dep.SigFake.RecoverTest(nil, hash, vrs)
 
 	assert.Nil(err)
 	assert.NotNil(addr)

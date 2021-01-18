@@ -37,9 +37,9 @@ contract Swivel {
   /// @dev maps an order key to a mapping of agreement Key -> agreement
   mapping (bytes32 => mapping (bytes32 => Agreement)) public agreements;
 
-  event Initiate (bytes32 orderKey, bytes32 agreementKey);
-  event Cancel (bytes32 key);
-  event Release (bytes32 orderKey, bytes32 agreementKey);
+  event Initiate (bytes32 indexed orderKey, bytes32 indexed agreementKey);
+  event Cancel (bytes32 indexed key);
+  event Release (bytes32 indexed orderKey, bytes32 indexed agreementKey);
 
   /// @param c Chain ID of the network this contract is deployed to
   /// @param v [optional] Verifying contract if present. Defaults to this.
