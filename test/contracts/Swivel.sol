@@ -22,7 +22,6 @@ contract Swivel {
     address underlying;
     bool floating;
     bool released;
-    uint256 initialRate;
     uint256 rate;
     uint256 principal;
     uint256 interest;
@@ -81,8 +80,7 @@ contract Swivel {
     newAgreement.taker = msg.sender;
     newAgreement.underlying = o.underlying; 
     newAgreement.floating = false;
-    newAgreement.initialRate = cToken.exchangeRateCurrent();
-    newAgreement.rate = o.rate;
+    newAgreement.rate = cToken.exchangeRateCurrent();
     newAgreement.duration = o.duration;
     newAgreement.release = newAgreement.duration + block.timestamp;
 

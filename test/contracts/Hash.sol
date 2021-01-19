@@ -29,7 +29,6 @@ library Hash {
   //     'address maker,',
   //     'address underlying,',
   //     'bool floating',
-  //     'uint256 rate,',
   //     'uint256 principal,',
   //     'uint256 interest,',
   //     'uint256 duration,',
@@ -37,7 +36,7 @@ library Hash {
   //     'uint256 nonce,',
   //     ')'
   // ));
-  // TODO doube check
+  // TODO RECALC re: rate removed
   bytes32 constant internal ORDER_TYPEHASH = 0x982d366ee870e6c64d27e7b149dff6bf737fd1c909c2392b1b6dda92d31a24e2;
 
   /// @dev struct represents the attributes of an offchain Swivel.Order
@@ -46,7 +45,6 @@ library Hash {
     address maker;
     address underlying;
     bool floating;
-    uint256 rate;
     uint256 principal;
     uint256 interest;
     uint256 duration;
@@ -95,7 +93,6 @@ library Hash {
       o.maker,
       o.underlying,
       o.floating,
-      o.rate,
       o.principal,
       o.interest,
       o.duration,
