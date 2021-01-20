@@ -13,9 +13,10 @@ import (
 
 type tokenTestSuite struct {
 	suite.Suite
-	Env   *Env
-	Dep   *Dep
-	Erc20 *tokens.Erc20Session // *Session objects are created by the go bindings
+	Env    *Env
+	Dep    *Dep
+	Erc20  *tokens.Erc20Session // *Session objects are created by the go bindings
+	CErc20 *tokens.CErc20Session
 }
 
 func (s *tokenTestSuite) SetupSuite() {
@@ -28,12 +29,22 @@ func (s *tokenTestSuite) SetupSuite() {
 		panic(err)
 	}
 
+	// binding owner to both, kind of why it exists - but could be any of the env wallets
 	s.Erc20 = &tokens.Erc20Session{
 		Contract: s.Dep.Erc20,
-		CallOpts: bind.CallOpts{From: s.Env.User1.Opts.From, Pending: false},
+		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
 		TransactOpts: bind.TransactOpts{
-			From:   s.Env.User1.Opts.From,
-			Signer: s.Env.User1.Opts.Signer,
+			From:   s.Env.Owner.Opts.From,
+			Signer: s.Env.Owner.Opts.Signer,
+		},
+	}
+
+	s.CErc20 = &tokens.CErc20Session{
+		Contract: s.Dep.CErc20,
+		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
+		TransactOpts: bind.TransactOpts{
+			From:   s.Env.Owner.Opts.From,
+			Signer: s.Env.Owner.Opts.Signer,
 		},
 	}
 }
@@ -57,6 +68,50 @@ func (s *tokenTestSuite) TestApprove() {
 	stored, err := s.Erc20.ApprovedArgs(address)
 	assert.Nil(err)
 	assert.Equal(amount, stored)
+}
+
+func (s *tokenTestSuite) TestTransferFrom() {
+	assert := assert.New(s.T())
+	tx, err := s.Erc20.TransferFromReturns(true)
+	assert.NotNil(tx)
+	assert.Nil(err)
+	s.Env.Blockchain.Commit()
+
+	amount := big.NewInt(ONE_ETH)
+	// fake transfer from user1 to owner
+	tx, err = s.Erc20.TransferFrom(
+		s.Env.User1.Opts.From,
+		s.Env.Owner.Opts.From,
+		amount,
+	)
+	assert.NotNil(tx)
+	assert.Nil(err)
+	s.Env.Blockchain.Commit()
+
+	// mapping uses the from address as key
+	stored, err := s.Erc20.TransferredFromArgs(s.Env.User1.Opts.From)
+	assert.Nil(err)
+	assert.Equal(stored.To, s.Env.Owner.Opts.From)
+	assert.Equal(stored.Amount, amount)
+}
+
+func (s *tokenTestSuite) TestExchangeRateCurrent() {
+	assert := assert.New(s.T())
+	// set the amount we want the stub to return
+	// NOTE: an actual current exchange rate is bigger than int64 will hold
+	// while we could use any number in this test, shown here for posterity
+	amount := big.NewInt(205906566771510710)
+	amount = amount.Mul(amount, big.NewInt(1000000000))
+
+	tx, err := s.CErc20.ExchangeRateCurrentReturns(amount)
+	assert.NotNil(tx)
+	assert.Nil(err)
+	s.Env.Blockchain.Commit()
+
+	// should return the stubbed amt
+	curr, err := s.CErc20.ExchangeRateCurrent()
+	assert.Nil(err)
+	assert.Equal(amount, curr)
 }
 
 func TestTokenSuite(t *test.T) {

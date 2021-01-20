@@ -7,12 +7,11 @@ import './Hash.sol';
 import './Abstracts.sol';
 
 contract Swivel {
-  string constant internal NAME = "Swivel Finance";
-  string constant internal VERSION = "1.0.0";
-
-  /// @dev DAI compound token
-  address constant internal CTOKEN = 0x822397d9a55d0fefd20F5c4bCaB33C5F65bd28Eb;
-
+  // TODO visibility of these...
+  string constant public NAME = "Swivel Finance";
+  string constant public VERSION = "1.0.0";
+  /// @dev DAI compound token, passed to constructor
+  address public CTOKEN;
   /// @dev EIP712 domain separator.
   bytes32 public DOMAIN;
 
@@ -40,11 +39,14 @@ contract Swivel {
   event Cancel (bytes32 indexed key);
   event Release (bytes32 indexed orderKey, bytes32 indexed agreementKey);
 
-  /// @param c Chain ID of the network this contract is deployed to
+  /// @param i Chain ID of the network this contract is deployed to
+  /// @param c Deployed address of the compound token to be used
   /// @param v [optional] Verifying contract if present. Defaults to this.
-  constructor(uint256 c, address v) {
+  constructor(uint256 i, address c, address v) {
+    require(c != address(0), 'compound token address required');
+    CTOKEN = c;
     address verifier = v == address(0) ? address(this) : v;
-    DOMAIN = Hash.domain(NAME, VERSION, c, verifier);
+    DOMAIN = Hash.domain(NAME, VERSION, i, verifier);
   }
 
   /// @param o An offline Swivel.Order

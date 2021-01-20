@@ -36,8 +36,8 @@ library Hash {
   //     'uint256 nonce,',
   //     ')'
   // ));
-  // TODO RECALC re: rate removed
-  bytes32 constant internal ORDER_TYPEHASH = 0x982d366ee870e6c64d27e7b149dff6bf737fd1c909c2392b1b6dda92d31a24e2;
+  // TODO double check
+  bytes32 constant internal ORDER_TYPEHASH = 0xf01cc16c244dd394ae954a5b2cd48a4f17007f995776783399d1190f45ada623;
 
   /// @dev struct represents the attributes of an offchain Swivel.Order
   struct Order {
@@ -54,9 +54,9 @@ library Hash {
 
   /// @param n EIP712 domain name
   /// @param version EIP712 semantic version string
-  /// @param c Chain ID
+  /// @param i Chain ID
   /// @param verifier address of the verifying contract
-  function domain(string memory n, string memory version, uint256 c, address verifier) internal pure returns (bytes32 hash) {
+  function domain(string memory n, string memory version, uint256 i, address verifier) internal pure returns (bytes32 hash) {
     assembly {
       let nameHash := keccak256(add(n, 32), mload(n))
       let versionHash := keccak256(add(version, 32), mload(version))
@@ -64,7 +64,7 @@ library Hash {
       mstore(pointer, DOMAIN_TYPEHASH)
       mstore(add(pointer, 32), nameHash)
       mstore(add(pointer, 64), versionHash)
-      mstore(add(pointer, 96), c)
+      mstore(add(pointer, 96), i)
       mstore(add(pointer, 128), verifier)
       hash := keccak256(pointer, 160)
     }

@@ -11,14 +11,14 @@ import (
 	"github.com/swivel-finance/gost/test/contracts/swivel"
 )
 
-type fillFixedTestSuite struct {
+type ctorTestSuite struct {
 	suite.Suite
 	Env    *Env
 	Dep    *Dep
 	Swivel *swivel.SwivelSession // *Session objects are created by the go bindings
 }
 
-func (s *fillFixedTestSuite) SetupSuite() {
+func (s *ctorTestSuite) SetupSuite() {
 	var err error
 
 	s.Env = NewEnv(big.NewInt(ONE_ETH)) // each of the wallets in the env will begin with this balance
@@ -39,11 +39,34 @@ func (s *fillFixedTestSuite) SetupSuite() {
 	}
 }
 
-func (s *fillFixedTestSuite) TestFoo() {
+func (s *ctorTestSuite) TestName() {
 	assert := assert.New(s.T())
-	assert.Equal(true, true)
+	name, err := s.Swivel.NAME()
+	assert.Nil(err)
+	assert.Equal(name, "Swivel Finance")
 }
 
-func TestSwivelSuite(t *test.T) {
-	suite.Run(t, &fillFixedTestSuite{})
+func (s *ctorTestSuite) TestVersion() {
+	assert := assert.New(s.T())
+	verz, err := s.Swivel.VERSION()
+	assert.Nil(err)
+	assert.Equal(verz, "1.0.0")
+}
+
+func (s *ctorTestSuite) TestCToken() {
+	assert := assert.New(s.T())
+	addr, err := s.Swivel.CTOKEN()
+	assert.Nil(err)
+	assert.Equal(addr, s.Dep.CErc20Address)
+}
+
+func (s *ctorTestSuite) TestDomain() {
+	assert := assert.New(s.T())
+	separator, err := s.Swivel.DOMAIN()
+	assert.Nil(err)
+	assert.Equal(32, len(separator))
+}
+
+func TestCtorSuite(t *test.T) {
+	suite.Run(t, &ctorTestSuite{})
 }

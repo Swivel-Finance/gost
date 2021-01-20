@@ -5,6 +5,10 @@
 .PHONY: compile_solidity_hash_fake compile_go_hash_fake compile_hash_fake
 .PHONY: compile_solidity_swivel compile_go_swivel compile_swivel
 .PHONY: compile
+.PHONY: clean_abi
+.PHONY: clean_bin
+.PHONY: clean_go
+.PHONY: clean
 
 compile_solidity_erc:
 	@echo "compiling ERC20 solidity source into abi and bin files"
@@ -58,4 +62,18 @@ compile_go_swivel:
 
 compile_swivel: compile_solidity_swivel compile_go_swivel
 
-compile: compile_tokens compile_sig_test compile_hash_test compile_swivel
+compile: compile_tokens compile_sig_fake compile_hash_fake compile_swivel
+
+clean_abi:
+	@echo "removing abi files from test/contracts dirs"
+	rm test/contracts/**/*.abi
+
+clean_bin:
+	@echo "removing bin files from test/contracts dirs"
+	rm test/contracts/**/*.bin
+
+clean_go:
+	@echo "removing generated go bindings from test/contracts dirs"
+	rm test/contracts/**/*.go
+
+clean: clean_abi clean_bin clean_go
