@@ -114,6 +114,28 @@ func (s *tokenTestSuite) TestExchangeRateCurrent() {
 	assert.Equal(amount, curr)
 }
 
+func (s *tokenTestSuite) TestMint() {
+	assert := assert.New(s.T())
+	// arbitrary amount
+	minted := big.NewInt(ONE_GWEI)
+
+	// not necessary for the result, but test it anyway
+	tx, err := s.CErc20.MintReturns(minted)
+	assert.NotNil(tx)
+	assert.Nil(err)
+	s.Env.Blockchain.Commit()
+
+	// call mint() so that the args are stored
+	tx, err = s.CErc20.Mint(minted)
+	assert.NotNil(tx)
+	assert.Nil(err)
+	s.Env.Blockchain.Commit()
+
+	stored, err := s.CErc20.MintedArgs()
+	assert.Nil(err)
+	assert.Equal(minted, stored)
+}
+
 func TestTokenSuite(t *test.T) {
 	suite.Run(t, &tokenTestSuite{})
 }
