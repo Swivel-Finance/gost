@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: UNLICENSED
+
 /**
   Erc20 is a mock which records arguments passed to its methods as well as
   provides setters allowing us to dictate method return values
@@ -12,29 +14,32 @@ contract Erc20 {
     uint256 amount;
   }
 
+  /// @dev mapping for arguments passed to approve
+  mapping (address => uint256) public approvedArgs;
+  /// @dev a boolean flag which allows us to dictate the return of approve(). 
+  bool private approveReturn;
   /// @dev mapping of arguments sent to transferFrom. key is passed from address.
-  mapping (address => TransferFromArgs) public transferFrom;
-
-  /// @dev a boolean flag which allows us to dictate the return. 
+  mapping (address => TransferFromArgs) public transferredFromArgs;
   bool private transferFromReturn;
 
-  constructor() {
-    transferFromReturnTrue();
+  function approveReturns(bool b) public {
+    approveReturn = b;
   }
 
-  function transferFromReturnTrue() public {
-    transferFromReturn = true;
+  function approve(address s, uint256 a) public returns (bool) {
+    approvedArgs[s] = a;  
+    return approveReturn;
   }
 
-  function transferFromReturnFalse() public {
-    transferFromReturn = false;
+  function transferFromReturns(bool b) public {
+    transferFromReturn = b;
   }
 
   function transferFrom(address f, address t, uint256 a) public returns (bool) {
     TransferFromArgs memory args;
     args.to = t;
     args.amount = a;
-    transferFrom[f] = args;
+    transferredFromArgs[f] = args;
     return transferFromReturn;
   }
 }

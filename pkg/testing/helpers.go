@@ -6,6 +6,7 @@ import (
 	"math/big"
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
 )
 
@@ -23,18 +24,16 @@ func GenBytes32(s string) [32]byte {
 }
 
 // NewCallOpts is a function which allows us to more succinctly place Call options
-func NewCallOpts(a *bind.TransactOpts) *bind.CallOpts {
+func NewCallOpts(a common.Address) *bind.CallOpts {
 	return &bind.CallOpts{
 		// TODO: Should this be a settable argument?
 		Pending: false,
-		From:    a.From,
+		From:    a,
 	}
 }
 
-// NewTxOpts is a function which allows us to more succintly place the transaction options into a "send"
-// type transaction. We do this in place of wrapping our TX in a global session variable, as, we tend to
-// use different values in various places. Returns the assembled Geth TransactOpts
-func NewTxOpts(a *bind.TransactOpts, v *big.Int, p *big.Int, l uint64) *bind.TransactOpts {
+// NewTxOpts is a function which allows us to more succintly get a hydrated TransactOpts object
+func NewTransactOpts(a *bind.TransactOpts, v *big.Int, p *big.Int, l uint64) *bind.TransactOpts {
 	return &bind.TransactOpts{
 		From:     a.From,
 		Signer:   a.Signer,

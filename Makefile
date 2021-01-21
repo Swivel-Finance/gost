@@ -1,9 +1,14 @@
 .PHONY: compile_solidity_erc compile_go_erc compile_erc
 .PHONY: compile_solidity_cerc compile_go_cerc compile_cerc
+.PHONY: compile_tokens
 .PHONY: compile_solidity_sig_fake compile_go_sig_fake compile_sig_fake
 .PHONY: compile_solidity_hash_fake compile_go_hash_fake compile_hash_fake
 .PHONY: compile_solidity_swivel compile_go_swivel compile_swivel
 .PHONY: compile
+.PHONY: clean_abi
+.PHONY: clean_bin
+.PHONY: clean_go
+.PHONY: clean
 
 compile_solidity_erc:
 	@echo "compiling ERC20 solidity source into abi and bin files"
@@ -14,6 +19,18 @@ compile_go_erc:
 	abigen --abi ./test/contracts/tokens/Erc20.abi --bin ./test/contracts/tokens/Erc20.bin -pkg tokens -type Erc20 -out ./test/contracts/tokens/erc20.go 
 
 compile_erc: compile_solidity_erc compile_go_erc
+
+compile_solidity_cerc:
+	@echo "compiling CERC20 solidity source into abi and bin files"
+	solc -o ./test/contracts/tokens --abi --bin --overwrite ./test/contracts/tokens/CErc20.sol
+
+compile_go_cerc:
+	@echo "compiling abi and bin files to golang"
+	abigen --abi ./test/contracts/tokens/CErc20.abi --bin ./test/contracts/tokens/CErc20.bin -pkg tokens -type CErc20 -out ./test/contracts/tokens/cerc20.go 
+
+compile_cerc: compile_solidity_cerc compile_go_cerc
+
+compile_tokens: compile_erc compile_cerc
 
 compile_solidity_sig_fake:
 	@echo "compiling Signature solidity source into abi and bin files"
@@ -45,4 +62,18 @@ compile_go_swivel:
 
 compile_swivel: compile_solidity_swivel compile_go_swivel
 
-compile: compile_sig_test compile_hash_test compile_swivel
+compile: compile_tokens compile_sig_fake compile_hash_fake compile_swivel
+
+clean_abi:
+	@echo "removing abi files from test/contracts dirs"
+	rm test/contracts/**/*.abi
+
+clean_bin:
+	@echo "removing bin files from test/contracts dirs"
+	rm test/contracts/**/*.bin
+
+clean_go:
+	@echo "removing generated go bindings from test/contracts dirs"
+	rm test/contracts/**/*.go
+
+clean: clean_abi clean_bin clean_go
