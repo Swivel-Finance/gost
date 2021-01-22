@@ -6,7 +6,6 @@ import (
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/crypto"
-	// "github.com/ethereum/go-ethereum/common"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 	"github.com/swivel-finance/gost/test/contracts/fakes"
@@ -14,7 +13,7 @@ import (
 	"github.com/swivel-finance/gost/test/contracts/tokens"
 )
 
-type fillFixedTestSuite struct {
+type fillFloatingTestSuite struct {
 	suite.Suite
 	Env    *Env
 	Dep    *Dep
@@ -23,7 +22,7 @@ type fillFixedTestSuite struct {
 	Swivel *swivel.SwivelSession // *Session objects are created by the go bindings
 }
 
-func (s *fillFixedTestSuite) SetupSuite() {
+func (s *fillFloatingTestSuite) SetupSuite() {
 	var err error
 
 	s.Env = NewEnv(big.NewInt(ONE_ETH)) // each of the wallets in the env will begin with this balance
@@ -63,7 +62,7 @@ func (s *fillFixedTestSuite) SetupSuite() {
 	}
 }
 
-func (s *fillFixedTestSuite) TestFillFixed() {
+func (s *fillFloatingTestSuite) TestFillFloating() {
 	assert := assert.New(s.T())
 
 	// stub the returns from the tokens
@@ -92,20 +91,20 @@ func (s *fillFixedTestSuite) TestFillFixed() {
 	// put together an order, hash and sign it...
 	// this represents the creation and storage of the offline order (and sig)
 	orderKey := GenBytes32("order")
-	principal := big.NewInt(5000)
-	interest := big.NewInt(50)
-	duration := big.NewInt(10000)
-	expiry := big.NewInt(20000)
-	nonce := big.NewInt(42)
+	principal := big.NewInt(6000)
+	interest := big.NewInt(60)
+	duration := big.NewInt(20000)
+	expiry := big.NewInt(30000)
+	nonce := big.NewInt(123)
 
-	// we'll say User1 made a fixed order some time ago
+	// we'll say User1 made a floating order some time ago
 	// NOTE fakes.* is being used here as the swivel package does not expose them
 	// both are using the same sig && hash libs however
 	hashOrder := fakes.HashOrder{
 		Key:        orderKey,
 		Maker:      s.Env.User1.Opts.From,
 		Underlying: s.Dep.Erc20Address,
-		Floating:   false,
+		Floating:   true,
 		Principal:  principal,
 		Interest:   interest,
 		Duration:   duration,
@@ -138,12 +137,12 @@ func (s *fillFixedTestSuite) TestFillFixed() {
 		vrs.V += 27
 	}
 
-	// the order passed to fillFixed must be from the correct pkg
+	// the order passed to fillFloating must be from the correct pkg
 	order := swivel.HashOrder{
 		Key:        orderKey,
 		Maker:      s.Env.User1.Opts.From,
 		Underlying: s.Dep.Erc20Address,
-		Floating:   false,
+		Floating:   true,
 		Principal:  principal,
 		Interest:   interest,
 		Duration:   duration,
@@ -160,9 +159,9 @@ func (s *fillFixedTestSuite) TestFillFixed() {
 
 	// NOW we are ready to call our method...
 	agreementKey := GenBytes32("agreement")
-	filling := big.NewInt(25) // filling half the available volume
+	filling := big.NewInt(30) // filling half the available volume
 
-	_, err = s.Swivel.FillFixed(order, filling, agreementKey, components)
+	_, err = s.Swivel.FillFloating(order, filling, agreementKey, components)
 	assert.Nil(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
@@ -173,6 +172,6 @@ func (s *fillFixedTestSuite) TestFillFixed() {
 	assert.NotNil(agreement)
 }
 
-func TestFixedSuite(t *test.T) {
-	suite.Run(t, &fillFixedTestSuite{})
+func TestFloatingSuite(t *test.T) {
+	suite.Run(t, &fillFloatingTestSuite{})
 }
