@@ -49,6 +49,16 @@ contract Swivel {
     DOMAIN = Hash.domain(NAME, VERSION, i, verifier);
   }
 
+  /// @dev Agreements may only be Initiated if the Order is valid.
+  /// @param o An offline Swivel.Order
+  /// @param c Components of a valid ECDSA signature
+  modifier valid(Hash.Order calldata o, Sig.Components calldata c) {
+    require(cancelled[o.key] == false, 'order has been cancelled');
+    require(o.expiry >= block.timestamp, 'order has expired');
+    require(o.maker == Sig.recover(Hash.message(DOMAIN, Hash.order(o)), c), 'invalid signature');
+    _;
+  }
+
   /// @param o An offline Swivel.Order
   /// @param a order volume amount this agreement is filling
   /// @param k Key of this new agreement
@@ -58,15 +68,12 @@ contract Swivel {
     uint256 a,
     bytes32 k,
     Sig.Components calldata c
-  ) public returns (bool) {
-    require(cancelled[o.key] == false, 'order has been cancelled');
-    require(o.expiry >= block.timestamp, 'order has expired');
-    require(o.maker == Sig.recover(Hash.message(DOMAIN, Hash.order(o)), c), 'invalid signature'); 
+  ) public valid(o, c) returns (bool) {
     require(a <= (o.interest - filled[o.key]), 'taker amount > available volume');
 
     Agreement memory newAgreement;
-    // .principal is principal * ratio / 1ETH were ratio is (a) * 1ETH / interest
-    newAgreement.principal = o.principal * ((a * (1 ether)) / o.interest) / (1 ether);
+    // .principal is principal * ratio / 1ETH were ratio is (a * 1ETH) / interest
+    newAgreement.principal = o.principal * ((a * 1 ether) / o.interest) / 1 ether;
     newAgreement.interest = a;
 
     // transfer tokens to this contract
@@ -82,6 +89,47 @@ contract Swivel {
     newAgreement.taker = msg.sender;
     newAgreement.underlying = o.underlying; 
     newAgreement.floating = false;
+    newAgreement.rate = cToken.exchangeRateCurrent();
+    newAgreement.duration = o.duration;
+    newAgreement.release = newAgreement.duration + block.timestamp;
+
+    agreements[o.key][k] = newAgreement;
+
+    emit Initiate(o.key, k);
+
+    return true;
+  }
+
+  /// @param o An offline Swivel.Order
+  /// @param a order volume amount this agreement is filling
+  /// @param k Key of this new agreement
+  /// @param c Components of a valid ECDSA signature
+  function fillFloating(
+    Hash.Order calldata o,
+    uint256 a,
+    bytes32 k,
+    Sig.Components calldata c
+  ) public valid(o, c) returns (bool) {
+    require(a <= (o.interest - filled[o.key]), 'taker amount > available volume');
+
+    Agreement memory newAgreement;
+    // .interest is interest * ratio / 1ETH where ratio is (a * 1ETH) / principal
+    newAgreement.interest = o.interest * ((a * 1 ether) / o.principal) / 1 ether;
+    newAgreement.principal = a;
+
+    // transfer tokens to this contract
+    Erc20 uToken = Erc20(o.underlying);
+    require(uToken.transferFrom(o.maker, address(this), newAgreement.interest), 'transfer from maker failed');
+    require(uToken.transferFrom(msg.sender, address(this), newAgreement.principal), 'transfer from taker failed');
+    // mint compound
+    require(mintCToken(o.underlying, o.interest + o.principal) > 0, 'CToken minting failed');
+
+    // finish setting new agreement props and store
+    CErc20 cToken = CErc20(CTOKEN);
+    newAgreement.maker = o.maker;
+    newAgreement.taker = msg.sender;
+    newAgreement.underlying = o.underlying; 
+    newAgreement.floating = true;
     newAgreement.rate = cToken.exchangeRateCurrent();
     newAgreement.duration = o.duration;
     newAgreement.release = newAgreement.duration + block.timestamp;
