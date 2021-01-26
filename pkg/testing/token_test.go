@@ -70,6 +70,29 @@ func (s *tokenTestSuite) TestApprove() {
 	assert.Equal(amount, stored)
 }
 
+func (s *tokenTestSuite) TestTransfer() {
+	assert := assert.New(s.T())
+	tx, err := s.Erc20.TransferReturns(true)
+	assert.NotNil(tx)
+	assert.Nil(err)
+	s.Env.Blockchain.Commit()
+
+	amount := big.NewInt(ONE_ETH)
+	// fake transfer to user2
+	tx, err = s.Erc20.Transfer(
+		s.Env.User2.Opts.From,
+		amount,
+	)
+	assert.NotNil(tx)
+	assert.Nil(err)
+	s.Env.Blockchain.Commit()
+
+	// mapping uses the passed address as key
+	stored, err := s.Erc20.TransferredArgs(s.Env.User2.Opts.From)
+	assert.Nil(err)
+	assert.Equal(stored, amount)
+}
+
 func (s *tokenTestSuite) TestTransferFrom() {
 	assert := assert.New(s.T())
 	tx, err := s.Erc20.TransferFromReturns(true)
@@ -134,6 +157,28 @@ func (s *tokenTestSuite) TestMint() {
 	stored, err := s.CErc20.MintedArgs()
 	assert.Nil(err)
 	assert.Equal(minted, stored)
+}
+
+func (s *tokenTestSuite) TestRedeemUnderlying() {
+	assert := assert.New(s.T())
+	// arbitrary amount
+	redeemed := big.NewInt(ONE_GWEI)
+
+	// compound uses 0 as 'success'. see https://compound.finance/docs/ctokens#redeem-underlying
+	tx, err := s.CErc20.RedeemUnderlyingReturns(big.NewInt(0))
+	assert.NotNil(tx)
+	assert.Nil(err)
+	s.Env.Blockchain.Commit()
+
+	// call redeem...() so that the args are stored
+	tx, err = s.CErc20.RedeemUnderlying(redeemed)
+	assert.NotNil(tx)
+	assert.Nil(err)
+	s.Env.Blockchain.Commit()
+
+	stored, err := s.CErc20.RedeemedUnderlyingArgs()
+	assert.Nil(err)
+	assert.Equal(redeemed, stored)
 }
 
 func TestTokenSuite(t *test.T) {

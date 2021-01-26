@@ -141,6 +141,47 @@ contract Swivel {
     return true;
   }
 
+  /// @param o key of the order this agreement is associated with
+  /// @param a key of the agreement being released
+  function releaseFixed(bytes32 o, bytes32 a) public returns (bool) {
+    Agreement memory releasing = agreements[o][a];
+
+    require(releasing.released == false, 'agreement is already released');
+    require(block.timestamp >= releasing.release, 'agreement term is not complete');
+
+
+    CErc20 cToken = CErc20(CTOKEN);
+
+    // calc annualized interest
+    uint256 total = releasing.principal + releasing.interest;
+    // TODO dusting?
+    uint256 yield = ((cToken.exchangeRateCurrent() * 1e26) / releasing.rate) - 1e26; 
+    uint256 interest = ((yield * releasing.principal) + (yield * releasing.interest)) / 1e26;
+
+    // update the total, protecting from underflow.
+    uint256 diff;
+    if (interest == releasing.interest) diff = interest;
+    else {
+      diff = interest > releasing.interest ? interest - releasing.interest :
+        releasing.interest - interest;
+    }
+
+    // TODO is there a sprintf type interpolation available here, or do we just pass more args?
+    require(redeemCToken(total + diff) == 0, 'redeem compound token failed');
+
+    // return funds to appropriate parties
+    Erc20 uToken = Erc20(releasing.underlying);
+
+    require(uToken.transfer(releasing.maker, total), 'transfer to maker failed');
+    require(uToken.transfer(releasing.taker, diff), 'transfer to taker failed');
+
+    releasing.released = true;
+
+    emit Release(o, a);
+
+    return true;
+  }
+
   /// @param u address of the underlying token contract
   /// @param n number of token to be minted
   function mintCToken(address u, uint256 n) internal returns (uint256) {
@@ -149,5 +190,9 @@ contract Swivel {
     require(uToken.approve(CTOKEN, n), 'underlying approval failed');
     CErc20 cToken = CErc20(CTOKEN);
     return cToken.mint(n);
+  }
+
+  function redeemCToken(uint256 n) internal returns (uint256) {
+    return CErc20(CTOKEN).redeemUnderlying(n);
   }
 }

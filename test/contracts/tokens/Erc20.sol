@@ -18,6 +18,9 @@ contract Erc20 {
   mapping (address => uint256) public approvedArgs;
   /// @dev a boolean flag which allows us to dictate the return of approve(). 
   bool private approveReturn;
+  /// @dev mapping of arguments sent to transfer. key is the passed in address.
+  mapping (address => uint256) public transferredArgs;
+  bool private transferReturn;
   /// @dev mapping of arguments sent to transferFrom. key is passed from address.
   mapping (address => TransferFromArgs) public transferredFromArgs;
   bool private transferFromReturn;
@@ -29,6 +32,15 @@ contract Erc20 {
   function approve(address s, uint256 a) public returns (bool) {
     approvedArgs[s] = a;  
     return approveReturn;
+  }
+
+  function transferReturns(bool b) public {
+    transferReturn = b;
+  }
+
+  function transfer(address t, uint256 a) public returns (bool) {
+    transferredArgs[t] = a;
+    return transferReturn;
   }
 
   function transferFromReturns(bool b) public {
