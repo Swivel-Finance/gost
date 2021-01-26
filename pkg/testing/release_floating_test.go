@@ -3,7 +3,6 @@ package testing
 import (
 	"math/big"
 	test "testing"
-	// "time"
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/crypto"
@@ -14,7 +13,7 @@ import (
 	"github.com/swivel-finance/gost/test/contracts/tokens"
 )
 
-type releaseFixedTestSuite struct {
+type releaseFloatingTestSuite struct {
 	suite.Suite
 	Env          *Env
 	Dep          *Dep
@@ -25,7 +24,7 @@ type releaseFixedTestSuite struct {
 	AgreementKey [32]byte
 }
 
-func (s *releaseFixedTestSuite) SetupSuite() {
+func (s *releaseFloatingTestSuite) SetupSuite() {
 	var err error
 
 	s.Env = NewEnv(big.NewInt(ONE_ETH)) // each of the wallets in the env will begin with this balance
@@ -93,7 +92,7 @@ func (s *releaseFixedTestSuite) SetupSuite() {
 		Key:        s.OrderKey,
 		Maker:      s.Env.User1.Opts.From,
 		Underlying: s.Dep.Erc20Address,
-		Floating:   false,
+		Floating:   true,
 		Principal:  principal,
 		Interest:   interest,
 		Duration:   duration,
@@ -115,7 +114,7 @@ func (s *releaseFixedTestSuite) SetupSuite() {
 		Key:        s.OrderKey,
 		Maker:      s.Env.User1.Opts.From,
 		Underlying: s.Dep.Erc20Address,
-		Floating:   false,
+		Floating:   true,
 		Principal:  principal,
 		Interest:   interest,
 		Duration:   duration,
@@ -138,11 +137,11 @@ func (s *releaseFixedTestSuite) SetupSuite() {
 		Signer: s.Env.User2.Opts.Signer,
 	}
 	// we can send different transact opts directly to the deployed contract
-	s.Dep.Swivel.FillFixed(opts, order, filling, s.AgreementKey, components)
+	s.Dep.Swivel.FillFloating(opts, order, filling, s.AgreementKey, components)
 	s.Env.Blockchain.Commit()
 }
 
-func (s *releaseFixedTestSuite) TestReleaseFixed() {
+func (s *releaseFloatingTestSuite) TestReleaseFloating() {
 	assert := assert.New(s.T())
 
 	// fetch our agreement that was made in the setup
@@ -164,7 +163,7 @@ func (s *releaseFixedTestSuite) TestReleaseFixed() {
 	// stub underlying to return true from transfer
 	s.Erc20.TransferReturns(true)
 
-	tx, err := s.Swivel.ReleaseFixed(s.OrderKey, s.AgreementKey)
+	tx, err := s.Swivel.ReleaseFloating(s.OrderKey, s.AgreementKey)
 	assert.Nil(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
@@ -183,6 +182,6 @@ func (s *releaseFixedTestSuite) TestReleaseFixed() {
 	s.T().Log(takers)
 }
 
-func TestReleaseFixedSuite(t *test.T) {
-	suite.Run(t, &releaseFixedTestSuite{})
+func TestReleaseFloatingSuite(t *test.T) {
+	suite.Run(t, &releaseFloatingTestSuite{})
 }

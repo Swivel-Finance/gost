@@ -144,6 +144,22 @@ contract Swivel {
   /// @param o key of the order this agreement is associated with
   /// @param a key of the agreement being released
   function releaseFixed(bytes32 o, bytes32 a) public returns (bool) {
+    require(agreements[o][a].floating == false, 'agreement must be fixed');
+    return release(o, a, agreements[o][a].maker, agreements[o][a].taker);
+  }
+
+  /// @param o key of the order this agreement is associated with
+  /// @param a key of the agreement being released
+  function releaseFloating(bytes32 o, bytes32 a) public returns (bool) {
+    require(agreements[o][a].floating, 'agreement must be floating');
+    return release(o, a, agreements[o][a].taker, agreements[o][a].maker);
+  }
+
+  /// @param o key of the order this agreement is associated with
+  /// @param a key of the agreement being released
+  /// @param t Recipient Address of the calculated total
+  /// @param d Recipient Address of the calculated diff
+  function release(bytes32 o, bytes32 a, address t, address d) internal returns (bool) {
     Agreement memory releasing = agreements[o][a];
 
     require(releasing.released == false, 'agreement is already released');
@@ -172,8 +188,8 @@ contract Swivel {
     // return funds to appropriate parties
     Erc20 uToken = Erc20(releasing.underlying);
 
-    require(uToken.transfer(releasing.maker, total), 'transfer to maker failed');
-    require(uToken.transfer(releasing.taker, diff), 'transfer to taker failed');
+    require(uToken.transfer(t, total), 'transfer of total failed');
+    require(uToken.transfer(d, diff), 'transfer of diff failed');
 
     releasing.released = true;
 
