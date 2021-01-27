@@ -198,6 +198,16 @@ contract Swivel {
     return true;
   }
 
+  function cancel(Hash.Order calldata o, Sig.Components calldata c) public returns (bool) {
+    require(o.maker == Sig.recover(Hash.message(DOMAIN, Hash.order(o)), c), 'invalid signature');
+
+    cancelled[o.key] = true;
+
+    emit Cancel(o.key);
+
+    return true;
+  }
+
   /// @param u address of the underlying token contract
   /// @param n number of token to be minted
   function mintCToken(address u, uint256 n) internal returns (uint256) {
