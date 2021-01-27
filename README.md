@@ -52,11 +52,11 @@ This is the way.
 
 ### Compiling and Testing Your Contracts
 * Compiling:
-    * Make Clean. Removes any compiled artifacts from all directories
-    * Make Compile. Compiles all contracts and libraries.
-    * Make <foo>. There are sub-commands for all possible steps so if you are adding new ones, **follow the pattern**
+    * `make clean`. Removes any compiled artifacts from all directories
+    * `make compile`. Compiles all contracts and libraries.
+    * `make <foo>`. There are sub-commands for all possible steps so if you are adding new ones, **follow the pattern**
 * Testing:
-    * go test ./... from root (as stated). Add the -v flag if you expect to see any logging you may be doing.
+    * `go test ./...` from root (as stated). Add the -v flag if you expect to see any logging you may be doing.
     * You can of course test at the package level, but the test run is fast so... whateves...
     * This author runs individual tests via the excellent vim-go tool while developing. Those of you with cuter tools are on your own...
 
