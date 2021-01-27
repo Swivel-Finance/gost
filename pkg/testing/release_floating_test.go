@@ -143,20 +143,20 @@ func (s *releaseFloatingTestSuite) SetupSuite() {
 
 func (s *releaseFloatingTestSuite) TestReleaseFloating() {
 	assert := assert.New(s.T())
-	t := s.T() // t is the pointer to the current testing.T instance
+	// t := s.T() // t is the pointer to the current testing.T instance
 
 	// fetch our agreement that was made in the setup
 	agreement, _ := s.Swivel.Agreements(s.OrderKey, s.AgreementKey)
 	// assure it has not been released
-	assert.Equal(agreement.Released, false)
+	assert.False(agreement.Released)
 
 	// we should have user1, user2 as maker/taker
 	assert.Equal(agreement.Maker, s.Env.User1.Opts.From)
 	assert.Equal(agreement.Taker, s.Env.User2.Opts.From)
 
 	// whats p && i
-	t.Log(agreement.Principal)
-	t.Log(agreement.Interest)
+	// t.Log(agreement.Principal)
+	// t.Log(agreement.Interest)
 
 	// TODO helper for generating a rate
 	rate := big.NewInt(1050000000000000000)
@@ -180,15 +180,18 @@ func (s *releaseFloatingTestSuite) TestReleaseFloating() {
 	// what was  redeem... called with
 	redeemed, _ := s.CErc20.RedeemedUnderlyingArgs()
 	assert.True(redeemed.Cmp(big.NewInt(0)) > 0) // Cmp returns 1 when >
-	t.Log(redeemed)
+	// t.Log(redeemed)
 
 	// what was transferred?
 	makers, _ := s.Erc20.TransferredArgs(agreement.Maker)
 	assert.True(makers.Cmp(big.NewInt(0)) > 0)
-	t.Log(makers)
+	// t.Log(makers)
 	takers, _ := s.Erc20.TransferredArgs(agreement.Taker)
 	assert.True(takers.Cmp(big.NewInt(0)) > 0)
-	t.Log(takers)
+	// t.Log(takers)
+
+	updated, _ := s.Swivel.Agreements(s.OrderKey, s.AgreementKey)
+	assert.True(updated.Released)
 }
 
 func TestReleaseFloatingSuite(t *test.T) {

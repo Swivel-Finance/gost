@@ -160,7 +160,7 @@ contract Swivel {
   /// @param t Recipient Address of the calculated total
   /// @param d Recipient Address of the calculated diff
   function release(bytes32 o, bytes32 a, address t, address d) internal returns (bool) {
-    Agreement memory releasing = agreements[o][a];
+    Agreement memory releasing = agreements[o][a]; // TODO we could just look it up each time...
 
     require(releasing.released == false, 'agreement is already released');
     require(block.timestamp >= releasing.release, 'agreement term is not complete');
@@ -191,7 +191,7 @@ contract Swivel {
     require(uToken.transfer(t, total), 'transfer of total failed');
     require(uToken.transfer(d, diff), 'transfer of diff failed');
 
-    releasing.released = true;
+    agreements[o][a].released = true;
 
     emit Release(o, a);
 
