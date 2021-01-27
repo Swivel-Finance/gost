@@ -159,7 +159,7 @@ func (s *fillFloatingTestSuite) TestFillFloating() {
 
 	// NOW we are ready to call our method...
 	agreementKey := GenBytes32("agreement")
-	filling := big.NewInt(30) // filling half the available volume
+	filling := big.NewInt(3000) // filling half the available volume
 
 	_, err = s.Swivel.FillFloating(order, filling, agreementKey, components)
 	assert.Nil(err)

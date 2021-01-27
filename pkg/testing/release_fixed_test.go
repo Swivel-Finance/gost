@@ -3,7 +3,6 @@ package testing
 import (
 	"math/big"
 	test "testing"
-	// "time"
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/crypto"
@@ -82,12 +81,12 @@ func (s *releaseFixedTestSuite) SetupSuite() {
 	s.CErc20.MintReturns(minted)
 	s.Env.Blockchain.Commit()
 
-	s.OrderKey = GenBytes32("order")
+	s.OrderKey = GenBytes32("fixedOrder")
 	principal := big.NewInt(ONE_ETH)
 	interest := big.NewInt(ONE_ETH / 20)
 	duration := big.NewInt(1) // so we don't have to adjust time
 	expiry := big.NewInt(100)
-	nonce := big.NewInt(42)
+	nonce := big.NewInt(41)
 
 	hashOrder := fakes.HashOrder{
 		Key:        s.OrderKey,
@@ -129,7 +128,7 @@ func (s *releaseFixedTestSuite) SetupSuite() {
 		S: vrs.S,
 	}
 
-	s.AgreementKey = GenBytes32("agreement")
+	s.AgreementKey = GenBytes32("fixedAgreement")
 	filling := big.NewInt(ONE_ETH / 20) // filling all available volume
 
 	// we can't use the session here as we need User2 to serve as Taker
@@ -144,11 +143,20 @@ func (s *releaseFixedTestSuite) SetupSuite() {
 
 func (s *releaseFixedTestSuite) TestReleaseFixed() {
 	assert := assert.New(s.T())
+	t := s.T() // t is the pointer to the current testing.T instance
 
 	// fetch our agreement that was made in the setup
 	agreement, _ := s.Swivel.Agreements(s.OrderKey, s.AgreementKey)
 	// assure it has not been released
 	assert.Equal(agreement.Released, false)
+
+	// we should have user1, user2 as maker/taker
+	assert.Equal(agreement.Maker, s.Env.User1.Opts.From)
+	assert.Equal(agreement.Taker, s.Env.User2.Opts.From)
+
+	// whats p && i
+	t.Log(agreement.Principal)
+	t.Log(agreement.Interest)
 
 	// TODO helper for generating a rate
 	rate := big.NewInt(1050000000000000000)
@@ -172,15 +180,15 @@ func (s *releaseFixedTestSuite) TestReleaseFixed() {
 	// what was  redeem... called with
 	redeemed, _ := s.CErc20.RedeemedUnderlyingArgs()
 	assert.True(redeemed.Cmp(big.NewInt(0)) > 0) // Cmp returns 1 when >
-	s.T().Log(redeemed)
+	t.Log(redeemed)
 
 	// what was transferred?
 	makers, _ := s.Erc20.TransferredArgs(agreement.Maker)
 	assert.True(makers.Cmp(big.NewInt(0)) > 0)
-	s.T().Log(makers)
+	t.Log(makers)
 	takers, _ := s.Erc20.TransferredArgs(agreement.Taker)
 	assert.True(takers.Cmp(big.NewInt(0)) > 0)
-	s.T().Log(takers)
+	t.Log(takers)
 }
 
 func TestReleaseFixedSuite(t *test.T) {
