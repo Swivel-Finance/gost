@@ -49,19 +49,9 @@ contract Swivel {
     DOMAIN = Hash.domain(NAME, VERSION, i, verifier);
   }
 
-  /// @dev Agreements may only be Initiated if the Order is valid.
-  /// @param o An offline Swivel.Order
-  /// @param c Components of a valid ECDSA signature
-  modifier valid(Hash.Order calldata o, Sig.Components calldata c) {
-    require(cancelled[o.key] == false, 'order has been cancelled');
-    require(o.expiry >= block.timestamp, 'order has expired');
-    require(o.maker == Sig.recover(Hash.message(DOMAIN, Hash.order(o)), c), 'invalid signature');
-    _;
-  }
-
   /// @param o An offline Swivel.Order
   /// @param a order volume (interest) amount this agreement is filling
-  /// @param k Key of this new agreement
+  /// @param k Key of this agreement
   /// @param c Components of a valid ECDSA signature
   function fillFixed(
     Hash.Order calldata o,
@@ -74,7 +64,25 @@ contract Swivel {
     // .principal is principal * ratio / 1ETH were ratio is (a * 1ETH) / interest
     uint256 principal = o.principal * ((a * 1 ether) / o.interest) / 1 ether;
 
+    // interest is 'a' when fixed
     return fill(o, a, k, principal, a, false); 
+  }
+
+  /// @param o Array of offline Swivel.Orders
+  /// @param a Array of order volume (interest) amounts relative to passed orders
+  /// @param k Key for these agreements
+  /// @param c Array of Components from valid ECDSA signatures
+  function batchFillFixed(
+    Hash.Order[] calldata o,
+    uint256[] calldata a,
+    bytes32 k,
+    Sig.Components[] calldata c
+  ) public returns (bool) {
+    for (uint256 i=0; i < o.length; i++) {
+      require(fillFixed(o[i], a[i], k, c[i]));     
+    }
+
+    return true;
   }
 
   /// @param o An offline Swivel.Order
@@ -92,8 +100,32 @@ contract Swivel {
     // .interest is interest * ratio / 1ETH where ratio is (a * 1ETH) / principal
     uint256 interest = o.interest * ((a * 1 ether) / o.principal) / 1 ether;
 
-    // .principal is a when floating
+    // .principal is 'a' when floating
     return fill(o, a, k, a, interest, true); 
+  }
+
+  /// @param o key of the order this agreement is associated with
+  /// @param a key of the agreement being released
+  function releaseFixed(bytes32 o, bytes32 a) public returns (bool) {
+    require(agreements[o][a].floating == false, 'agreement must be fixed');
+    return release(o, a, agreements[o][a].maker, agreements[o][a].taker);
+  }
+
+  /// @param o key of the order this agreement is associated with
+  /// @param a key of the agreement being released
+  function releaseFloating(bytes32 o, bytes32 a) public returns (bool) {
+    require(agreements[o][a].floating, 'agreement must be floating');
+    return release(o, a, agreements[o][a].taker, agreements[o][a].maker);
+  }
+
+  function cancel(Hash.Order calldata o, Sig.Components calldata c) public returns (bool) {
+    require(o.maker == Sig.recover(Hash.message(DOMAIN, Hash.order(o)), c), 'invalid signature');
+
+    cancelled[o.key] = true;
+
+    emit Cancel(o.key);
+
+    return true;
   }
 
   /// @param o An offline Swivel.Order
@@ -143,20 +175,6 @@ contract Swivel {
 
   /// @param o key of the order this agreement is associated with
   /// @param a key of the agreement being released
-  function releaseFixed(bytes32 o, bytes32 a) public returns (bool) {
-    require(agreements[o][a].floating == false, 'agreement must be fixed');
-    return release(o, a, agreements[o][a].maker, agreements[o][a].taker);
-  }
-
-  /// @param o key of the order this agreement is associated with
-  /// @param a key of the agreement being released
-  function releaseFloating(bytes32 o, bytes32 a) public returns (bool) {
-    require(agreements[o][a].floating, 'agreement must be floating');
-    return release(o, a, agreements[o][a].taker, agreements[o][a].maker);
-  }
-
-  /// @param o key of the order this agreement is associated with
-  /// @param a key of the agreement being released
   /// @param t Recipient Address of the calculated total
   /// @param d Recipient Address of the calculated diff
   function release(bytes32 o, bytes32 a, address t, address d) internal returns (bool) {
@@ -198,16 +216,6 @@ contract Swivel {
     return true;
   }
 
-  function cancel(Hash.Order calldata o, Sig.Components calldata c) public returns (bool) {
-    require(o.maker == Sig.recover(Hash.message(DOMAIN, Hash.order(o)), c), 'invalid signature');
-
-    cancelled[o.key] = true;
-
-    emit Cancel(o.key);
-
-    return true;
-  }
-
   /// @param u address of the underlying token contract
   /// @param n number of token to be minted
   function mintCToken(address u, uint256 n) internal returns (uint256) {
@@ -218,7 +226,18 @@ contract Swivel {
     return cToken.mint(n);
   }
 
+  /// @param n Number of underlying token to be redeemed
   function redeemCToken(uint256 n) internal returns (uint256) {
     return CErc20(CTOKEN).redeemUnderlying(n);
+  }
+
+  /// @dev Agreements may only be Initiated if the Order is valid.
+  /// @param o An offline Swivel.Order
+  /// @param c Components of a valid ECDSA signature
+  modifier valid(Hash.Order calldata o, Sig.Components calldata c) {
+    require(cancelled[o.key] == false, 'order has been cancelled');
+    require(o.expiry >= block.timestamp, 'order has expired');
+    require(o.maker == Sig.recover(Hash.message(DOMAIN, Hash.order(o)), c), 'invalid signature');
+    _;
   }
 }
