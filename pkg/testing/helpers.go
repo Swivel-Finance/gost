@@ -1,3 +1,5 @@
+// this file can be split up into foo_helper, bar_helpers etc to prevent ye olde monolith
+
 package testing
 
 import (
@@ -8,6 +10,8 @@ import (
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/swivel-finance/gost/test/contracts/fakes"
+	"github.com/swivel-finance/gost/test/contracts/swivel"
 )
 
 func NewAuth() (*ecdsa.PrivateKey, *bind.TransactOpts) {
@@ -58,5 +62,54 @@ func Commafy(n *big.Int) string {
 			j, k = j-1, 0
 			out[j] = ','
 		}
+	}
+}
+
+// NewHashOrder will take args to hydrate a Hash.Order and return it
+func NewHashOrder(k [32]byte, m common.Address, u common.Address, f bool, p int64, i int64, d int64, e int64, n int64) fakes.HashOrder {
+	return fakes.HashOrder{
+		Key:        k,
+		Maker:      m,
+		Underlying: u,
+		Floating:   f,
+		Principal:  big.NewInt(p),
+		Interest:   big.NewInt(i),
+		Duration:   big.NewInt(d),
+		Expiry:     big.NewInt(e),
+		Nonce:      big.NewInt(n),
+	}
+}
+
+// NewSwivelOrder will take args to hydrate a swivel.HashOrder and return it
+func NewSwivelOrder(k [32]byte, m common.Address, u common.Address, f bool, p int64, i int64, d int64, e int64, n int64) swivel.HashOrder {
+	return swivel.HashOrder{
+		Key:        k,
+		Maker:      m,
+		Underlying: u,
+		Floating:   f,
+		Principal:  big.NewInt(p),
+		Interest:   big.NewInt(i),
+		Duration:   big.NewInt(d),
+		Expiry:     big.NewInt(e),
+		Nonce:      big.NewInt(n),
+	}
+}
+
+// convenience method to take a Hash.Order and return a Swivel.Order
+func NewSwivelOrderFromHashOrder(o fakes.HashOrder) swivel.HashOrder {
+	return NewSwivelOrder(o.Key, o.Maker, o.Underlying, o.Floating,
+		o.Principal.Int64(), o.Interest.Int64(), o.Duration.Int64(), o.Expiry.Int64(), o.Nonce.Int64())
+}
+
+// convenience method to take a Sig.Components and return a Swivel.Components
+func NewSwivelComponentsFromSigComponents(c fakes.SigComponents) swivel.SigComponents {
+	if c.V < 27 {
+		c.V += 27
+	}
+
+	return swivel.SigComponents{
+		V: c.V,
+		R: c.R,
+		S: c.S,
 	}
 }
