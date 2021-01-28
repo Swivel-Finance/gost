@@ -104,6 +104,23 @@ contract Swivel {
     return fill(o, a, k, a, interest, true); 
   }
 
+  /// @param o Array of offline Swivel.Order
+  /// @param a Array of order volume (principal) amounts relative to passed orders
+  /// @param k Key for these agreements
+  /// @param c Array of Components from valid ECDSA signatures
+  function batchFillFloating(
+    Hash.Order[] calldata o,
+    uint256[] calldata  a,
+    bytes32 k,
+    Sig.Components[] calldata c
+  ) public returns (bool) {
+     for (uint256 i=0; i < o.length; i++) {
+      require(fillFloating(o[i], a[i], k, c[i]));     
+    }
+
+    return true;
+  }
+
   /// @param o key of the order this agreement is associated with
   /// @param a key of the agreement being released
   function releaseFixed(bytes32 o, bytes32 a) public returns (bool) {

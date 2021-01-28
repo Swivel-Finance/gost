@@ -12,7 +12,7 @@ import (
 	"github.com/swivel-finance/gost/test/contracts/tokens"
 )
 
-type batchFillFixedTestSuite struct {
+type batchFillFloatingTestSuite struct {
 	suite.Suite
 	Env    *Env
 	Dep    *Dep
@@ -21,7 +21,7 @@ type batchFillFixedTestSuite struct {
 	Swivel *swivel.SwivelSession // *Session objects are created by the go bindings
 }
 
-func (s *batchFillFixedTestSuite) SetupSuite() {
+func (s *batchFillFloatingTestSuite) SetupSuite() {
 	var err error
 
 	s.Env = NewEnv(big.NewInt(ONE_ETH)) // each of the wallets in the env will begin with this balance
@@ -60,7 +60,7 @@ func (s *batchFillFixedTestSuite) SetupSuite() {
 	}
 }
 
-func (s *batchFillFixedTestSuite) TestBatchFillFixed() {
+func (s *batchFillFloatingTestSuite) TestBatchFillFloating() {
 	assert := assert.New(s.T())
 
 	// stub the returns from the tokens
@@ -79,7 +79,7 @@ func (s *batchFillFixedTestSuite) TestBatchFillFixed() {
 	s.Env.Blockchain.Commit()
 
 	// we'll say User1 made fixed orders some time ago
-	sigOrder := NewHashOrder(GenBytes32("order1"), s.Env.User1.Opts.From, s.Dep.Erc20Address, false, 5000, 50,
+	sigOrder := NewHashOrder(GenBytes32("order1"), s.Env.User1.Opts.From, s.Dep.Erc20Address, true, 5000, 50,
 		10000, 20000, 42)
 
 	sigOrderHash, _ := s.Dep.HashFake.OrderTest(nil, sigOrder)
@@ -97,7 +97,7 @@ func (s *batchFillFixedTestSuite) TestBatchFillFixed() {
 	components1 := NewSwivelComponentsFromSigComponents(vrs)
 
 	// make a second order
-	sigOrder = NewHashOrder(GenBytes32("order2"), s.Env.User1.Opts.From, s.Dep.Erc20Address, false, 6000, 60,
+	sigOrder = NewHashOrder(GenBytes32("order2"), s.Env.User1.Opts.From, s.Dep.Erc20Address, true, 6000, 60,
 		10000, 20000, 44)
 
 	sigOrderHash, _ = s.Dep.HashFake.OrderTest(nil, sigOrder)
@@ -118,7 +118,7 @@ func (s *batchFillFixedTestSuite) TestBatchFillFixed() {
 	filling := []*big.Int{big.NewInt(25), big.NewInt(30)}
 	sigs := []swivel.SigComponents{components1, components2}
 
-	tx, err := s.Swivel.BatchFillFixed(orders, filling, agreementKey, sigs)
+	tx, err := s.Swivel.BatchFillFloating(orders, filling, agreementKey, sigs)
 	assert.Nil(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
@@ -127,15 +127,15 @@ func (s *batchFillFixedTestSuite) TestBatchFillFixed() {
 	agreement1, err := s.Swivel.Agreements(order1.Key, agreementKey)
 	assert.Nil(err)
 	assert.NotNil(agreement1)
-	// agreement.interest is the taker volume amount
-	assert.Equal(agreement1.Interest.Cmp(big.NewInt(25)), 0)
+	// agreement.principal is the taker volume amount
+	assert.Equal(agreement1.Principal.Cmp(big.NewInt(25)), 0)
 
 	agreement2, err := s.Swivel.Agreements(order2.Key, agreementKey)
 	assert.Nil(err)
 	assert.NotNil(agreement2)
-	assert.Equal(agreement2.Interest.Cmp(big.NewInt(30)), 0)
+	assert.Equal(agreement2.Principal.Cmp(big.NewInt(30)), 0)
 }
 
-func TestBatchFixedSuite(t *test.T) {
-	suite.Run(t, &batchFillFixedTestSuite{})
+func TestBatchFloatingSuite(t *test.T) {
+	suite.Run(t, &batchFillFloatingTestSuite{})
 }
