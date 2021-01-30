@@ -34,7 +34,6 @@ func (s *releaseFloatingTestSuite) SetupSuite() {
 		panic(err)
 	}
 
-	// bind the owner wallet to the two tokens
 	s.Erc20 = &tokens.Erc20Session{
 		Contract: s.Dep.Erc20,
 		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
@@ -53,13 +52,12 @@ func (s *releaseFloatingTestSuite) SetupSuite() {
 		},
 	}
 
-	// bind user1 to the swivel contract
 	s.Swivel = &swivel.SwivelSession{
 		Contract: s.Dep.Swivel,
-		CallOpts: bind.CallOpts{From: s.Env.User1.Opts.From, Pending: false},
+		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
 		TransactOpts: bind.TransactOpts{
-			From:   s.Env.User1.Opts.From,
-			Signer: s.Env.User1.Opts.Signer,
+			From:   s.Env.Owner.Opts.From,
+			Signer: s.Env.Owner.Opts.Signer,
 		},
 	}
 
