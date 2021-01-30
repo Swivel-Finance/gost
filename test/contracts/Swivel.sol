@@ -135,6 +135,17 @@ contract Swivel {
     return release(o, a, agreements[o][a].taker, agreements[o][a].maker);
   }
 
+  /// @param o Array of order keys the passed agreements are associated with
+  /// @param a Array of agreement keys which are being released
+  function batchRelease(bytes32[] calldata o, bytes32[] calldata a) public returns (bool) {
+    for (uint256 i=0; i < o.length; i++) {
+      if (agreements[o[i]][a[i]].floating) require(releaseFloating(o[i], a[i]), 'release of floating agreement failed');
+      else require(releaseFixed(o[i], a[i]), 'release of fixed agreement failed');
+    }
+
+    return true; 
+  }
+
   function cancel(Hash.Order calldata o, Sig.Components calldata c) public returns (bool) {
     require(o.maker == Sig.recover(Hash.message(DOMAIN, Hash.order(o)), c), 'invalid signature');
 

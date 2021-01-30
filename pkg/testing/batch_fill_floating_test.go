@@ -54,8 +54,8 @@ func (s *batchFillFloatingTestSuite) SetupSuite() {
 		Contract: s.Dep.Swivel,
 		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
 		TransactOpts: bind.TransactOpts{
-			From:   s.Env.User1.Opts.From,
-			Signer: s.Env.User1.Opts.Signer,
+			From:   s.Env.Owner.Opts.From,
+			Signer: s.Env.Owner.Opts.Signer,
 		},
 	}
 }
