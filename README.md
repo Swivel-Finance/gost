@@ -1,4 +1,4 @@
-##### Smart contract testing with Geth via the Golang ABIGEN
+##### Smart contract testing with Geth via the Golang ABIGEN [![Build Status](https://travis-ci.com/Swivel-Finance/gost.svg?token=mHzJQzb11WHSPwztZw8B&branch=main)](https://travis-ci.com/Swivel-Finance/gost)
 ```
                 _______                                 
                /______/\                                
