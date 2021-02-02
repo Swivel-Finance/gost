@@ -45,7 +45,7 @@ golang's package conventions (see Makefile). Some notes on the residents here:
 * Subdirectories:
     * /fakes. Compiled artifacts for the Fake.sol files
     * /tokens. Mock contracts (and their artifacts) used strictly to stub our token dependencies
-    * /swivel. Compiled artifacts for the Swivel contract.
+    * /swivel. Compiled artifacts for the Swivel contracts.
 
 #### The Makefile
 This is the way.
