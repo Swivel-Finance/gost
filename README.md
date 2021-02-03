@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.com/Swivel-Finance/gost.svg?token=mHzJQzb11WHSPwztZw8B&branch=main)](https://travis-ci.com/Swivel-Finance/gost)
 ##### Smart contract testing with Geth via the Golang ABIGEN
 ```
                 _______                                 
