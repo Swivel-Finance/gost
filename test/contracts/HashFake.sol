@@ -11,7 +11,7 @@ import './Hash.sol';
 contract HashFake {
   /// @dev convenience method to get the domain type hash
   function domainTypeHash() public pure returns (bytes32) {
-    return keccak256(abi.encodePacked(
+    return keccak256(abi.encode(
       'EIP712Domain(',
       'string name,',
       'string version,',
@@ -31,7 +31,7 @@ contract HashFake {
 
   /// @dev convenience method to get the order type hash
   function orderTypeHash() public pure returns (bytes32) {
-    return keccak256(abi.encodePacked(
+    return keccak256(abi.encode(
       'Order(',
       'bytes32 key,',
       'address maker,',
@@ -41,7 +41,6 @@ contract HashFake {
       'uint256 interest,',
       'uint256 duration,',
       'uint256 expiry,',
-      'uint256 nonce,',
       ')'
     ));
   }

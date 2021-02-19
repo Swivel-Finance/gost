@@ -66,7 +66,7 @@ func Commafy(n *big.Int) string {
 }
 
 // NewHashOrder will take args to hydrate a Hash.Order and return it
-func NewHashOrder(k [32]byte, m common.Address, u common.Address, f bool, p int64, i int64, d int64, e int64, n int64) fakes.HashOrder {
+func NewHashOrder(k [32]byte, m common.Address, u common.Address, f bool, p int64, i int64, d int64, e int64) fakes.HashOrder {
 	return fakes.HashOrder{
 		Key:        k,
 		Maker:      m,
@@ -76,12 +76,11 @@ func NewHashOrder(k [32]byte, m common.Address, u common.Address, f bool, p int6
 		Interest:   big.NewInt(i),
 		Duration:   big.NewInt(d),
 		Expiry:     big.NewInt(e),
-		Nonce:      big.NewInt(n),
 	}
 }
 
 // NewSwivelOrder will take args to hydrate a swivel.HashOrder and return it
-func NewSwivelOrder(k [32]byte, m common.Address, u common.Address, f bool, p int64, i int64, d int64, e int64, n int64) swivel.HashOrder {
+func NewSwivelOrder(k [32]byte, m common.Address, u common.Address, f bool, p int64, i int64, d int64, e int64) swivel.HashOrder {
 	return swivel.HashOrder{
 		Key:        k,
 		Maker:      m,
@@ -91,14 +90,13 @@ func NewSwivelOrder(k [32]byte, m common.Address, u common.Address, f bool, p in
 		Interest:   big.NewInt(i),
 		Duration:   big.NewInt(d),
 		Expiry:     big.NewInt(e),
-		Nonce:      big.NewInt(n),
 	}
 }
 
 // convenience method to take a Hash.Order and return a Swivel.Order
 func NewSwivelOrderFromHashOrder(o fakes.HashOrder) swivel.HashOrder {
 	return NewSwivelOrder(o.Key, o.Maker, o.Underlying, o.Floating,
-		o.Principal.Int64(), o.Interest.Int64(), o.Duration.Int64(), o.Expiry.Int64(), o.Nonce.Int64())
+		o.Principal.Int64(), o.Interest.Int64(), o.Duration.Int64(), o.Expiry.Int64())
 }
 
 // convenience method to take a Sig.Components and return a Swivel.Components

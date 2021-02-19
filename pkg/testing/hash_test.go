@@ -5,7 +5,7 @@ import (
 	test "testing"
 
 	"github.com/ethereum/go-ethereum/common"
-	// "github.com/ethereum/go-ethereum/common/hexutil"
+	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 	"github.com/swivel-finance/gost/test/contracts/fakes"
@@ -30,7 +30,6 @@ func order(m common.Address, f bool) fakes.HashOrder { // abigen defined
 		Interest:   big.NewInt(100),
 		Duration:   big.NewInt(123456),
 		Expiry:     big.NewInt(123456789),
-		Nonce:      big.NewInt(1234),
 	}
 }
 
@@ -48,12 +47,12 @@ func (s *hashTestSuite) SetupSuite() {
 }
 
 // NOTE: present just to calculate the hashed values stored in the contract
-// func (s *hashTestSuite) TestTypeHashes() {
-// 	domainTypehash, _ := s.Dep.HashFake.DomainTypeHash(nil)
-// 	orderTypehash, _ := s.Dep.HashFake.OrderTypeHash(nil)
-// 	s.T().Logf("Domain Typehash: %v", hexutil.Encode(domainTypehash[:]))
-// 	s.T().Logf("Order Typehash: %v", hexutil.Encode(orderTypehash[:]))
-// }
+func (s *hashTestSuite) TestTypeHashes() {
+	domainTypehash, _ := s.Dep.HashFake.DomainTypeHash(nil)
+	orderTypehash, _ := s.Dep.HashFake.OrderTypeHash(nil)
+	s.T().Logf("Domain Typehash: %v", hexutil.Encode(domainTypehash[:]))
+	s.T().Logf("Order Typehash: %v", hexutil.Encode(orderTypehash[:]))
+}
 
 func (s *hashTestSuite) TestDomain() {
 	var err error
