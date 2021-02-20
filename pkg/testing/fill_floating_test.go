@@ -94,7 +94,6 @@ func (s *fillFloatingTestSuite) TestFillFloating() {
 	interest := big.NewInt(60)
 	duration := big.NewInt(20000)
 	expiry := big.NewInt(30000)
-	nonce := big.NewInt(123)
 
 	// we'll say User1 made a floating order some time ago
 	// NOTE fakes.* is being used here as the swivel package does not expose them
@@ -108,7 +107,6 @@ func (s *fillFloatingTestSuite) TestFillFloating() {
 		Interest:   interest,
 		Duration:   duration,
 		Expiry:     expiry,
-		Nonce:      nonce,
 	}
 
 	orderHash, err := s.Dep.HashFake.OrderTest(nil, hashOrder)
@@ -146,7 +144,6 @@ func (s *fillFloatingTestSuite) TestFillFloating() {
 		Interest:   interest,
 		Duration:   duration,
 		Expiry:     expiry,
-		Nonce:      nonce,
 	}
 
 	// like order the signature components must ref swivel

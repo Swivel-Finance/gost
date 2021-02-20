@@ -84,7 +84,6 @@ func (s *releaseFloatingTestSuite) SetupSuite() {
 	interest := big.NewInt(ONE_ETH / 20)
 	duration := big.NewInt(1) // so we don't have to adjust time
 	expiry := big.NewInt(100)
-	nonce := big.NewInt(42)
 
 	hashOrder := fakes.HashOrder{
 		Key:        s.OrderKey,
@@ -95,7 +94,6 @@ func (s *releaseFloatingTestSuite) SetupSuite() {
 		Interest:   interest,
 		Duration:   duration,
 		Expiry:     expiry,
-		Nonce:      nonce,
 	}
 
 	orderHash, _ := s.Dep.HashFake.OrderTest(nil, hashOrder)
@@ -117,7 +115,6 @@ func (s *releaseFloatingTestSuite) SetupSuite() {
 		Interest:   interest,
 		Duration:   duration,
 		Expiry:     expiry,
-		Nonce:      nonce,
 	}
 
 	components := swivel.SigComponents{

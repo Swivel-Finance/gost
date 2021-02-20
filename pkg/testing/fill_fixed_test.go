@@ -93,7 +93,6 @@ func (s *fillFixedTestSuite) TestFillFixed() {
 	interest := big.NewInt(50)
 	duration := big.NewInt(10000)
 	expiry := big.NewInt(20000)
-	nonce := big.NewInt(42)
 
 	// we'll say User1 made a fixed order some time ago
 	// NOTE fakes.* is being used here as the swivel package does not expose them
@@ -107,7 +106,6 @@ func (s *fillFixedTestSuite) TestFillFixed() {
 		Interest:   interest,
 		Duration:   duration,
 		Expiry:     expiry,
-		Nonce:      nonce,
 	}
 
 	orderHash, err := s.Dep.HashFake.OrderTest(nil, hashOrder)
@@ -145,7 +143,6 @@ func (s *fillFixedTestSuite) TestFillFixed() {
 		Interest:   interest,
 		Duration:   duration,
 		Expiry:     expiry,
-		Nonce:      nonce,
 	}
 
 	// like order the signature components must ref swivel

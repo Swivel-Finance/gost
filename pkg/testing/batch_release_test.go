@@ -87,7 +87,7 @@ func (s *batchReleaseTestSuite) SetupSuite() {
 
 	// hash and sign
 	hashOrder := NewHashOrder(s.OrderKeys[0], s.Env.User1.Opts.From, s.Dep.Erc20Address, false,
-		ONE_ETH, (ONE_ETH / 20), 20, 1000, 41)
+		ONE_ETH, (ONE_ETH / 20), 20, 1000)
 
 	orderHash, _ := s.Dep.HashFake.OrderTest(nil, hashOrder)
 	messageHash, _ := s.Dep.HashFake.MessageTest(nil, separator, orderHash)
@@ -117,7 +117,7 @@ func (s *batchReleaseTestSuite) SetupSuite() {
 
 	// hash and sign NOTE the reuse of variables here, no need to := new ones
 	hashOrder = NewHashOrder(s.OrderKeys[1], s.Env.User1.Opts.From, s.Dep.Erc20Address, true,
-		ONE_ETH, (ONE_ETH / 20), 30, 1000, 43)
+		ONE_ETH, (ONE_ETH / 20), 30, 1000)
 
 	orderHash, _ = s.Dep.HashFake.OrderTest(nil, hashOrder)
 	messageHash, _ = s.Dep.HashFake.MessageTest(nil, separator, orderHash)

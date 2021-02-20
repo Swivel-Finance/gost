@@ -80,7 +80,7 @@ func (s *batchFillFloatingTestSuite) TestBatchFillFloating() {
 
 	// we'll say User1 made fixed orders some time ago
 	sigOrder := NewHashOrder(GenBytes32("order1"), s.Env.User1.Opts.From, s.Dep.Erc20Address, true, 5000, 50,
-		10000, 20000, 42)
+		10000, 20000)
 
 	sigOrderHash, _ := s.Dep.HashFake.OrderTest(nil, sigOrder)
 	// put the hashed order together with the eip712 domain and hash those
@@ -98,7 +98,7 @@ func (s *batchFillFloatingTestSuite) TestBatchFillFloating() {
 
 	// make a second order
 	sigOrder = NewHashOrder(GenBytes32("order2"), s.Env.User1.Opts.From, s.Dep.Erc20Address, true, 6000, 60,
-		10000, 20000, 44)
+		10000, 20000)
 
 	sigOrderHash, _ = s.Dep.HashFake.OrderTest(nil, sigOrder)
 	sigOrderMessageHash, _ = s.Dep.HashFake.MessageTest(nil, separator, sigOrderHash)
