@@ -83,7 +83,7 @@ library Hash {
   /// @param o A Swivel Order
   function order(Order calldata o) internal pure returns (bytes32) {
     // TODO assembly
-    return keccak256(abi.encode(
+    return keccak256(abi.encodePacked(
       ORDER_TYPEHASH,
       o.key,
       o.maker,
