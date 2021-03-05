@@ -11,7 +11,7 @@ pragma solidity 0.8.0;
 
 library Hash {
   // EIP712 Domain Separator typeHash
-  // keccak256(abi.encode(
+  // keccak256(abi.encodePacked(
   //     'EIP712Domain(',
   //     'string name,',
   //     'string version,',
@@ -19,10 +19,10 @@ library Hash {
   //     'address verifyingContract',
   //     ')'
   // ));
-  bytes32 constant internal DOMAIN_TYPEHASH = 0x6b3e3172e299e519cec9eee835db996fcd6ba3f36d9c8b276bde4a89359dbf7e;
+  bytes32 constant internal DOMAIN_TYPEHASH = 0x8b73c3c69bb8fe3d512ecc4cf759cc79239f7b179b0ffacaa9a75d522b39400f;
 
   // EIP712 typeHash of an Order 
-  // keccak256(abi.encode(
+  // keccak256(abi.encodePacked(
   //     'Order(',
   //     'bytes32 key,',
   //     'address maker,',
@@ -34,7 +34,7 @@ library Hash {
   //     'uint256 expiry,',
   //     ')'
   // ));
-  bytes32 constant internal ORDER_TYPEHASH = 0xb3a09b817a742005e1fc2f8fa7854d10669e03517c81e238114270190d0c7eb9;
+  bytes32 constant internal ORDER_TYPEHASH = 0x6d7f43a0d330aacab713d630fa9dad09c6e92c02743a1d7a6172d2307b612f61;
 
   /// @dev struct represents the attributes of an offchain Swivel.Order
   struct Order {

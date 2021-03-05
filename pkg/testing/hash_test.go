@@ -64,12 +64,13 @@ func (s *hashTestSuite) TestDomain() {
 		"Swivel Finance",
 		"1.0.0",
 		big.NewInt(5),
-		common.HexToAddress("0xaBc123"),
+		common.HexToAddress("0x6a6BeC42A5Dd6F2766F806F91Ad12034F43b6361"),
 	)
 
 	assert.Nil(err)
 	assert.NotNil(s.Separator)
 	assert.Equal(len(s.Separator), 32)
+	s.T().Log(hexutil.Encode(s.Separator[:]))
 }
 
 func (s *hashTestSuite) TestOrder() {
