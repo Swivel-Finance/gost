@@ -11,7 +11,7 @@ pragma solidity 0.8.0;
 
 library Hash {
   // EIP712 Domain Separator typeHash
-  // keccak256(abi.encode(
+  // keccak256(abi.encodePacked(
   //     'EIP712Domain(',
   //     'string name,',
   //     'string version,',
@@ -22,7 +22,7 @@ library Hash {
   bytes32 constant internal DOMAIN_TYPEHASH = 0x8b73c3c69bb8fe3d512ecc4cf759cc79239f7b179b0ffacaa9a75d522b39400f;
 
   // EIP712 typeHash of an Order 
-  // keccak256(abi.encode(
+  // keccak256(abi.encodePacked(
   //     'Order(',
   //     'bytes32 key,',
   //     'address maker,',
