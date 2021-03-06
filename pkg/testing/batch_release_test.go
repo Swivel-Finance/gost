@@ -76,8 +76,8 @@ func (s *batchReleaseTestSuite) SetupSuite() {
 	s.CErc20.ExchangeRateCurrentReturns(rate)
 	s.Env.Blockchain.Commit()
 
-	minted := big.NewInt(ONE_GWEI)
-	s.CErc20.MintReturns(minted)
+	// minted := big.NewInt(ONE_GWEI)
+	s.CErc20.MintReturns(big.NewInt(0))
 	s.Env.Blockchain.Commit()
 
 	separator, _ := s.Swivel.DOMAIN()

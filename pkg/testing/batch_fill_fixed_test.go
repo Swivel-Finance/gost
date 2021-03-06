@@ -74,8 +74,8 @@ func (s *batchFillFixedTestSuite) TestBatchFillFixed() {
 	s.CErc20.ExchangeRateCurrentReturns(rate)
 	s.Env.Blockchain.Commit()
 
-	minted := big.NewInt(ONE_GWEI)
-	s.CErc20.MintReturns(minted)
+	// minted := big.NewInt(ONE_GWEI)
+	s.CErc20.MintReturns(big.NewInt(0))
 	s.Env.Blockchain.Commit()
 
 	// we'll say User1 made fixed orders some time ago

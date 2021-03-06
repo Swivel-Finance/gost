@@ -81,8 +81,8 @@ func (s *fillFloatingTestSuite) TestFillFloating() {
 	assert.Nil(err)
 	s.Env.Blockchain.Commit()
 
-	minted := big.NewInt(ONE_GWEI)
-	tx, err = s.CErc20.MintReturns(minted)
+	// minted := big.NewInt(ONE_GWEI)
+	tx, err = s.CErc20.MintReturns(big.NewInt(0))
 	assert.NotNil(tx)
 	assert.Nil(err)
 	s.Env.Blockchain.Commit()
