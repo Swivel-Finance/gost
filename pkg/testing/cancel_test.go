@@ -49,12 +49,12 @@ func (s *cancelTestSuite) SetupSuite() {
 	duration := big.NewInt(10000)
 	expiry := big.NewInt(20000)
 
-	// we'll say User1 made a fixed order some time ago
+	// we'll say Owner made a fixed order some time ago
 	// NOTE fakes.* is being used here as the swivel package does not expose them
 	// both are using the same sig && hash libs however
 	hashOrder := fakes.HashOrder{
 		Key:        orderKey,
-		Maker:      s.Env.User1.Opts.From,
+		Maker:      s.Env.Owner.Opts.From,
 		Underlying: s.Dep.Erc20Address,
 		Floating:   false,
 		Principal:  principal,
@@ -68,7 +68,7 @@ func (s *cancelTestSuite) SetupSuite() {
 	separator, _ := s.Swivel.DOMAIN()
 	messageHash, _ := s.Dep.HashFake.MessageTest(nil, separator, orderHash)
 	// sign it with User1 private key
-	sig, _ := crypto.Sign(messageHash[:], s.Env.User1.PK)
+	sig, _ := crypto.Sign(messageHash[:], s.Env.Owner.PK)
 	// get the sig components
 	vrs, _ := s.Dep.SigFake.SplitTest(nil, sig)
 
@@ -80,7 +80,7 @@ func (s *cancelTestSuite) SetupSuite() {
 	// the order passed to cancel must be from the correct pkg
 	s.Order = swivel.HashOrder{
 		Key:        orderKey,
-		Maker:      s.Env.User1.Opts.From,
+		Maker:      s.Env.Owner.Opts.From,
 		Underlying: s.Dep.Erc20Address,
 		Floating:   false,
 		Principal:  principal,

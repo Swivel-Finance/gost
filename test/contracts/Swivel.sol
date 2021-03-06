@@ -147,6 +147,7 @@ contract Swivel {
   }
 
   function cancel(Hash.Order calldata o, Sig.Components calldata c) public returns (bool) {
+    require(o.maker == msg.sender || o.maker == tx.origin, 'must be authorized to cancel');
     require(o.maker == Sig.recover(Hash.message(DOMAIN, Hash.order(o)), c), 'invalid signature');
 
     cancelled[o.key] = true;
