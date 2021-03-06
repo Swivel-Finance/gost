@@ -180,7 +180,7 @@ contract Swivel {
     require(uToken.transferFrom(o.maker, address(this), newAgreement.interest), 'transfer from maker failed');
     require(uToken.transferFrom(msg.sender, address(this), newAgreement.principal), 'transfer from taker failed');
     // mint compound
-    require(mintCToken(o.underlying, o.interest + o.principal) > 0, 'CToken minting failed');
+    require(mintCToken(o.underlying, newAgreement.interest + newAgreement.principal) == 0, 'CToken minting failed');
 
     // finish setting new agreement props and store
     CErc20 cToken = CErc20(CTOKEN);

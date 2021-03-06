@@ -27,14 +27,14 @@ library Hash {
   //     'bytes32 key,',
   //     'address maker,',
   //     'address underlying,',
-  //     'bool floating',
+  //     'bool floating,',
   //     'uint256 principal,',
   //     'uint256 interest,',
   //     'uint256 duration,',
-  //     'uint256 expiry,',
+  //     'uint256 expiry',
   //     ')'
   // ));
-  bytes32 constant internal ORDER_TYPEHASH = 0x6d7f43a0d330aacab713d630fa9dad09c6e92c02743a1d7a6172d2307b612f61;
+  bytes32 constant internal ORDER_TYPEHASH = 0xa3c680804aa3dc3cf9b923a1d0d8b699fcdf013624a69077d1fe6673a236562a;
 
   /// @dev struct represents the attributes of an offchain Swivel.Order
   struct Order {
@@ -83,7 +83,7 @@ library Hash {
   /// @param o A Swivel Order
   function order(Order calldata o) internal pure returns (bytes32) {
     // TODO assembly
-    return keccak256(abi.encodePacked(
+    return keccak256(abi.encode(
       ORDER_TYPEHASH,
       o.key,
       o.maker,
