@@ -38,10 +38,10 @@ contract Swivel {
   event Initiate (bytes32 indexed orderKey, bytes32 indexed agreementKey);
   event Cancel (bytes32 indexed key);
   event Release (bytes32 indexed orderKey, bytes32 indexed agreementKey);
-
+  
+  /// @param v [optional] Verifying contract if present. Defaults to this.
   /// @param i Chain ID of the network this contract is deployed to
   /// @param c Deployed address of the compound token to be used
-  /// @param v [optional] Verifying contract if present. Defaults to this.
   constructor(uint256 i, address c, address v) {
     require(c != address(0), 'compound token address required');
     CTOKEN = c;
@@ -60,7 +60,7 @@ contract Swivel {
     Sig.Components calldata c
   ) public valid(o, c) returns (bool) {
     require(a <= (o.interest - filled[o.key]), 'taker amount > available volume');
-
+    require(o.floating == false, 'Order filled on wrong side');
     // .principal is principal * ratio / 1ETH were ratio is (a * 1ETH) / interest
     uint256 principal = o.principal * ((a * 1 ether) / o.interest) / 1 ether;
 
@@ -96,7 +96,7 @@ contract Swivel {
     Sig.Components calldata c
   ) public valid(o, c) returns (bool) {
     require(a <= (o.principal - filled[o.key]), 'taker amount > available volume');
-
+    require(o.floating == true, 'Order filled on wrong side');
     // .interest is interest * ratio / 1ETH where ratio is (a * 1ETH) / principal
     uint256 interest = o.interest * ((a * 1 ether) / o.principal) / 1 ether;
 
@@ -149,7 +149,7 @@ contract Swivel {
   function cancel(Hash.Order calldata o, Sig.Components calldata c) public returns (bool) {
     require(o.maker == msg.sender || o.maker == tx.origin, 'must be authorized to cancel');
     require(o.maker == Sig.recover(Hash.message(DOMAIN, Hash.order(o)), c), 'invalid signature');
-
+	
     cancelled[o.key] = true;
 
     emit Cancel(o.key);
