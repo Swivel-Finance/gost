@@ -149,7 +149,7 @@ contract Swivel {
   function cancel(Hash.Order calldata o, Sig.Components calldata c) public returns (bool) {
     require(o.maker == msg.sender || o.maker == tx.origin, 'must be authorized to cancel');
     require(o.maker == Sig.recover(Hash.message(DOMAIN, Hash.order(o)), c), 'invalid signature');
-	
+
     cancelled[o.key] = true;
 
     emit Cancel(o.key);
@@ -158,7 +158,7 @@ contract Swivel {
   }
 
   /// @param o An offline Swivel.Order
-  /// @param a order volume (principal) amount this agreement is filling
+  /// @param a order volume (principal or interest) amount this agreement is filling
   /// @param k Key of this new agreement
   /// @param p Principal of the new agreement
   /// @param i Interest of the new agreement
