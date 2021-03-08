@@ -64,6 +64,11 @@ contract Swivel {
     // .principal is principal * ratio / 1ETH were ratio is (a * 1ETH) / interest
     uint256 principal = o.principal * ((a * 1 ether) / o.interest) / 1 ether;
 
+
+    // transfer tokens to this contract
+    Erc20 uToken = Erc20(o.underlying);
+    require(uToken.transferFrom(o.maker, address(this), principal), 'transfer from maker failed');
+    require(uToken.transferFrom(msg.sender, address(this), a), 'transfer from taker failed');
     // interest is 'a' when fixed
     return fill(o, a, k, principal, a, false); 
   }
@@ -100,6 +105,10 @@ contract Swivel {
     // .interest is interest * ratio / 1ETH where ratio is (a * 1ETH) / principal
     uint256 interest = o.interest * ((a * 1 ether) / o.principal) / 1 ether;
 
+    // transfer tokens to this contract
+    Erc20 uToken = Erc20(o.underlying);
+    require(uToken.transferFrom(o.maker, address(this), interest), 'transfer from maker failed');
+    require(uToken.transferFrom(msg.sender, address(this), a), 'transfer from taker failed');
     // .principal is 'a' when floating
     return fill(o, a, k, a, interest, true); 
   }
@@ -176,10 +185,6 @@ contract Swivel {
     newAgreement.principal = p;
     newAgreement.interest = i;
 
-    // transfer tokens to this contract
-    Erc20 uToken = Erc20(o.underlying);
-    require(uToken.transferFrom(o.maker, address(this), newAgreement.interest), 'transfer from maker failed');
-    require(uToken.transferFrom(msg.sender, address(this), newAgreement.principal), 'transfer from taker failed');
     // mint compound
     require(mintCToken(o.underlying, newAgreement.interest + newAgreement.principal) == 0, 'CToken minting failed');
 
