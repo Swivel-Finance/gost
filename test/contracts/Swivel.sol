@@ -35,7 +35,7 @@ contract Swivel {
   /// @dev maps an order key to a mapping of agreement Key -> agreement
   mapping (bytes32 => mapping (bytes32 => Agreement)) public agreements;
 
-  event Initiate (bytes32 indexed orderKey, bytes32 indexed agreementKey);
+  event Initiate (bytes32 indexed orderKey, bytes32 indexed agreementKey, uint256 filled);
   event Cancel (bytes32 indexed key);
   event Release (bytes32 indexed orderKey, bytes32 indexed agreementKey);
   
@@ -59,8 +59,8 @@ contract Swivel {
     bytes32 k,
     Sig.Components calldata c
   ) public valid(o, c) returns (bool) {
+    require(o.floating == false, 'must be filled on fixed side');
     require(a <= (o.interest - filled[o.key]), 'taker amount > available volume');
-    require(o.floating == false, 'Order filled on wrong side');
     // .principal is principal * ratio / 1ETH were ratio is (a * 1ETH) / interest
     uint256 principal = o.principal * ((a * 1 ether) / o.interest) / 1 ether;
 
@@ -95,8 +95,8 @@ contract Swivel {
     bytes32 k,
     Sig.Components calldata c
   ) public valid(o, c) returns (bool) {
+    require(o.floating == true, 'must be filled on floating side');
     require(a <= (o.principal - filled[o.key]), 'taker amount > available volume');
-    require(o.floating == true, 'Order filled on wrong side');
     // .interest is interest * ratio / 1ETH where ratio is (a * 1ETH) / principal
     uint256 interest = o.interest * ((a * 1 ether) / o.principal) / 1 ether;
 
@@ -197,7 +197,7 @@ contract Swivel {
 
     filled[o.key] += a;
 
-    emit Initiate(o.key, k);
+    emit Initiate(o.key, k, a);
 
     return true;
   }
