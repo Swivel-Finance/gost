@@ -39,9 +39,9 @@ contract Swivel {
   event Cancel (bytes32 indexed key);
   event Release (bytes32 indexed orderKey, bytes32 indexed agreementKey);
   
-  /// @param v [optional] Verifying contract if present. Defaults to this.
   /// @param i Chain ID of the network this contract is deployed to
   /// @param c Deployed address of the compound token to be used
+  /// @param v [optional] Verifying contract if present. Defaults to this.
   constructor(uint256 i, address c, address v) {
     require(c != address(0), 'compound token address required');
     CTOKEN = c;
