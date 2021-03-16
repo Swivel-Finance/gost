@@ -35,7 +35,7 @@ contract Swivel {
   /// @dev maps an order key to a mapping of agreement Key -> agreement
   mapping (bytes32 => mapping (bytes32 => Agreement)) public agreements;
 
-  event Initiate (bytes32 indexed orderKey, bytes32 indexed agreementKey, uint256 filled);
+  event Initiate (bytes32 indexed orderKey, bytes32 indexed agreementKey, uint256 filled, address taker);
   event Cancel (bytes32 indexed key);
   event Release (bytes32 indexed orderKey, bytes32 indexed agreementKey);
   
@@ -202,7 +202,7 @@ contract Swivel {
 
     filled[o.key] += a;
 
-    emit Initiate(o.key, k, a);
+    emit Initiate(o.key, k, a, msg.sender);
 
     return true;
   }
