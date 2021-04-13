@@ -1,5 +1,6 @@
 .PHONY: compile_solidity_erc compile_go_erc compile_erc
 .PHONY: compile_solidity_cerc compile_go_cerc compile_cerc
+.PHONY: compile_solidity_under compile_go_under compile_under
 .PHONY: compile_tokens
 .PHONY: compile_solidity_sig_fake compile_go_sig_fake compile_sig_fake
 .PHONY: compile_solidity_hash_fake compile_go_hash_fake compile_hash_fake
@@ -30,7 +31,17 @@ compile_go_cerc:
 
 compile_cerc: compile_solidity_cerc compile_go_cerc
 
-compile_tokens: compile_erc compile_cerc
+compile_solidity_under:
+	@echo "compiling Underlying solidity source into abi and bin files"
+	solc -o ./test/contracts/tokens --abi --bin --overwrite ./test/contracts/tokens/Underlying.sol
+
+compile_go_under:
+	@echo "compiling abi and bin files to golang"
+	abigen --abi ./test/contracts/tokens/Underlying.abi --bin ./test/contracts/tokens/Underlying.bin -pkg tokens -type Underlying -out ./test/contracts/tokens/underlying.go 
+
+compile_under: compile_solidity_under compile_go_under
+
+compile_tokens: compile_erc compile_cerc compile_under
 
 compile_solidity_sig_fake:
 	@echo "compiling Signature solidity source into abi and bin files"
