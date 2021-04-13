@@ -6,7 +6,7 @@
 
 pragma solidity 0.8.0;
 
-contract Erc20 {
+contract Underlying {
   mapping (address => uint256) public balances;
 
   // For v1 we only need to read the balance of underlying
