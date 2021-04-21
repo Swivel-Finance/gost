@@ -6,11 +6,17 @@
 
 pragma solidity 0.8.0;
 
+// For v1 we only need to read the balance and allowance of underlying
 contract Underlying {
   mapping (address => uint256) public balances;
 
-  // For v1 we only need to read the balance of underlying
+  mapping (address => mapping (address => uint256)) public allowances;
+
   function balanceOf(address o) public view returns (uint256) {
     return balances[o]; // this should not matter to the abi. i think...
+  }
+
+  function allowance(address o, address s) public view returns (uint256) {
+    return allowances[o][s];
   }
 }

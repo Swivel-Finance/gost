@@ -27,10 +27,10 @@ var (
 )
 
 // UnderlyingABI is the input ABI used to generate the binding from.
-const UnderlyingABI = "[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"o\",\"type\":\"address\"}],\"name\":\"balanceOf\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"balances\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"}]"
+const UnderlyingABI = "[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"o\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"s\",\"type\":\"address\"}],\"name\":\"allowance\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"allowances\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"o\",\"type\":\"address\"}],\"name\":\"balanceOf\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"balances\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"}]"
 
 // UnderlyingBin is the compiled bytecode used for deploying new contracts.
-var UnderlyingBin = "0x608060405234801561001057600080fd5b506101ec806100206000396000f3fe608060405234801561001057600080fd5b50600436106100365760003560e01c806327e235e31461003b57806370a082311461006b575b600080fd5b61005560048036038101906100509190610110565b61009b565b6040516100629190610148565b60405180910390f35b61008560048036038101906100809190610110565b6100b3565b6040516100929190610148565b60405180910390f35b60006020528060005260406000206000915090505481565b60008060008373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020549050919050565b60008135905061010a8161019f565b92915050565b60006020828403121561012257600080fd5b6000610130848285016100fb565b91505092915050565b61014281610195565b82525050565b600060208201905061015d6000830184610139565b92915050565b600061016e82610175565b9050919050565b600073ffffffffffffffffffffffffffffffffffffffff82169050919050565b6000819050919050565b6101a881610163565b81146101b357600080fd5b5056fea26469706673582212208728a7fc7bab72c759f0cd0f09b5a20219b8b07a5414242a39a91d3bef5987b464736f6c63430008000033"
+var UnderlyingBin = "0x608060405234801561001057600080fd5b5061034a806100206000396000f3fe608060405234801561001057600080fd5b506004361061004c5760003560e01c806327e235e31461005157806355b6ed5c1461008157806370a08231146100b1578063dd62ed3e146100e1575b600080fd5b61006b60048036038101906100669190610232565b610111565b60405161007891906102a6565b60405180910390f35b61009b6004803603810190610096919061025b565b610129565b6040516100a891906102a6565b60405180910390f35b6100cb60048036038101906100c69190610232565b61014e565b6040516100d891906102a6565b60405180910390f35b6100fb60048036038101906100f6919061025b565b610196565b60405161010891906102a6565b60405180910390f35b60006020528060005260406000206000915090505481565b6001602052816000526040600020602052806000526040600020600091509150505481565b60008060008373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020549050919050565b6000600160008473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060008373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002054905092915050565b60008135905061022c816102fd565b92915050565b60006020828403121561024457600080fd5b60006102528482850161021d565b91505092915050565b6000806040838503121561026e57600080fd5b600061027c8582860161021d565b925050602061028d8582860161021d565b9150509250929050565b6102a0816102f3565b82525050565b60006020820190506102bb6000830184610297565b92915050565b60006102cc826102d3565b9050919050565b600073ffffffffffffffffffffffffffffffffffffffff82169050919050565b6000819050919050565b610306816102c1565b811461031157600080fd5b5056fea2646970667358221220ce2dc19ecec00f96584ea19cbd345527c54534144a3086f6ba24adaf2cbdff3864736f6c63430008000033"
 
 // DeployUnderlying deploys a new Ethereum contract, binding an instance of Underlying to it.
 func DeployUnderlying(auth *bind.TransactOpts, backend bind.ContractBackend) (common.Address, *types.Transaction, *Underlying, error) {
@@ -186,6 +186,68 @@ func (_Underlying *UnderlyingTransactorRaw) Transfer(opts *bind.TransactOpts) (*
 // Transact invokes the (paid) contract method with params as input values.
 func (_Underlying *UnderlyingTransactorRaw) Transact(opts *bind.TransactOpts, method string, params ...interface{}) (*types.Transaction, error) {
 	return _Underlying.Contract.contract.Transact(opts, method, params...)
+}
+
+// Allowance is a free data retrieval call binding the contract method 0xdd62ed3e.
+//
+// Solidity: function allowance(address o, address s) view returns(uint256)
+func (_Underlying *UnderlyingCaller) Allowance(opts *bind.CallOpts, o common.Address, s common.Address) (*big.Int, error) {
+	var out []interface{}
+	err := _Underlying.contract.Call(opts, &out, "allowance", o, s)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
+}
+
+// Allowance is a free data retrieval call binding the contract method 0xdd62ed3e.
+//
+// Solidity: function allowance(address o, address s) view returns(uint256)
+func (_Underlying *UnderlyingSession) Allowance(o common.Address, s common.Address) (*big.Int, error) {
+	return _Underlying.Contract.Allowance(&_Underlying.CallOpts, o, s)
+}
+
+// Allowance is a free data retrieval call binding the contract method 0xdd62ed3e.
+//
+// Solidity: function allowance(address o, address s) view returns(uint256)
+func (_Underlying *UnderlyingCallerSession) Allowance(o common.Address, s common.Address) (*big.Int, error) {
+	return _Underlying.Contract.Allowance(&_Underlying.CallOpts, o, s)
+}
+
+// Allowances is a free data retrieval call binding the contract method 0x55b6ed5c.
+//
+// Solidity: function allowances(address , address ) view returns(uint256)
+func (_Underlying *UnderlyingCaller) Allowances(opts *bind.CallOpts, arg0 common.Address, arg1 common.Address) (*big.Int, error) {
+	var out []interface{}
+	err := _Underlying.contract.Call(opts, &out, "allowances", arg0, arg1)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
+}
+
+// Allowances is a free data retrieval call binding the contract method 0x55b6ed5c.
+//
+// Solidity: function allowances(address , address ) view returns(uint256)
+func (_Underlying *UnderlyingSession) Allowances(arg0 common.Address, arg1 common.Address) (*big.Int, error) {
+	return _Underlying.Contract.Allowances(&_Underlying.CallOpts, arg0, arg1)
+}
+
+// Allowances is a free data retrieval call binding the contract method 0x55b6ed5c.
+//
+// Solidity: function allowances(address , address ) view returns(uint256)
+func (_Underlying *UnderlyingCallerSession) Allowances(arg0 common.Address, arg1 common.Address) (*big.Int, error) {
+	return _Underlying.Contract.Allowances(&_Underlying.CallOpts, arg0, arg1)
 }
 
 // BalanceOf is a free data retrieval call binding the contract method 0x70a08231.
