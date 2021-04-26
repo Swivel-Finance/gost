@@ -1,11 +1,8 @@
 package testing
 
 import (
-	"math/big"
-
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/swivel-finance/gost/test/contracts/fakes"
-	"github.com/swivel-finance/gost/test/contracts/swivel"
 	"github.com/swivel-finance/gost/test/contracts/tokens"
 )
 
@@ -18,8 +15,6 @@ type Dep struct {
 	Erc20           *tokens.Erc20 // mock erc20
 	CErc20Address   common.Address
 	CErc20          *tokens.CErc20 // mock erc20
-	SwivelAddress   common.Address
-	Swivel          *swivel.Swivel
 }
 
 func Deploy(e *Env) (*Dep, error) {
@@ -59,15 +54,6 @@ func Deploy(e *Env) (*Dep, error) {
 
 	e.Blockchain.Commit()
 
-	// deploy swivel contract with chain id of 1, cerc20 address and a bs verifier
-	swivelAddress, _, swivelContract, swivelErr := swivel.DeploySwivel(e.Owner.Opts, e.Blockchain, big.NewInt(1), cercAddress, common.HexToAddress("0xv3r1fy"))
-
-	if swivelErr != nil {
-		return nil, swivelErr
-	}
-
-	e.Blockchain.Commit()
-
 	return &Dep{
 		SigFakeAddress:  sigAddress,
 		SigFake:         sigContract,
@@ -77,7 +63,5 @@ func Deploy(e *Env) (*Dep, error) {
 		Erc20:           ercContract,
 		CErc20Address:   cercAddress,
 		CErc20:          cercContract,
-		SwivelAddress:   swivelAddress,
-		Swivel:          swivelContract,
 	}, nil
 }
