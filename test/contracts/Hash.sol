@@ -27,13 +27,16 @@ library Hash {
   //     'bytes32 key,',
   //     'address maker,',
   //     'address underlying,',
-  //     'bool floating,',
+  //     'bool exit,',
+  //     'bool timeLock,',
   //     'uint256 principal,',
-  //     'uint256 interest,',
-  //     'uint256 duration,',
+  //     'uint256 premium,',
+  //     'uint256 maturity,',
   //     'uint256 expiry',
   //     ')'
   // ));
+
+  // TODO recalc
   bytes32 constant internal ORDER_TYPEHASH = 0xa3c680804aa3dc3cf9b923a1d0d8b699fcdf013624a69077d1fe6673a236562a;
 
   /// @dev struct represents the attributes of an offchain Swivel.Order
@@ -41,10 +44,11 @@ library Hash {
     bytes32 key;
     address maker;
     address underlying;
-    bool floating;
+    bool exit;
+    bool timeLock;
     uint256 principal;
-    uint256 interest;
-    uint256 duration;
+    uint256 premium;
+    uint256 maturity;
     uint256 expiry;
   }
 
@@ -88,10 +92,11 @@ library Hash {
       o.key,
       o.maker,
       o.underlying,
-      o.floating,
+      o.exit,
+      o.timeLock,
       o.principal,
-      o.interest,
-      o.duration,
+      o.premium,
+      o.maturity,
       o.expiry
     ));
   }
