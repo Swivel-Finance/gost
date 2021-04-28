@@ -75,6 +75,8 @@ contract Market {
 
   // TODO why is redeemVaultInterest not on Vault?
 
+
+  // TODO THROW IN LIBRARY
   function calculateReturn(address u, uint256 m, uint256 a) internal returns (uint256) {
     // ...
 
