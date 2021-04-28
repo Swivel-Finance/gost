@@ -32,8 +32,8 @@ contract Swivel {
   function initiate(Hash.Order[] calldata o, uint256[] calldata a, Sig.Components[] calldata c) public returns (bool) {
     for (uint256 i=0; i < o.length; i++) {
       // TODO explain the scenarios
-      if (o[i].exit == false) {
-        if (o[i].timeLock == false) {
+      if (o[i].exit == false) { // i would actually prefer '.exited' but am unsure if this indicates a future state, or a present one...
+        if (o[i].timeLock == false) { // and '.timelocked' like above, just unsure of series-of-events at this point...
           require(initiateVaultFillingZcTokenInitiate(o[i], a[i], c[i]));
         } else {
           require(initiateZcTokenFillingVaultInitiate(o[i], a[i], c[i]));
