@@ -38,6 +38,7 @@ contract Market {
   ) public restricted(admin) returns (bool) {
     // TODO drop this pattern for some type of registry / delegate-registry pattern
     // `new` functions like a lib and all bytecodes are incorporated into this contract
+    // CREATE opcode is cost prohibitive AF...
     address zctAddr = address(new ZcToken(n, s, u, m));
     address vAddr = address(new Vault(u, m, c));
     markets[u][m] = Window(c, zctAddr, vAddr);
