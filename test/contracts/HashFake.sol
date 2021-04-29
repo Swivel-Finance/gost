@@ -36,10 +36,11 @@ contract HashFake {
       'bytes32 key,',
       'address maker,',
       'address underlying,',
-      'bool floating,',
+      'bool vault,',
+      'bool exit,',
       'uint256 principal,',
-      'uint256 interest,',
-      'uint256 duration,',
+      'uint256 premium,',
+      'uint256 maturity,',
       'uint256 expiry',
       ')'
     ));

@@ -19,7 +19,8 @@ type Auth struct {
 // Env, holds Auth objects capable of signing transactions.
 // Also holds the Geth simulated backend.
 type Env struct {
-	Alloc      core.GenesisAlloc
+	Alloc core.GenesisAlloc
+	// TODO maybe change to Admin to fit v2 contract terms...
 	Owner      *Auth
 	User1      *Auth
 	User2      *Auth

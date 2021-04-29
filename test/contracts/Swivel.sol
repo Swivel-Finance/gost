@@ -3,6 +3,10 @@
 // TODO update to 0.8.4 (or whatever latest is...)
 pragma solidity 0.8.0;
 
+import './Hash.sol';
+import './Sig.sol';
+import './Abstracts.sol';
+
 contract Swivel {
   string constant public NAME = "Swivel Finance";
   string constant public VERSION = "2.0.0";
@@ -33,13 +37,13 @@ contract Swivel {
     for (uint256 i=0; i < o.length; i++) {
       // TODO explain the scenarios
       if (o[i].exit == false) { // i would actually prefer '.exited' but am unsure if this indicates a future state, or a present one...
-        if (o[i].timeLock == false) { // and '.timelocked' like above, just unsure of series-of-events at this point...
+        if (o[i].vault == false) { // and '.timelocked' like above, just unsure of series-of-events at this point...
           require(initiateVaultFillingZcTokenInitiate(o[i], a[i], c[i]));
         } else {
           require(initiateZcTokenFillingVaultInitiate(o[i], a[i], c[i]));
         }
       } else {
-        if (o[i].timeLock == false) {
+        if (o[i].vault == false) {
           require(initiateZcTokenFillingZcTokenExit(o[i], a[i], c[i]));
         } else {
           require(initiateVaultFillingVaultExit(o[i], a[i], c[i]));
@@ -101,21 +105,21 @@ contract Swivel {
       // Determine whether the order being filled is an exit
       if (o[i].exit == false) {
         // Determine whether the order being filled is a vault initiate or a zcToken initiate
-          if (o[i].timeLock == false) {
+          if (o[i].vault == false) {
             // If filling a zcToken initiate with an exit, one is exiting zcTokens
-            require(exitZcTokenFillingZcTokenInitiateOrder(o[i], a[i], c[i]));
+            require(exitZcTokenFillingZcTokenInitiate(o[i], a[i], c[i]));
           } else {
             // If filling a vault initiate with an exit, one is exiting vault notional
-            require(exitVaultFillingVaultInitiateOrder(o[i], a[i], c[i]));
+            require(exitVaultFillingVaultInitiate(o[i], a[i], c[i]));
           }
       } else {
         // Determine whether the order being filled is a vault exit or zcToken exit
-        if (o[i].timeLock == false) {
+        if (o[i].vault == false) {
           // If filling a zcToken exit with an exit, one is exiting vault
-          require(exitVaultFillingZcTokenExitOrder(o[i], a[i], c[i]));
+          require(exitVaultFillingZcTokenExit(o[i], a[i], c[i]));
         } else {
           // If filling a vault exit with an exit, one is exiting zcTokens
-          require(exitZcTokenFillingVaultExitOrder(o[i], a[i], c[i]));
+          require(exitZcTokenFillingVaultExit(o[i], a[i], c[i]));
         }   
       }   
     }
@@ -168,7 +172,6 @@ contract Swivel {
   /// @param c Components of a valid ECDSA signature
   function cancel(Hash.Order calldata o, Sig.Components calldata c) public returns (bool) {
     require(o.maker == Sig.recover(Hash.message(DOMAIN, Hash.order(o)), c), 'invalid signature');
-
     cancelled[o.key] = true;
 
     emit Cancel(o.key);

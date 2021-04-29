@@ -65,7 +65,17 @@ compile_go_hash_fake:
 
 compile_hash_fake: compile_solidity_hash_fake compile_go_hash_fake
 
-compile: compile_tokens compile_sig_fake compile_hash_fake
+compile_solidity_swivel:
+	@echo "compiling Swivel solidity source into abi and bin files"
+	solc -o ./test/contracts/swivel --abi --bin --overwrite ./test/contracts/Swivel.sol
+
+compile_go_swivel:
+	@echo "compiling abi and bin files to golang"
+	abigen --abi ./test/contracts/swivel/Swivel.abi --bin ./test/contracts/swivel/Swivel.bin -pkg swivel -type Swivel -out ./test/contracts/swivel/swivel.go 
+
+compile_swivel: compile_solidity_swivel compile_go_swivel
+
+compile: compile_tokens compile_sig_fake compile_hash_fake compile_swivel
 
 clean_abi:
 	@echo "removing abi files from test/contracts dirs"

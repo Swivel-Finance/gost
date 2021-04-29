@@ -65,15 +65,26 @@ func Commafy(n *big.Int) string {
 }
 
 // NewHashOrder will take args to hydrate a Hash.Order and return it
-func NewHashOrder(k [32]byte, m common.Address, u common.Address, f bool, p int64, i int64, d int64, e int64) fakes.HashOrder {
+func NewHashOrder(
+	k [32]byte,
+	maker common.Address,
+	u common.Address,
+	v bool,
+	exit bool,
+	principal int64,
+	premium int64,
+	maturity int64,
+	expiry int64,
+) fakes.HashOrder {
 	return fakes.HashOrder{
 		Key:        k,
-		Maker:      m,
+		Maker:      maker,
 		Underlying: u,
-		Floating:   f,
-		Principal:  big.NewInt(p),
-		Interest:   big.NewInt(i),
-		Duration:   big.NewInt(d),
-		Expiry:     big.NewInt(e),
+		Vault:      v,
+		Exit:       exit,
+		Principal:  big.NewInt(principal),
+		Premium:    big.NewInt(premium),
+		Maturity:   big.NewInt(maturity),
+		Expiry:     big.NewInt(expiry),
 	}
 }

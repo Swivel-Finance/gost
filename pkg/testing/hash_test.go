@@ -25,10 +25,11 @@ func order(m common.Address, f bool) fakes.HashOrder { // abigen defined
 		Key:        GenBytes32("abc123"),
 		Maker:      m,
 		Underlying: common.HexToAddress("0xbcd234"),
-		Floating:   f,
+		Vault:      f,
+		Exit:       f,
 		Principal:  big.NewInt(1000),
-		Interest:   big.NewInt(100),
-		Duration:   big.NewInt(123456),
+		Premium:    big.NewInt(100),
+		Maturity:   big.NewInt(123456),
 		Expiry:     big.NewInt(123456789),
 	}
 }
@@ -70,7 +71,7 @@ func (s *hashTestSuite) TestDomain() {
 	assert.Nil(err)
 	assert.NotNil(s.Separator)
 	assert.Equal(len(s.Separator), 32)
-	s.T().Log(hexutil.Encode(s.Separator[:]))
+	// s.T().Log(hexutil.Encode(s.Separator[:]))
 }
 
 func (s *hashTestSuite) TestOrder() {
