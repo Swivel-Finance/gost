@@ -6,6 +6,10 @@
 
 pragma solidity 0.8.0;
 
+// TODO ZcToken
+// TODO VaultTracker
+
+// TODO what is the relationship with Swivel? Does swivel call here? Does here call Swivel?
 contract MarketPlace {
   address public admin = msg.sender;
 
@@ -23,6 +27,8 @@ contract MarketPlace {
   event Create(address underlying, uint256 maturity, address cToken, address zcToken); 
   event Mature(address underlying, uint256 maturity, uint256 maturityRate, uint256 maturedOn);
 
+  // TODO constructor - likely passing the Swivel contract address...
+
     /// @notice Allows the owner to create new markets
     /// @param n Name of the new zcToken market
     /// @param s Symbol of the new zcToken market
@@ -37,11 +43,11 @@ contract MarketPlace {
     address c
   ) public restricted(admin) returns (bool) {
     // TODO can we live with the factory pattern here both bytecode size wise and CREATE opcode cost wise?
-    address zctAddr = address(new ZcToken(n, s, u, m));
-    address vAddr = address(new VaultTracker(u, m, c));
-    markets[u][m] = Market(c, zctAddr, vAddr);
+    // address zctAddr = address(new ZcToken(n, s, u, m));
+    // address vAddr = address(new VaultTracker(u, m, c));
+    // markets[u][m] = Market(c, zctAddr, vAddr);
 
-    emit Create(u, m, c, zctAddr);
+    // emit Create(u, m, c, zctAddr);
 
     return true;
   }
@@ -72,14 +78,19 @@ contract MarketPlace {
     return true;
   }
 
-  // TODO why is redeemVaultInterest not on Vault?
+  function reddemVaultInterest(address u, uint256 m) public returns (bool) {
 
+    return true;
+  }
 
-  // TODO THROW IN LIBRARY
-  // function calculateReturn(address u, uint256 m, uint256 a) internal returns (uint256) {
+  function calculateReturn(address u, uint256 m, uint256 a) internal returns (uint256) {
+    uint256 total;
+
+    return total;
+  }
 
   modifier restricted(address a) {
-    require(msg.sender == a, 'sender must be admin')
+    require(msg.sender == a, 'sender must be admin');
     _;
   }
 }

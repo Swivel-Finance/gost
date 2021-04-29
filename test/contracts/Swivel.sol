@@ -22,6 +22,7 @@ contract Swivel {
   /// @notice Emitted on order cancellation
   event Cancel (bytes32 indexed key);
 
+  // TODO does Swivel want the Market address?
   constructor() {
     admin = msg.sender;
     DOMAIN = Hash.domain(NAME, VERSION, block.chainid, address(this));

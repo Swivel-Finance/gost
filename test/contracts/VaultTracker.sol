@@ -8,6 +8,7 @@ pragma solidity 0.8.0;
 
 contract VaultTracker {
   // TODO check the visibilibty of all of these...
+  // TODO some of these are not needed in the new pattern. which?
   address public admin; 
   address public underlying; 
   uint256 public maturity; 
@@ -21,7 +22,7 @@ contract VaultTracker {
     uint256 exchangeRate;
   }
 
-  mapping(address => Vault) pubilc vaults;
+  mapping(address => Vault) public vaults;
 
   // TODO events?
 
@@ -31,7 +32,7 @@ contract VaultTracker {
   constructor(address u, uint256 m, address c) {
     admin = msg.sender;
     underlying = u;
-    // maturity = m;
+    maturity = m;
     cTokenAddr = c;
   }
 
@@ -39,7 +40,7 @@ contract VaultTracker {
   /// @param o Address that owns a timelock in the vault
   /// @param a Amount to ...
   function addNotional(address o, uint256 a) public restricted(admin) returns (bool) {
-    locked memory Vault = vaults[o];
+    Vault memory locked = vaults[o];
     if (locked.notional > 0 ) {
       // do stuff
     } else {
@@ -62,15 +63,19 @@ contract VaultTracker {
   /// @param o Address that owns a timelock in the vault
   function redeemInterest(address o) public restricted(admin) returns (uint256) {
     // TODO
+    uint256 foo;
+
+    return foo;
   }
 
   /// @notice ...
   function matureVault() public returns (bool) {
-    require(block.timestamp >= maturity, 'maturity has not been reached');  
-    matured = true;
+    // require(block.timestamp >= maturity, 'maturity has not been reached');  
+    // matured = true;
     // NOTE removed the stored instance of the CErc20...
-    CErc20 cToken = CErc20(cTokenAddr);
-    maturityRate = cToken.exchangeRateCurrent();
+    // CErc20 cToken = CErc20(cTokenAddr);
+    // maturityRate = cToken.exchangeRateCurrent();
+
     return true;
   }
 
@@ -79,6 +84,7 @@ contract VaultTracker {
   /// @param a Amount to transfer
   function transfer(address t, uint256 a) public returns (bool) {
     // TODO
+    return true;
   }
 
   /// @notice ...
@@ -88,7 +94,7 @@ contract VaultTracker {
   }
 
   modifier restricted(address a) {
-    require(msg.sender == a, 'sender must be admin')
+    require(msg.sender == a, 'sender must be admin');
     _;
   }
 }
