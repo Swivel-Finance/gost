@@ -6,16 +6,16 @@
 
 pragma solidity 0.8.0;
 
-contract Market {
+contract MarketPlace {
   address public admin = msg.sender;
 
-  struct Window {
+  struct Market {
     address cTokenAddr;
     address zcTokenAddr;
-    address vaultAddr; // TODO explore the relationship between Market.Window <-> Vault.TimeLock (and the relationship of Swivel to both)
+    address vaultAddr; // TODO explore the relationship between MarketPlace.Market <-> VaultTracker.Vault (and the relationship of Swivel to both)
   }
 
-  mapping (address => mapping (uint256 => Window)) public markets;
+  mapping (address => mapping (uint256 => Market)) public markets;
   mapping (address => mapping (uint256 => bool)) public mature;
   mapping (address => mapping (uint256 => uint256)) public maturityRate;
 
@@ -23,32 +23,30 @@ contract Market {
   event Create(address underlying, uint256 maturity, address cToken, address zcToken); 
   event Mature(address underlying, uint256 maturity, uint256 maturityRate, uint256 maturedOn);
 
-    /// @notice Allows the owner to create new market windows
+    /// @notice Allows the owner to create new markets
     /// @param n Name of the new zcToken market
     /// @param s Symbol of the new zcToken market
     /// @param u Underlying token address associated with the new market
     /// @param m Maturity timestamp of the new market
     /// @param c cToken address associated with underlying for the new market 
-  function createWindow(
+  function createMarket(
     string memory n,
     string memory s,
     address u,
     uint256 m,
     address c
   ) public restricted(admin) returns (bool) {
-    // TODO drop this pattern for some type of registry / delegate-registry pattern
-    // `new` functions like a lib and all bytecodes are incorporated into this contract
-    // CREATE opcode is cost prohibitive AF...
+    // TODO can we live with the factory pattern here both bytecode size wise and CREATE opcode cost wise?
     address zctAddr = address(new ZcToken(n, s, u, m));
-    address vAddr = address(new Vault(u, m, c));
-    markets[u][m] = Window(c, zctAddr, vAddr);
+    address vAddr = address(new VaultTracker(u, m, c));
+    markets[u][m] = Market(c, zctAddr, vAddr);
 
     emit Create(u, m, c, zctAddr);
 
     return true;
   }
 
-  function matureWindow(address u, uint256 m) public returns (bool) {
+  function matureMarket(address u, uint256 m) public returns (bool) {
     // require mature...
     // window...
     // CErc20...
@@ -78,11 +76,7 @@ contract Market {
 
 
   // TODO THROW IN LIBRARY
-  function calculateReturn(address u, uint256 m, uint256 a) internal returns (uint256) {
-    // ...
-
-    return total;
-  }
+  // function calculateReturn(address u, uint256 m, uint256 a) internal returns (uint256) {
 
   modifier restricted(address a) {
     require(msg.sender == a, 'sender must be admin')

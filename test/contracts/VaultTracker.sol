@@ -6,7 +6,7 @@
 
 pragma solidity 0.8.0;
 
-contract Vault {
+contract VaultTracker {
   // TODO check the visibilibty of all of these...
   address public admin; 
   address public underlying; 
@@ -15,13 +15,13 @@ contract Vault {
   bool public matured;
   address public cTokenAddr;
 
-  struct TimeLock {
+  struct Vault {
     uint256 notional;
     uint256 redeemable;
     uint256 exchangeRate;
   }
 
-  mapping(address => TimeLock) pubilc vaults;
+  mapping(address => Vault) pubilc vaults;
 
   // TODO events?
 
@@ -31,7 +31,7 @@ contract Vault {
   constructor(address u, uint256 m, address c) {
     admin = msg.sender;
     underlying = u;
-    maturity = m;
+    // maturity = m;
     cTokenAddr = c;
   }
 
@@ -39,7 +39,7 @@ contract Vault {
   /// @param o Address that owns a timelock in the vault
   /// @param a Amount to ...
   function addNotional(address o, uint256 a) public restricted(admin) returns (bool) {
-    locked memory TimeLock = vaults[o];
+    locked memory Vault = vaults[o];
     if (locked.notional > 0 ) {
       // do stuff
     } else {
