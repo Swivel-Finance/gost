@@ -65,7 +65,37 @@ compile_go_hash_fake:
 
 compile_hash_fake: compile_solidity_hash_fake compile_go_hash_fake
 
-compile: compile_tokens compile_sig_fake compile_hash_fake
+compile_solidity_swivel:
+	@echo "compiling Swivel solidity source into abi and bin files"
+	solc -o ./test/contracts/swivel --abi --bin --overwrite ./test/contracts/Swivel.sol
+
+compile_go_swivel:
+	@echo "compiling abi and bin files to golang"
+	abigen --abi ./test/contracts/swivel/Swivel.abi --bin ./test/contracts/swivel/Swivel.bin -pkg swivel -type Swivel -out ./test/contracts/swivel/swivel.go 
+
+compile_swivel: compile_solidity_swivel compile_go_swivel
+
+compile_solidity_marketplace:
+	@echo "compiling MarketPlace solidity source into abi and bin files"
+	solc -o ./test/contracts/swivel --abi --bin --overwrite ./test/contracts/MarketPlace.sol
+
+compile_go_marketplace:
+	@echo "compiling abi and bin files to golang"
+	abigen --abi ./test/contracts/swivel/MarketPlace.abi --bin ./test/contracts/swivel/MarketPlace.bin -pkg swivel -type MarketPlace -out ./test/contracts/swivel/marketplace.go 
+
+compile_marketplace: compile_solidity_marketplace compile_go_marketplace
+
+compile_solidity_vaulttracker:
+	@echo "compiling VaultTracker solidity source into abi and bin files"
+	solc -o ./test/contracts/swivel --abi --bin --overwrite ./test/contracts/VaultTracker.sol
+
+compile_go_vaulttracker:
+	@echo "compiling abi and bin files to golang"
+	abigen --abi ./test/contracts/swivel/VaultTracker.abi --bin ./test/contracts/swivel/VaultTracker.bin -pkg swivel -type VaultTracker -out ./test/contracts/swivel/vaulttracker.go 
+
+compile_vaulttracker: compile_solidity_vaulttracker compile_go_vaulttracker
+
+compile: compile_tokens compile_sig_fake compile_hash_fake compile_swivel compile_marketplace compile_vaulttracker
 
 clean_abi:
 	@echo "removing abi files from test/contracts dirs"
