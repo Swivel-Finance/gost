@@ -1,4 +1,4 @@
-package testing
+package vaulttrackertesting
 
 import (
 	"crypto/ecdsa"
