@@ -109,7 +109,7 @@ contract VaultTracker {
   /// @notice ...
   /// @param o Address that owns a timelock in the vault
   function balancesOf(address o) public view returns (uint256, uint256) {
-    return (1, 1);
+    return (vaults[o].notional, vaults[o].redeemable);
   }
 
   modifier restricted(address a) {
