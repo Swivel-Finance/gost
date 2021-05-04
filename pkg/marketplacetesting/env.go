@@ -1,4 +1,4 @@
-package testing
+package marketplacetesting
 
 import (
 	"crypto/ecdsa"

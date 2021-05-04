@@ -8,15 +8,15 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
-	"github.com/swivel-finance/gost/test/contracts/tokens"
+	"github.com/swivel-finance/gost/test/mocks"
 )
 
 type tokenTestSuite struct {
 	suite.Suite
 	Env    *Env
 	Dep    *Dep
-	Erc20  *tokens.Erc20Session // *Session objects are created by the go bindings
-	CErc20 *tokens.CErc20Session
+	Erc20  *mocks.Erc20Session // *Session objects are created by the go bindings
+	CErc20 *mocks.CErc20Session
 }
 
 func (s *tokenTestSuite) SetupSuite() {
@@ -30,7 +30,7 @@ func (s *tokenTestSuite) SetupSuite() {
 	}
 
 	// binding owner to both, kind of why it exists - but could be any of the env wallets
-	s.Erc20 = &tokens.Erc20Session{
+	s.Erc20 = &mocks.Erc20Session{
 		Contract: s.Dep.Erc20,
 		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
 		TransactOpts: bind.TransactOpts{
@@ -39,7 +39,7 @@ func (s *tokenTestSuite) SetupSuite() {
 		},
 	}
 
-	s.CErc20 = &tokens.CErc20Session{
+	s.CErc20 = &mocks.CErc20Session{
 		Contract: s.Dep.CErc20,
 		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
 		TransactOpts: bind.TransactOpts{

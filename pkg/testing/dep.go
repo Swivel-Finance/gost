@@ -2,24 +2,19 @@ package testing
 
 import (
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/swivel-finance/gost/test/contracts/fakes"
-	"github.com/swivel-finance/gost/test/contracts/swivel"
-	"github.com/swivel-finance/gost/test/contracts/tokens"
+	"github.com/swivel-finance/gost/test/fakes"
+	"github.com/swivel-finance/gost/test/mocks"
 )
 
 type Dep struct {
-	SigFakeAddress     common.Address
-	SigFake            *fakes.SigFake // fake sig lib test contract
-	HashFakeAddress    common.Address
-	HashFake           *fakes.HashFake // fake hash lib test contract
-	Erc20Address       common.Address
-	Erc20              *tokens.Erc20 // mock erc20
-	CErc20Address      common.Address
-	CErc20             *tokens.CErc20 // mock erc20
-	SwivelAddress      common.Address
-	Swivel             *swivel.Swivel
-	MarketPlaceAddress common.Address
-	MarketPlace        *swivel.MarketPlace
+	SigFakeAddress  common.Address
+	SigFake         *fakes.SigFake // fake sig lib test contract
+	HashFakeAddress common.Address
+	HashFake        *fakes.HashFake // fake hash lib test contract
+	Erc20Address    common.Address
+	Erc20           *mocks.Erc20
+	CErc20Address   common.Address
+	CErc20          *mocks.CErc20
 }
 
 func Deploy(e *Env) (*Dep, error) {
@@ -43,7 +38,7 @@ func Deploy(e *Env) (*Dep, error) {
 	e.Blockchain.Commit()
 
 	// deploy the two mock tokens.
-	ercAddress, _, ercContract, ercErr := tokens.DeployErc20(e.Owner.Opts, e.Blockchain)
+	ercAddress, _, ercContract, ercErr := mocks.DeployErc20(e.Owner.Opts, e.Blockchain)
 
 	if ercErr != nil {
 		return nil, ercErr
@@ -51,7 +46,7 @@ func Deploy(e *Env) (*Dep, error) {
 
 	e.Blockchain.Commit()
 
-	cercAddress, _, cercContract, cercErr := tokens.DeployCErc20(e.Owner.Opts, e.Blockchain)
+	cercAddress, _, cercContract, cercErr := mocks.DeployCErc20(e.Owner.Opts, e.Blockchain)
 
 	if cercErr != nil {
 		return nil, cercErr
@@ -60,35 +55,31 @@ func Deploy(e *Env) (*Dep, error) {
 	e.Blockchain.Commit()
 
 	// deploy marketplace contract... TODO we likely give the marketplace address to swivel...
-	marketAddress, _, marketContract, marketErr := swivel.DeployMarketPlace(e.Owner.Opts, e.Blockchain)
+	// marketAddress, _, marketContract, marketErr := swivel.DeployMarketPlace(e.Owner.Opts, e.Blockchain)
 
-	if marketErr != nil {
-		return nil, marketErr
-	}
+	// if marketErr != nil {
+	// return nil, marketErr
+	// }
 
-	e.Blockchain.Commit()
+	// e.Blockchain.Commit()
 
 	// deploy swivel contract...
-	swivelAddress, _, swivelContract, swivelErr := swivel.DeploySwivel(e.Owner.Opts, e.Blockchain)
+	// swivelAddress, _, swivelContract, swivelErr := swivel.DeploySwivel(e.Owner.Opts, e.Blockchain)
 
-	if swivelErr != nil {
-		return nil, swivelErr
-	}
+	// if swivelErr != nil {
+	// return nil, swivelErr
+	// }
 
-	e.Blockchain.Commit()
+	// e.Blockchain.Commit()
 
 	return &Dep{
-		SigFakeAddress:     sigAddress,
-		SigFake:            sigContract,
-		HashFakeAddress:    hashAddress,
-		HashFake:           hashContract,
-		Erc20Address:       ercAddress,
-		Erc20:              ercContract,
-		CErc20Address:      cercAddress,
-		CErc20:             cercContract,
-		SwivelAddress:      swivelAddress,
-		Swivel:             swivelContract,
-		MarketPlaceAddress: marketAddress,
-		MarketPlace:        marketContract,
+		SigFakeAddress:  sigAddress,
+		SigFake:         sigContract,
+		HashFakeAddress: hashAddress,
+		HashFake:        hashContract,
+		Erc20Address:    ercAddress,
+		Erc20:           ercContract,
+		CErc20Address:   cercAddress,
+		CErc20:          cercContract,
 	}, nil
 }

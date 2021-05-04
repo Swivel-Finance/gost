@@ -8,7 +8,8 @@ import (
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
-	"github.com/swivel-finance/gost/test/contracts/fakes"
+	"github.com/swivel-finance/gost/internal/helpers"
+	"github.com/swivel-finance/gost/test/fakes"
 )
 
 type hashTestSuite struct {
@@ -22,7 +23,7 @@ type hashTestSuite struct {
 func order(m common.Address, f bool) fakes.HashOrder { // abigen defined
 	// NOTE: none of the actual numbers used matter here for the purpose of this test.
 	return fakes.HashOrder{
-		Key:        GenBytes32("abc123"),
+		Key:        helpers.GenBytes32("abc123"),
 		Maker:      m,
 		Underlying: common.HexToAddress("0xbcd234"),
 		Vault:      f,

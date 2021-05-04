@@ -1,4 +1,4 @@
-package testing
+package swiveltesting
 
 import (
 	"crypto/ecdsa"
