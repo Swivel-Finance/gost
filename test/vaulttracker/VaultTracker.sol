@@ -40,7 +40,7 @@ contract VaultTracker {
   /// @notice ...
   /// @param o Address that owns a timelock in the vault
   /// @param a Amount to ...
-  function addNotional(address o, uint256 a) public restricted(admin) {
+  function addNotional(address o, uint256 a) public restricted(admin) returns (bool) {
     require(msg.sender == admin, "Only Admin");
     Vault memory vault = vaults[o];
 
@@ -71,6 +71,7 @@ contract VaultTracker {
       vault.exchangeRate = cToken.exchangeRateCurrent();
       vaults[o] = vault;
     }
+    return true;
   }
 
   /// @notice ...
@@ -92,10 +93,11 @@ contract VaultTracker {
   }
 
   /// @notice ...
-  function matureVault() public {
+  function matureVault() public returns (bool) {
     require(block.timestamp >= maturity, 'maturity has not been reached');
     matured = true;
     maturityRate = cToken.exchangeRateCurrent();
+    return true;
   }
 
   /// @notice ...
