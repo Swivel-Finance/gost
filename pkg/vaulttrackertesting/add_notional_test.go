@@ -1,0 +1,147 @@
+package vaulttrackertesting
+
+import (
+	"github.com/ethereum/go-ethereum/accounts/abi/bind"
+	assertions "github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/suite"
+	"github.com/swivel-finance/gost/test/mocks"
+	"github.com/swivel-finance/gost/test/vaulttracker"
+	"math/big"
+	test "testing"
+)
+
+type trackerAddNotionalSuite struct {
+	suite.Suite
+	Env          *Env
+	Dep          *Dep
+	CErc20       *mocks.CErc20Session
+	VaultTracker *vaulttracker.VaultTrackerSession // *Session objects are created by the go bindings
+}
+
+func (s *trackerAddNotionalSuite) SetupSuite() {
+	var err error
+
+	s.Env = NewEnv(big.NewInt(ONE_ETH)) // each of the wallets in the env will begin with this balance
+	s.Dep, err = Deploy(s.Env)
+	if err != nil {
+		panic(err)
+	}
+
+	s.CErc20 = &mocks.CErc20Session{
+		Contract: s.Dep.CErc20,
+		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
+		TransactOpts: bind.TransactOpts{
+			From:   s.Env.Owner.Opts.From,
+			Signer: s.Env.Owner.Opts.Signer,
+		},
+	}
+
+	// binding owner to both, kind of why it exists - but could be any of the env wallets
+	s.VaultTracker = &vaulttracker.VaultTrackerSession{
+		Contract: s.Dep.VaultTracker,
+		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
+		TransactOpts: bind.TransactOpts{
+			From:   s.Env.Owner.Opts.From,
+			Signer: s.Env.Owner.Opts.Signer,
+		},
+	}
+}
+
+func (s *trackerAddNotionalSuite) TestAddNotional() {
+	assert := assertions.New(s.T())
+
+	rate1 := big.NewInt(123456789)
+	tx, err := s.CErc20.ExchangeRateCurrentReturns(rate1)
+	assert.Nil(err)
+	assert.NotNil(tx)
+	s.Env.Blockchain.Commit()
+
+	// no vault found for Owner
+	vault, err := s.VaultTracker.Vaults(s.Env.Owner.Opts.From)
+	assert.Nil(err)
+	assert.NotNil(vault)
+	assert.True(vault.Redeemable.Cmp(ZERO) == 0)
+	assert.True(vault.Redeemable.Cmp(ZERO) == 0)
+	assert.True(vault.Redeemable.Cmp(ZERO) == 0)
+
+	// call AddNotional for Owner with no vault
+	caller := s.Env.Owner.Opts.From
+	amount1 := big.NewInt(10000000)
+	redeemable1 := ZERO
+	tx, err = s.VaultTracker.AddNotional(caller, amount1)
+	assert.Nil(err)
+	assert.NotNil(tx)
+
+	s.Env.Blockchain.Commit()
+
+	// found vault for Owner
+	vault, err = s.VaultTracker.Vaults(s.Env.Owner.Opts.From)
+	assert.Nil(err)
+	assert.NotNil(vault)
+	assert.Equal(amount1, vault.Notional)
+	assert.Equal(rate1, vault.ExchangeRate)
+	assert.True(vault.Redeemable.Cmp(redeemable1) == 0)
+
+	rate2 := big.NewInt(723456789)
+	tx, err = s.CErc20.ExchangeRateCurrentReturns(rate2)
+	assert.NotNil(tx)
+	assert.Nil(err)
+	s.Env.Blockchain.Commit()
+
+	amount2 := big.NewInt(20000000)
+	redeemable2 := big.NewInt(48600000)
+
+	// call AddNotional for Owner which already has vault and market is not matured
+	tx, err = s.VaultTracker.AddNotional(caller, amount1)
+	assert.Nil(err)
+	assert.NotNil(tx)
+
+	s.Env.Blockchain.Commit()
+
+	vault, err = s.VaultTracker.Vaults(s.Env.Owner.Opts.From)
+	assert.Nil(err)
+	assert.NotNil(vault)
+	assert.Equal(amount2, vault.Notional)
+	assert.Equal(rate2, vault.ExchangeRate)
+	assert.Equal(redeemable2, vault.Redeemable)
+
+	rate3 := big.NewInt(823456789)
+	tx, err = s.CErc20.ExchangeRateCurrentReturns(rate3)
+	assert.NotNil(tx)
+	assert.Nil(err)
+	s.Env.Blockchain.Commit()
+
+	// call mature
+	tx, err = s.VaultTracker.MatureVault()
+	assert.Nil(err)
+	assert.NotNil(tx)
+
+	s.Env.Blockchain.Commit()
+
+	rate4 := big.NewInt(923456787)
+	tx, err = s.CErc20.ExchangeRateCurrentReturns(rate4)
+	assert.NotNil(tx)
+	assert.Nil(err)
+	s.Env.Blockchain.Commit()
+
+	amount3 := big.NewInt(30000000)
+	redeemable3 := big.NewInt(51364505)
+
+	// call AddNotional for Owner which already has vault and market matured
+	tx, err = s.VaultTracker.AddNotional(caller, amount1)
+	assert.Nil(err)
+	assert.NotNil(tx)
+
+	s.Env.Blockchain.Commit()
+
+	vault, err = s.VaultTracker.Vaults(s.Env.Owner.Opts.From)
+	assert.Nil(err)
+	assert.NotNil(vault)
+	assert.Equal(amount3, vault.Notional)
+	assert.Equal(rate4, vault.ExchangeRate)
+	assert.Equal(redeemable3, vault.Redeemable)
+}
+
+func TestTrackerAddNotionalSuite(t *test.T) {
+	suite.Run(t, &trackerAddNotionalSuite{})
+}

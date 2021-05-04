@@ -27,19 +27,19 @@ var (
 )
 
 // VaultTrackerABI is the input ABI used to generate the binding from.
-const VaultTrackerABI = "[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"u\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"m\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"c\",\"type\":\"address\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"o\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"a\",\"type\":\"uint256\"}],\"name\":\"addNotional\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"admin\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"o\",\"type\":\"address\"}],\"name\":\"balancesOf\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"cTokenAddr\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"matureVault\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"matured\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"maturity\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"maturityRate\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"o\",\"type\":\"address\"}],\"name\":\"redeemInterest\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"o\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"a\",\"type\":\"uint256\"}],\"name\":\"removeNotional\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"t\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"a\",\"type\":\"uint256\"}],\"name\":\"transfer\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"underlying\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"vaults\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"notional\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"redeemable\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"exchangeRate\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"}]"
+const VaultTrackerABI = "[{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"m\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"c\",\"type\":\"address\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"o\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"a\",\"type\":\"uint256\"}],\"name\":\"addNotional\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"admin\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"o\",\"type\":\"address\"}],\"name\":\"balancesOf\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"cTokenAddress\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"matureVault\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"maturity\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"o\",\"type\":\"address\"}],\"name\":\"redeemInterest\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"o\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"a\",\"type\":\"uint256\"}],\"name\":\"removeNotional\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"t\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"a\",\"type\":\"uint256\"}],\"name\":\"transfer\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"vaults\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"notional\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"redeemable\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"exchangeRate\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"}]"
 
 // VaultTrackerBin is the compiled bytecode used for deploying new contracts.
-var VaultTrackerBin = "0x608060405234801561001057600080fd5b50604051610b00380380610b008339818101604052810190610032919061012d565b336000806101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555082600160006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff1602179055508160028190555080600460016101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff1602179055505050506101e6565b600081519050610112816101b8565b92915050565b600081519050610127816101cf565b92915050565b60008060006060848603121561014257600080fd5b600061015086828701610103565b935050602061016186828701610118565b925050604061017286828701610103565b9150509250925092565b60006101878261018e565b9050919050565b600073ffffffffffffffffffffffffffffffffffffffff82169050919050565b6000819050919050565b6101c18161017c565b81146101cc57600080fd5b50565b6101d8816101ae565b81146101e357600080fd5b50565b61090b806101f56000396000f3fe608060405234801561001057600080fd5b50600436106100cf5760003560e01c80636b868d511161008c578063a622ee7c11610066578063a622ee7c1461022b578063a9059cbb1461025d578063b7dd34831461028d578063f851a440146102ab576100cf565b80636b868d51146101bf5780636f307dc3146101dd578063a01cfffb146101fb576100cf565b806311554c43146100d457806319caf46c146100f2578063204f83f914610122578063454c87b314610140578063613a28d11461015e5780636392a51f1461018e575b600080fd5b6100dc6102c9565b6040516100e991906107d3565b60405180910390f35b61010c600480360381019061010791906106ab565b6102cf565b60405161011991906107d3565b60405180910390f35b61012a61036d565b60405161013791906107d3565b60405180910390f35b610148610373565b6040516101559190610798565b60405180910390f35b610178600480360381019061017391906106d4565b610386565b6040516101859190610798565b60405180910390f35b6101a860048036038101906101a391906106ab565b610423565b6040516101b69291906107ee565b60405180910390f35b6101c76104b5565b6040516101d49190610798565b60405180910390f35b6101e56104be565b6040516101f2919061077d565b60405180910390f35b610215600480360381019061021091906106d4565b6104e4565b6040516102229190610798565b60405180910390f35b610245600480360381019061024091906106ab565b610601565b60405161025493929190610817565b60405180910390f35b610277600480360381019061027291906106d4565b61062b565b6040516102849190610798565b60405180910390f35b610295610637565b6040516102a2919061077d565b60405180910390f35b6102b361065d565b6040516102c0919061077d565b60405180910390f35b60035481565b60008060009054906101000a900473ffffffffffffffffffffffffffffffffffffffff168073ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff1614610361576040517f08c379a0000000000000000000000000000000000000000000000000000000008152600401610358906107b3565b60405180910390fd5b60008092505050919050565b60025481565b600460009054906101000a900460ff1681565b60008060009054906101000a900473ffffffffffffffffffffffffffffffffffffffff168073ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff1614610418576040517f08c379a000000000000000000000000000000000000000000000000000000000815260040161040f906107b3565b60405180910390fd5b600191505092915050565b600080600560008473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060000154600560008573ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1681526020019081526020016000206001015491509150915091565b60006001905090565b600160009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1681565b60008060009054906101000a900473ffffffffffffffffffffffffffffffffffffffff168073ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff1614610576576040517f08c379a000000000000000000000000000000000000000000000000000000000815260040161056d906107b3565b60405180910390fd5b6000600560008673ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020604051806060016040529081600082015481526020016001820154815260200160028201548152505090506000816000015111156105f4576105f5565b5b60019250505092915050565b60056020528060005260406000206000915090508060000154908060010154908060020154905083565b60006001905092915050565b600460019054906101000a900473ffffffffffffffffffffffffffffffffffffffff1681565b60008054906101000a900473ffffffffffffffffffffffffffffffffffffffff1681565b600081359050610690816108a7565b92915050565b6000813590506106a5816108be565b92915050565b6000602082840312156106bd57600080fd5b60006106cb84828501610681565b91505092915050565b600080604083850312156106e757600080fd5b60006106f585828601610681565b925050602061070685828601610696565b9150509250929050565b6107198161085f565b82525050565b61072881610871565b82525050565b600061073b60148361084e565b91507f73656e646572206d7573742062652061646d696e0000000000000000000000006000830152602082019050919050565b6107778161089d565b82525050565b60006020820190506107926000830184610710565b92915050565b60006020820190506107ad600083018461071f565b92915050565b600060208201905081810360008301526107cc8161072e565b9050919050565b60006020820190506107e8600083018461076e565b92915050565b6000604082019050610803600083018561076e565b610810602083018461076e565b9392505050565b600060608201905061082c600083018661076e565b610839602083018561076e565b610846604083018461076e565b949350505050565b600082825260208201905092915050565b600061086a8261087d565b9050919050565b60008115159050919050565b600073ffffffffffffffffffffffffffffffffffffffff82169050919050565b6000819050919050565b6108b08161085f565b81146108bb57600080fd5b50565b6108c78161089d565b81146108d257600080fd5b5056fea264697066735822122097b04acfa230e9d78221ccb375815cdf0461c5a28f94276f8d04b6fc83266cbb64736f6c63430008000033"
+var VaultTrackerBin = "0x60806040523480156200001157600080fd5b506040516200119638038062001196833981810160405281019062000037919062000158565b336000806101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff1602179055508160018190555080600360006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff160217905550600360009054906101000a900473ffffffffffffffffffffffffffffffffffffffff16600260006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555050506200020b565b6000815190506200013b81620001d7565b92915050565b6000815190506200015281620001f1565b92915050565b600080604083850312156200016c57600080fd5b60006200017c8582860162000141565b92505060206200018f858286016200012a565b9150509250929050565b6000620001a682620001ad565b9050919050565b600073ffffffffffffffffffffffffffffffffffffffff82169050919050565b6000819050919050565b620001e28162000199565b8114620001ee57600080fd5b50565b620001fc81620001cd565b81146200020857600080fd5b50565b610f7b806200021b6000396000f3fe608060405234801561001057600080fd5b506004361061009e5760003560e01c8063833e231e11610066578063833e231e1461015c578063a01cfffb1461017a578063a622ee7c14610196578063a9059cbb146101c8578063f851a440146101f85761009e565b806319caf46c146100a3578063204f83f9146100d3578063613a28d1146100f15780636392a51f146101215780636b868d5114610152575b600080fd5b6100bd60048036038101906100b89190610abf565b610216565b6040516100ca9190610cd0565b60405180910390f35b6100db6102b4565b6040516100e89190610cd0565b60405180910390f35b61010b60048036038101906101069190610ae8565b6102ba565b6040516101189190610c55565b60405180910390f35b61013b60048036038101906101369190610abf565b610357565b604051610149929190610ceb565b60405180910390f35b61015a610366565b005b610164610470565b6040516101719190610c3a565b60405180910390f35b610194600480360381019061018f9190610ae8565b610496565b005b6101b060048036038101906101ab9190610abf565b610a26565b6040516101bf93929190610d14565b60405180910390f35b6101e260048036038101906101dd9190610ae8565b610a50565b6040516101ef9190610c55565b60405180910390f35b610200610a5c565b60405161020d9190610c3a565b60405180910390f35b60008060009054906101000a900473ffffffffffffffffffffffffffffffffffffffff168073ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff16146102a8576040517f08c379a000000000000000000000000000000000000000000000000000000000815260040161029f90610c90565b60405180910390fd5b60008092505050919050565b60015481565b60008060009054906101000a900473ffffffffffffffffffffffffffffffffffffffff168073ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff161461034c576040517f08c379a000000000000000000000000000000000000000000000000000000000815260040161034390610c90565b60405180910390fd5b600191505092915050565b60008060018091509150915091565b6001544210156103ab576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004016103a290610c70565b60405180910390fd5b6001600360146101000a81548160ff021916908315150217905550600260009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1663bd6d894d6040518163ffffffff1660e01b8152600401602060405180830381600087803b15801561043057600080fd5b505af1158015610444573d6000803e3d6000fd5b505050506040513d601f19601f820116820180604052508101906104689190610b24565b600481905550565b600360009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1681565b60008054906101000a900473ffffffffffffffffffffffffffffffffffffffff168073ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff1614610525576040517f08c379a000000000000000000000000000000000000000000000000000000000815260040161051c90610c90565b60405180910390fd5b60008054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff16146105b3576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004016105aa90610cb0565b60405180910390fd5b6000600560008573ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1681526020019081526020016000206040518060600160405290816000820154815260200160018201548152602001600282015481525050905060008160000151111561090957600060011515600360149054906101000a900460ff16151514156106ba5760006a52b7d2dcc80cd2e400000083604001516a52b7d2dcc80cd2e40000006004546106769190610de3565b6106809190610db2565b61068a9190610e3d565b90506a52b7d2dcc80cd2e40000008360000151826106a89190610de3565b6106b29190610db2565b9150506107c5565b60006a52b7d2dcc80cd2e400000083604001516a52b7d2dcc80cd2e4000000600260009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1663bd6d894d6040518163ffffffff1660e01b8152600401602060405180830381600087803b15801561074357600080fd5b505af1158015610757573d6000803e3d6000fd5b505050506040513d601f19601f8201168201806040525081019061077b9190610b24565b6107859190610de3565b61078f9190610db2565b6107999190610e3d565b90506a52b7d2dcc80cd2e40000008360000151826107b79190610de3565b6107c19190610db2565b9150505b80826020018181516107d79190610d5c565b9150818152505083826000018181516107f09190610d5c565b91508181525050600260009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1663bd6d894d6040518163ffffffff1660e01b8152600401602060405180830381600087803b15801561086157600080fd5b505af1158015610875573d6000803e3d6000fd5b505050506040513d601f19601f820116820180604052508101906108999190610b24565b82604001818152505081600560008773ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060008201518160000155602082015181600101556040820151816002015590505050610a20565b82816000018181525050600260009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1663bd6d894d6040518163ffffffff1660e01b8152600401602060405180830381600087803b15801561097d57600080fd5b505af1158015610991573d6000803e3d6000fd5b505050506040513d601f19601f820116820180604052508101906109b59190610b24565b81604001818152505080600560008673ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1681526020019081526020016000206000820151816000015560208201518160010155604082015181600201559050505b50505050565b60056020528060005260406000206000915090508060000154908060010154908060020154905083565b60006001905092915050565b60008054906101000a900473ffffffffffffffffffffffffffffffffffffffff1681565b600081359050610a8f81610f17565b92915050565b600081359050610aa481610f2e565b92915050565b600081519050610ab981610f2e565b92915050565b600060208284031215610ad157600080fd5b6000610adf84828501610a80565b91505092915050565b60008060408385031215610afb57600080fd5b6000610b0985828601610a80565b9250506020610b1a85828601610a95565b9150509250929050565b600060208284031215610b3657600080fd5b6000610b4484828501610aaa565b91505092915050565b610b5681610e71565b82525050565b610b6581610e83565b82525050565b6000610b78601d83610d4b565b91507f6d6174757269747920686173206e6f74206265656e20726561636865640000006000830152602082019050919050565b6000610bb8601483610d4b565b91507f73656e646572206d7573742062652061646d696e0000000000000000000000006000830152602082019050919050565b6000610bf8600a83610d4b565b91507f4f6e6c792041646d696e000000000000000000000000000000000000000000006000830152602082019050919050565b610c3481610eaf565b82525050565b6000602082019050610c4f6000830184610b4d565b92915050565b6000602082019050610c6a6000830184610b5c565b92915050565b60006020820190508181036000830152610c8981610b6b565b9050919050565b60006020820190508181036000830152610ca981610bab565b9050919050565b60006020820190508181036000830152610cc981610beb565b9050919050565b6000602082019050610ce56000830184610c2b565b92915050565b6000604082019050610d006000830185610c2b565b610d0d6020830184610c2b565b9392505050565b6000606082019050610d296000830186610c2b565b610d366020830185610c2b565b610d436040830184610c2b565b949350505050565b600082825260208201905092915050565b6000610d6782610eaf565b9150610d7283610eaf565b9250827fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff03821115610da757610da6610eb9565b5b828201905092915050565b6000610dbd82610eaf565b9150610dc883610eaf565b925082610dd857610dd7610ee8565b5b828204905092915050565b6000610dee82610eaf565b9150610df983610eaf565b9250817fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff0483118215151615610e3257610e31610eb9565b5b828202905092915050565b6000610e4882610eaf565b9150610e5383610eaf565b925082821015610e6657610e65610eb9565b5b828203905092915050565b6000610e7c82610e8f565b9050919050565b60008115159050919050565b600073ffffffffffffffffffffffffffffffffffffffff82169050919050565b6000819050919050565b7f4e487b7100000000000000000000000000000000000000000000000000000000600052601160045260246000fd5b7f4e487b7100000000000000000000000000000000000000000000000000000000600052601260045260246000fd5b610f2081610e71565b8114610f2b57600080fd5b50565b610f3781610eaf565b8114610f4257600080fd5b5056fea26469706673582212208265eadafd8784e8739c533b034c3335886fce97a554ca17e862db1498853e1264736f6c63430008000033"
 
 // DeployVaultTracker deploys a new Ethereum contract, binding an instance of VaultTracker to it.
-func DeployVaultTracker(auth *bind.TransactOpts, backend bind.ContractBackend, u common.Address, m *big.Int, c common.Address) (common.Address, *types.Transaction, *VaultTracker, error) {
+func DeployVaultTracker(auth *bind.TransactOpts, backend bind.ContractBackend, m *big.Int, c common.Address) (common.Address, *types.Transaction, *VaultTracker, error) {
 	parsed, err := abi.JSON(strings.NewReader(VaultTrackerABI))
 	if err != nil {
 		return common.Address{}, nil, nil, err
 	}
 
-	address, tx, contract, err := bind.DeployContract(auth, parsed, common.FromHex(VaultTrackerBin), backend, u, m, c)
+	address, tx, contract, err := bind.DeployContract(auth, parsed, common.FromHex(VaultTrackerBin), backend, m, c)
 	if err != nil {
 		return common.Address{}, nil, nil, err
 	}
@@ -251,12 +251,12 @@ func (_VaultTracker *VaultTrackerCallerSession) BalancesOf(o common.Address) (*b
 	return _VaultTracker.Contract.BalancesOf(&_VaultTracker.CallOpts, o)
 }
 
-// CTokenAddr is a free data retrieval call binding the contract method 0xb7dd3483.
+// CTokenAddress is a free data retrieval call binding the contract method 0x833e231e.
 //
-// Solidity: function cTokenAddr() view returns(address)
-func (_VaultTracker *VaultTrackerCaller) CTokenAddr(opts *bind.CallOpts) (common.Address, error) {
+// Solidity: function cTokenAddress() view returns(address)
+func (_VaultTracker *VaultTrackerCaller) CTokenAddress(opts *bind.CallOpts) (common.Address, error) {
 	var out []interface{}
-	err := _VaultTracker.contract.Call(opts, &out, "cTokenAddr")
+	err := _VaultTracker.contract.Call(opts, &out, "cTokenAddress")
 
 	if err != nil {
 		return *new(common.Address), err
@@ -268,49 +268,18 @@ func (_VaultTracker *VaultTrackerCaller) CTokenAddr(opts *bind.CallOpts) (common
 
 }
 
-// CTokenAddr is a free data retrieval call binding the contract method 0xb7dd3483.
+// CTokenAddress is a free data retrieval call binding the contract method 0x833e231e.
 //
-// Solidity: function cTokenAddr() view returns(address)
-func (_VaultTracker *VaultTrackerSession) CTokenAddr() (common.Address, error) {
-	return _VaultTracker.Contract.CTokenAddr(&_VaultTracker.CallOpts)
+// Solidity: function cTokenAddress() view returns(address)
+func (_VaultTracker *VaultTrackerSession) CTokenAddress() (common.Address, error) {
+	return _VaultTracker.Contract.CTokenAddress(&_VaultTracker.CallOpts)
 }
 
-// CTokenAddr is a free data retrieval call binding the contract method 0xb7dd3483.
+// CTokenAddress is a free data retrieval call binding the contract method 0x833e231e.
 //
-// Solidity: function cTokenAddr() view returns(address)
-func (_VaultTracker *VaultTrackerCallerSession) CTokenAddr() (common.Address, error) {
-	return _VaultTracker.Contract.CTokenAddr(&_VaultTracker.CallOpts)
-}
-
-// Matured is a free data retrieval call binding the contract method 0x454c87b3.
-//
-// Solidity: function matured() view returns(bool)
-func (_VaultTracker *VaultTrackerCaller) Matured(opts *bind.CallOpts) (bool, error) {
-	var out []interface{}
-	err := _VaultTracker.contract.Call(opts, &out, "matured")
-
-	if err != nil {
-		return *new(bool), err
-	}
-
-	out0 := *abi.ConvertType(out[0], new(bool)).(*bool)
-
-	return out0, err
-
-}
-
-// Matured is a free data retrieval call binding the contract method 0x454c87b3.
-//
-// Solidity: function matured() view returns(bool)
-func (_VaultTracker *VaultTrackerSession) Matured() (bool, error) {
-	return _VaultTracker.Contract.Matured(&_VaultTracker.CallOpts)
-}
-
-// Matured is a free data retrieval call binding the contract method 0x454c87b3.
-//
-// Solidity: function matured() view returns(bool)
-func (_VaultTracker *VaultTrackerCallerSession) Matured() (bool, error) {
-	return _VaultTracker.Contract.Matured(&_VaultTracker.CallOpts)
+// Solidity: function cTokenAddress() view returns(address)
+func (_VaultTracker *VaultTrackerCallerSession) CTokenAddress() (common.Address, error) {
+	return _VaultTracker.Contract.CTokenAddress(&_VaultTracker.CallOpts)
 }
 
 // Maturity is a free data retrieval call binding the contract method 0x204f83f9.
@@ -342,68 +311,6 @@ func (_VaultTracker *VaultTrackerSession) Maturity() (*big.Int, error) {
 // Solidity: function maturity() view returns(uint256)
 func (_VaultTracker *VaultTrackerCallerSession) Maturity() (*big.Int, error) {
 	return _VaultTracker.Contract.Maturity(&_VaultTracker.CallOpts)
-}
-
-// MaturityRate is a free data retrieval call binding the contract method 0x11554c43.
-//
-// Solidity: function maturityRate() view returns(uint256)
-func (_VaultTracker *VaultTrackerCaller) MaturityRate(opts *bind.CallOpts) (*big.Int, error) {
-	var out []interface{}
-	err := _VaultTracker.contract.Call(opts, &out, "maturityRate")
-
-	if err != nil {
-		return *new(*big.Int), err
-	}
-
-	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
-
-	return out0, err
-
-}
-
-// MaturityRate is a free data retrieval call binding the contract method 0x11554c43.
-//
-// Solidity: function maturityRate() view returns(uint256)
-func (_VaultTracker *VaultTrackerSession) MaturityRate() (*big.Int, error) {
-	return _VaultTracker.Contract.MaturityRate(&_VaultTracker.CallOpts)
-}
-
-// MaturityRate is a free data retrieval call binding the contract method 0x11554c43.
-//
-// Solidity: function maturityRate() view returns(uint256)
-func (_VaultTracker *VaultTrackerCallerSession) MaturityRate() (*big.Int, error) {
-	return _VaultTracker.Contract.MaturityRate(&_VaultTracker.CallOpts)
-}
-
-// Underlying is a free data retrieval call binding the contract method 0x6f307dc3.
-//
-// Solidity: function underlying() view returns(address)
-func (_VaultTracker *VaultTrackerCaller) Underlying(opts *bind.CallOpts) (common.Address, error) {
-	var out []interface{}
-	err := _VaultTracker.contract.Call(opts, &out, "underlying")
-
-	if err != nil {
-		return *new(common.Address), err
-	}
-
-	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
-
-	return out0, err
-
-}
-
-// Underlying is a free data retrieval call binding the contract method 0x6f307dc3.
-//
-// Solidity: function underlying() view returns(address)
-func (_VaultTracker *VaultTrackerSession) Underlying() (common.Address, error) {
-	return _VaultTracker.Contract.Underlying(&_VaultTracker.CallOpts)
-}
-
-// Underlying is a free data retrieval call binding the contract method 0x6f307dc3.
-//
-// Solidity: function underlying() view returns(address)
-func (_VaultTracker *VaultTrackerCallerSession) Underlying() (common.Address, error) {
-	return _VaultTracker.Contract.Underlying(&_VaultTracker.CallOpts)
 }
 
 // Vaults is a free data retrieval call binding the contract method 0xa622ee7c.
@@ -458,42 +365,42 @@ func (_VaultTracker *VaultTrackerCallerSession) Vaults(arg0 common.Address) (str
 
 // AddNotional is a paid mutator transaction binding the contract method 0xa01cfffb.
 //
-// Solidity: function addNotional(address o, uint256 a) returns(bool)
+// Solidity: function addNotional(address o, uint256 a) returns()
 func (_VaultTracker *VaultTrackerTransactor) AddNotional(opts *bind.TransactOpts, o common.Address, a *big.Int) (*types.Transaction, error) {
 	return _VaultTracker.contract.Transact(opts, "addNotional", o, a)
 }
 
 // AddNotional is a paid mutator transaction binding the contract method 0xa01cfffb.
 //
-// Solidity: function addNotional(address o, uint256 a) returns(bool)
+// Solidity: function addNotional(address o, uint256 a) returns()
 func (_VaultTracker *VaultTrackerSession) AddNotional(o common.Address, a *big.Int) (*types.Transaction, error) {
 	return _VaultTracker.Contract.AddNotional(&_VaultTracker.TransactOpts, o, a)
 }
 
 // AddNotional is a paid mutator transaction binding the contract method 0xa01cfffb.
 //
-// Solidity: function addNotional(address o, uint256 a) returns(bool)
+// Solidity: function addNotional(address o, uint256 a) returns()
 func (_VaultTracker *VaultTrackerTransactorSession) AddNotional(o common.Address, a *big.Int) (*types.Transaction, error) {
 	return _VaultTracker.Contract.AddNotional(&_VaultTracker.TransactOpts, o, a)
 }
 
 // MatureVault is a paid mutator transaction binding the contract method 0x6b868d51.
 //
-// Solidity: function matureVault() returns(bool)
+// Solidity: function matureVault() returns()
 func (_VaultTracker *VaultTrackerTransactor) MatureVault(opts *bind.TransactOpts) (*types.Transaction, error) {
 	return _VaultTracker.contract.Transact(opts, "matureVault")
 }
 
 // MatureVault is a paid mutator transaction binding the contract method 0x6b868d51.
 //
-// Solidity: function matureVault() returns(bool)
+// Solidity: function matureVault() returns()
 func (_VaultTracker *VaultTrackerSession) MatureVault() (*types.Transaction, error) {
 	return _VaultTracker.Contract.MatureVault(&_VaultTracker.TransactOpts)
 }
 
 // MatureVault is a paid mutator transaction binding the contract method 0x6b868d51.
 //
-// Solidity: function matureVault() returns(bool)
+// Solidity: function matureVault() returns()
 func (_VaultTracker *VaultTrackerTransactorSession) MatureVault() (*types.Transaction, error) {
 	return _VaultTracker.Contract.MatureVault(&_VaultTracker.TransactOpts)
 }

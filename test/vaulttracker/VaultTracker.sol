@@ -6,15 +6,17 @@
 
 pragma solidity 0.8.0;
 
+import "./Abstracts.sol";
+
 contract VaultTracker {
-  // TODO check the visibilibty of all of these...
-  // TODO some of these are not needed in the new pattern. which?
-  address public admin; 
-  address public underlying; 
-  uint256 public maturity; 
-  uint256 public maturityRate; 
-  bool public matured;
-  address public cTokenAddr;
+  address public admin;
+  uint256 public maturity;
+
+  CErc20 cToken;
+  address public cTokenAddress;
+
+  bool matured;
+  uint256 maturityRate;
 
   struct Vault {
     uint256 notional;
@@ -26,28 +28,49 @@ contract VaultTracker {
 
   // TODO events?
 
-  /// @param u Underlying token address associated with the new vaul
   /// @param m Maturity timestamp of the new market
   /// @param c cToken address associated with underlying for the new market 
-  constructor(address u, uint256 m, address c) {
+  constructor(uint256 m, address c) {
     admin = msg.sender;
-    underlying = u;
     maturity = m;
-    cTokenAddr = c;
+    cTokenAddress = c;
+    cToken = CErc20(cTokenAddress);
   }
 
   /// @notice ...
   /// @param o Address that owns a timelock in the vault
   /// @param a Amount to ...
-  function addNotional(address o, uint256 a) public restricted(admin) returns (bool) {
-    Vault memory locked = vaults[o];
-    if (locked.notional > 0 ) {
-      // do stuff
-    } else {
-      // do other stuff
-    }
+  function addNotional(address o, uint256 a) public restricted(admin) {
+    require(msg.sender == admin, "Only Admin");
+    Vault memory vault = vaults[o];
 
-    return true;
+    if (vault.notional > 0) {
+      uint256 interest;
+
+      // If market has matured, calculate marginal interest between the maturity rate and previous position exchange rate
+      // Otherwise, calculate marginal exchange rate between current and previous exchange rate.
+      if (matured == true) {
+        // Calculate marginal interest
+        uint256 yield = ((maturityRate * 1e26) / vault.exchangeRate) - 1e26;
+        interest = (yield * vault.notional) / 1e26;
+      }
+      else {
+        // Calculate marginal interest
+        uint256 yield = ((cToken.exchangeRateCurrent() * 1e26) / vault.exchangeRate) - 1e26;
+        interest = (yield * vault.notional) / 1e26;
+      }
+
+      // Add interest and amount to position, reset cToken exchange rate
+      vault.redeemable += interest;
+      vault.notional += a;
+      vault.exchangeRate = cToken.exchangeRateCurrent();
+      vaults[o] = vault;
+    }
+    else {
+      vault.notional = a;
+      vault.exchangeRate = cToken.exchangeRateCurrent();
+      vaults[o] = vault;
+    }
   }
 
   /// @notice ...
@@ -69,14 +92,10 @@ contract VaultTracker {
   }
 
   /// @notice ...
-  function matureVault() public returns (bool) {
-    // require(block.timestamp >= maturity, 'maturity has not been reached');  
-    // matured = true;
-    // NOTE removed the stored instance of the CErc20...
-    // CErc20 cToken = CErc20(cTokenAddr);
-    // maturityRate = cToken.exchangeRateCurrent();
-
-    return true;
+  function matureVault() public {
+    require(block.timestamp >= maturity, 'maturity has not been reached');
+    matured = true;
+    maturityRate = cToken.exchangeRateCurrent();
   }
 
   /// @notice ...
@@ -90,7 +109,7 @@ contract VaultTracker {
   /// @notice ...
   /// @param o Address that owns a timelock in the vault
   function balancesOf(address o) public view returns (uint256, uint256) {
-    return (vaults[o].notional, vaults[o].redeemable);
+    return (1, 1);
   }
 
   modifier restricted(address a) {
