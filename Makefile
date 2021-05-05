@@ -4,6 +4,10 @@
 
 # TODO under? api-specific sol?
 
+.PHONY: compile_solidity_zct compile_go_zct compile_zct
+.PHONY: compile_tokens
+
+
 .PHONY: compile_solidity_sig_fake compile_go_sig_fake compile_sig_fake
 .PHONY: compile_solidity_hash_fake compile_go_hash_fake compile_hash_fake
 .PHONY: compile_fakes
@@ -18,8 +22,9 @@
 .PHONY: clean_test_go
 .PHONY: clean_test
 
-# TODO dist/ jobs...
+# TODO build/ jobs...
 
+# Mock Tokens
 compile_solidity_mock_erc:
 	@echo "compiling Mock ERC20 solidity source into abi and bin files"
 	solc -o ./test/mocks --abi --bin --overwrite ./test/mocks/Erc20.sol
@@ -42,6 +47,20 @@ compile_mock_cerc: compile_solidity_mock_cerc compile_go_mock_cerc
 
 compile_mock_tokens: compile_mock_erc compile_mock_cerc
 
+# Real Tokens
+compile_solidity_zct:
+	@echo "compiling ZCT solidity source into abi and bin files"
+	solc -o ./test/tokens --abi --bin --overwrite ./test/tokens/ZCToken.sol
+
+compile_go_zct:
+	@echo "compiling abi and bin files to golang"
+	abigen --abi ./test/tokens/ZCToken.abi --bin ./test/tokens/ZCToken.bin -pkg tokens -type ZCToken -out ./test/tokens/zctoken.go 
+
+compile_zct: compile_solidity_zct compile_go_zct
+
+compile_tokens: compile_zct
+
+# Fakes
 compile_solidity_sig_fake:
 	@echo "compiling Sig and Fake source into abi and bin files"
 	solc -o ./test/fakes --abi --bin --overwrite ./test/fakes/SigFake.sol
@@ -64,6 +83,7 @@ compile_hash_fake: compile_solidity_hash_fake compile_go_hash_fake
 
 compile_fakes: compile_sig_fake compile_hash_fake
 
+# Contracts
 compile_solidity_swivel_test:
 	@echo "compiling Swivel solidity source into abi and bin files"
 	solc -o ./test/swivel --abi --bin --overwrite ./test/swivel/Swivel.sol
@@ -94,8 +114,9 @@ compile_go_vaulttracker_test:
 
 compile_vaulttracker_test: compile_solidity_vaulttracker_test compile_go_vaulttracker_test
 
-compile_test: compile_mock_tokens compile_fakes compile_swivel_test compile_marketplace_test compile_vaulttracker_test
+compile_test: compile_mock_tokens compile_tokens compile_fakes compile_swivel_test compile_marketplace_test compile_vaulttracker_test
 
+# Cleaning
 clean_test_abi:
 	@echo "removing abi files from test/ dirs"
 	rm test/**/*.abi
