@@ -46,7 +46,7 @@ func (s *trackerCtorSuite) TestAdmin() {
 
 func (s *trackerCtorSuite) TestCTokenAddress() {
 	assert := assertions.New(s.T())
-	addr, err := s.VaultTracker.CTokenAddress()
+	addr, err := s.VaultTracker.CTokenAddr()
 	assert.Nil(err)
 	assert.Equal(s.Dep.CErc20Address, addr)
 }

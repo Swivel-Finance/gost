@@ -62,8 +62,8 @@ func (s *trackerAddNotionalSuite) TestAddNotional() {
 	assert.Nil(err)
 	assert.NotNil(vault)
 	assert.True(vault.Redeemable.Cmp(ZERO) == 0)
-	assert.True(vault.Redeemable.Cmp(ZERO) == 0)
-	assert.True(vault.Redeemable.Cmp(ZERO) == 0)
+	assert.True(vault.Notional.Cmp(ZERO) == 0)
+	assert.True(vault.ExchangeRate.Cmp(ZERO) == 0)
 
 	// call AddNotional for Owner with no vault
 	caller := s.Env.Owner.Opts.From

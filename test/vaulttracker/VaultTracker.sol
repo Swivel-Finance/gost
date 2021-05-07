@@ -11,12 +11,9 @@ import "./Abstracts.sol";
 contract VaultTracker {
   address public admin;
   uint256 public maturity;
-
-  CErc20 cToken;
-  address public cTokenAddress;
-
   bool matured;
   uint256 maturityRate;
+  address public cTokenAddr;
 
   struct Vault {
     uint256 notional;
@@ -33,16 +30,15 @@ contract VaultTracker {
   constructor(uint256 m, address c) {
     admin = msg.sender;
     maturity = m;
-    cTokenAddress = c;
-    cToken = CErc20(cTokenAddress);
+    cTokenAddr = c;
   }
 
   /// @notice ...
   /// @param o Address that owns a timelock in the vault
   /// @param a Amount to ...
-  function addNotional(address o, uint256 a) public restricted(admin) returns (bool) {
-    require(msg.sender == admin, "Only Admin");
+  function addNotional(address o, uint256 a) public onlyAdmin(admin) returns (bool) {
     Vault memory vault = vaults[o];
+    CErc20 cToken = CErc20(cTokenAddr);
 
     if (vault.notional > 0) {
       uint256 interest;
@@ -77,7 +73,7 @@ contract VaultTracker {
   /// @notice ...
   /// @param o Address that owns a timelock in the vault
   /// @param a Amount to ...
-  function removeNotional(address o, uint256 a) public restricted(admin) returns (bool) {
+  function removeNotional(address o, uint256 a) public onlyAdmin(admin) returns (bool) {
     // TODO
 
     return true;
@@ -85,7 +81,7 @@ contract VaultTracker {
 
   /// @notice ...
   /// @param o Address that owns a timelock in the vault
-  function redeemInterest(address o) public restricted(admin) returns (uint256) {
+  function redeemInterest(address o) public onlyAdmin(admin) returns (uint256) {
     // TODO
     uint256 foo;
 
@@ -96,7 +92,7 @@ contract VaultTracker {
   function matureVault() public returns (bool) {
     require(block.timestamp >= maturity, 'maturity has not been reached');
     matured = true;
-    maturityRate = cToken.exchangeRateCurrent();
+    maturityRate = CErc20(cTokenAddr).exchangeRateCurrent();
     return true;
   }
 
@@ -114,7 +110,7 @@ contract VaultTracker {
     return (vaults[o].notional, vaults[o].redeemable);
   }
 
-  modifier restricted(address a) {
+  modifier onlyAdmin(address a) {
     require(msg.sender == a, 'sender must be admin');
     _;
   }
