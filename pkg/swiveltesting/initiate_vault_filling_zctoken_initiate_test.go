@@ -197,7 +197,7 @@ func (s *IVFZISuite) TestIVFZI() {
 
 	// we should have a filled amount for orderKey
 	amt, err := s.Swivel.Filled(orderKey)
-	assert.Equal(amt.Cmp(amount), 0)
+	assert.Equal(amt, amount)
 
 	// first call to utoken transferfrom 'from' should be owner here...
 	args, err := s.Erc20.TransferredFromArgs(s.Env.Owner.Opts.From)
