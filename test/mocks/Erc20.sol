@@ -8,20 +8,20 @@
 pragma solidity 0.8.0;
 
 contract Erc20 {
-  /// @dev a struct to hold the arguments passed to transferFrom
+  // a struct to hold the arguments passed to transferFrom
   struct TransferFromArgs {
     address to;
     uint256 amount;
   }
 
-  /// @dev mapping for arguments passed to approve
+  // mapping for arguments passed to approve
   mapping (address => uint256) public approvedArgs;
-  /// @dev a boolean flag which allows us to dictate the return of approve(). 
+  // a boolean flag which allows us to dictate the return of approve(). 
   bool private approveReturn;
-  /// @dev mapping of arguments sent to transfer. key is the passed in address.
+  // mapping of arguments sent to transfer. key is the passed in address.
   mapping (address => uint256) public transferredArgs;
   bool private transferReturn;
-  /// @dev mapping of arguments sent to transferFrom. key is passed from address.
+  // mapping of arguments sent to transferFrom. key is passed from address.
   mapping (address => TransferFromArgs) public transferredFromArgs;
   bool private transferFromReturn;
 

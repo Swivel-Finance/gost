@@ -1,15 +1,16 @@
 // SPDX-License-Identifier: UNLICENSED
 
 // TODO update to 0.8.4 (or whatever latest is...)
+// TODO add swivel address
+// TODO add setter for swivel address (only admin, once only if desired...)
+// TODO add onlySwivel
+// TODO add marketCTokenAddress...
+// TODO add mintZcTokenAddingNotional
 
 // NOTE the pattern [underlying, maturity*, cToken, ...]
 
 pragma solidity 0.8.0;
 
-// TODO ZcToken
-// TODO VaultTracker
-
-// TODO what is the relationship with Swivel? Does swivel call here? Does here call Swivel?
 contract MarketPlace {
   address public admin = msg.sender;
 
@@ -41,7 +42,7 @@ contract MarketPlace {
     address u,
     uint256 m,
     address c
-  ) public restricted(admin) returns (bool) {
+  ) public onlyAdmin(admin) returns (bool) {
     // TODO can we live with the factory pattern here both bytecode size wise and CREATE opcode cost wise?
     // address zctAddr = address(new ZcToken(n, s, u, m));
     // address vAddr = address(new VaultTracker(u, m, c));
@@ -89,7 +90,7 @@ contract MarketPlace {
     return total;
   }
 
-  modifier restricted(address a) {
+  modifier onlyAdmin(address a) {
     require(msg.sender == a, 'sender must be admin');
     _;
   }

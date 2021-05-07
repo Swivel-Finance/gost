@@ -8,12 +8,14 @@ import (
 
 // TODO mock for marketplace...
 type Dep struct {
-	Erc20Address  common.Address
-	Erc20         *mocks.Erc20 // mock erc20
-	CErc20Address common.Address
-	CErc20        *mocks.CErc20 // mock erc20
-	SwivelAddress common.Address
-	Swivel        *swivel.Swivel
+	Erc20Address       common.Address
+	Erc20              *mocks.Erc20 // mock erc20
+	CErc20Address      common.Address
+	CErc20             *mocks.CErc20 // mock erc20
+	MarketPlaceAddress common.Address
+	MarketPlace        *mocks.MarketPlace // mock marketplace
+	SwivelAddress      common.Address
+	Swivel             *swivel.Swivel
 }
 
 func Deploy(e *Env) (*Dep, error) {
@@ -34,8 +36,18 @@ func Deploy(e *Env) (*Dep, error) {
 
 	e.Blockchain.Commit()
 
+	marketAddress, _, marketContract, marketErr := mocks.DeployMarketPlace(e.Owner.Opts, e.Blockchain)
+
+	if marketErr != nil {
+		return nil, marketErr
+	}
+
+	e.Blockchain.Commit()
+
 	// deploy swivel contract...
-	swivelAddress, _, swivelContract, swivelErr := swivel.DeploySwivel(e.Owner.Opts, e.Blockchain)
+	swivelAddress, _, swivelContract, swivelErr := swivel.DeploySwivel(e.Owner.Opts, e.Blockchain, marketAddress)
+
+	// TODO call marketPlace swivel contract address setter when implemented...
 
 	if swivelErr != nil {
 		return nil, swivelErr
@@ -44,11 +56,13 @@ func Deploy(e *Env) (*Dep, error) {
 	e.Blockchain.Commit()
 
 	return &Dep{
-		Erc20Address:  ercAddress,
-		Erc20:         ercContract,
-		CErc20Address: cercAddress,
-		CErc20:        cercContract,
-		SwivelAddress: swivelAddress,
-		Swivel:        swivelContract,
+		Erc20Address:       ercAddress,
+		Erc20:              ercContract,
+		CErc20Address:      cercAddress,
+		CErc20:             cercContract,
+		MarketPlaceAddress: marketAddress,
+		MarketPlace:        marketContract,
+		SwivelAddress:      swivelAddress,
+		Swivel:             swivelContract,
 	}, nil
 }

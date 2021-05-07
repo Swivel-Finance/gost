@@ -10,8 +10,9 @@ import './Abstracts.sol';
 contract Swivel {
   string constant public NAME = "Swivel Finance";
   string constant public VERSION = "2.0.0";
-  address public admin;
   bytes32 public DOMAIN;
+  address public admin;
+  address public marketPlaceAddr;
 
   /// @dev maps the key of an order to a boolean indicating if an order was cancelled
   mapping (bytes32 => bool) public cancelled;
@@ -22,10 +23,11 @@ contract Swivel {
   /// @notice Emitted on order cancellation
   event Cancel (bytes32 indexed key);
 
-  // TODO does Swivel want the Market address?
-  constructor() {
+  /// @param m deployed MarketPlace contract address
+  constructor(address m) {
     admin = msg.sender;
     DOMAIN = Hash.domain(NAME, VERSION, block.chainid, address(this));
+    marketPlaceAddr = m;
   }
 
   // ********* INITIATING *************
@@ -37,8 +39,8 @@ contract Swivel {
   function initiate(Hash.Order[] calldata o, uint256[] calldata a, Sig.Components[] calldata c) public returns (bool) {
     for (uint256 i=0; i < o.length; i++) {
       // TODO explain the scenarios
-      if (o[i].exit == false) { // i would actually prefer '.exited' but am unsure if this indicates a future state, or a present one...
-        if (o[i].vault == false) { // and '.timelocked' like above, just unsure of series-of-events at this point...
+      if (o[i].exit == false) {
+        if (o[i].vault == false) {
           require(initiateVaultFillingZcTokenInitiate(o[i], a[i], c[i]));
         } else {
           require(initiateZcTokenFillingVaultInitiate(o[i], a[i], c[i]));
@@ -51,6 +53,43 @@ contract Swivel {
         }
       }
     }
+
+    return true;
+  }
+
+  /// @notice Allows a user to initiate a Vault by filling an offline zcToken initiate order
+  /// @param o The order being filled
+  /// @param a Amount of volume (interest) being filled by the taker's exit
+  /// @param c Components of a valid ECDSA signature
+  function initiateVaultFillingZcTokenInitiate(Hash.Order calldata o,uint256 a,Sig.Components calldata c) internal valid(o, c) returns (bool) {
+    // Checks the side, and the amount compared to amount available
+    require(a <= (o.premium - filled[o.key]), 'taker amount > available volume');
+    
+    uint256 principalFilled = ((a * 1e18) / o.premium) * o.principal / 1e18;
+    
+    // transfer tokens to this contract
+    Erc20 uToken = Erc20(o.underlying);
+    require(uToken.transferFrom(msg.sender, o.maker, a), 'premium transfer failed');
+    require(uToken.transferFrom(o.maker, address(this), principalFilled), 'principal transfer failed');
+
+    MarketPlace marketPlace = MarketPlace(marketPlaceAddr);
+    address cTokenAddr = marketPlace.marketCTokenAddress(o.underlying, o.maturity);
+
+    require(uToken.approve(cTokenAddr, principalFilled), 'underlying approval at CToken failed'); 
+    require(CErc20(cTokenAddr).mint(principalFilled) == 0, 'minting CToken failed');
+    require(marketPlace.mintZcTokenAddingNotional(o.underlying, o.maturity, principalFilled, o.maker));
+
+    filled[o.key] += a;
+
+    return true;
+  }
+
+  /// @notice Allows a user to initiate a zcToken _ by filling an offline vault initiate order
+  /// @param o The order being filled
+  /// @param o Amount of volume (principal) being filled by the taker's exit
+  /// @param c Components of a valid ECDSA signature
+  function initiateZcTokenFillingVaultInitiate(Hash.Order calldata o, uint256 a, Sig.Components calldata c) public valid(o, c) returns (bool) {
+    // TODO
 
     return true;
   }
@@ -70,26 +109,6 @@ contract Swivel {
   /// @param a Amount of volume (interest) being filled by the taker's exit
   /// @param c Components of a valid ECDSA signature
   function initiateVaultFillingVaultExit(Hash.Order calldata o, uint256 a, Sig.Components calldata c) internal valid(o, c) returns (bool) {
-    // TODO
-
-    return true;
-  }
-
-  /// @notice Allows a user to initiate a Vault by filling an offline zcToken initiate order
-  /// @param o The order being filled
-  /// @param a Amount of volume (interest) being filled by the taker's exit
-  /// @param c Components of a valid ECDSA signature
-  function initiateVaultFillingZcTokenInitiate(Hash.Order calldata o,uint256 a,Sig.Components calldata c) internal valid(o, c) returns (bool) {
-    // TODO
-
-    return true;
-  }
-
-  /// @notice Allows a user to initiate a zcToken _ by filling an offline vault initiate order
-  /// @param o The order being filled
-  /// @param o Amount of volume (principal) being filled by the taker's exit
-  /// @param c Components of a valid ECDSA signature
-  function initiateZcTokenFillingVaultInitiate(Hash.Order calldata o, uint256 a, Sig.Components calldata c) public valid(o, c) returns (bool) {
     // TODO
 
     return true;
