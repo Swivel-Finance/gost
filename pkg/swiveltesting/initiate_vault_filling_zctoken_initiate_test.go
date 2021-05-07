@@ -181,14 +181,16 @@ func (s *IVFZISuite) TestIVFZI() {
 	// call it (finally)...
 	amount := big.NewInt(25) // 1/2 the premium
 	// initiate wants slices...
-	// orders := []swivel.HashOrder{order}
-	// amounts := []*big.Int{amount}
-	// componentses := []swivel.SigComponents{components} // yeah, i liek it...
+	orders := []swivel.HashOrder{order}
+	amounts := []*big.Int{amount}
+	componentses := []swivel.SigComponents{components} // yeah, i liek it...
 
 	// vault && exit false will force the call to IVFZI
-	// tx, err = s.Swivel.Initiate(orders, amounts, componentses)
+	tx, err = s.Swivel.Initiate(orders, amounts, componentses)
 
-	tx, err = s.Swivel.InitiateVaultFillingZcTokenInitiate(order, amount, components)
+	// change the internal method to public (recompile) and call directly this way if needed...
+	// tx, err = s.Swivel.InitiateVaultFillingZcTokenInitiate(order, amount, components)
+
 	assert.Nil(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()

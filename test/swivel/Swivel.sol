@@ -61,7 +61,7 @@ contract Swivel {
   /// @param o The order being filled
   /// @param a Amount of volume (interest) being filled by the taker's exit
   /// @param c Components of a valid ECDSA signature
-  function initiateVaultFillingZcTokenInitiate(Hash.Order calldata o, uint256 a, Sig.Components calldata c) public valid(o, c) returns (bool) {
+  function initiateVaultFillingZcTokenInitiate(Hash.Order calldata o, uint256 a, Sig.Components calldata c) internal valid(o, c) returns (bool) {
     // Checks the side, and the amount compared to amount available
     require(a <= (o.premium - filled[o.key]), 'taker amount > available volume');
     
