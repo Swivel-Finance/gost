@@ -5,8 +5,7 @@ import (
 	test "testing"
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
-	// "github.com/ethereum/go-ethereum/common"
-	"github.com/stretchr/testify/assert"
+	assertions "github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 	"github.com/swivel-finance/gost/test/vaulttracker"
 )
@@ -23,7 +22,6 @@ func (s *trackerCtorSuite) SetupSuite() {
 
 	s.Env = NewEnv(big.NewInt(ONE_ETH)) // each of the wallets in the env will begin with this balance
 	s.Dep, err = Deploy(s.Env)
-
 	if err != nil {
 		panic(err)
 	}
@@ -40,10 +38,24 @@ func (s *trackerCtorSuite) SetupSuite() {
 }
 
 func (s *trackerCtorSuite) TestAdmin() {
-	assert := assert.New(s.T())
+	assert := assertions.New(s.T())
 	addr, err := s.VaultTracker.Admin()
 	assert.Nil(err)
 	assert.Equal(addr, s.Env.Owner.Opts.From)
+}
+
+func (s *trackerCtorSuite) TestCTokenAddress() {
+	assert := assertions.New(s.T())
+	addr, err := s.VaultTracker.CTokenAddr()
+	assert.Nil(err)
+	assert.Equal(s.Dep.CErc20Address, addr)
+}
+
+func (s *trackerCtorSuite) TestMaturity() {
+	assert := assertions.New(s.T())
+	maturity, err := s.VaultTracker.Maturity()
+	assert.Nil(err)
+	assert.Equal(maturity, s.Dep.Maturity)
 }
 
 func TestTrackerCtorSuite(t *test.T) {
