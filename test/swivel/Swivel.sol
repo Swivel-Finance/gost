@@ -61,11 +61,11 @@ contract Swivel {
   /// @param o The order being filled
   /// @param a Amount of volume (interest) being filled by the taker's exit
   /// @param c Components of a valid ECDSA signature
-  function initiateVaultFillingZcTokenInitiate(Hash.Order calldata o,uint256 a,Sig.Components calldata c) internal valid(o, c) returns (bool) {
+  function initiateVaultFillingZcTokenInitiate(Hash.Order calldata o, uint256 a, Sig.Components calldata c) public valid(o, c) returns (bool) {
     // Checks the side, and the amount compared to amount available
     require(a <= (o.premium - filled[o.key]), 'taker amount > available volume');
     
-    uint256 principalFilled = ((a * 1e18) / o.premium) * o.principal / 1e18;
+    uint256 principalFilled = (((a * 1e18) / o.premium) * o.principal) / 1e18;
     
     // transfer tokens to this contract
     Erc20 uToken = Erc20(o.underlying);
@@ -77,7 +77,7 @@ contract Swivel {
 
     require(uToken.approve(cTokenAddr, principalFilled), 'underlying approval at CToken failed'); 
     require(CErc20(cTokenAddr).mint(principalFilled) == 0, 'minting CToken failed');
-    require(marketPlace.mintZcTokenAddingNotional(o.underlying, o.maturity, principalFilled, o.maker));
+    require(marketPlace.mintZcTokenAddingNotional(o.underlying, o.maturity, principalFilled, o.maker), 'minting ZCToken failed');
 
     filled[o.key] += a;
 
@@ -88,7 +88,7 @@ contract Swivel {
   /// @param o The order being filled
   /// @param o Amount of volume (principal) being filled by the taker's exit
   /// @param c Components of a valid ECDSA signature
-  function initiateZcTokenFillingVaultInitiate(Hash.Order calldata o, uint256 a, Sig.Components calldata c) public valid(o, c) returns (bool) {
+  function initiateZcTokenFillingVaultInitiate(Hash.Order calldata o, uint256 a, Sig.Components calldata c) internal valid(o, c) returns (bool) {
     // TODO
 
     return true;

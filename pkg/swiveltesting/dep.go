@@ -2,12 +2,17 @@ package swiveltesting
 
 import (
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/swivel-finance/gost/test/fakes"
 	"github.com/swivel-finance/gost/test/mocks"
 	"github.com/swivel-finance/gost/test/swivel"
 )
 
 // TODO mock for marketplace...
 type Dep struct {
+	SigFakeAddress     common.Address
+	SigFake            *fakes.SigFake // fake sig lib test contract
+	HashFakeAddress    common.Address
+	HashFake           *fakes.HashFake // fake hash lib test contract
 	Erc20Address       common.Address
 	Erc20              *mocks.Erc20 // mock erc20
 	CErc20Address      common.Address
@@ -19,6 +24,23 @@ type Dep struct {
 }
 
 func Deploy(e *Env) (*Dep, error) {
+	// deploy the fakes so we can access the libs from tests
+	sigAddress, _, sigContract, sigErr := fakes.DeploySigFake(e.Owner.Opts, e.Blockchain)
+
+	if sigErr != nil {
+		return nil, sigErr
+	}
+
+	e.Blockchain.Commit()
+
+	hashAddress, _, hashContract, hashErr := fakes.DeployHashFake(e.Owner.Opts, e.Blockchain)
+
+	if hashErr != nil {
+		return nil, hashErr
+	}
+
+	e.Blockchain.Commit()
+
 	// deploy the two mock tokens.
 	ercAddress, _, ercContract, ercErr := mocks.DeployErc20(e.Owner.Opts, e.Blockchain)
 
@@ -56,6 +78,10 @@ func Deploy(e *Env) (*Dep, error) {
 	e.Blockchain.Commit()
 
 	return &Dep{
+		SigFakeAddress:     sigAddress,
+		SigFake:            sigContract,
+		HashFakeAddress:    hashAddress,
+		HashFake:           hashContract,
 		Erc20Address:       ercAddress,
 		Erc20:              ercContract,
 		CErc20Address:      cercAddress,
