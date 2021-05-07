@@ -2,6 +2,8 @@
 
 /**
   Underlying is a (for now) ERC20 compatible token interface
+
+  NOTE: with the addition of the ZCToken, we may just be able to use its bindings vs maintaining this... TODO
 */
 
 pragma solidity 0.8.0;
