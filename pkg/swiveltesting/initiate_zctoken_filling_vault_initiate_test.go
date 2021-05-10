@@ -15,7 +15,7 @@ import (
 )
 
 // yeah, just make it an acronym...
-type IVFZISuite struct {
+type IZFVISuite struct {
 	suite.Suite
 	Env         *Env
 	Dep         *Dep
@@ -25,7 +25,7 @@ type IVFZISuite struct {
 	Swivel      *swivel.SwivelSession
 }
 
-func (s *IVFZISuite) SetupTest() {
+func (s *IZFVISuite) SetupTest() {
 	var err error
 
 	s.Env = NewEnv(big.NewInt(ONE_ETH))
@@ -73,14 +73,7 @@ func (s *IVFZISuite) SetupTest() {
 	}
 }
 
-func (s *IVFZISuite) TestMarketPlaceAddress() {
-	assert := assert.New(s.T())
-	addr, err := s.Swivel.MarketPlaceAddr()
-	assert.Nil(err)
-	assert.Equal(addr, s.Dep.MarketPlaceAddress)
-}
-
-func (s *IVFZISuite) TestIVFZI() {
+func (s *IZFVISuite) TestIZFVI() {
 	assert := assert.New(s.T())
 
 	// stub underlying (erc20) transferfrom to return true
@@ -124,7 +117,7 @@ func (s *IVFZISuite) TestIVFZI() {
 		Key:        orderKey,
 		Maker:      s.Env.User1.Opts.From,
 		Underlying: s.Dep.Erc20Address,
-		Vault:      false,
+		Vault:      true,
 		Exit:       false,
 		Principal:  principal,
 		Premium:    premium,
@@ -163,7 +156,7 @@ func (s *IVFZISuite) TestIVFZI() {
 		Key:        orderKey,
 		Maker:      s.Env.User1.Opts.From,
 		Underlying: s.Dep.Erc20Address,
-		Vault:      false,
+		Vault:      true,
 		Exit:       false,
 		Principal:  principal,
 		Premium:    premium,
@@ -179,17 +172,14 @@ func (s *IVFZISuite) TestIVFZI() {
 	}
 
 	// call it (finally)...
-	amount := big.NewInt(25) // 1/2 the premium
+	amount := big.NewInt(2500) // 1/2 the principal
 	// initiate wants slices...
 	orders := []swivel.HashOrder{order}
 	amounts := []*big.Int{amount}
 	componentses := []swivel.SigComponents{components} // yeah, i liek it...
 
-	// vault && exit false will force the call to IVFZI
+	// vault true && exit false will force the call to IZFVI
 	tx, err = s.Swivel.Initiate(orders, amounts, componentses)
-
-	// change the internal method to public (recompile) and call directly this way if needed...
-	// tx, err = s.Swivel.InitiateVaultFillingZcTokenInitiate(order, amount, components)
 
 	assert.Nil(err)
 	assert.NotNil(tx)
@@ -199,44 +189,43 @@ func (s *IVFZISuite) TestIVFZI() {
 	amt, err := s.Swivel.Filled(orderKey)
 	assert.Equal(amt, amount)
 
-	// first call to utoken transferfrom 'from' should be owner here...
-	args, err := s.Erc20.TransferredFromArgs(s.Env.Owner.Opts.From)
+	// first call to utoken transferfrom 'from' should be maker here...
+	args, err := s.Erc20.TransferredFromArgs(order.Maker)
 	assert.Nil(err)
 	assert.NotNil(args)
-	assert.Equal(args.To, order.Maker)
-	assert.Equal(args.Amount.Cmp(amount), 0)
+	assert.Equal(args.To, s.Env.Owner.Opts.From)
+	assert.Equal(args.Amount.Cmp(big.NewInt(0)), 1) // amount is pFilled here so should be > 0
 
-	// second call will be keyed by order.Maker
-	args, err = s.Erc20.TransferredFromArgs(order.Maker)
+	// second call will be keyed by owner...
+	args, err = s.Erc20.TransferredFromArgs(s.Env.Owner.Opts.From)
 	assert.Nil(err)
 	assert.NotNil(args)
 	assert.Equal(args.To, s.Dep.SwivelAddress)
-	// the amount here is the "principalFilled"
-	pFilled := args.Amount                      // log this if you want to check the math (2500 in this test)
-	assert.Equal(pFilled.Cmp(big.NewInt(0)), 1) // should be > 0 regardless
+	// the amount here is the "a"
+	assert.Equal(args.Amount, amt) // should be > 0 regardless
 
 	// call to utoken approve...
 	arg, err := s.Erc20.ApprovedArgs(s.Dep.CErc20Address)
 	assert.Nil(err)
 	assert.NotNil(arg)
-	// the arg here should be the pFilled
-	assert.Equal(arg, pFilled)
+	// the arg here should be the passed "a"
+	assert.Equal(arg, amt)
 
-	// the call to ctoken mint, don't reuse arg as they should actually both be pFilled
+	// the call to ctoken mint, don't reuse arg as they should actually both be "a"
 	mintArg, err := s.CErc20.MintedArgs()
 	assert.Nil(err)
 	assert.NotNil(mintArg)
-	assert.Equal(mintArg, pFilled)
+	assert.Equal(mintArg, amt)
 
 	// mint zctoken call...
 	mintZcArgs, err := s.MarketPlace.MintZcTokenAddingNotionalCalled(order.Underlying)
 	assert.Nil(err)
 	assert.NotNil(mintZcArgs)
 	assert.Equal(mintZcArgs.Maturity, order.Maturity)
-	assert.Equal(mintZcArgs.Amount, pFilled)
+	assert.Equal(mintZcArgs.Amount, amt)
 	assert.Equal(mintZcArgs.Owner, order.Maker)
 }
 
-func TestIVFZISuite(t *test.T) {
-	suite.Run(t, &IVFZISuite{})
+func TestIZFVISuite(t *test.T) {
+	suite.Run(t, &IZFVISuite{})
 }
