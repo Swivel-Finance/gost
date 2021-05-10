@@ -15,3 +15,8 @@ abstract contract CErc20 is Erc20 {
 	function redeemUnderlying(uint256) virtual external returns (uint256);
 	function exchangeRateCurrent() virtual external returns (uint256);
 }
+
+abstract contract MarketPlace {
+  function marketCTokenAddress(address, uint256) virtual external returns (address);
+  function mintZcTokenAddingNotional(address, uint256, uint256, address) virtual external returns (bool);
+}

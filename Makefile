@@ -1,6 +1,7 @@
 .PHONY: compile_solidity_mock_erc compile_go_mock_erc compile_mock_erc
 .PHONY: compile_solidity_mock_cerc compile_go_mock_cerc compile_mock_cerc
-.PHONY: compile_mock_tokens
+.PHONY: compile_solidity_mock_marketplace compile_go_mock_marketplace
+.PHONY: compile_mocks
 
 # TODO under? api-specific sol?
 
@@ -24,7 +25,7 @@
 
 # TODO build/ jobs...
 
-# Mock Tokens
+# Mocks
 compile_solidity_mock_erc:
 	@echo "compiling Mock ERC20 solidity source into abi and bin files"
 	solc -o ./test/mocks --abi --bin --overwrite ./test/mocks/Erc20.sol
@@ -45,7 +46,17 @@ compile_go_mock_cerc:
 
 compile_mock_cerc: compile_solidity_mock_cerc compile_go_mock_cerc
 
-compile_mock_tokens: compile_mock_erc compile_mock_cerc
+compile_solidity_mock_marketplace:
+	@echo "compiling Mock MarketPlace solidity source into abi and bin files"
+	solc -o ./test/mocks --abi --bin --overwrite ./test/mocks/MarketPlace.sol
+
+compile_go_mock_marketplace:
+	@echo "compiling abi and bin files to golang"
+	abigen --abi ./test/mocks/MarketPlace.abi --bin ./test/mocks/MarketPlace.bin -pkg mocks -type MarketPlace -out ./test/mocks/marketplace.go 
+
+compile_mock_marketplace: compile_solidity_mock_marketplace compile_go_mock_marketplace
+
+compile_mocks: compile_mock_erc compile_mock_cerc compile_mock_marketplace
 
 # Real Tokens
 compile_solidity_zct:
@@ -114,7 +125,7 @@ compile_go_vaulttracker_test:
 
 compile_vaulttracker_test: compile_solidity_vaulttracker_test compile_go_vaulttracker_test
 
-compile_test: compile_mock_tokens compile_tokens compile_fakes compile_swivel_test compile_marketplace_test compile_vaulttracker_test
+compile_test: compile_mocks compile_fakes compile_tokens compile_swivel_test compile_marketplace_test compile_vaulttracker_test
 
 # Cleaning
 clean_test_abi:
@@ -126,7 +137,7 @@ clean_test_bin:
 	rm test/**/*.bin
 
 clean_test_go:
-	@echo "removing generated go bindings from test/contracts dirs"
+	@echo "removing generated go bindings from test/ dirs"
 	rm test/**/*.go
 
 clean_test: clean_test_abi clean_test_bin clean_test_go
