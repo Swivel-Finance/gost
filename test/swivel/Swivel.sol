@@ -89,7 +89,24 @@ contract Swivel {
   /// @param o Amount of volume (principal) being filled by the taker's exit
   /// @param c Components of a valid ECDSA signature
   function initiateZcTokenFillingVaultInitiate(Hash.Order calldata o, uint256 a, Sig.Components calldata c) internal valid(o, c) returns (bool) {
-    // TODO
+    // Checks the side, and the amount compared to amount available
+    require((a <= o.principal - filled[o.key]), 'taker amount > available volume');
+
+    uint256 premiumFilled = (((a * 1e18) / o.principal) * o.premium) / 1e18;
+
+    // transfer tokens to this contract
+    Erc20 uToken = Erc20(o.underlying);
+    require(uToken.transferFrom(o.maker, msg.sender, premiumFilled), 'interest transfer failed');
+    require(uToken.transferFrom(msg.sender, address(this), a), 'principal transfer failed');
+    
+    MarketPlace marketPlace = MarketPlace(marketPlaceAddr);
+    address cTokenAddr = marketPlace.marketCTokenAddress(o.underlying, o.maturity);
+
+    uToken.approve(cTokenAddr, a);
+    require(CErc20(cTokenAddr).mint(a) == 0, 'Minting cTokens Failed');
+    require(marketPlace.mintZcTokenAddingNotional(o.underlying, o.maturity, a, o.maker), 'minting ZCToken failed');
+    
+    filled[o.key] += a;
 
     return true;
   }
