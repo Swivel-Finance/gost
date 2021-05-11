@@ -4,8 +4,9 @@
 // TODO add swivel address
 // TODO add setter for swivel address (only admin, once only if desired...)
 // TODO add onlySwivel
-// TODO add marketCTokenAddress...
+// TODO add marketCTokenAddress
 // TODO add mintZcTokenAddingNotional
+// TODO add transferFromMarketZcToken // remember to arrange args correcly for transferFrom
 
 // NOTE the pattern [underlying, maturity*, cToken, ...]
 

@@ -77,7 +77,7 @@ contract Swivel {
 
     require(uToken.approve(cTokenAddr, principalFilled), 'underlying approval at CToken failed'); 
     require(CErc20(cTokenAddr).mint(principalFilled) == 0, 'minting CToken failed');
-    require(marketPlace.mintZcTokenAddingNotional(o.underlying, o.maturity, principalFilled, o.maker), 'minting ZCToken failed');
+    require(marketPlace.mintZcTokenAddingNotional(o.underlying, o.maturity, o.maker, msg.sender, principalFilled), 'minting ZCToken failed');
 
     filled[o.key] += a;
 
@@ -103,8 +103,8 @@ contract Swivel {
     address cTokenAddr = marketPlace.marketCTokenAddress(o.underlying, o.maturity);
 
     uToken.approve(cTokenAddr, a);
-    require(CErc20(cTokenAddr).mint(a) == 0, 'Minting cTokens Failed');
-    require(marketPlace.mintZcTokenAddingNotional(o.underlying, o.maturity, a, o.maker), 'minting ZCToken failed');
+    require(CErc20(cTokenAddr).mint(a) == 0, 'minting CToken Failed');
+    require(marketPlace.mintZcTokenAddingNotional(o.underlying, o.maturity, o.maker, msg.sender, a), 'minting ZCToken failed');
     
     filled[o.key] += a;
 
@@ -116,8 +116,20 @@ contract Swivel {
   /// @param a Amount of volume (principal) being filled by the taker's exit
   /// @param c Components of a valid ECDSA signature
   function initiateZcTokenFillingZcTokenExit(Hash.Order calldata o, uint256 a, Sig.Components calldata c) internal valid(o, c) returns (bool) {
-    // TODO
+    // Checks the side, and the amount compared to amount available
+    require(a <= ((o.principal - filled[o.key])), 'taker amount > available volume');
+    
+    // .interest is interest * ratio / 1e18 where ratio is (a * 1e18) / principal
+    uint256 premiumFilled = (((a * 1e18) / o.principal) * o.premium) / 1e18;
 
+    // transfer tokens to this contract
+    Erc20 uToken = Erc20(o.underlying);
+    require(uToken.transferFrom(msg.sender, o.maker, (a - premiumFilled)), 'principal transfer failed');
+    // the zctoken in this order's market should transfer from sender to maker
+    require(MarketPlace(marketPlaceAddr).transferFromMarketZcToken(o.underlying, o.maturity, o.maker, msg.sender, a), 'ZCToken transfer failed');
+    
+    filled[o.key] += a;
+            
     return true;
   }
 
