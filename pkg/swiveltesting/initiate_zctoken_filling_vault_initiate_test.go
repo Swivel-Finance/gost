@@ -224,6 +224,7 @@ func (s *IZFVISuite) TestIZFVI() {
 	assert.Equal(mintZcArgs.Maturity, order.Maturity)
 	assert.Equal(mintZcArgs.Amount, amt)
 	assert.Equal(mintZcArgs.Owner, order.Maker)
+	assert.Equal(mintZcArgs.Sender, s.Env.Owner.Opts.From)
 }
 
 func TestIZFVISuite(t *test.T) {

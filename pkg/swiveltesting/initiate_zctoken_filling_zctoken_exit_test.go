@@ -15,7 +15,7 @@ import (
 )
 
 // yeah, just make it an acronym...
-type IVFZISuite struct {
+type IZFZESuite struct {
 	suite.Suite
 	Env         *Env
 	Dep         *Dep
@@ -25,7 +25,7 @@ type IVFZISuite struct {
 	Swivel      *swivel.SwivelSession
 }
 
-func (s *IVFZISuite) SetupTest() {
+func (s *IZFZESuite) SetupTest() {
 	var err error
 
 	s.Env = NewEnv(big.NewInt(ONE_ETH))
@@ -73,14 +73,7 @@ func (s *IVFZISuite) SetupTest() {
 	}
 }
 
-func (s *IVFZISuite) TestMarketPlaceAddress() {
-	assert := assert.New(s.T())
-	addr, err := s.Swivel.MarketPlaceAddr()
-	assert.Nil(err)
-	assert.Equal(addr, s.Dep.MarketPlaceAddress)
-}
-
-func (s *IVFZISuite) TestIVFZI() {
+func (s *IZFZESuite) TestIZFZE() {
 	assert := assert.New(s.T())
 
 	// stub underlying (erc20) transferfrom to return true
@@ -89,27 +82,10 @@ func (s *IVFZISuite) TestIVFZI() {
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
 
-	// and approve
-	tx, err = s.Erc20.ApproveReturns(true)
-	assert.Nil(err)
-	assert.NotNil(tx)
-	s.Env.Blockchain.Commit()
-
 	// and the marketplace api methods...
-	tx, err = s.MarketPlace.MarketCTokenAddressReturns(s.Dep.CErc20Address) // must use the actual dep addr here
+	tx, err = s.MarketPlace.TransferFromMarketZcTokenReturns(true)
 	assert.Nil(err)
 	assert.NotNil(tx)
-	s.Env.Blockchain.Commit()
-
-	tx, err = s.MarketPlace.MintZcTokenAddingNotionalReturns(true)
-	assert.Nil(err)
-	assert.NotNil(tx)
-	s.Env.Blockchain.Commit()
-
-	// and the ctoken mint
-	tx, err = s.CErc20.MintReturns(big.NewInt(0))
-	assert.NotNil(tx)
-	assert.Nil(err)
 	s.Env.Blockchain.Commit()
 
 	// hashed order...
@@ -125,7 +101,7 @@ func (s *IVFZISuite) TestIVFZI() {
 		Maker:      s.Env.User1.Opts.From,
 		Underlying: s.Dep.Erc20Address,
 		Vault:      false,
-		Exit:       false,
+		Exit:       true,
 		Principal:  principal,
 		Premium:    premium,
 		Maturity:   maturity,
@@ -164,7 +140,7 @@ func (s *IVFZISuite) TestIVFZI() {
 		Maker:      s.Env.User1.Opts.From,
 		Underlying: s.Dep.Erc20Address,
 		Vault:      false,
-		Exit:       false,
+		Exit:       true,
 		Principal:  principal,
 		Premium:    premium,
 		Maturity:   maturity,
@@ -179,17 +155,14 @@ func (s *IVFZISuite) TestIVFZI() {
 	}
 
 	// call it (finally)...
-	amount := big.NewInt(25) // 1/2 the premium
+	amount := big.NewInt(2500) // 1/2 the principal
 	// initiate wants slices...
 	orders := []swivel.HashOrder{order}
 	amounts := []*big.Int{amount}
 	componentses := []swivel.SigComponents{components} // yeah, i liek it...
 
-	// vault && exit false will force the call to IVFZI
+	// vault false && exit true will force the call to IZFZE
 	tx, err = s.Swivel.Initiate(orders, amounts, componentses)
-
-	// change the internal method to public (recompile) and call directly this way if needed...
-	// tx, err = s.Swivel.InitiateVaultFillingZcTokenInitiate(order, amount, components)
 
 	assert.Nil(err)
 	assert.NotNil(tx)
@@ -199,45 +172,23 @@ func (s *IVFZISuite) TestIVFZI() {
 	amt, err := s.Swivel.Filled(orderKey)
 	assert.Equal(amt, amount)
 
-	// first call to utoken transferfrom 'from' should be owner here...
+	// first call to utoken transferfrom 'from' should be sender here...
 	args, err := s.Erc20.TransferredFromArgs(s.Env.Owner.Opts.From)
 	assert.Nil(err)
 	assert.NotNil(args)
 	assert.Equal(args.To, order.Maker)
-	assert.Equal(args.Amount.Cmp(amount), 0)
+	assert.Equal(amt.Cmp(args.Amount), 1) // amount should be (a - pFilled, so less than passed amt)
 
-	// second call will be keyed by order.Maker
-	args, err = s.Erc20.TransferredFromArgs(order.Maker)
+	// market zctoken transfer from call...
+	marketTransferArgs, err := s.MarketPlace.TransferFromMarketZcTokenCalled(order.Underlying)
 	assert.Nil(err)
-	assert.NotNil(args)
-	assert.Equal(args.To, s.Dep.SwivelAddress)
-	// the amount here is the "principalFilled"
-	pFilled := args.Amount                      // log this if you want to check the math (2500 in this test)
-	assert.Equal(pFilled.Cmp(big.NewInt(0)), 1) // should be > 0 regardless
-
-	// call to utoken approve...
-	arg, err := s.Erc20.ApprovedArgs(s.Dep.CErc20Address)
-	assert.Nil(err)
-	assert.NotNil(arg)
-	// the arg here should be the pFilled
-	assert.Equal(arg, pFilled)
-
-	// the call to ctoken mint, don't reuse arg as they should actually both be pFilled
-	mintArg, err := s.CErc20.MintedArgs()
-	assert.Nil(err)
-	assert.NotNil(mintArg)
-	assert.Equal(mintArg, pFilled)
-
-	// mint zctoken call...
-	mintZcArgs, err := s.MarketPlace.MintZcTokenAddingNotionalCalled(order.Underlying)
-	assert.Nil(err)
-	assert.NotNil(mintZcArgs)
-	assert.Equal(mintZcArgs.Maturity, order.Maturity)
-	assert.Equal(mintZcArgs.Amount, pFilled)
-	assert.Equal(mintZcArgs.Owner, order.Maker)
-	assert.Equal(mintZcArgs.Sender, s.Env.Owner.Opts.From)
+	assert.NotNil(marketTransferArgs)
+	assert.Equal(marketTransferArgs.Maturity, order.Maturity)
+	assert.Equal(marketTransferArgs.Amount, amt)
+	assert.Equal(marketTransferArgs.Owner, order.Maker)
+	assert.Equal(marketTransferArgs.Sender, s.Env.Owner.Opts.From)
 }
 
-func TestIVFZISuite(t *test.T) {
-	suite.Run(t, &IVFZISuite{})
+func TestIZFZESuite(t *test.T) {
+	suite.Run(t, &IZFZESuite{})
 }
