@@ -17,7 +17,7 @@ abstract contract CErc20 is Erc20 {
 }
 
 abstract contract MarketPlace {
-  function marketCTokenAddress(address, uint256) virtual external returns (address);
+  function cTokenAddress(address, uint256) virtual external returns (address);
   function mintZcTokenAddingNotional(address, uint256, address, address, uint256) virtual external returns (bool);
-  function transferFromMarketZcToken(address, uint256, address, address, uint256) virtual external returns (bool);
+  function transferFromZcToken(address, uint256, address, address, uint256) virtual external returns (bool);
 }

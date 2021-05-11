@@ -9,11 +9,11 @@ contract MarketPlace {
   // the arguments that were passed to marketCTokenAddress when it was called
   // TODO: we should likely standardize on using the `Called` suffix for these mappings in the mocks.
   //       the token mocks use a differnt pattern, change them to match this...
-  mapping (address => uint256) public marketCTokenAddressCalled;
+  mapping (address => uint256) public cTokenAddressCalled;
   // the bool that will be returned from mintZcTokenAddingNotional
   bool private mintZcTokenAddingNotionalReturn;
   // and transferFromMarketZcToken...
-  bool private transferFromMarketZcTokenReturn;
+  bool private transferFromZcTokenReturn;
 
   struct MintZcTokenAddingNotionalArgs {
     uint256 maturity;
@@ -22,7 +22,7 @@ contract MarketPlace {
     uint256 amount;
   }
 
-  struct TransferFromMarketZcTokenArgs {
+  struct TransferFromZcTokenArgs {
     uint256 maturity;
     address owner; // should become to
     address sender; // should become from
@@ -30,14 +30,14 @@ contract MarketPlace {
   }
 
   mapping (address => MintZcTokenAddingNotionalArgs) public mintZcTokenAddingNotionalCalled;
-  mapping (address => TransferFromMarketZcTokenArgs) public transferFromMarketZcTokenCalled;
+  mapping (address => TransferFromZcTokenArgs) public transferFromZcTokenCalled;
 
-  function marketCTokenAddressReturns(address a) external {
+  function cTokenAddressReturns(address a) external {
     cTokenAddr = a;
   }
 
-  function marketCTokenAddress(address u, uint256 m) external returns (address) {
-    marketCTokenAddressCalled[u] = m;
+  function cTokenAddress(address u, uint256 m) external returns (address) {
+    cTokenAddressCalled[u] = m;
     return cTokenAddr;
   }
 
@@ -56,18 +56,18 @@ contract MarketPlace {
     return mintZcTokenAddingNotionalReturn;
   }
 
-  function transferFromMarketZcTokenReturns(bool b) external {
-    transferFromMarketZcTokenReturn = b;
+  function transferFromZcTokenReturns(bool b) external {
+    transferFromZcTokenReturn = b;
   }
 
-  function transferFromMarketZcToken(address u, uint256 m, address o, address s, uint256 a) external returns (bool) {
-    TransferFromMarketZcTokenArgs memory args;
+  function transferFromZcToken(address u, uint256 m, address o, address s, uint256 a) external returns (bool) {
+    TransferFromZcTokenArgs memory args;
     args.maturity = m;
     args.owner = o;
     args.sender = s;
     args.amount = a;
-    transferFromMarketZcTokenCalled[u] = args;
+    transferFromZcTokenCalled[u] = args;
 
-    return transferFromMarketZcTokenReturn;
+    return transferFromZcTokenReturn;
   }
 }
