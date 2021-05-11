@@ -125,7 +125,7 @@ contract Swivel {
     // transfer tokens to this contract
     Erc20 uToken = Erc20(o.underlying);
     require(uToken.transferFrom(msg.sender, o.maker, (a - premiumFilled)), 'principal transfer failed');
-    // the zctoken in this order's market should transfer from sender to maker
+    // the zctoken in this order's market should transfer <a> from sender to maker
     require(MarketPlace(marketPlaceAddr).transferFromZcToken(o.underlying, o.maturity, o.maker, msg.sender, a), 'ZCToken transfer failed');
     
     filled[o.key] += a;
@@ -138,7 +138,18 @@ contract Swivel {
   /// @param a Amount of volume (interest) being filled by the taker's exit
   /// @param c Components of a valid ECDSA signature
   function initiateVaultFillingVaultExit(Hash.Order calldata o, uint256 a, Sig.Components calldata c) internal valid(o, c) returns (bool) {
-    // TODO
+    // Checks the side, and the amount compared to amount available
+    require(a <= (o.premium - filled[o.key]), 'taker amount > available volume');
+    
+    uint256 principalFilled = (((a * 1e18) / o.premium) * o.principal) / 1e18;
+ 
+    // transfer tokens to this contract
+    Erc20 uToken = Erc20(o.underlying);
+    require(uToken.transferFrom(msg.sender, o.maker, a), 'premium transfer failed');
+    // the notional in this order's market should transfer <principalFilled> from maker to sender
+    require(MarketPlace(marketPlaceAddr).transferFromNotional(o.underlying, o.maturity, o.maker, msg.sender, principalFilled), 'notional transfer failed');
+    
+    filled[o.key] += a;
 
     return true;
   }
