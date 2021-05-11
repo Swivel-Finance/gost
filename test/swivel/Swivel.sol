@@ -73,7 +73,7 @@ contract Swivel {
     require(uToken.transferFrom(o.maker, address(this), principalFilled), 'principal transfer failed');
 
     MarketPlace marketPlace = MarketPlace(marketPlaceAddr);
-    address cTokenAddr = marketPlace.marketCTokenAddress(o.underlying, o.maturity);
+    address cTokenAddr = marketPlace.cTokenAddress(o.underlying, o.maturity);
 
     require(uToken.approve(cTokenAddr, principalFilled), 'underlying approval at CToken failed'); 
     require(CErc20(cTokenAddr).mint(principalFilled) == 0, 'minting CToken failed');
@@ -100,7 +100,7 @@ contract Swivel {
     require(uToken.transferFrom(msg.sender, address(this), a), 'principal transfer failed');
     
     MarketPlace marketPlace = MarketPlace(marketPlaceAddr);
-    address cTokenAddr = marketPlace.marketCTokenAddress(o.underlying, o.maturity);
+    address cTokenAddr = marketPlace.cTokenAddress(o.underlying, o.maturity);
 
     uToken.approve(cTokenAddr, a);
     require(CErc20(cTokenAddr).mint(a) == 0, 'minting CToken Failed');
@@ -126,7 +126,7 @@ contract Swivel {
     Erc20 uToken = Erc20(o.underlying);
     require(uToken.transferFrom(msg.sender, o.maker, (a - premiumFilled)), 'principal transfer failed');
     // the zctoken in this order's market should transfer from sender to maker
-    require(MarketPlace(marketPlaceAddr).transferFromMarketZcToken(o.underlying, o.maturity, o.maker, msg.sender, a), 'ZCToken transfer failed');
+    require(MarketPlace(marketPlaceAddr).transferFromZcToken(o.underlying, o.maturity, o.maker, msg.sender, a), 'ZCToken transfer failed');
     
     filled[o.key] += a;
             

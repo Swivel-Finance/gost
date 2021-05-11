@@ -96,7 +96,7 @@ func (s *IVFZISuite) TestIVFZI() {
 	s.Env.Blockchain.Commit()
 
 	// and the marketplace api methods...
-	tx, err = s.MarketPlace.MarketCTokenAddressReturns(s.Dep.CErc20Address) // must use the actual dep addr here
+	tx, err = s.MarketPlace.CTokenAddressReturns(s.Dep.CErc20Address) // must use the actual dep addr here
 	assert.Nil(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
