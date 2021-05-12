@@ -20,4 +20,5 @@ abstract contract MarketPlace {
   function cTokenAddress(address, uint256) virtual external returns (address);
   function mintZcTokenAddingNotional(address, uint256, address, address, uint256) virtual external returns (bool);
   function transferFromZcToken(address, uint256, address, address, uint256) virtual external returns (bool);
+  function transferFromNotional(address, uint256, address, address, uint256) virtual external returns (bool);
 }

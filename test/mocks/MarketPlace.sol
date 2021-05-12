@@ -12,8 +12,10 @@ contract MarketPlace {
   mapping (address => uint256) public cTokenAddressCalled;
   // the bool that will be returned from mintZcTokenAddingNotional
   bool private mintZcTokenAddingNotionalReturn;
-  // and transferFromMarketZcToken...
+  // and transferFromZcToken...
   bool private transferFromZcTokenReturn;
+  // and transferFromNotional...
+  bool private transferFromNotionalReturn;
 
   struct MintZcTokenAddingNotionalArgs {
     uint256 maturity;
@@ -29,8 +31,16 @@ contract MarketPlace {
     uint256 amount;
   }
 
+  struct TransferFromNotionalArgs {
+    uint256 maturity;
+    address owner; // should become from
+    address sender; // should become to
+    uint256 amount;
+  }
+
   mapping (address => MintZcTokenAddingNotionalArgs) public mintZcTokenAddingNotionalCalled;
   mapping (address => TransferFromZcTokenArgs) public transferFromZcTokenCalled;
+  mapping (address => TransferFromNotionalArgs) public transferFromNotionalCalled;
 
   function cTokenAddressReturns(address a) external {
     cTokenAddr = a;
@@ -69,5 +79,20 @@ contract MarketPlace {
     transferFromZcTokenCalled[u] = args;
 
     return transferFromZcTokenReturn;
+  }
+
+  function transferFromNotionalReturns(bool b) external {
+    transferFromNotionalReturn = b;
+  }
+
+  function transferFromNotional(address u, uint256 m, address o, address s, uint256 a) external returns (bool) {
+    TransferFromNotionalArgs memory args;
+    args.maturity = m;
+    args.owner = o;
+    args.sender = s;
+    args.amount = a;
+    transferFromNotionalCalled[u] = args;
+
+    return transferFromNotionalReturn;
   }
 }
