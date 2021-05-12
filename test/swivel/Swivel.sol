@@ -77,6 +77,7 @@ contract Swivel {
 
     require(uToken.approve(cTokenAddr, principalFilled), 'underlying approval at CToken failed'); 
     require(CErc20(cTokenAddr).mint(principalFilled) == 0, 'minting CToken failed');
+    // TODO assure sender, maker...
     require(marketPlace.mintZcTokenAddingNotional(o.underlying, o.maturity, o.maker, msg.sender, principalFilled), 'minting ZCToken failed');
 
     filled[o.key] += a;
@@ -104,6 +105,7 @@ contract Swivel {
 
     uToken.approve(cTokenAddr, a);
     require(CErc20(cTokenAddr).mint(a) == 0, 'minting CToken Failed');
+    // TODO sender, maker order...
     require(marketPlace.mintZcTokenAddingNotional(o.underlying, o.maturity, o.maker, msg.sender, a), 'minting ZCToken failed');
     
     filled[o.key] += a;
@@ -125,7 +127,7 @@ contract Swivel {
     // transfer tokens to this contract
     Erc20 uToken = Erc20(o.underlying);
     require(uToken.transferFrom(msg.sender, o.maker, (a - premiumFilled)), 'principal transfer failed');
-    // the zctoken in this order's market should transfer <a> from sender to maker
+    // the zctoken in this order's market should transfer <a> from sender to maker TODO assure order...
     require(MarketPlace(marketPlaceAddr).transferFromZcToken(o.underlying, o.maturity, o.maker, msg.sender, a), 'ZCToken transfer failed');
     
     filled[o.key] += a;
@@ -146,7 +148,7 @@ contract Swivel {
     // transfer tokens to this contract
     Erc20 uToken = Erc20(o.underlying);
     require(uToken.transferFrom(msg.sender, o.maker, a), 'premium transfer failed');
-    // the notional in this order's market should transfer <principalFilled> from maker to sender
+    // the notional in this order's market should transfer <principalFilled> from maker to sender TODO assure order...
     require(MarketPlace(marketPlaceAddr).transferFromNotional(o.underlying, o.maturity, o.maker, msg.sender, principalFilled), 'notional transfer failed');
     
     filled[o.key] += a;
@@ -186,6 +188,27 @@ contract Swivel {
 
     return true;
   }
+
+  /// @notice Allows a user to exit their zcTokens by filling an offline zcToken initiate order
+  /// @param : o The order being filled
+  /// @param : a Amount of volume (interest) being filled by the taker's exit
+  /// @param : c Components of a valid ECDSA signature
+  function exitZcTokenFillingZcTokenInitiate(Hash.Order calldata o, uint256 a, Sig.Components calldata c) valid(o,c) internal returns (bool) {
+    require(a <= ((o.premium) - (filled[o.key])));
+    
+    uint256 principalFilled = (((a * 1e18) / o.premium) * o.principal) / 1e18;
+    // transferZcToken <premiumFilled> from sender to maker TODO assure sender, maker...
+    require(MarketPlace(marketPlaceAddr).transferFromZcToken(o.underlying, o.maturity, o.maker, msg.sender, principalFilled), 'ZCToken transfer failed');
+    // Transfer underlying from initiating party to exiting party, minus the price the exit party pays for the exit (interest).
+    Erc20 uToken = Erc20(o.underlying);
+    // TODO audit these revert messages...
+    require(uToken.transferFrom(o.maker, msg.sender, (principalFilled - a)), 'premium transfer failed');
+    
+    filled[o.key] += a;       
+    
+    // TODO events?
+    return true;
+  }
   
   /// @notice Allows a user to exit their Vault by filling an offline vault initiate order
   /// @param o The order being filled
@@ -212,16 +235,6 @@ contract Swivel {
   /// @param : a Amount of volume (interest) being filled by the taker's exit
   /// @param : c Components of a valid ECDSA signature
   function exitZcTokenFillingVaultExit(Hash.Order calldata o, uint256 a, Sig.Components calldata c) valid(o,c) internal returns (bool) {
-    // TODO
-
-    return true;
-  }
-
-  /// @notice Allows a user to exit their zcTokens by filling an offline zcToken initiate order
-  /// @param : o The order being filled
-  /// @param : a Amount of volume (interest) being filled by the taker's exit
-  /// @param : c Components of a valid ECDSA signature
-  function exitZcTokenFillingZcTokenInitiate(Hash.Order calldata o, uint256 a, Sig.Components calldata c) valid(o,c) internal returns (bool) {
     // TODO
 
     return true;
