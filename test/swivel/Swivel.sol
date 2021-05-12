@@ -194,7 +194,7 @@ contract Swivel {
   /// @param : a Amount of volume (interest) being filled by the taker's exit
   /// @param : c Components of a valid ECDSA signature
   function exitZcTokenFillingZcTokenInitiate(Hash.Order calldata o, uint256 a, Sig.Components calldata c) valid(o,c) internal returns (bool) {
-    require(a <= ((o.premium) - (filled[o.key])));
+    require(a <= (o.premium - filled[o.key]), 'taker amount > available volume');
     
     uint256 principalFilled = (((a * 1e18) / o.premium) * o.principal) / 1e18;
     // transferZcToken <premiumFilled> from sender to maker TODO assure sender, maker...
@@ -215,8 +215,20 @@ contract Swivel {
   /// @param a Amount of volume (principal) being filled by the taker's exit
   /// @param c Components of a valid ECDSA signature
   function exitVaultFillingVaultInitiate(Hash.Order calldata o, uint256 a, Sig.Components calldata c) valid(o,c) internal returns (bool) {
-    // TODO
+    require(a <= (o.principal - filled[o.key]), 'taker amount > available volume');
+    
+    uint256 premiumFilled = (((a * 1e18) / o.principal) * o.premium) / 1e18;
+        
+    // market should transfer <a> notional from sender to maker
+    // NOTE the method naming is being addressed in a follow up PR
+    // this will prevent errors with argument passing and such...
+    require(MarketPlace(marketPlaceAddr).transferFromNotional(o.underlying, o.maturity, o.maker, msg.sender, a), 'notional transfer failed');
 
+    Erc20 uToken = Erc20(o.underlying);
+    require(uToken.transferFrom(o.maker, msg.sender, premiumFilled), 'principal transfer failed');
+    
+    filled[o.key] += a;
+    // TODO events?
     return true;
   }
 
