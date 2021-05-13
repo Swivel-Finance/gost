@@ -125,8 +125,7 @@ contract Swivel {
     uint256 premiumFilled = (((a * 1e18) / o.principal) * o.premium) / 1e18;
 
     // transfer tokens to this contract
-    Erc20 uToken = Erc20(o.underlying);
-    require(uToken.transferFrom(msg.sender, o.maker, (a - premiumFilled)), 'principal transfer failed');
+    require(Erc20(o.underlying).transferFrom(msg.sender, o.maker, (a - premiumFilled)), 'principal transfer failed');
     // the zctoken in this order's market should transfer <a> from sender to maker TODO assure order...
     require(MarketPlace(marketPlaceAddr).transferFromZcToken(o.underlying, o.maturity, o.maker, msg.sender, a), 'ZCToken transfer failed');
     
@@ -146,8 +145,7 @@ contract Swivel {
     uint256 principalFilled = (((a * 1e18) / o.premium) * o.principal) / 1e18;
  
     // transfer tokens to this contract
-    Erc20 uToken = Erc20(o.underlying);
-    require(uToken.transferFrom(msg.sender, o.maker, a), 'premium transfer failed');
+    require(Erc20(o.underlying).transferFrom(msg.sender, o.maker, a), 'premium transfer failed');
     // the notional in this order's market should transfer <principalFilled> from maker to sender TODO assure order...
     require(MarketPlace(marketPlaceAddr).transferFromNotional(o.underlying, o.maturity, o.maker, msg.sender, principalFilled), 'notional transfer failed');
     
@@ -200,9 +198,8 @@ contract Swivel {
     // transferZcToken <premiumFilled> from sender to maker TODO assure sender, maker...
     require(MarketPlace(marketPlaceAddr).transferFromZcToken(o.underlying, o.maturity, o.maker, msg.sender, principalFilled), 'ZCToken transfer failed');
     // Transfer underlying from initiating party to exiting party, minus the price the exit party pays for the exit (interest).
-    Erc20 uToken = Erc20(o.underlying);
     // TODO audit these revert messages...
-    require(uToken.transferFrom(o.maker, msg.sender, (principalFilled - a)), 'premium transfer failed');
+    require(Erc20(o.underlying).transferFrom(o.maker, msg.sender, (principalFilled - a)), 'premium transfer failed');
     
     filled[o.key] += a;       
     
@@ -223,9 +220,7 @@ contract Swivel {
     // NOTE the method naming is being addressed in a follow up PR
     // this will prevent errors with argument passing and such...
     require(MarketPlace(marketPlaceAddr).transferFromNotional(o.underlying, o.maturity, o.maker, msg.sender, a), 'notional transfer failed');
-
-    Erc20 uToken = Erc20(o.underlying);
-    require(uToken.transferFrom(o.maker, msg.sender, premiumFilled), 'principal transfer failed');
+    require(Erc20(o.underlying).transferFrom(o.maker, msg.sender, premiumFilled), 'principal transfer failed');
     
     filled[o.key] += a;
     // TODO events?
@@ -237,7 +232,25 @@ contract Swivel {
   /// @param a Amount of volume (principal) being filled by the taker's exit
   /// @param c Components of a valid ECDSA signature
   function exitVaultFillingZcTokenExit(Hash.Order calldata o, uint256 a, Sig.Components calldata c) valid(o,c) internal returns (bool) {
-    // TODO
+    require(a <= (o.principal - filled[o.key]), 'taker amount > available volume');
+    
+    uint256 premiumFilled = (((a * 1e18) / o.principal) * o.premium) / 1e18;
+    
+    MarketPlace marketPlace = MarketPlace(marketPlaceAddr);
+    address cTokenAddr = marketPlace.cTokenAddress(o.underlying, o.maturity);
+    // burn zcTokens for fixed exit party, burn interest coupon for floating exit party
+    require(marketPlace.burnZcTokenRemovingNotional(o.underlying, o.maturity, o.maker, msg.sender, a), 'notional transfer failed');
+    // transfer cost of interest coupon to floating party
+    Erc20 uToken = Erc20(o.underlying);
+    require(uToken.transferFrom(o.maker, msg.sender, premiumFilled), 'principal transfer failed');
+    // redeem principal from compound now that coupon and zcb have been redeemed
+    require((CErc20(cTokenAddr).redeemUnderlying(a) == 0), "compound redemption error");
+    // Transfer principal back to fixed exit party now that the interest coupon and zcb have been redeemed
+    require(uToken.transfer(o.maker, a), 'principal transfer failed');
+    
+    filled[o.key] += a;
+    
+    // TODO events?
 
     return true;
   }

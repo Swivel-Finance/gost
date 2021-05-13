@@ -10,14 +10,19 @@ contract MarketPlace {
   // TODO: we should likely standardize on using the `Called` suffix for these mappings in the mocks.
   //       the token mocks use a differnt pattern, change them to match this...
   mapping (address => uint256) public cTokenAddressCalled;
-  // the bool that will be returned from mintZcTokenAddingNotional
   bool private mintZcTokenAddingNotionalReturn;
-  // and transferFromZcToken...
+  bool private burnZcTokenRemovingNotionalReturn;
   bool private transferFromZcTokenReturn;
-  // and transferFromNotional...
   bool private transferFromNotionalReturn;
 
   struct MintZcTokenAddingNotionalArgs {
+    uint256 maturity;
+    address owner;
+    address sender;
+    uint256 amount;
+  }
+
+  struct BurnZcTokenRemovingNotionalArgs {
     uint256 maturity;
     address owner;
     address sender;
@@ -39,6 +44,7 @@ contract MarketPlace {
   }
 
   mapping (address => MintZcTokenAddingNotionalArgs) public mintZcTokenAddingNotionalCalled;
+  mapping (address => BurnZcTokenRemovingNotionalArgs) public burnZcTokenRemovingNotionalCalled;
   mapping (address => TransferFromZcTokenArgs) public transferFromZcTokenCalled;
   mapping (address => TransferFromNotionalArgs) public transferFromNotionalCalled;
 
@@ -64,6 +70,21 @@ contract MarketPlace {
     mintZcTokenAddingNotionalCalled[u] = args;
 
     return mintZcTokenAddingNotionalReturn;
+  }
+
+  function burnZcTokenRemovingNotionalReturns(bool b) external {
+    burnZcTokenRemovingNotionalReturn = b;
+  }
+
+  function burnZcTokenRemovingNotional(address u, uint256 m, address o, address s, uint256 a) external returns (bool) {
+    BurnZcTokenRemovingNotionalArgs memory args; 
+    args.maturity = m;
+    args.owner = o;
+    args.sender = s;
+    args.amount = a;
+    burnZcTokenRemovingNotionalCalled[u] = args;
+
+    return burnZcTokenRemovingNotionalReturn;
   }
 
   function transferFromZcTokenReturns(bool b) external {
