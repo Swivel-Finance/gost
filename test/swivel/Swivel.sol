@@ -69,13 +69,13 @@ contract Swivel {
     
     // transfer tokens to this contract
     Erc20 uToken = Erc20(o.underlying);
-    require(uToken.transferFrom(msg.sender, o.maker, a), 'premium transfer failed');
-    require(uToken.transferFrom(o.maker, address(this), principalFilled), 'principal transfer failed');
+    require(uToken.transferFrom(msg.sender, o.maker, a), 'transfer failed');
+    require(uToken.transferFrom(o.maker, address(this), principalFilled), 'transfer failed');
 
     MarketPlace marketPlace = MarketPlace(marketPlaceAddr);
     address cTokenAddr = marketPlace.cTokenAddress(o.underlying, o.maturity);
 
-    require(uToken.approve(cTokenAddr, principalFilled), 'underlying approval at CToken failed'); 
+    require(uToken.approve(cTokenAddr, principalFilled), 'underlying approval failed'); 
     require(CErc20(cTokenAddr).mint(principalFilled) == 0, 'minting CToken failed');
     // TODO assure sender, maker...
     require(marketPlace.mintZcTokenAddingNotional(o.underlying, o.maturity, o.maker, msg.sender, principalFilled), 'minting ZCToken failed');
@@ -97,8 +97,8 @@ contract Swivel {
 
     // transfer tokens to this contract
     Erc20 uToken = Erc20(o.underlying);
-    require(uToken.transferFrom(o.maker, msg.sender, premiumFilled), 'interest transfer failed');
-    require(uToken.transferFrom(msg.sender, address(this), a), 'principal transfer failed');
+    require(uToken.transferFrom(o.maker, msg.sender, premiumFilled), 'transfer failed');
+    require(uToken.transferFrom(msg.sender, address(this), a), 'transfer failed');
     
     MarketPlace marketPlace = MarketPlace(marketPlaceAddr);
     address cTokenAddr = marketPlace.cTokenAddress(o.underlying, o.maturity);
@@ -106,7 +106,7 @@ contract Swivel {
     uToken.approve(cTokenAddr, a);
     require(CErc20(cTokenAddr).mint(a) == 0, 'minting CToken Failed');
     // TODO sender, maker order...
-    require(marketPlace.mintZcTokenAddingNotional(o.underlying, o.maturity, o.maker, msg.sender, a), 'minting ZCToken failed');
+    require(marketPlace.mintZcTokenAddingNotional(o.underlying, o.maturity, o.maker, msg.sender, a), 'minting ZCToken, adding notional failed');
     
     filled[o.key] += a;
 
@@ -125,7 +125,7 @@ contract Swivel {
     uint256 premiumFilled = (((a * 1e18) / o.principal) * o.premium) / 1e18;
 
     // transfer tokens to this contract
-    require(Erc20(o.underlying).transferFrom(msg.sender, o.maker, (a - premiumFilled)), 'principal transfer failed');
+    require(Erc20(o.underlying).transferFrom(msg.sender, o.maker, (a - premiumFilled)), 'transfer failed');
     // the zctoken in this order's market should transfer <a> from sender to maker TODO assure order...
     require(MarketPlace(marketPlaceAddr).transferFromZcToken(o.underlying, o.maturity, o.maker, msg.sender, a), 'ZCToken transfer failed');
     
@@ -145,7 +145,7 @@ contract Swivel {
     uint256 principalFilled = (((a * 1e18) / o.premium) * o.principal) / 1e18;
  
     // transfer tokens to this contract
-    require(Erc20(o.underlying).transferFrom(msg.sender, o.maker, a), 'premium transfer failed');
+    require(Erc20(o.underlying).transferFrom(msg.sender, o.maker, a), 'transfer failed');
     // the notional in this order's market should transfer <principalFilled> from maker to sender TODO assure order...
     require(MarketPlace(marketPlaceAddr).transferFromNotional(o.underlying, o.maturity, o.maker, msg.sender, principalFilled), 'notional transfer failed');
     
@@ -199,7 +199,7 @@ contract Swivel {
     require(MarketPlace(marketPlaceAddr).transferFromZcToken(o.underlying, o.maturity, o.maker, msg.sender, principalFilled), 'ZCToken transfer failed');
     // Transfer underlying from initiating party to exiting party, minus the price the exit party pays for the exit (interest).
     // TODO audit these revert messages...
-    require(Erc20(o.underlying).transferFrom(o.maker, msg.sender, (principalFilled - a)), 'premium transfer failed');
+    require(Erc20(o.underlying).transferFrom(o.maker, msg.sender, (principalFilled - a)), 'transfer failed');
     
     filled[o.key] += a;       
     
@@ -220,7 +220,7 @@ contract Swivel {
     // NOTE the method naming is being addressed in a follow up PR
     // this will prevent errors with argument passing and such...
     require(MarketPlace(marketPlaceAddr).transferFromNotional(o.underlying, o.maturity, o.maker, msg.sender, a), 'notional transfer failed');
-    require(Erc20(o.underlying).transferFrom(o.maker, msg.sender, premiumFilled), 'principal transfer failed');
+    require(Erc20(o.underlying).transferFrom(o.maker, msg.sender, premiumFilled), 'transfer failed');
     
     filled[o.key] += a;
     // TODO events?
@@ -237,16 +237,16 @@ contract Swivel {
     uint256 premiumFilled = (((a * 1e18) / o.principal) * o.premium) / 1e18;
     
     MarketPlace marketPlace = MarketPlace(marketPlaceAddr);
-    address cTokenAddr = marketPlace.cTokenAddress(o.underlying, o.maturity);
-    // burn zcTokens for fixed exit party, burn interest coupon for floating exit party
+    // burn zcTokens for fixed exit party, burn interest coupon for floating exit party (burn maker, remove sender)
     require(marketPlace.burnZcTokenRemovingNotional(o.underlying, o.maturity, o.maker, msg.sender, a), 'notional transfer failed');
     // transfer cost of interest coupon to floating party
     Erc20 uToken = Erc20(o.underlying);
-    require(uToken.transferFrom(o.maker, msg.sender, premiumFilled), 'principal transfer failed');
+    require(uToken.transferFrom(o.maker, msg.sender, premiumFilled), 'transfer failed');
     // redeem principal from compound now that coupon and zcb have been redeemed
+    address cTokenAddr = marketPlace.cTokenAddress(o.underlying, o.maturity);
     require((CErc20(cTokenAddr).redeemUnderlying(a) == 0), "compound redemption error");
     // Transfer principal back to fixed exit party now that the interest coupon and zcb have been redeemed
-    require(uToken.transfer(o.maker, a), 'principal transfer failed');
+    require(uToken.transfer(o.maker, a), 'transfer failed');
     
     filled[o.key] += a;
     
@@ -260,7 +260,25 @@ contract Swivel {
   /// @param : a Amount of volume (interest) being filled by the taker's exit
   /// @param : c Components of a valid ECDSA signature
   function exitZcTokenFillingVaultExit(Hash.Order calldata o, uint256 a, Sig.Components calldata c) valid(o,c) internal returns (bool) {
-    // TODO
+    require(a <= (o.premium - filled[o.key]));
+    
+    uint256 principalFilled = (((a * 1e18) / o.premium) * o.principal) / 1e18;
+    
+    MarketPlace marketPlace = MarketPlace(marketPlaceAddr);
+    // Burn zcTokens for fixed exit party... (burn sender, remove maker)
+    require(marketPlace.burnZcTokenRemovingNotional(o.underlying, o.maturity, o.maker, msg.sender, a), 'notional transfer failed');
+    // Transfer cost of interest coupon to floating party
+    Erc20 uToken = Erc20(o.underlying);
+    require(uToken.transferFrom(msg.sender, o.maker, a), 'transfer failed');
+    // Redeem principal from compound now that coupon and zcb have been redeemed
+    address cTokenAddr = marketPlace.cTokenAddress(o.underlying, o.maturity);
+    require((CErc20(cTokenAddr).redeemUnderlying(principalFilled) == 0), "compound redemption Error");
+    // Transfer principal back to fixed exit party now that the interest coupon and zcb have been redeemed
+    require(uToken.transfer(msg.sender, principalFilled), 'transfer failed');
+    
+    filled[o.key] += a;
+    
+    // TODO events
 
     return true;
   }
