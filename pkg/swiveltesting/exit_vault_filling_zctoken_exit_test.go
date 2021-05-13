@@ -15,16 +15,17 @@ import (
 )
 
 // yeah, just make it an acronym...
-type EZFZISuite struct {
+type EVFZESuite struct {
 	suite.Suite
 	Env         *Env
 	Dep         *Dep
 	Erc20       *mocks.Erc20Session
+	CErc20      *mocks.CErc20Session
 	MarketPlace *mocks.MarketPlaceSession
 	Swivel      *swivel.SwivelSession
 }
 
-func (s *EZFZISuite) SetupTest() {
+func (s *EVFZESuite) SetupTest() {
 	var err error
 
 	s.Env = NewEnv(big.NewInt(ONE_ETH))
@@ -36,6 +37,15 @@ func (s *EZFZISuite) SetupTest() {
 
 	s.Erc20 = &mocks.Erc20Session{
 		Contract: s.Dep.Erc20,
+		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
+		TransactOpts: bind.TransactOpts{
+			From:   s.Env.Owner.Opts.From,
+			Signer: s.Env.Owner.Opts.Signer,
+		},
+	}
+
+	s.CErc20 = &mocks.CErc20Session{
+		Contract: s.Dep.CErc20,
 		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
 		TransactOpts: bind.TransactOpts{
 			From:   s.Env.Owner.Opts.From,
@@ -63,17 +73,33 @@ func (s *EZFZISuite) SetupTest() {
 	}
 }
 
-func (s *EZFZISuite) TestEZFZI() {
+func (s *EVFZESuite) TestEVFZE() {
 	assert := assert.New(s.T())
 
-	// stub underlying (erc20) transferfrom to return true
-	tx, err := s.Erc20.TransferFromReturns(true)
+	// stub underlying (erc20) transfer and transferfrom to return true
+	tx, err := s.Erc20.TransferReturns(true)
 	assert.Nil(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
 
+	tx, err = s.Erc20.TransferFromReturns(true)
+	assert.Nil(err)
+	assert.NotNil(tx)
+	s.Env.Blockchain.Commit()
+
+	// and the ctoken redeem...
+	tx, err = s.CErc20.RedeemUnderlyingReturns(big.NewInt(0))
+	assert.NotNil(tx)
+	assert.Nil(err)
+	s.Env.Blockchain.Commit()
+
 	// and the marketplace api methods...
-	tx, err = s.MarketPlace.TransferFromZcTokenReturns(true)
+	tx, err = s.MarketPlace.CTokenAddressReturns(s.Dep.CErc20Address) // must use the actual dep addr here
+	assert.Nil(err)
+	assert.NotNil(tx)
+	s.Env.Blockchain.Commit()
+
+	tx, err = s.MarketPlace.BurnZcTokenRemovingNotionalReturns(true)
 	assert.Nil(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
@@ -91,7 +117,7 @@ func (s *EZFZISuite) TestEZFZI() {
 		Maker:      s.Env.User1.Opts.From,
 		Underlying: s.Dep.Erc20Address,
 		Vault:      false,
-		Exit:       false,
+		Exit:       true,
 		Principal:  principal,
 		Premium:    premium,
 		Maturity:   maturity,
@@ -130,7 +156,7 @@ func (s *EZFZISuite) TestEZFZI() {
 		Maker:      s.Env.User1.Opts.From,
 		Underlying: s.Dep.Erc20Address,
 		Vault:      false,
-		Exit:       false,
+		Exit:       true,
 		Principal:  principal,
 		Premium:    premium,
 		Maturity:   maturity,
@@ -145,13 +171,13 @@ func (s *EZFZISuite) TestEZFZI() {
 	}
 
 	// call it (finally)...
-	amount := big.NewInt(25) // 1/2 the premium
+	amount := big.NewInt(2500) // 1/2 the principal
 	// initiate wants slices...
 	orders := []swivel.HashOrder{order}
 	amounts := []*big.Int{amount}
 	componentses := []swivel.SigComponents{components} // yeah, i liek it...
 
-	// vault false && exit false will force the call to EZFZI
+	// vault false && exit true will force the call to EVFZE
 	tx, err = s.Swivel.Exit(orders, amounts, componentses)
 
 	assert.Nil(err)
@@ -167,18 +193,18 @@ func (s *EZFZISuite) TestEZFZI() {
 	assert.Nil(err)
 	assert.NotNil(args)
 	assert.Equal(args.To, s.Env.Owner.Opts.From)
-	assert.Equal(args.Amount.Cmp(amt), 1) // amount should be greater than the passed in filled premium
+	assert.Equal(amt.Cmp(args.Amount), 1) // amt should be greater than computed pFilled
 
-	// market zctoken transfer from call...
-	zcTransferArgs, err := s.MarketPlace.TransferFromZcTokenCalled(order.Underlying)
+	// market zctoken burn...
+	burnArgs, err := s.MarketPlace.BurnZcTokenRemovingNotionalCalled(order.Underlying)
 	assert.Nil(err)
-	assert.NotNil(zcTransferArgs)
-	assert.Equal(zcTransferArgs.Maturity, order.Maturity)
-	assert.Equal(zcTransferArgs.Amount.Cmp(amt), 1) // .Amount is greater than passed in filled prem (like above)
-	assert.Equal(zcTransferArgs.Owner, order.Maker)
-	assert.Equal(zcTransferArgs.Sender, s.Env.Owner.Opts.From)
+	assert.NotNil(burnArgs)
+	assert.Equal(burnArgs.Maturity, order.Maturity)
+	assert.Equal(amt.Cmp(burnArgs.Amount), 0) // .Amount is passed in amt
+	assert.Equal(burnArgs.Owner, order.Maker)
+	assert.Equal(burnArgs.Sender, s.Env.Owner.Opts.From)
 }
 
-func TestEZFZISuite(t *test.T) {
-	suite.Run(t, &EZFZISuite{})
+func TestEVFZESuite(t *test.T) {
+	suite.Run(t, &EVFZESuite{})
 }
