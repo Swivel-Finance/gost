@@ -237,7 +237,30 @@ contract Swivel {
   /// @param a Amount of volume (principal) being filled by the taker's exit
   /// @param c Components of a valid ECDSA signature
   function exitVaultFillingZcTokenExit(Hash.Order calldata o, uint256 a, Sig.Components calldata c) valid(o,c) internal returns (bool) {
-    // TODO
+    require(a <= (o.principal - filled[o.key]), 'taker amount > available volume');
+    
+    uint256 premiumFilled = (((a * 1e18) / o.principal) * o.premium) / 1e18;
+    
+    // Burn zcTokens for fixed exit party
+    // zcToken(tokenAddresses_.zcToken).burn(o.maker, a);
+    
+    // Burn interest coupon for floating exit party
+    // VaultTracker(tokenAddresses_.vaultTracker).removeNotional(msg.sender, a);
+    
+    // Transfer cost of interest coupon to floating party
+    Erc20 uToken = Erc20(o.underlying);
+    require(uToken.transferFrom(o.maker, msg.sender, premiumFilled), 'principal transfer failed');
+    
+    // Redeem principal from compound now that coupon and zcb have been redeemed
+    // get cToken address...
+    require((CErc20(tokenAddresses_.cToken).redeemUnderlying(a) == 0), "compound redemption error");
+    
+    // Transfer principal back to fixed exit party now that the interest coupon and zcb have been redeemed
+    uToken.transfer(o.maker, a);
+    
+    filled[o.key] += a;
+    
+    //event for fixed initiation and exit
 
     return true;
   }
