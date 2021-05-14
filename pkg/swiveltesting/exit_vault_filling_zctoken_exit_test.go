@@ -99,7 +99,7 @@ func (s *EVFZESuite) TestEVFZE() {
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
 
-	tx, err = s.MarketPlace.ExitFillingExitReturns(true)
+	tx, err = s.MarketPlace.CustodialExitReturns(true)
 	assert.Nil(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
@@ -196,7 +196,7 @@ func (s *EVFZESuite) TestEVFZE() {
 	assert.Equal(amt.Cmp(args.Amount), 1) // amt should be greater than computed pFilled
 
 	// market zctoken burn...
-	burnArgs, err := s.MarketPlace.ExitFillingExitCalled(order.Underlying)
+	burnArgs, err := s.MarketPlace.CustodialExitCalled(order.Underlying)
 	assert.Nil(err)
 	assert.NotNil(burnArgs)
 	assert.Equal(burnArgs.Maturity, order.Maturity)
