@@ -176,8 +176,8 @@ func (s *IVFVESuite) TestIZFZE() {
 	assert.Equal(notionalTransferArgs.Maturity, order.Maturity)
 	// log the .Amount here to check the math...
 	assert.Equal(notionalTransferArgs.Amount.Cmp(big.NewInt(0)), 1) // it's pFilled, so should be > 0 at the least...
-	assert.Equal(notionalTransferArgs.Owner, order.Maker)
-	assert.Equal(notionalTransferArgs.Sender, s.Env.Owner.Opts.From)
+	assert.Equal(notionalTransferArgs.One, order.Maker)
+	assert.Equal(notionalTransferArgs.Two, s.Env.Owner.Opts.From)
 }
 
 func TestIVFVESuite(t *test.T) {

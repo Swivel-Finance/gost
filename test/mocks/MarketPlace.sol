@@ -10,43 +10,22 @@ contract MarketPlace {
   // TODO: we should likely standardize on using the `Called` suffix for these mappings in the mocks.
   //       the token mocks use a differnt pattern, change them to match this...
   mapping (address => uint256) public cTokenAddressCalled;
-  bool private mintZcTokenAddingNotionalReturn;
-  bool private burnZcTokenRemovingNotionalReturn;
+  bool private initiateFillingInitiateReturn;
+  bool private exitFillingExitReturn;
   bool private transferFromZcTokenReturn;
   bool private transferFromNotionalReturn;
 
-  struct MintZcTokenAddingNotionalArgs {
+  struct MethodArgs {
     uint256 maturity;
-    address owner;
-    address sender;
+    address one; // is sender or maker depending on method
+    address two; // same as above
     uint256 amount;
   }
 
-  struct BurnZcTokenRemovingNotionalArgs {
-    uint256 maturity;
-    address owner;
-    address sender;
-    uint256 amount;
-  }
-
-  struct TransferFromZcTokenArgs {
-    uint256 maturity;
-    address owner; // should become to
-    address sender; // should become from
-    uint256 amount;
-  }
-
-  struct TransferFromNotionalArgs {
-    uint256 maturity;
-    address owner; // should become from
-    address sender; // should become to
-    uint256 amount;
-  }
-
-  mapping (address => MintZcTokenAddingNotionalArgs) public mintZcTokenAddingNotionalCalled;
-  mapping (address => BurnZcTokenRemovingNotionalArgs) public burnZcTokenRemovingNotionalCalled;
-  mapping (address => TransferFromZcTokenArgs) public transferFromZcTokenCalled;
-  mapping (address => TransferFromNotionalArgs) public transferFromNotionalCalled;
+  mapping (address => MethodArgs) public initiateFillingInitiateCalled;
+  mapping (address => MethodArgs) public exitFillingExitCalled;
+  mapping (address => MethodArgs) public transferFromZcTokenCalled;
+  mapping (address => MethodArgs) public transferFromNotionalCalled;
 
   function cTokenAddressReturns(address a) external {
     cTokenAddr = a;
@@ -57,45 +36,49 @@ contract MarketPlace {
     return cTokenAddr;
   }
 
-  function mintZcTokenAddingNotionalReturns(bool b) external {
-    mintZcTokenAddingNotionalReturn = b;
+  function initiateFillingInitiateReturns(bool b) external {
+    initiateFillingInitiateReturn = b;
   }
 
-  function mintZcTokenAddingNotional(address u, uint256 m, address o, address s, uint256 a) external returns (bool) {
-    MintZcTokenAddingNotionalArgs memory args; 
+  // called by swivel IVFZI && IZFVI 
+  // call with underlying, maturity, mint-target, add-notional-target and an amount
+  function initiateFillingInitiate(address u, uint256 m, address o, address t, uint256 a) external returns (bool) {
+    MethodArgs memory args; 
     args.maturity = m;
-    args.owner = o;
-    args.sender = s;
-    args.amount = a;
-    mintZcTokenAddingNotionalCalled[u] = args;
+    args.one = o; // will be the recipient of minted zctoken
+    args.two = t; // will be the recipient of added notional
+    args.amount = a; // the amount of minted zctoken and notional added
+    initiateFillingInitiateCalled[u] = args;
 
-    return mintZcTokenAddingNotionalReturn;
+    return initiateFillingInitiateReturn;
   }
 
-  function burnZcTokenRemovingNotionalReturns(bool b) external {
-    burnZcTokenRemovingNotionalReturn = b;
+  function exitFillingExitReturns(bool b) external {
+    exitFillingExitReturn = b;
   }
 
-  function burnZcTokenRemovingNotional(address u, uint256 m, address o, address s, uint256 a) external returns (bool) {
-    BurnZcTokenRemovingNotionalArgs memory args; 
+  // called by swivel EVFZE FF EZFVE
+  // call with underlying, maturity, burn-target, remove-notional-target and an amount
+  function exitFillingExit(address u, uint256 m, address o, address t, uint256 a) external returns (bool) {
+    MethodArgs memory args; 
     args.maturity = m;
-    args.owner = o;
-    args.sender = s;
-    args.amount = a;
-    burnZcTokenRemovingNotionalCalled[u] = args;
+    args.one = o; // will be the burn-from target
+    args.two = t; // will be the remove-notional target
+    args.amount = a; // zctoken burned, notional removed
+    exitFillingExitCalled[u] = args;
 
-    return burnZcTokenRemovingNotionalReturn;
+    return exitFillingExitReturn;
   }
 
   function transferFromZcTokenReturns(bool b) external {
     transferFromZcTokenReturn = b;
   }
 
-  function transferFromZcToken(address u, uint256 m, address o, address s, uint256 a) external returns (bool) {
-    TransferFromZcTokenArgs memory args;
+  function transferFromZcToken(address u, uint256 m, address o, address t, uint256 a) external returns (bool) {
+    MethodArgs memory args;
     args.maturity = m;
-    args.owner = o;
-    args.sender = s;
+    args.one = o;
+    args.two = t;
     args.amount = a;
     transferFromZcTokenCalled[u] = args;
 
@@ -106,11 +89,11 @@ contract MarketPlace {
     transferFromNotionalReturn = b;
   }
 
-  function transferFromNotional(address u, uint256 m, address o, address s, uint256 a) external returns (bool) {
-    TransferFromNotionalArgs memory args;
+  function transferFromNotional(address u, uint256 m, address o, address t, uint256 a) external returns (bool) {
+    MethodArgs memory args;
     args.maturity = m;
-    args.owner = o;
-    args.sender = s;
+    args.one = o;
+    args.two = t;
     args.amount = a;
     transferFromNotionalCalled[u] = args;
 

@@ -175,8 +175,8 @@ func (s *EZFZISuite) TestEZFZI() {
 	assert.NotNil(zcTransferArgs)
 	assert.Equal(zcTransferArgs.Maturity, order.Maturity)
 	assert.Equal(zcTransferArgs.Amount.Cmp(amt), 1) // .Amount is greater than passed in filled prem (like above)
-	assert.Equal(zcTransferArgs.Owner, order.Maker)
-	assert.Equal(zcTransferArgs.Sender, s.Env.Owner.Opts.From)
+	assert.Equal(zcTransferArgs.One, order.Maker)
+	assert.Equal(zcTransferArgs.Two, s.Env.Owner.Opts.From)
 }
 
 func TestEZFZISuite(t *test.T) {

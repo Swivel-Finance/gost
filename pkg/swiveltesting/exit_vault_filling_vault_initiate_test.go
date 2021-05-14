@@ -175,8 +175,8 @@ func (s *EVFVISuite) TestEVFVI() {
 	assert.NotNil(noTransferArgs)
 	assert.Equal(noTransferArgs.Maturity, order.Maturity)
 	assert.Equal(amt.Cmp(noTransferArgs.Amount), 0) // .Amount is passed in amt
-	assert.Equal(noTransferArgs.Owner, order.Maker)
-	assert.Equal(noTransferArgs.Sender, s.Env.Owner.Opts.From)
+	assert.Equal(noTransferArgs.One, order.Maker)
+	assert.Equal(noTransferArgs.Two, s.Env.Owner.Opts.From)
 }
 
 func TestEVFVISuite(t *test.T) {

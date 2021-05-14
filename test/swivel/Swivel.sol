@@ -58,6 +58,7 @@ contract Swivel {
   }
 
   /// @notice Allows a user to initiate a Vault by filling an offline zcToken initiate order
+  /// @dev This method should pass (underlying, maturity, sender, maker, principalFilled) to MarketPlace.initiateFillingInitiate
   /// @param o The order being filled
   /// @param a Amount of volume (interest) being filled by the taker's exit
   /// @param c Components of a valid ECDSA signature
@@ -77,8 +78,8 @@ contract Swivel {
 
     require(uToken.approve(cTokenAddr, principalFilled), 'underlying approval failed'); 
     require(CErc20(cTokenAddr).mint(principalFilled) == 0, 'minting CToken failed');
-    // TODO assure sender, maker...
-    require(marketPlace.mintZcTokenAddingNotional(o.underlying, o.maturity, o.maker, msg.sender, principalFilled), 'minting ZCToken failed');
+    // alert MarketPlace.
+    require(marketPlace.initiateFillingInitiate(o.underlying, o.maturity, msg.sender, o.maker, principalFilled), 'initiateFillingInitiate call failed');
 
     filled[o.key] += a;
 
@@ -86,6 +87,7 @@ contract Swivel {
   }
 
   /// @notice Allows a user to initiate a zcToken _ by filling an offline vault initiate order
+  /// @dev This method should pass (underlying, maturity, sender, maker, a) to MarketPlace.initiateFillingInitiate
   /// @param o The order being filled
   /// @param o Amount of volume (principal) being filled by the taker's exit
   /// @param c Components of a valid ECDSA signature
@@ -105,8 +107,8 @@ contract Swivel {
 
     uToken.approve(cTokenAddr, a);
     require(CErc20(cTokenAddr).mint(a) == 0, 'minting CToken Failed');
-    // TODO sender, maker order...
-    require(marketPlace.mintZcTokenAddingNotional(o.underlying, o.maturity, o.maker, msg.sender, a), 'minting ZCToken, adding notional failed');
+    // alert MarketPlace
+    require(marketPlace.initiateFillingInitiate(o.underlying, o.maturity, msg.sender, o.maker, a), 'initiateFillingInitiate call failed');
     
     filled[o.key] += a;
 
@@ -228,6 +230,7 @@ contract Swivel {
   }
 
   /// @notice Allows a user to exit their Vault filling an offline zcToken exit order
+  /// @dev This method should pass (underlying, maturity, maker, sender, a) to MarketPlace.exitFillingExit
   /// @param o The order being filled
   /// @param a Amount of volume (principal) being filled by the taker's exit
   /// @param c Components of a valid ECDSA signature
@@ -237,8 +240,8 @@ contract Swivel {
     uint256 premiumFilled = (((a * 1e18) / o.principal) * o.premium) / 1e18;
     
     MarketPlace marketPlace = MarketPlace(marketPlaceAddr);
-    // burn zcTokens for fixed exit party, burn interest coupon for floating exit party (burn maker, remove sender)
-    require(marketPlace.burnZcTokenRemovingNotional(o.underlying, o.maturity, o.maker, msg.sender, a), 'notional transfer failed');
+    // alert MarketPlace...
+    require(marketPlace.exitFillingExit(o.underlying, o.maturity, o.maker, msg.sender, a), 'exitFillingExit call failed');
     // transfer cost of interest coupon to floating party
     Erc20 uToken = Erc20(o.underlying);
     require(uToken.transferFrom(o.maker, msg.sender, premiumFilled), 'transfer failed');
@@ -256,6 +259,7 @@ contract Swivel {
   }
 
   /// @notice Allows a user to exit their zcTokens by filling an offline vault exit order
+  /// @dev This method should pass (underlying, maturity, sender, maker, principalFilled) to MarketPlace.exitFillingExit
   /// @param : o The order being filled
   /// @param : a Amount of volume (interest) being filled by the taker's exit
   /// @param : c Components of a valid ECDSA signature
@@ -265,8 +269,8 @@ contract Swivel {
     uint256 principalFilled = (((a * 1e18) / o.premium) * o.principal) / 1e18;
     
     MarketPlace marketPlace = MarketPlace(marketPlaceAddr);
-    // Burn zcTokens for fixed exit party... (burn sender, remove maker)
-    require(marketPlace.burnZcTokenRemovingNotional(o.underlying, o.maturity, o.maker, msg.sender, a), 'notional transfer failed');
+    // inform MarketPlace what happened...
+    require(marketPlace.exitFillingExit(o.underlying, o.maturity, msg.sender, o.maker, principalFilled), 'exitFillingExit call failed');
     // Transfer cost of interest coupon to floating party
     Erc20 uToken = Erc20(o.underlying);
     require(uToken.transferFrom(msg.sender, o.maker, a), 'transfer failed');
