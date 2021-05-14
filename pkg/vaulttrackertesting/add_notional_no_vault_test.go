@@ -11,7 +11,7 @@ import (
 	"github.com/swivel-finance/gost/test/vaulttracker"
 )
 
-type trackerAddNotionalSuite struct {
+type addNotionalNoVaultSuite struct {
 	suite.Suite
 	Env          *Env
 	Dep          *Dep
@@ -19,7 +19,7 @@ type trackerAddNotionalSuite struct {
 	VaultTracker *vaulttracker.VaultTrackerSession // *Session objects are created by the go bindings
 }
 
-func (s *trackerAddNotionalSuite) SetupSuite() {
+func (s *addNotionalNoVaultSuite) SetupSuite() {
 	var err error
 
 	s.Env = NewEnv(big.NewInt(ONE_ETH)) // each of the wallets in the env will begin with this balance
@@ -48,7 +48,7 @@ func (s *trackerAddNotionalSuite) SetupSuite() {
 	}
 }
 
-func (s *trackerAddNotionalSuite) TestAddNotional() {
+func (s *addNotionalNoVaultSuite) TestAddNotional() {
 	assert := assertions.New(s.T())
 
 	rate1 := big.NewInt(123456789)
@@ -61,9 +61,9 @@ func (s *trackerAddNotionalSuite) TestAddNotional() {
 	vault, err := s.VaultTracker.Vaults(s.Env.Owner.Opts.From)
 	assert.Nil(err)
 	assert.NotNil(vault)
-	assert.True(vault.Redeemable.Cmp(ZERO) == 0)
-	assert.True(vault.Notional.Cmp(ZERO) == 0)
-	assert.True(vault.ExchangeRate.Cmp(ZERO) == 0)
+	assert.Equal(vault.Redeemable.Cmp(ZERO), 0)
+	assert.Equal(vault.Notional.Cmp(ZERO), 0)
+	assert.Equal(vault.ExchangeRate.Cmp(ZERO),0)
 
 	// call AddNotional for Owner with no vault
 	caller := s.Env.Owner.Opts.From
@@ -81,68 +81,9 @@ func (s *trackerAddNotionalSuite) TestAddNotional() {
 	assert.NotNil(vault)
 	assert.Equal(amount1, vault.Notional)
 	assert.Equal(rate1, vault.ExchangeRate)
-	assert.True(vault.Redeemable.Cmp(redeemable1) == 0)
-
-	rate2 := big.NewInt(723456789)
-	tx, err = s.CErc20.ExchangeRateCurrentReturns(rate2)
-	assert.NotNil(tx)
-	assert.Nil(err)
-	s.Env.Blockchain.Commit()
-
-	amount2 := big.NewInt(20000000)
-	redeemable2 := big.NewInt(48600000)
-
-	// call AddNotional for Owner which already has vault and market is not matured
-	tx, err = s.VaultTracker.AddNotional(caller, amount1)
-	assert.Nil(err)
-	assert.NotNil(tx)
-
-	s.Env.Blockchain.Commit()
-
-	vault, err = s.VaultTracker.Vaults(s.Env.Owner.Opts.From)
-	assert.Nil(err)
-	assert.NotNil(vault)
-	assert.Equal(amount2, vault.Notional)
-	assert.Equal(rate2, vault.ExchangeRate)
-	assert.Equal(redeemable2, vault.Redeemable)
-
-	rate3 := big.NewInt(823456789)
-	tx, err = s.CErc20.ExchangeRateCurrentReturns(rate3)
-	assert.NotNil(tx)
-	assert.Nil(err)
-	s.Env.Blockchain.Commit()
-
-	// call mature
-	tx, err = s.VaultTracker.MatureVault()
-	assert.Nil(err)
-	assert.NotNil(tx)
-
-	s.Env.Blockchain.Commit()
-
-	rate4 := big.NewInt(923456787)
-	tx, err = s.CErc20.ExchangeRateCurrentReturns(rate4)
-	assert.NotNil(tx)
-	assert.Nil(err)
-	s.Env.Blockchain.Commit()
-
-	amount3 := big.NewInt(30000000)
-	redeemable3 := big.NewInt(51364505)
-
-	// call AddNotional for Owner which already has vault and market matured
-	tx, err = s.VaultTracker.AddNotional(caller, amount1)
-	assert.Nil(err)
-	assert.NotNil(tx)
-
-	s.Env.Blockchain.Commit()
-
-	vault, err = s.VaultTracker.Vaults(s.Env.Owner.Opts.From)
-	assert.Nil(err)
-	assert.NotNil(vault)
-	assert.Equal(amount3, vault.Notional)
-	assert.Equal(rate4, vault.ExchangeRate)
-	assert.Equal(redeemable3, vault.Redeemable)
+	assert.Equal(vault.Redeemable.Cmp(redeemable1), 0)
 }
 
-func TestTrackerAddNotionalSuite(t *test.T) {
-	suite.Run(t, &trackerAddNotionalSuite{})
+func TestAddNotionalNoVaultSuite(t *test.T) {
+	suite.Run(t, &addNotionalNoVaultSuite{})
 }

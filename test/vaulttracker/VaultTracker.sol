@@ -26,7 +26,7 @@ contract VaultTracker {
   // TODO events?
 
   /// @param m Maturity timestamp of the new market
-  /// @param c cToken address associated with underlying for the new market 
+  /// @param c cToken address associated with underlying for the new market
   constructor(uint256 m, address c) {
     admin = msg.sender;
     maturity = m;
@@ -74,8 +74,31 @@ contract VaultTracker {
   /// @param o Address that owns a timelock in the vault
   /// @param a Amount to ...
   function removeNotional(address o, uint256 a) public onlyAdmin(admin) returns (bool) {
-    // TODO
+    Vault memory vault = vaults[o];
 
+    require(vault.notional >= a, "Amount exceeds vault balance");
+
+    uint256 interest;
+    CErc20 cToken = CErc20(cTokenAddr);
+
+    // If market has matured, calculate marginal interest between the maturity rate and previous position exchange rate
+    // Otherwise, calculate marginal exchange rate between current and previous exchange rate.
+    if (matured == true) {
+      // Calculate marginal interest
+      uint256 yield = ((maturityRate * 1e26) / vault.exchangeRate) - 1e26;
+      interest = (yield * vault.notional) / 1e26;
+    }
+    else {
+      // Calculate marginal interest
+      uint256 yield = ((cToken.exchangeRateCurrent() * 1e26) / vault.exchangeRate) - 1e26;
+      interest = (yield * vault.notional) / 1e26;
+    }
+
+    // Remove amount from position, Add interest to position, reset cToken exchange rate
+    vault.redeemable += interest;
+    vault.notional -= a;
+    vault.exchangeRate = cToken.exchangeRateCurrent();
+    vaults[o] = vault;
     return true;
   }
 
