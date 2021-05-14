@@ -185,8 +185,8 @@ func (s *IZFZESuite) TestIZFZE() {
 	assert.NotNil(marketTransferArgs)
 	assert.Equal(marketTransferArgs.Maturity, order.Maturity)
 	assert.Equal(marketTransferArgs.Amount, amt)
-	assert.Equal(marketTransferArgs.Owner, order.Maker)
-	assert.Equal(marketTransferArgs.Sender, s.Env.Owner.Opts.From)
+	assert.Equal(marketTransferArgs.One, order.Maker)
+	assert.Equal(marketTransferArgs.Two, s.Env.Owner.Opts.From)
 }
 
 func TestIZFZESuite(t *test.T) {

@@ -99,7 +99,7 @@ func (s *EZFVESuite) TestEZFVE() {
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
 
-	tx, err = s.MarketPlace.BurnZcTokenRemovingNotionalReturns(true)
+	tx, err = s.MarketPlace.ExitFillingExitReturns(true)
 	assert.Nil(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
@@ -196,13 +196,13 @@ func (s *EZFVESuite) TestEZFVE() {
 	assert.Equal(amt.Cmp(args.Amount), 0) // amt is transferred...
 
 	// market zctoken burn...
-	burnArgs, err := s.MarketPlace.BurnZcTokenRemovingNotionalCalled(order.Underlying)
+	burnArgs, err := s.MarketPlace.ExitFillingExitCalled(order.Underlying)
 	assert.Nil(err)
 	assert.NotNil(burnArgs)
 	assert.Equal(burnArgs.Maturity, order.Maturity)
-	assert.Equal(amt.Cmp(burnArgs.Amount), 0) // .Amount is passed in amt
-	assert.Equal(burnArgs.Owner, order.Maker)
-	assert.Equal(burnArgs.Sender, s.Env.Owner.Opts.From)
+	assert.Equal(amt.Cmp(burnArgs.Amount), -1) // .Amount is passed in amt
+	assert.Equal(burnArgs.Two, order.Maker)
+	assert.Equal(burnArgs.One, s.Env.Owner.Opts.From)
 }
 
 func TestEZFVESuite(t *test.T) {

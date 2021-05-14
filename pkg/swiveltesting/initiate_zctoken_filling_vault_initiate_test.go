@@ -94,7 +94,7 @@ func (s *IZFVISuite) TestIZFVI() {
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
 
-	tx, err = s.MarketPlace.MintZcTokenAddingNotionalReturns(true)
+	tx, err = s.MarketPlace.InitiateFillingInitiateReturns(true)
 	assert.Nil(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
@@ -218,13 +218,13 @@ func (s *IZFVISuite) TestIZFVI() {
 	assert.Equal(mintArg, amt)
 
 	// mint zctoken call...
-	mintZcArgs, err := s.MarketPlace.MintZcTokenAddingNotionalCalled(order.Underlying)
+	fillingArgs, err := s.MarketPlace.InitiateFillingInitiateCalled(order.Underlying)
 	assert.Nil(err)
-	assert.NotNil(mintZcArgs)
-	assert.Equal(mintZcArgs.Maturity, order.Maturity)
-	assert.Equal(mintZcArgs.Amount, amt)
-	assert.Equal(mintZcArgs.Owner, order.Maker)
-	assert.Equal(mintZcArgs.Sender, s.Env.Owner.Opts.From)
+	assert.NotNil(fillingArgs)
+	assert.Equal(fillingArgs.Maturity, order.Maturity)
+	assert.Equal(fillingArgs.Amount, amt)
+	assert.Equal(fillingArgs.Two, order.Maker)
+	assert.Equal(fillingArgs.One, s.Env.Owner.Opts.From)
 }
 
 func TestIZFVISuite(t *test.T) {
