@@ -79,7 +79,7 @@ contract Swivel {
     require(uToken.approve(cTokenAddr, principalFilled), 'underlying approval failed'); 
     require(CErc20(cTokenAddr).mint(principalFilled) == 0, 'minting CToken failed');
     // alert MarketPlace.
-    require(marketPlace.initiateFillingInitiate(o.underlying, o.maturity, msg.sender, o.maker, principalFilled), 'initiateFillingInitiate call failed');
+    require(marketPlace.custodialInitiate(o.underlying, o.maturity, msg.sender, o.maker, principalFilled), 'initiateFillingInitiate call failed');
 
     filled[o.key] += a;
 
@@ -108,7 +108,7 @@ contract Swivel {
     uToken.approve(cTokenAddr, a);
     require(CErc20(cTokenAddr).mint(a) == 0, 'minting CToken Failed');
     // alert MarketPlace
-    require(marketPlace.initiateFillingInitiate(o.underlying, o.maturity, msg.sender, o.maker, a), 'initiateFillingInitiate call failed');
+    require(marketPlace.custodialInitiate(o.underlying, o.maturity, msg.sender, o.maker, a), 'initiateFillingInitiate call failed');
     
     filled[o.key] += a;
 
@@ -241,7 +241,7 @@ contract Swivel {
     
     MarketPlace marketPlace = MarketPlace(marketPlaceAddr);
     // alert MarketPlace...
-    require(marketPlace.exitFillingExit(o.underlying, o.maturity, o.maker, msg.sender, a), 'exitFillingExit call failed');
+    require(marketPlace.custodialExit(o.underlying, o.maturity, o.maker, msg.sender, a), 'exitFillingExit call failed');
     // transfer cost of interest coupon to floating party
     Erc20 uToken = Erc20(o.underlying);
     require(uToken.transferFrom(o.maker, msg.sender, premiumFilled), 'transfer failed');
@@ -270,7 +270,7 @@ contract Swivel {
     
     MarketPlace marketPlace = MarketPlace(marketPlaceAddr);
     // inform MarketPlace what happened...
-    require(marketPlace.exitFillingExit(o.underlying, o.maturity, msg.sender, o.maker, principalFilled), 'exitFillingExit call failed');
+    require(marketPlace.custodialExit(o.underlying, o.maturity, msg.sender, o.maker, principalFilled), 'exitFillingExit call failed');
     // Transfer cost of interest coupon to floating party
     Erc20 uToken = Erc20(o.underlying);
     require(uToken.transferFrom(msg.sender, o.maker, a), 'transfer failed');

@@ -94,7 +94,7 @@ func (s *IZFVISuite) TestIZFVI() {
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
 
-	tx, err = s.MarketPlace.InitiateFillingInitiateReturns(true)
+	tx, err = s.MarketPlace.CustodialInitiateReturns(true)
 	assert.Nil(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
@@ -218,7 +218,7 @@ func (s *IZFVISuite) TestIZFVI() {
 	assert.Equal(mintArg, amt)
 
 	// mint zctoken call...
-	fillingArgs, err := s.MarketPlace.InitiateFillingInitiateCalled(order.Underlying)
+	fillingArgs, err := s.MarketPlace.CustodialInitiateCalled(order.Underlying)
 	assert.Nil(err)
 	assert.NotNil(fillingArgs)
 	assert.Equal(fillingArgs.Maturity, order.Maturity)
