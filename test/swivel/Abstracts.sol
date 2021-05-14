@@ -22,6 +22,8 @@ abstract contract MarketPlace {
   function custodialExit(address, uint256, address, address, uint256) virtual external returns (bool);
   // IVFZI && IZFVI call this which would then mint zctoken and add notional
   function custodialInitiate(address, uint256, address, address, uint256) virtual external returns (bool);
-  function transferFromZcToken(address, uint256, address, address, uint256) virtual external returns (bool);
-  function transferFromNotional(address, uint256, address, address, uint256) virtual external returns (bool);
+  // IZFZE && EZFZI call this, tranferring zctoken from one party to another
+  function p2pZcTokenExchange(address, uint256, address, address, uint256) virtual external returns (bool);
+  // IVFVE && EVFVI call this, removing notional from one party and adding to the other
+  function p2pVaultExchange(address, uint256, address, address, uint256) virtual external returns (bool);
 }

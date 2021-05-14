@@ -27,10 +27,10 @@ var (
 )
 
 // MarketPlaceABI is the input ABI used to generate the binding from.
-const MarketPlaceABI = "[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"u\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"m\",\"type\":\"uint256\"}],\"name\":\"cTokenAddress\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"cTokenAddressCalled\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"a\",\"type\":\"address\"}],\"name\":\"cTokenAddressReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"u\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"m\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"o\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"t\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"a\",\"type\":\"uint256\"}],\"name\":\"custodialExit\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"custodialExitCalled\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"maturity\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"one\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"two\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bool\",\"name\":\"b\",\"type\":\"bool\"}],\"name\":\"custodialExitReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"u\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"m\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"o\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"t\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"a\",\"type\":\"uint256\"}],\"name\":\"custodialInitiate\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"custodialInitiateCalled\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"maturity\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"one\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"two\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bool\",\"name\":\"b\",\"type\":\"bool\"}],\"name\":\"custodialInitiateReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"u\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"m\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"o\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"t\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"a\",\"type\":\"uint256\"}],\"name\":\"transferFromNotional\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"transferFromNotionalCalled\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"maturity\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"one\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"two\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bool\",\"name\":\"b\",\"type\":\"bool\"}],\"name\":\"transferFromNotionalReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"u\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"m\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"o\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"t\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"a\",\"type\":\"uint256\"}],\"name\":\"transferFromZcToken\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"transferFromZcTokenCalled\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"maturity\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"one\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"two\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bool\",\"name\":\"b\",\"type\":\"bool\"}],\"name\":\"transferFromZcTokenReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]"
+const MarketPlaceABI = "[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"u\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"m\",\"type\":\"uint256\"}],\"name\":\"cTokenAddress\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"cTokenAddressCalled\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"a\",\"type\":\"address\"}],\"name\":\"cTokenAddressReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"u\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"m\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"o\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"t\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"a\",\"type\":\"uint256\"}],\"name\":\"custodialExit\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"custodialExitCalled\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"maturity\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"one\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"two\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bool\",\"name\":\"b\",\"type\":\"bool\"}],\"name\":\"custodialExitReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"u\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"m\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"o\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"t\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"a\",\"type\":\"uint256\"}],\"name\":\"custodialInitiate\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"custodialInitiateCalled\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"maturity\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"one\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"two\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bool\",\"name\":\"b\",\"type\":\"bool\"}],\"name\":\"custodialInitiateReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"u\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"m\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"o\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"t\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"a\",\"type\":\"uint256\"}],\"name\":\"p2pVaultExchange\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"p2pVaultExchangeCalled\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"maturity\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"one\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"two\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bool\",\"name\":\"b\",\"type\":\"bool\"}],\"name\":\"p2pVaultExchangeReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"u\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"m\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"o\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"t\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"a\",\"type\":\"uint256\"}],\"name\":\"p2pZcTokenExchange\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"p2pZcTokenExchangeCalled\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"maturity\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"one\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"two\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bool\",\"name\":\"b\",\"type\":\"bool\"}],\"name\":\"p2pZcTokenExchangeReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]"
 
 // MarketPlaceBin is the compiled bytecode used for deploying new contracts.
-var MarketPlaceBin = "0x608060405234801561001057600080fd5b50610fc7806100206000396000f3fe608060405234801561001057600080fd5b50600436106100f55760003560e01c80633f73df2c11610097578063c129a1c211610066578063c129a1c2146102c6578063d557ee85146102f6578063f8e51bcb14610312578063fb1a0f5814610342576100f5565b80633f73df2c146102175780634521d303146102475780638c6b9b411461027a578063b80ce931146102aa576100f5565b80632634de19116100d35780632634de1914610162578063287827881461017e57806330e5b1b9146101b15780633f25be9d146101e4576100f5565b806305e1dc25146100fa57806319178e711461012a5780631cd9be9114610146575b600080fd5b610114600480360381019061010f9190610d65565b610372565b6040516101219190610e6e565b60405180910390f35b610144600480360381019061013f9190610e18565b6103e1565b005b610160600480360381019061015b9190610e18565b6103fe565b005b61017c60048036038101906101779190610e18565b61041b565b005b61019860048036038101906101939190610d3c565b610438565b6040516101a89493929190610ebf565b60405180910390f35b6101cb60048036038101906101c69190610d3c565b6104a8565b6040516101db9493929190610ebf565b60405180910390f35b6101fe60048036038101906101f99190610d3c565b610518565b60405161020e9493929190610ebf565b60405180910390f35b610231600480360381019061022c9190610d3c565b610588565b60405161023e9190610ea4565b60405180910390f35b610261600480360381019061025c9190610d3c565b6105a0565b6040516102719493929190610ebf565b60405180910390f35b610294600480360381019061028f9190610da1565b610610565b6040516102a19190610e89565b60405180910390f35b6102c460048036038101906102bf9190610e18565b61079f565b005b6102e060048036038101906102db9190610da1565b6107bb565b6040516102ed9190610e89565b60405180910390f35b610310600480360381019061030b9190610d3c565b610948565b005b61032c60048036038101906103279190610da1565b61098b565b6040516103399190610e89565b60405180910390f35b61035c60048036038101906103579190610da1565b610b1a565b6040516103699190610e89565b60405180910390f35b600081600160008573ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1681526020019081526020016000208190555060008054906101000a900473ffffffffffffffffffffffffffffffffffffffff16905092915050565b80600260036101000a81548160ff02191690831515021790555050565b80600260016101000a81548160ff02191690831515021790555050565b80600260006101000a81548160ff02191690831515021790555050565b60056020528060005260406000206000915090508060000154908060010160009054906101000a900473ffffffffffffffffffffffffffffffffffffffff16908060020160009054906101000a900473ffffffffffffffffffffffffffffffffffffffff16908060030154905084565b60066020528060005260406000206000915090508060000154908060010160009054906101000a900473ffffffffffffffffffffffffffffffffffffffff16908060020160009054906101000a900473ffffffffffffffffffffffffffffffffffffffff16908060030154905084565b60036020528060005260406000206000915090508060000154908060010160009054906101000a900473ffffffffffffffffffffffffffffffffffffffff16908060020160009054906101000a900473ffffffffffffffffffffffffffffffffffffffff16908060030154905084565b60016020528060005260406000206000915090505481565b60046020528060005260406000206000915090508060000154908060010160009054906101000a900473ffffffffffffffffffffffffffffffffffffffff16908060020160009054906101000a900473ffffffffffffffffffffffffffffffffffffffff16908060030154905084565b600061061a610ca9565b8581600001818152505084816020019073ffffffffffffffffffffffffffffffffffffffff16908173ffffffffffffffffffffffffffffffffffffffff168152505083816040019073ffffffffffffffffffffffffffffffffffffffff16908173ffffffffffffffffffffffffffffffffffffffff16815250508281606001818152505080600460008973ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1681526020019081526020016000206000820151816000015560208201518160010160006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555060408201518160020160006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555060608201518160030155905050600260019054906101000a900460ff1691505095945050505050565b806002806101000a81548160ff02191690831515021790555050565b60006107c5610ca9565b8581600001818152505084816020019073ffffffffffffffffffffffffffffffffffffffff16908173ffffffffffffffffffffffffffffffffffffffff168152505083816040019073ffffffffffffffffffffffffffffffffffffffff16908173ffffffffffffffffffffffffffffffffffffffff16815250508281606001818152505080600560008973ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1681526020019081526020016000206000820151816000015560208201518160010160006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555060408201518160020160006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff1602179055506060820151816003015590505060028054906101000a900460ff1691505095945050505050565b806000806101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555050565b6000610995610ca9565b8581600001818152505084816020019073ffffffffffffffffffffffffffffffffffffffff16908173ffffffffffffffffffffffffffffffffffffffff168152505083816040019073ffffffffffffffffffffffffffffffffffffffff16908173ffffffffffffffffffffffffffffffffffffffff16815250508281606001818152505080600360008973ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1681526020019081526020016000206000820151816000015560208201518160010160006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555060408201518160020160006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555060608201518160030155905050600260009054906101000a900460ff1691505095945050505050565b6000610b24610ca9565b8581600001818152505084816020019073ffffffffffffffffffffffffffffffffffffffff16908173ffffffffffffffffffffffffffffffffffffffff168152505083816040019073ffffffffffffffffffffffffffffffffffffffff16908173ffffffffffffffffffffffffffffffffffffffff16815250508281606001818152505080600660008973ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1681526020019081526020016000206000820151816000015560208201518160010160006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555060408201518160020160006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555060608201518160030155905050600260039054906101000a900460ff1691505095945050505050565b604051806080016040528060008152602001600073ffffffffffffffffffffffffffffffffffffffff168152602001600073ffffffffffffffffffffffffffffffffffffffff168152602001600081525090565b600081359050610d0c81610f4c565b92915050565b600081359050610d2181610f63565b92915050565b600081359050610d3681610f7a565b92915050565b600060208284031215610d4e57600080fd5b6000610d5c84828501610cfd565b91505092915050565b60008060408385031215610d7857600080fd5b6000610d8685828601610cfd565b9250506020610d9785828601610d27565b9150509250929050565b600080600080600060a08688031215610db957600080fd5b6000610dc788828901610cfd565b9550506020610dd888828901610d27565b9450506040610de988828901610cfd565b9350506060610dfa88828901610cfd565b9250506080610e0b88828901610d27565b9150509295509295909350565b600060208284031215610e2a57600080fd5b6000610e3884828501610d12565b91505092915050565b610e4a81610f04565b82525050565b610e5981610f16565b82525050565b610e6881610f42565b82525050565b6000602082019050610e836000830184610e41565b92915050565b6000602082019050610e9e6000830184610e50565b92915050565b6000602082019050610eb96000830184610e5f565b92915050565b6000608082019050610ed46000830187610e5f565b610ee16020830186610e41565b610eee6040830185610e41565b610efb6060830184610e5f565b95945050505050565b6000610f0f82610f22565b9050919050565b60008115159050919050565b600073ffffffffffffffffffffffffffffffffffffffff82169050919050565b6000819050919050565b610f5581610f04565b8114610f6057600080fd5b50565b610f6c81610f16565b8114610f7757600080fd5b50565b610f8381610f42565b8114610f8e57600080fd5b5056fea26469706673582212201754ab67ac8027c201b792949ffb0d1e20aae57ead37ecee3154f4cce705da7964736f6c63430008000033"
+var MarketPlaceBin = "0x608060405234801561001057600080fd5b50610fc7806100206000396000f3fe608060405234801561001057600080fd5b50600436106100f55760003560e01c80637d04cd1511610097578063c4c2572611610066578063c4c25726146102c0578063d557ee85146102f3578063eee6e8141461030f578063f8e51bcb14610342576100f5565b80637d04cd15146102285780638c6b9b4114610244578063bddbfbe414610274578063beaff41e146102a4576100f5565b80633f25be9d116100d35780633f25be9d146101625780633f73df2c146101955780634521d303146101c557806365a963aa146101f8576100f5565b806305e1dc25146100fa5780631cd9be911461012a5780632634de1914610146575b600080fd5b610114600480360381019061010f9190610d65565b610372565b6040516101219190610e6e565b60405180910390f35b610144600480360381019061013f9190610e18565b6103e1565b005b610160600480360381019061015b9190610e18565b6103fe565b005b61017c60048036038101906101779190610d3c565b61041b565b60405161018c9493929190610ebf565b60405180910390f35b6101af60048036038101906101aa9190610d3c565b61048b565b6040516101bc9190610ea4565b60405180910390f35b6101df60048036038101906101da9190610d3c565b6104a3565b6040516101ef9493929190610ebf565b60405180910390f35b610212600480360381019061020d9190610da1565b610513565b60405161021f9190610e89565b60405180910390f35b610242600480360381019061023d9190610e18565b6106a0565b005b61025e60048036038101906102599190610da1565b6106bd565b60405161026b9190610e89565b60405180910390f35b61028e60048036038101906102899190610da1565b61084c565b60405161029b9190610e89565b60405180910390f35b6102be60048036038101906102b99190610e18565b6109db565b005b6102da60048036038101906102d59190610d3c565b6109f7565b6040516102ea9493929190610ebf565b60405180910390f35b61030d60048036038101906103089190610d3c565b610a67565b005b61032960048036038101906103249190610d3c565b610aaa565b6040516103399493929190610ebf565b60405180910390f35b61035c60048036038101906103579190610da1565b610b1a565b6040516103699190610e89565b60405180910390f35b600081600160008573ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1681526020019081526020016000208190555060008054906101000a900473ffffffffffffffffffffffffffffffffffffffff16905092915050565b80600260016101000a81548160ff02191690831515021790555050565b80600260006101000a81548160ff02191690831515021790555050565b60036020528060005260406000206000915090508060000154908060010160009054906101000a900473ffffffffffffffffffffffffffffffffffffffff16908060020160009054906101000a900473ffffffffffffffffffffffffffffffffffffffff16908060030154905084565b60016020528060005260406000206000915090505481565b60046020528060005260406000206000915090508060000154908060010160009054906101000a900473ffffffffffffffffffffffffffffffffffffffff16908060020160009054906101000a900473ffffffffffffffffffffffffffffffffffffffff16908060030154905084565b600061051d610ca9565b8581600001818152505084816020019073ffffffffffffffffffffffffffffffffffffffff16908173ffffffffffffffffffffffffffffffffffffffff168152505083816040019073ffffffffffffffffffffffffffffffffffffffff16908173ffffffffffffffffffffffffffffffffffffffff16815250508281606001818152505080600560008973ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1681526020019081526020016000206000820151816000015560208201518160010160006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555060408201518160020160006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff1602179055506060820151816003015590505060028054906101000a900460ff1691505095945050505050565b80600260036101000a81548160ff02191690831515021790555050565b60006106c7610ca9565b8581600001818152505084816020019073ffffffffffffffffffffffffffffffffffffffff16908173ffffffffffffffffffffffffffffffffffffffff168152505083816040019073ffffffffffffffffffffffffffffffffffffffff16908173ffffffffffffffffffffffffffffffffffffffff16815250508281606001818152505080600460008973ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1681526020019081526020016000206000820151816000015560208201518160010160006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555060408201518160020160006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555060608201518160030155905050600260019054906101000a900460ff1691505095945050505050565b6000610856610ca9565b8581600001818152505084816020019073ffffffffffffffffffffffffffffffffffffffff16908173ffffffffffffffffffffffffffffffffffffffff168152505083816040019073ffffffffffffffffffffffffffffffffffffffff16908173ffffffffffffffffffffffffffffffffffffffff16815250508281606001818152505080600660008973ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1681526020019081526020016000206000820151816000015560208201518160010160006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555060408201518160020160006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555060608201518160030155905050600260039054906101000a900460ff1691505095945050505050565b806002806101000a81548160ff02191690831515021790555050565b60056020528060005260406000206000915090508060000154908060010160009054906101000a900473ffffffffffffffffffffffffffffffffffffffff16908060020160009054906101000a900473ffffffffffffffffffffffffffffffffffffffff16908060030154905084565b806000806101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555050565b60066020528060005260406000206000915090508060000154908060010160009054906101000a900473ffffffffffffffffffffffffffffffffffffffff16908060020160009054906101000a900473ffffffffffffffffffffffffffffffffffffffff16908060030154905084565b6000610b24610ca9565b8581600001818152505084816020019073ffffffffffffffffffffffffffffffffffffffff16908173ffffffffffffffffffffffffffffffffffffffff168152505083816040019073ffffffffffffffffffffffffffffffffffffffff16908173ffffffffffffffffffffffffffffffffffffffff16815250508281606001818152505080600360008973ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1681526020019081526020016000206000820151816000015560208201518160010160006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555060408201518160020160006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555060608201518160030155905050600260009054906101000a900460ff1691505095945050505050565b604051806080016040528060008152602001600073ffffffffffffffffffffffffffffffffffffffff168152602001600073ffffffffffffffffffffffffffffffffffffffff168152602001600081525090565b600081359050610d0c81610f4c565b92915050565b600081359050610d2181610f63565b92915050565b600081359050610d3681610f7a565b92915050565b600060208284031215610d4e57600080fd5b6000610d5c84828501610cfd565b91505092915050565b60008060408385031215610d7857600080fd5b6000610d8685828601610cfd565b9250506020610d9785828601610d27565b9150509250929050565b600080600080600060a08688031215610db957600080fd5b6000610dc788828901610cfd565b9550506020610dd888828901610d27565b9450506040610de988828901610cfd565b9350506060610dfa88828901610cfd565b9250506080610e0b88828901610d27565b9150509295509295909350565b600060208284031215610e2a57600080fd5b6000610e3884828501610d12565b91505092915050565b610e4a81610f04565b82525050565b610e5981610f16565b82525050565b610e6881610f42565b82525050565b6000602082019050610e836000830184610e41565b92915050565b6000602082019050610e9e6000830184610e50565b92915050565b6000602082019050610eb96000830184610e5f565b92915050565b6000608082019050610ed46000830187610e5f565b610ee16020830186610e41565b610eee6040830185610e41565b610efb6060830184610e5f565b95945050505050565b6000610f0f82610f22565b9050919050565b60008115159050919050565b600073ffffffffffffffffffffffffffffffffffffffff82169050919050565b6000819050919050565b610f5581610f04565b8114610f6057600080fd5b50565b610f6c81610f16565b8114610f7757600080fd5b50565b610f8381610f42565b8114610f8e57600080fd5b5056fea2646970667358221220cbde010ceb7e85eca1269ef8d11c634553361f391b8996c5ad6151370467f04264736f6c63430008000033"
 
 // DeployMarketPlace deploys a new Ethereum contract, binding an instance of MarketPlace to it.
 func DeployMarketPlace(auth *bind.TransactOpts, backend bind.ContractBackend) (common.Address, *types.Transaction, *MarketPlace, error) {
@@ -329,17 +329,17 @@ func (_MarketPlace *MarketPlaceCallerSession) CustodialInitiateCalled(arg0 commo
 	return _MarketPlace.Contract.CustodialInitiateCalled(&_MarketPlace.CallOpts, arg0)
 }
 
-// TransferFromNotionalCalled is a free data retrieval call binding the contract method 0x30e5b1b9.
+// P2pVaultExchangeCalled is a free data retrieval call binding the contract method 0xeee6e814.
 //
-// Solidity: function transferFromNotionalCalled(address ) view returns(uint256 maturity, address one, address two, uint256 amount)
-func (_MarketPlace *MarketPlaceCaller) TransferFromNotionalCalled(opts *bind.CallOpts, arg0 common.Address) (struct {
+// Solidity: function p2pVaultExchangeCalled(address ) view returns(uint256 maturity, address one, address two, uint256 amount)
+func (_MarketPlace *MarketPlaceCaller) P2pVaultExchangeCalled(opts *bind.CallOpts, arg0 common.Address) (struct {
 	Maturity *big.Int
 	One      common.Address
 	Two      common.Address
 	Amount   *big.Int
 }, error) {
 	var out []interface{}
-	err := _MarketPlace.contract.Call(opts, &out, "transferFromNotionalCalled", arg0)
+	err := _MarketPlace.contract.Call(opts, &out, "p2pVaultExchangeCalled", arg0)
 
 	outstruct := new(struct {
 		Maturity *big.Int
@@ -360,41 +360,41 @@ func (_MarketPlace *MarketPlaceCaller) TransferFromNotionalCalled(opts *bind.Cal
 
 }
 
-// TransferFromNotionalCalled is a free data retrieval call binding the contract method 0x30e5b1b9.
+// P2pVaultExchangeCalled is a free data retrieval call binding the contract method 0xeee6e814.
 //
-// Solidity: function transferFromNotionalCalled(address ) view returns(uint256 maturity, address one, address two, uint256 amount)
-func (_MarketPlace *MarketPlaceSession) TransferFromNotionalCalled(arg0 common.Address) (struct {
+// Solidity: function p2pVaultExchangeCalled(address ) view returns(uint256 maturity, address one, address two, uint256 amount)
+func (_MarketPlace *MarketPlaceSession) P2pVaultExchangeCalled(arg0 common.Address) (struct {
 	Maturity *big.Int
 	One      common.Address
 	Two      common.Address
 	Amount   *big.Int
 }, error) {
-	return _MarketPlace.Contract.TransferFromNotionalCalled(&_MarketPlace.CallOpts, arg0)
+	return _MarketPlace.Contract.P2pVaultExchangeCalled(&_MarketPlace.CallOpts, arg0)
 }
 
-// TransferFromNotionalCalled is a free data retrieval call binding the contract method 0x30e5b1b9.
+// P2pVaultExchangeCalled is a free data retrieval call binding the contract method 0xeee6e814.
 //
-// Solidity: function transferFromNotionalCalled(address ) view returns(uint256 maturity, address one, address two, uint256 amount)
-func (_MarketPlace *MarketPlaceCallerSession) TransferFromNotionalCalled(arg0 common.Address) (struct {
+// Solidity: function p2pVaultExchangeCalled(address ) view returns(uint256 maturity, address one, address two, uint256 amount)
+func (_MarketPlace *MarketPlaceCallerSession) P2pVaultExchangeCalled(arg0 common.Address) (struct {
 	Maturity *big.Int
 	One      common.Address
 	Two      common.Address
 	Amount   *big.Int
 }, error) {
-	return _MarketPlace.Contract.TransferFromNotionalCalled(&_MarketPlace.CallOpts, arg0)
+	return _MarketPlace.Contract.P2pVaultExchangeCalled(&_MarketPlace.CallOpts, arg0)
 }
 
-// TransferFromZcTokenCalled is a free data retrieval call binding the contract method 0x28782788.
+// P2pZcTokenExchangeCalled is a free data retrieval call binding the contract method 0xc4c25726.
 //
-// Solidity: function transferFromZcTokenCalled(address ) view returns(uint256 maturity, address one, address two, uint256 amount)
-func (_MarketPlace *MarketPlaceCaller) TransferFromZcTokenCalled(opts *bind.CallOpts, arg0 common.Address) (struct {
+// Solidity: function p2pZcTokenExchangeCalled(address ) view returns(uint256 maturity, address one, address two, uint256 amount)
+func (_MarketPlace *MarketPlaceCaller) P2pZcTokenExchangeCalled(opts *bind.CallOpts, arg0 common.Address) (struct {
 	Maturity *big.Int
 	One      common.Address
 	Two      common.Address
 	Amount   *big.Int
 }, error) {
 	var out []interface{}
-	err := _MarketPlace.contract.Call(opts, &out, "transferFromZcTokenCalled", arg0)
+	err := _MarketPlace.contract.Call(opts, &out, "p2pZcTokenExchangeCalled", arg0)
 
 	outstruct := new(struct {
 		Maturity *big.Int
@@ -415,28 +415,28 @@ func (_MarketPlace *MarketPlaceCaller) TransferFromZcTokenCalled(opts *bind.Call
 
 }
 
-// TransferFromZcTokenCalled is a free data retrieval call binding the contract method 0x28782788.
+// P2pZcTokenExchangeCalled is a free data retrieval call binding the contract method 0xc4c25726.
 //
-// Solidity: function transferFromZcTokenCalled(address ) view returns(uint256 maturity, address one, address two, uint256 amount)
-func (_MarketPlace *MarketPlaceSession) TransferFromZcTokenCalled(arg0 common.Address) (struct {
+// Solidity: function p2pZcTokenExchangeCalled(address ) view returns(uint256 maturity, address one, address two, uint256 amount)
+func (_MarketPlace *MarketPlaceSession) P2pZcTokenExchangeCalled(arg0 common.Address) (struct {
 	Maturity *big.Int
 	One      common.Address
 	Two      common.Address
 	Amount   *big.Int
 }, error) {
-	return _MarketPlace.Contract.TransferFromZcTokenCalled(&_MarketPlace.CallOpts, arg0)
+	return _MarketPlace.Contract.P2pZcTokenExchangeCalled(&_MarketPlace.CallOpts, arg0)
 }
 
-// TransferFromZcTokenCalled is a free data retrieval call binding the contract method 0x28782788.
+// P2pZcTokenExchangeCalled is a free data retrieval call binding the contract method 0xc4c25726.
 //
-// Solidity: function transferFromZcTokenCalled(address ) view returns(uint256 maturity, address one, address two, uint256 amount)
-func (_MarketPlace *MarketPlaceCallerSession) TransferFromZcTokenCalled(arg0 common.Address) (struct {
+// Solidity: function p2pZcTokenExchangeCalled(address ) view returns(uint256 maturity, address one, address two, uint256 amount)
+func (_MarketPlace *MarketPlaceCallerSession) P2pZcTokenExchangeCalled(arg0 common.Address) (struct {
 	Maturity *big.Int
 	One      common.Address
 	Two      common.Address
 	Amount   *big.Int
 }, error) {
-	return _MarketPlace.Contract.TransferFromZcTokenCalled(&_MarketPlace.CallOpts, arg0)
+	return _MarketPlace.Contract.P2pZcTokenExchangeCalled(&_MarketPlace.CallOpts, arg0)
 }
 
 // CTokenAddress is a paid mutator transaction binding the contract method 0x05e1dc25.
@@ -565,86 +565,86 @@ func (_MarketPlace *MarketPlaceTransactorSession) CustodialInitiateReturns(b boo
 	return _MarketPlace.Contract.CustodialInitiateReturns(&_MarketPlace.TransactOpts, b)
 }
 
-// TransferFromNotional is a paid mutator transaction binding the contract method 0xfb1a0f58.
+// P2pVaultExchange is a paid mutator transaction binding the contract method 0xbddbfbe4.
 //
-// Solidity: function transferFromNotional(address u, uint256 m, address o, address t, uint256 a) returns(bool)
-func (_MarketPlace *MarketPlaceTransactor) TransferFromNotional(opts *bind.TransactOpts, u common.Address, m *big.Int, o common.Address, t common.Address, a *big.Int) (*types.Transaction, error) {
-	return _MarketPlace.contract.Transact(opts, "transferFromNotional", u, m, o, t, a)
+// Solidity: function p2pVaultExchange(address u, uint256 m, address o, address t, uint256 a) returns(bool)
+func (_MarketPlace *MarketPlaceTransactor) P2pVaultExchange(opts *bind.TransactOpts, u common.Address, m *big.Int, o common.Address, t common.Address, a *big.Int) (*types.Transaction, error) {
+	return _MarketPlace.contract.Transact(opts, "p2pVaultExchange", u, m, o, t, a)
 }
 
-// TransferFromNotional is a paid mutator transaction binding the contract method 0xfb1a0f58.
+// P2pVaultExchange is a paid mutator transaction binding the contract method 0xbddbfbe4.
 //
-// Solidity: function transferFromNotional(address u, uint256 m, address o, address t, uint256 a) returns(bool)
-func (_MarketPlace *MarketPlaceSession) TransferFromNotional(u common.Address, m *big.Int, o common.Address, t common.Address, a *big.Int) (*types.Transaction, error) {
-	return _MarketPlace.Contract.TransferFromNotional(&_MarketPlace.TransactOpts, u, m, o, t, a)
+// Solidity: function p2pVaultExchange(address u, uint256 m, address o, address t, uint256 a) returns(bool)
+func (_MarketPlace *MarketPlaceSession) P2pVaultExchange(u common.Address, m *big.Int, o common.Address, t common.Address, a *big.Int) (*types.Transaction, error) {
+	return _MarketPlace.Contract.P2pVaultExchange(&_MarketPlace.TransactOpts, u, m, o, t, a)
 }
 
-// TransferFromNotional is a paid mutator transaction binding the contract method 0xfb1a0f58.
+// P2pVaultExchange is a paid mutator transaction binding the contract method 0xbddbfbe4.
 //
-// Solidity: function transferFromNotional(address u, uint256 m, address o, address t, uint256 a) returns(bool)
-func (_MarketPlace *MarketPlaceTransactorSession) TransferFromNotional(u common.Address, m *big.Int, o common.Address, t common.Address, a *big.Int) (*types.Transaction, error) {
-	return _MarketPlace.Contract.TransferFromNotional(&_MarketPlace.TransactOpts, u, m, o, t, a)
+// Solidity: function p2pVaultExchange(address u, uint256 m, address o, address t, uint256 a) returns(bool)
+func (_MarketPlace *MarketPlaceTransactorSession) P2pVaultExchange(u common.Address, m *big.Int, o common.Address, t common.Address, a *big.Int) (*types.Transaction, error) {
+	return _MarketPlace.Contract.P2pVaultExchange(&_MarketPlace.TransactOpts, u, m, o, t, a)
 }
 
-// TransferFromNotionalReturns is a paid mutator transaction binding the contract method 0x19178e71.
+// P2pVaultExchangeReturns is a paid mutator transaction binding the contract method 0x7d04cd15.
 //
-// Solidity: function transferFromNotionalReturns(bool b) returns()
-func (_MarketPlace *MarketPlaceTransactor) TransferFromNotionalReturns(opts *bind.TransactOpts, b bool) (*types.Transaction, error) {
-	return _MarketPlace.contract.Transact(opts, "transferFromNotionalReturns", b)
+// Solidity: function p2pVaultExchangeReturns(bool b) returns()
+func (_MarketPlace *MarketPlaceTransactor) P2pVaultExchangeReturns(opts *bind.TransactOpts, b bool) (*types.Transaction, error) {
+	return _MarketPlace.contract.Transact(opts, "p2pVaultExchangeReturns", b)
 }
 
-// TransferFromNotionalReturns is a paid mutator transaction binding the contract method 0x19178e71.
+// P2pVaultExchangeReturns is a paid mutator transaction binding the contract method 0x7d04cd15.
 //
-// Solidity: function transferFromNotionalReturns(bool b) returns()
-func (_MarketPlace *MarketPlaceSession) TransferFromNotionalReturns(b bool) (*types.Transaction, error) {
-	return _MarketPlace.Contract.TransferFromNotionalReturns(&_MarketPlace.TransactOpts, b)
+// Solidity: function p2pVaultExchangeReturns(bool b) returns()
+func (_MarketPlace *MarketPlaceSession) P2pVaultExchangeReturns(b bool) (*types.Transaction, error) {
+	return _MarketPlace.Contract.P2pVaultExchangeReturns(&_MarketPlace.TransactOpts, b)
 }
 
-// TransferFromNotionalReturns is a paid mutator transaction binding the contract method 0x19178e71.
+// P2pVaultExchangeReturns is a paid mutator transaction binding the contract method 0x7d04cd15.
 //
-// Solidity: function transferFromNotionalReturns(bool b) returns()
-func (_MarketPlace *MarketPlaceTransactorSession) TransferFromNotionalReturns(b bool) (*types.Transaction, error) {
-	return _MarketPlace.Contract.TransferFromNotionalReturns(&_MarketPlace.TransactOpts, b)
+// Solidity: function p2pVaultExchangeReturns(bool b) returns()
+func (_MarketPlace *MarketPlaceTransactorSession) P2pVaultExchangeReturns(b bool) (*types.Transaction, error) {
+	return _MarketPlace.Contract.P2pVaultExchangeReturns(&_MarketPlace.TransactOpts, b)
 }
 
-// TransferFromZcToken is a paid mutator transaction binding the contract method 0xc129a1c2.
+// P2pZcTokenExchange is a paid mutator transaction binding the contract method 0x65a963aa.
 //
-// Solidity: function transferFromZcToken(address u, uint256 m, address o, address t, uint256 a) returns(bool)
-func (_MarketPlace *MarketPlaceTransactor) TransferFromZcToken(opts *bind.TransactOpts, u common.Address, m *big.Int, o common.Address, t common.Address, a *big.Int) (*types.Transaction, error) {
-	return _MarketPlace.contract.Transact(opts, "transferFromZcToken", u, m, o, t, a)
+// Solidity: function p2pZcTokenExchange(address u, uint256 m, address o, address t, uint256 a) returns(bool)
+func (_MarketPlace *MarketPlaceTransactor) P2pZcTokenExchange(opts *bind.TransactOpts, u common.Address, m *big.Int, o common.Address, t common.Address, a *big.Int) (*types.Transaction, error) {
+	return _MarketPlace.contract.Transact(opts, "p2pZcTokenExchange", u, m, o, t, a)
 }
 
-// TransferFromZcToken is a paid mutator transaction binding the contract method 0xc129a1c2.
+// P2pZcTokenExchange is a paid mutator transaction binding the contract method 0x65a963aa.
 //
-// Solidity: function transferFromZcToken(address u, uint256 m, address o, address t, uint256 a) returns(bool)
-func (_MarketPlace *MarketPlaceSession) TransferFromZcToken(u common.Address, m *big.Int, o common.Address, t common.Address, a *big.Int) (*types.Transaction, error) {
-	return _MarketPlace.Contract.TransferFromZcToken(&_MarketPlace.TransactOpts, u, m, o, t, a)
+// Solidity: function p2pZcTokenExchange(address u, uint256 m, address o, address t, uint256 a) returns(bool)
+func (_MarketPlace *MarketPlaceSession) P2pZcTokenExchange(u common.Address, m *big.Int, o common.Address, t common.Address, a *big.Int) (*types.Transaction, error) {
+	return _MarketPlace.Contract.P2pZcTokenExchange(&_MarketPlace.TransactOpts, u, m, o, t, a)
 }
 
-// TransferFromZcToken is a paid mutator transaction binding the contract method 0xc129a1c2.
+// P2pZcTokenExchange is a paid mutator transaction binding the contract method 0x65a963aa.
 //
-// Solidity: function transferFromZcToken(address u, uint256 m, address o, address t, uint256 a) returns(bool)
-func (_MarketPlace *MarketPlaceTransactorSession) TransferFromZcToken(u common.Address, m *big.Int, o common.Address, t common.Address, a *big.Int) (*types.Transaction, error) {
-	return _MarketPlace.Contract.TransferFromZcToken(&_MarketPlace.TransactOpts, u, m, o, t, a)
+// Solidity: function p2pZcTokenExchange(address u, uint256 m, address o, address t, uint256 a) returns(bool)
+func (_MarketPlace *MarketPlaceTransactorSession) P2pZcTokenExchange(u common.Address, m *big.Int, o common.Address, t common.Address, a *big.Int) (*types.Transaction, error) {
+	return _MarketPlace.Contract.P2pZcTokenExchange(&_MarketPlace.TransactOpts, u, m, o, t, a)
 }
 
-// TransferFromZcTokenReturns is a paid mutator transaction binding the contract method 0xb80ce931.
+// P2pZcTokenExchangeReturns is a paid mutator transaction binding the contract method 0xbeaff41e.
 //
-// Solidity: function transferFromZcTokenReturns(bool b) returns()
-func (_MarketPlace *MarketPlaceTransactor) TransferFromZcTokenReturns(opts *bind.TransactOpts, b bool) (*types.Transaction, error) {
-	return _MarketPlace.contract.Transact(opts, "transferFromZcTokenReturns", b)
+// Solidity: function p2pZcTokenExchangeReturns(bool b) returns()
+func (_MarketPlace *MarketPlaceTransactor) P2pZcTokenExchangeReturns(opts *bind.TransactOpts, b bool) (*types.Transaction, error) {
+	return _MarketPlace.contract.Transact(opts, "p2pZcTokenExchangeReturns", b)
 }
 
-// TransferFromZcTokenReturns is a paid mutator transaction binding the contract method 0xb80ce931.
+// P2pZcTokenExchangeReturns is a paid mutator transaction binding the contract method 0xbeaff41e.
 //
-// Solidity: function transferFromZcTokenReturns(bool b) returns()
-func (_MarketPlace *MarketPlaceSession) TransferFromZcTokenReturns(b bool) (*types.Transaction, error) {
-	return _MarketPlace.Contract.TransferFromZcTokenReturns(&_MarketPlace.TransactOpts, b)
+// Solidity: function p2pZcTokenExchangeReturns(bool b) returns()
+func (_MarketPlace *MarketPlaceSession) P2pZcTokenExchangeReturns(b bool) (*types.Transaction, error) {
+	return _MarketPlace.Contract.P2pZcTokenExchangeReturns(&_MarketPlace.TransactOpts, b)
 }
 
-// TransferFromZcTokenReturns is a paid mutator transaction binding the contract method 0xb80ce931.
+// P2pZcTokenExchangeReturns is a paid mutator transaction binding the contract method 0xbeaff41e.
 //
-// Solidity: function transferFromZcTokenReturns(bool b) returns()
-func (_MarketPlace *MarketPlaceTransactorSession) TransferFromZcTokenReturns(b bool) (*types.Transaction, error) {
-	return _MarketPlace.Contract.TransferFromZcTokenReturns(&_MarketPlace.TransactOpts, b)
+// Solidity: function p2pZcTokenExchangeReturns(bool b) returns()
+func (_MarketPlace *MarketPlaceTransactorSession) P2pZcTokenExchangeReturns(b bool) (*types.Transaction, error) {
+	return _MarketPlace.Contract.P2pZcTokenExchangeReturns(&_MarketPlace.TransactOpts, b)
 }

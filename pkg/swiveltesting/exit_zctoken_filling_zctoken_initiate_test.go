@@ -73,7 +73,7 @@ func (s *EZFZISuite) TestEZFZI() {
 	s.Env.Blockchain.Commit()
 
 	// and the marketplace api methods...
-	tx, err = s.MarketPlace.TransferFromZcTokenReturns(true)
+	tx, err = s.MarketPlace.P2pZcTokenExchangeReturns(true)
 	assert.Nil(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
@@ -170,13 +170,13 @@ func (s *EZFZISuite) TestEZFZI() {
 	assert.Equal(args.Amount.Cmp(amt), 1) // amount should be greater than the passed in filled premium
 
 	// market zctoken transfer from call...
-	zcTransferArgs, err := s.MarketPlace.TransferFromZcTokenCalled(order.Underlying)
+	zcTransferArgs, err := s.MarketPlace.P2pZcTokenExchangeCalled(order.Underlying)
 	assert.Nil(err)
 	assert.NotNil(zcTransferArgs)
 	assert.Equal(zcTransferArgs.Maturity, order.Maturity)
 	assert.Equal(zcTransferArgs.Amount.Cmp(amt), 1) // .Amount is greater than passed in filled prem (like above)
-	assert.Equal(zcTransferArgs.One, order.Maker)
-	assert.Equal(zcTransferArgs.Two, s.Env.Owner.Opts.From)
+	assert.Equal(zcTransferArgs.Two, order.Maker)
+	assert.Equal(zcTransferArgs.One, s.Env.Owner.Opts.From)
 }
 
 func TestEZFZISuite(t *test.T) {
