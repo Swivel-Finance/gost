@@ -1,24 +1,30 @@
 package vaulttrackertesting
 
 import (
-	"math/big"
-
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/swivel-finance/gost/test/mocks"
 	"github.com/swivel-finance/gost/test/vaulttracker"
+	"math/big"
 )
 
 type Dep struct {
-	CErc20              *mocks.CErc20
-	CErc20Address       common.Address
+	CErc20        *mocks.CErc20
+	CErc20Address common.Address
+
 	VaultTracker        *vaulttracker.VaultTracker
 	VaultTrackerAddress common.Address
-	Maturity            *big.Int
+
+	Maturity      *big.Int
 }
 
 func Deploy(e *Env) (*Dep, error) {
-	bsMaturity := big.NewInt(17)
+	err := e.Blockchain.AdjustTime(0) // set bc timestamp to 0
+	if err != nil {
+		panic(err)
+	}
+	e.Blockchain.Commit()
 
+	maturity := big.NewInt(MATURITY)
 	cercAddress, _, cercContract, cercErr := mocks.DeployCErc20(e.Owner.Opts, e.Blockchain)
 
 	if cercErr != nil {
@@ -31,7 +37,7 @@ func Deploy(e *Env) (*Dep, error) {
 	trackerAddress, _, trackerContract, trackerErr := vaulttracker.DeployVaultTracker(
 		e.Owner.Opts,
 		e.Blockchain,
-		bsMaturity,
+		maturity,
 		cercAddress,
 	)
 
@@ -44,7 +50,7 @@ func Deploy(e *Env) (*Dep, error) {
 	return &Dep{
 		VaultTrackerAddress: trackerAddress,
 		VaultTracker:        trackerContract,
-		Maturity:            bsMaturity,
+		Maturity:            maturity,
 		CErc20:              cercContract,
 		CErc20Address:       cercAddress,
 	}, nil

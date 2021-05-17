@@ -3,6 +3,7 @@ package vaulttrackertesting
 import (
 	"math/big"
 	test "testing"
+	"time"
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	assertions "github.com/stretchr/testify/assert"
@@ -11,7 +12,7 @@ import (
 	"github.com/swivel-finance/gost/test/vaulttracker"
 )
 
-type addNotionalMaturedSuite struct {
+type addNotionalSuite struct {
 	suite.Suite
 	Env          *Env
 	Dep          *Dep
@@ -19,7 +20,7 @@ type addNotionalMaturedSuite struct {
 	VaultTracker *vaulttracker.VaultTrackerSession // *Session objects are created by the go bindings
 }
 
-func (s *addNotionalMaturedSuite) SetupSuite() {
+func (s *addNotionalSuite) SetupTest() {
 	var err error
 
 	s.Env = NewEnv(big.NewInt(ONE_ETH)) // each of the wallets in the env will begin with this balance
@@ -48,7 +49,102 @@ func (s *addNotionalMaturedSuite) SetupSuite() {
 	}
 }
 
-func (s *addNotionalMaturedSuite) TestAddNotional() {
+func (s *addNotionalSuite) TestAddNotionalCreateVault() {
+	assert := assertions.New(s.T())
+
+	rate1 := big.NewInt(123456789)
+	tx, err := s.CErc20.ExchangeRateCurrentReturns(rate1)
+	assert.Nil(err)
+	assert.NotNil(tx)
+	s.Env.Blockchain.Commit()
+
+	// no vault found for Owner
+	vault, err := s.VaultTracker.Vaults(s.Env.Owner.Opts.From)
+	assert.Nil(err)
+	assert.NotNil(vault)
+	assert.Equal(vault.Redeemable.Cmp(ZERO), 0)
+	assert.Equal(vault.Notional.Cmp(ZERO), 0)
+	assert.Equal(vault.ExchangeRate.Cmp(ZERO),0)
+
+	// call AddNotional for Owner with no vault
+	caller := s.Env.Owner.Opts.From
+	amount1 := big.NewInt(10000000)
+	redeemable1 := ZERO
+	tx, err = s.VaultTracker.AddNotional(caller, amount1)
+	assert.Nil(err)
+	assert.NotNil(tx)
+
+	s.Env.Blockchain.Commit()
+
+	// found vault for Owner
+	vault, err = s.VaultTracker.Vaults(s.Env.Owner.Opts.From)
+	assert.Nil(err)
+	assert.NotNil(vault)
+	assert.Equal(amount1, vault.Notional)
+	assert.Equal(rate1, vault.ExchangeRate)
+	assert.Equal(vault.Redeemable.Cmp(redeemable1), 0)
+}
+
+func (s *addNotionalSuite) TestAddNotionalNotMatured() {
+	assert := assertions.New(s.T())
+
+	rate1 := big.NewInt(123456789)
+	tx, err := s.CErc20.ExchangeRateCurrentReturns(rate1)
+	assert.Nil(err)
+	assert.NotNil(tx)
+	s.Env.Blockchain.Commit()
+
+	// no vault found for Owner
+	vault, err := s.VaultTracker.Vaults(s.Env.Owner.Opts.From)
+	assert.Nil(err)
+	assert.NotNil(vault)
+	assert.Equal(vault.Redeemable.Cmp(ZERO), 0)
+	assert.Equal(vault.Notional.Cmp(ZERO), 0)
+	assert.Equal(vault.ExchangeRate.Cmp(ZERO),0)
+
+	// call AddNotional for Owner with no vault
+	caller := s.Env.Owner.Opts.From
+	amount1 := big.NewInt(10000000)
+	redeemable1 := ZERO
+	tx, err = s.VaultTracker.AddNotional(caller, amount1)
+	assert.Nil(err)
+	assert.NotNil(tx)
+
+	s.Env.Blockchain.Commit()
+
+	// found vault for Owner
+	vault, err = s.VaultTracker.Vaults(s.Env.Owner.Opts.From)
+	assert.Nil(err)
+	assert.NotNil(vault)
+	assert.Equal(amount1, vault.Notional)
+	assert.Equal(rate1, vault.ExchangeRate)
+	assert.Equal(vault.Redeemable.Cmp(redeemable1), 0)
+
+	rate2 := big.NewInt(723456789)
+	tx, err = s.CErc20.ExchangeRateCurrentReturns(rate2)
+	assert.NotNil(tx)
+	assert.Nil(err)
+	s.Env.Blockchain.Commit()
+
+	amount2 := big.NewInt(20000000)
+	redeemable2 := big.NewInt(48600000)
+
+	// call AddNotional for Owner which already has vault and market is not matured
+	tx, err = s.VaultTracker.AddNotional(caller, amount1)
+	assert.Nil(err)
+	assert.NotNil(tx)
+
+	s.Env.Blockchain.Commit()
+
+	vault, err = s.VaultTracker.Vaults(s.Env.Owner.Opts.From)
+	assert.Nil(err)
+	assert.NotNil(vault)
+	assert.Equal(amount2, vault.Notional)
+	assert.Equal(rate2, vault.ExchangeRate)
+	assert.Equal(redeemable2, vault.Redeemable)
+}
+
+func (s *addNotionalSuite) TestAddNotionalMatured() {
 	assert := assertions.New(s.T())
 
 	rate1 := big.NewInt(123456789)
@@ -112,6 +208,13 @@ func (s *addNotionalMaturedSuite) TestAddNotional() {
 	assert.Nil(err)
 	s.Env.Blockchain.Commit()
 
+	// move past the maturity
+	err = s.Env.Blockchain.AdjustTime(MATURITY * time.Second)
+	if err != nil {
+		panic(err)
+	}
+	s.Env.Blockchain.Commit()
+
 	// call mature
 	tx, err = s.VaultTracker.MatureVault()
 	assert.Nil(err)
@@ -144,5 +247,5 @@ func (s *addNotionalMaturedSuite) TestAddNotional() {
 }
 
 func TestAddNotionalSuite(t *test.T) {
-	suite.Run(t, &addNotionalMaturedSuite{})
+	suite.Run(t, &addNotionalSuite{})
 }
