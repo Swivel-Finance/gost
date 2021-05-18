@@ -146,7 +146,62 @@ contract VaultTracker {
   /// @param t Address recipient of the amount
   /// @param a Amount to transfer
   function transfer(address t, uint256 a) public returns (bool) {
-    // TODO
+    Vault memory vault = vaults[msg.sender];
+
+    require(vault.notional >= a, "Amount exceeds vault balance");
+
+    uint256 interest;
+    CErc20 cToken = CErc20(cTokenAddr);
+
+    // If market has matured, calculate marginal interest between the maturity rate and previous position exchange rate
+    // Otherwise, calculate marginal exchange rate between current and previous exchange rate.
+    if (matured == true) {
+      // Calculate marginal interest
+      uint256 yield = ((maturityRate * 1e26) / vault.exchangeRate) - 1e26;
+      interest = (yield * vault.notional) / 1e26;
+    }
+    else {
+      // Calculate marginal interest
+      uint256 yield = ((cToken.exchangeRateCurrent() * 1e26) / vault.exchangeRate) - 1e26;
+      interest = (yield * vault.notional) / 1e26;
+    }
+
+    // Remove amount from position, Add interest to position, reset cToken exchange rate
+    vault.redeemable += interest;
+    vault.notional -= a;
+    vault.exchangeRate = cToken.exchangeRateCurrent();
+    vaults[msg.sender] = vault;
+
+    // transfer notional to address "t", calculate interest if necessary
+    Vault memory newVault = vaults[t];
+
+    if (newVault.notional > 0) {
+      uint256 newVaultInterest;
+
+      // If market has matured, calculate marginal interest between the maturity rate and previous position exchange rate
+      // Otherwise, calculate marginal exchange rate between current and previous exchange rate.
+      if (matured == true) {
+        // Calculate marginal interest
+        uint256 yield = ((maturityRate * 1e26) / newVault.exchangeRate) - 1e26;
+        newVaultInterest = (yield * newVault.notional) / 1e26;
+      }
+      else {
+        // Calculate marginal interest
+        uint256 yield = ((cToken.exchangeRateCurrent() * 1e26) / newVault.exchangeRate) - 1e26;
+        newVaultInterest = (yield * newVault.notional) / 1e26;
+      }
+
+      // Add interest and amount to position, reset cToken exchange rate
+      newVault.redeemable += newVaultInterest;
+      newVault.notional += a;
+      newVault.exchangeRate = cToken.exchangeRateCurrent();
+      vaults[t] = newVault;
+    }
+    else {
+      newVault.notional += a;
+      newVault.exchangeRate = cToken.exchangeRateCurrent();
+      vaults[t] = newVault;
+    }
     return true;
   }
 
