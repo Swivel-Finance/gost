@@ -26,6 +26,12 @@ func (s *vaultTrackerCtorSuite) SetupSuite() {
 		panic(err)
 	}
 
+	err = s.Env.Blockchain.AdjustTime(0) // set bc timestamp to 0
+	if err != nil {
+		panic(err)
+	}
+	s.Env.Blockchain.Commit()
+
 	// binding owner to both, kind of why it exists - but could be any of the env wallets
 	s.VaultTracker = &vaulttracker.VaultTrackerSession{
 		Contract: s.Dep.VaultTracker,

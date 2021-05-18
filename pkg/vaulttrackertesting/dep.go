@@ -19,12 +19,6 @@ type Dep struct {
 }
 
 func Deploy(e *Env) (*Dep, error) {
-	err := e.Blockchain.AdjustTime(0) // set bc timestamp to 0
-	if err != nil {
-		panic(err)
-	}
-	e.Blockchain.Commit()
-
 	maturity := big.NewInt(MATURITY)
 	cercAddress, _, cercContract, cercErr := mocks.DeployCErc20(e.Owner.Opts, e.Blockchain)
 

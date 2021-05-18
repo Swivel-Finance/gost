@@ -29,6 +29,12 @@ func (s *addNotionalSuite) SetupTest() {
 		panic(err)
 	}
 
+	err = s.Env.Blockchain.AdjustTime(0) // set bc timestamp to 0
+	if err != nil {
+		panic(err)
+	}
+	s.Env.Blockchain.Commit()
+
 	s.CErc20 = &mocks.CErc20Session{
 		Contract: s.Dep.CErc20,
 		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
