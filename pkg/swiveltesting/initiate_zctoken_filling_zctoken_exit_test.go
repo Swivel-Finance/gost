@@ -83,7 +83,7 @@ func (s *IZFZESuite) TestIZFZE() {
 	s.Env.Blockchain.Commit()
 
 	// and the marketplace api methods...
-	tx, err = s.MarketPlace.TransferFromZcTokenReturns(true)
+	tx, err = s.MarketPlace.P2pZcTokenExchangeReturns(true)
 	assert.Nil(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
@@ -180,7 +180,7 @@ func (s *IZFZESuite) TestIZFZE() {
 	assert.Equal(amt.Cmp(args.Amount), 1) // amount should be (a - pFilled, so less than passed amt)
 
 	// market zctoken transfer from call...
-	marketTransferArgs, err := s.MarketPlace.TransferFromZcTokenCalled(order.Underlying)
+	marketTransferArgs, err := s.MarketPlace.P2pZcTokenExchangeCalled(order.Underlying)
 	assert.Nil(err)
 	assert.NotNil(marketTransferArgs)
 	assert.Equal(marketTransferArgs.Maturity, order.Maturity)

@@ -73,7 +73,7 @@ func (s *EVFVISuite) TestEVFVI() {
 	s.Env.Blockchain.Commit()
 
 	// and the marketplace api methods...
-	tx, err = s.MarketPlace.TransferFromNotionalReturns(true)
+	tx, err = s.MarketPlace.P2pVaultExchangeReturns(true)
 	assert.Nil(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
@@ -170,13 +170,13 @@ func (s *EVFVISuite) TestEVFVI() {
 	assert.Equal(amt.Cmp(args.Amount), 1) // amt should be greater than computed pFilled
 
 	// market zctoken transfer from call...
-	noTransferArgs, err := s.MarketPlace.TransferFromNotionalCalled(order.Underlying)
+	noTransferArgs, err := s.MarketPlace.P2pVaultExchangeCalled(order.Underlying)
 	assert.Nil(err)
 	assert.NotNil(noTransferArgs)
 	assert.Equal(noTransferArgs.Maturity, order.Maturity)
 	assert.Equal(amt.Cmp(noTransferArgs.Amount), 0) // .Amount is passed in amt
-	assert.Equal(noTransferArgs.One, order.Maker)
-	assert.Equal(noTransferArgs.Two, s.Env.Owner.Opts.From)
+	assert.Equal(noTransferArgs.Two, order.Maker)
+	assert.Equal(noTransferArgs.One, s.Env.Owner.Opts.From)
 }
 
 func TestEVFVISuite(t *test.T) {

@@ -12,8 +12,8 @@ contract MarketPlace {
   mapping (address => uint256) public cTokenAddressCalled;
   bool private custodialInitiateReturn;
   bool private custodialExitReturn;
-  bool private transferFromZcTokenReturn;
-  bool private transferFromNotionalReturn;
+  bool private p2pZcTokenExchangeReturn;
+  bool private p2pVaultExchangeReturn;
 
   struct MethodArgs {
     uint256 maturity;
@@ -24,8 +24,8 @@ contract MarketPlace {
 
   mapping (address => MethodArgs) public custodialInitiateCalled;
   mapping (address => MethodArgs) public custodialExitCalled;
-  mapping (address => MethodArgs) public transferFromZcTokenCalled;
-  mapping (address => MethodArgs) public transferFromNotionalCalled;
+  mapping (address => MethodArgs) public p2pZcTokenExchangeCalled;
+  mapping (address => MethodArgs) public p2pVaultExchangeCalled;
 
   function cTokenAddressReturns(address a) external {
     cTokenAddr = a;
@@ -70,33 +70,37 @@ contract MarketPlace {
     return custodialExitReturn;
   }
 
-  function transferFromZcTokenReturns(bool b) external {
-    transferFromZcTokenReturn = b;
+  function p2pZcTokenExchangeReturns(bool b) external {
+    p2pZcTokenExchangeReturn = b;
   }
 
-  function transferFromZcToken(address u, uint256 m, address o, address t, uint256 a) external returns (bool) {
+  // called by swivel IZFZE, EZFZI
+  // call with underlying, maturity, transfer-from, transfer-to, amount
+  function p2pZcTokenExchange(address u, uint256 m, address o, address t, uint256 a) external returns (bool) {
     MethodArgs memory args;
     args.maturity = m;
     args.one = o;
     args.two = t;
     args.amount = a;
-    transferFromZcTokenCalled[u] = args;
+    p2pZcTokenExchangeCalled[u] = args;
 
-    return transferFromZcTokenReturn;
+    return p2pZcTokenExchangeReturn;
   }
 
-  function transferFromNotionalReturns(bool b) external {
-    transferFromNotionalReturn = b;
+  function p2pVaultExchangeReturns(bool b) external {
+    p2pVaultExchangeReturn = b;
   }
 
-  function transferFromNotional(address u, uint256 m, address o, address t, uint256 a) external returns (bool) {
+  // called by swivel IVFVE, EVFVI
+  // call with underlying, maturity, remove-from, add-to, amount
+  function p2pVaultExchange(address u, uint256 m, address o, address t, uint256 a) external returns (bool) {
     MethodArgs memory args;
     args.maturity = m;
     args.one = o;
     args.two = t;
     args.amount = a;
-    transferFromNotionalCalled[u] = args;
+    p2pVaultExchangeCalled[u] = args;
 
-    return transferFromNotionalReturn;
+    return p2pVaultExchangeReturn;
   }
 }

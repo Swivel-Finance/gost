@@ -73,7 +73,7 @@ func (s *IVFVESuite) TestIZFZE() {
 	s.Env.Blockchain.Commit()
 
 	// and the marketplace api methods...
-	tx, err = s.MarketPlace.TransferFromNotionalReturns(true)
+	tx, err = s.MarketPlace.P2pVaultExchangeReturns(true)
 	assert.Nil(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
@@ -170,7 +170,7 @@ func (s *IVFVESuite) TestIZFZE() {
 	assert.Equal(amt, args.Amount) // should be "a" here
 
 	// market notional transfer from call...
-	notionalTransferArgs, err := s.MarketPlace.TransferFromNotionalCalled(order.Underlying)
+	notionalTransferArgs, err := s.MarketPlace.P2pVaultExchangeCalled(order.Underlying)
 	assert.Nil(err)
 	assert.NotNil(notionalTransferArgs)
 	assert.Equal(notionalTransferArgs.Maturity, order.Maturity)
