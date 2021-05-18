@@ -175,9 +175,7 @@ func (s *removeNotionalSuite) TestRemoveNotionalMatured() {
 
 	// move past the maturity
 	err = s.Env.Blockchain.AdjustTime(MATURITY * time.Second)
-	if err != nil {
-		panic(err)
-	}
+	assert.Nil(err)
 	s.Env.Blockchain.Commit()
 
 	// call mature

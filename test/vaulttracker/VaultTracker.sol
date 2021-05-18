@@ -23,7 +23,7 @@ contract VaultTracker {
 
   mapping(address => Vault) public vaults;
 
-  // TODO events?
+  event RedeemInterest(address indexed owner, uint256 indexed amount);
 
   /// @param m Maturity timestamp of the new market
   /// @param c cToken address associated with underlying for the new market
@@ -105,10 +105,33 @@ contract VaultTracker {
   /// @notice ...
   /// @param o Address that owns a timelock in the vault
   function redeemInterest(address o) public onlyAdmin(admin) returns (uint256) {
-    // TODO
-    uint256 foo;
+    Vault memory vault = vaults[o];
+    uint256 redeemAmount = vault.redeemable;
 
-    return foo;
+    uint256 interest;
+    CErc20 cToken = CErc20(cTokenAddr);
+
+    // If market has matured, calculate marginal interest between the maturity rate and previous position exchange rate
+    // Otherwise, calculate marginal exchange rate between current and previous exchange rate.
+    if (matured == true) {
+      // Calculate marginal interest
+      uint256 yield = ((maturityRate * 1e26) / vault.exchangeRate) - 1e26;
+      interest = (yield * vault.notional) / 1e26;
+    }
+    else {
+      // Calculate marginal interest
+      uint256 yield = ((cToken.exchangeRateCurrent() * 1e26) / vault.exchangeRate) - 1e26;
+      interest = (yield * vault.notional) / 1e26;
+    }
+    // Add marginal interest to previously accrued redeemable interest
+    redeemAmount += interest;
+
+    vault.exchangeRate = cToken.exchangeRateCurrent();
+    vault.redeemable = 0;
+    vaults[o] = vault;
+
+    emit RedeemInterest(o, redeemAmount);
+    return(redeemAmount);
   }
 
   /// @notice ...

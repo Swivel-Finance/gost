@@ -1,10 +1,11 @@
 package vaulttrackertesting
 
 import (
+	"math/big"
+
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/swivel-finance/gost/test/mocks"
 	"github.com/swivel-finance/gost/test/vaulttracker"
-	"math/big"
 )
 
 type Dep struct {
@@ -14,7 +15,7 @@ type Dep struct {
 	VaultTracker        *vaulttracker.VaultTracker
 	VaultTrackerAddress common.Address
 
-	Maturity      *big.Int
+	Maturity *big.Int
 }
 
 func Deploy(e *Env) (*Dep, error) {
