@@ -12,7 +12,7 @@ import (
 	"github.com/swivel-finance/gost/test/vaulttracker"
 )
 
-type addNotionalSuite struct {
+type removeNotionalSuite struct {
 	suite.Suite
 	Env          *Env
 	Dep          *Dep
@@ -20,7 +20,7 @@ type addNotionalSuite struct {
 	VaultTracker *vaulttracker.VaultTrackerSession // *Session objects are created by the go bindings
 }
 
-func (s *addNotionalSuite) SetupTest() {
+func (s *removeNotionalSuite) SetupTest() {
 	var err error
 
 	s.Env = NewEnv(big.NewInt(ONE_ETH)) // each of the wallets in the env will begin with this balance
@@ -55,7 +55,7 @@ func (s *addNotionalSuite) SetupTest() {
 	}
 }
 
-func (s *addNotionalSuite) TestAddNotionalCreateVault() {
+func (s *removeNotionalSuite) TestRemoveNotionalFailRequireAmount() {
 	assert := assertions.New(s.T())
 
 	rate1 := big.NewInt(123456789)
@@ -72,26 +72,27 @@ func (s *addNotionalSuite) TestAddNotionalCreateVault() {
 	assert.Equal(vault.Notional.Cmp(ZERO), 0)
 	assert.Equal(vault.ExchangeRate.Cmp(ZERO),0)
 
-	// call AddNotional for Owner with no vault
+	// call AddNotional for Owner with no vault and add "small" amount
 	caller := s.Env.Owner.Opts.From
-	amount1 := big.NewInt(10000000)
-	redeemable1 := ZERO
+	amount1 := big.NewInt(1)
 	tx, err = s.VaultTracker.AddNotional(caller, amount1)
 	assert.Nil(err)
 	assert.NotNil(tx)
 
 	s.Env.Blockchain.Commit()
 
-	// found vault for Owner
-	vault, err = s.VaultTracker.Vaults(s.Env.Owner.Opts.From)
-	assert.Nil(err)
-	assert.NotNil(vault)
-	assert.Equal(amount1, vault.Notional)
-	assert.Equal(rate1, vault.ExchangeRate)
-	assert.Equal(vault.Redeemable.Cmp(redeemable1), 0)
+	// call RemoveNotional for Owner with vault amount lower than removal amount
+	caller = s.Env.Owner.Opts.From
+	amount2 := big.NewInt(1000)
+	tx, err = s.VaultTracker.RemoveNotional(caller, amount2)
+	assert.NotNil(err)
+	assert.Regexp("Amount exceeds vault balance", err.Error())
+	assert.Nil(tx)
+
+	s.Env.Blockchain.Commit()
 }
 
-func (s *addNotionalSuite) TestAddNotionalNotMatured() {
+func (s *removeNotionalSuite) TestRemoveNotionalNotMatured() {
 	assert := assertions.New(s.T())
 
 	rate1 := big.NewInt(123456789)
@@ -111,20 +112,11 @@ func (s *addNotionalSuite) TestAddNotionalNotMatured() {
 	// call AddNotional for Owner with no vault
 	caller := s.Env.Owner.Opts.From
 	amount1 := big.NewInt(10000000)
-	redeemable1 := ZERO
 	tx, err = s.VaultTracker.AddNotional(caller, amount1)
 	assert.Nil(err)
 	assert.NotNil(tx)
 
 	s.Env.Blockchain.Commit()
-
-	// found vault for Owner
-	vault, err = s.VaultTracker.Vaults(s.Env.Owner.Opts.From)
-	assert.Nil(err)
-	assert.NotNil(vault)
-	assert.Equal(amount1, vault.Notional)
-	assert.Equal(rate1, vault.ExchangeRate)
-	assert.Equal(vault.Redeemable.Cmp(redeemable1), 0)
 
 	rate2 := big.NewInt(723456789)
 	tx, err = s.CErc20.ExchangeRateCurrentReturns(rate2)
@@ -132,11 +124,10 @@ func (s *addNotionalSuite) TestAddNotionalNotMatured() {
 	assert.Nil(err)
 	s.Env.Blockchain.Commit()
 
-	amount2 := big.NewInt(20000000)
-	redeemable2 := big.NewInt(48600000)
-
-	// call AddNotional for Owner which already has vault and market is not matured
-	tx, err = s.VaultTracker.AddNotional(caller, amount1)
+	// call RemoveNotional for Owner with vault amount lower than removal amount
+	caller = s.Env.Owner.Opts.From
+	amount2 := big.NewInt(1000)
+	tx, err = s.VaultTracker.RemoveNotional(caller, amount2)
 	assert.Nil(err)
 	assert.NotNil(tx)
 
@@ -145,12 +136,12 @@ func (s *addNotionalSuite) TestAddNotionalNotMatured() {
 	vault, err = s.VaultTracker.Vaults(s.Env.Owner.Opts.From)
 	assert.Nil(err)
 	assert.NotNil(vault)
-	assert.Equal(amount2, vault.Notional)
+	assert.Equal(big.NewInt(9999000), vault.Notional)
 	assert.Equal(rate2, vault.ExchangeRate)
-	assert.Equal(redeemable2, vault.Redeemable)
+	assert.Equal(big.NewInt(48600000), vault.Redeemable)
 }
 
-func (s *addNotionalSuite) TestAddNotionalMatured() {
+func (s *removeNotionalSuite) TestRemoveNotionalMatured() {
 	assert := assertions.New(s.T())
 
 	rate1 := big.NewInt(123456789)
@@ -167,46 +158,20 @@ func (s *addNotionalSuite) TestAddNotionalMatured() {
 	assert.Equal(vault.Notional.Cmp(ZERO), 0)
 	assert.Equal(vault.ExchangeRate.Cmp(ZERO),0)
 
-	// call AddNotional for Owner with no vault
+	// call AddNotional for Owner with no vault and add "small" amount
 	caller := s.Env.Owner.Opts.From
 	amount1 := big.NewInt(10000000)
-	redeemable1 := ZERO
 	tx, err = s.VaultTracker.AddNotional(caller, amount1)
 	assert.Nil(err)
 	assert.NotNil(tx)
 
 	s.Env.Blockchain.Commit()
-
-	// found vault for Owner
-	vault, err = s.VaultTracker.Vaults(s.Env.Owner.Opts.From)
-	assert.Nil(err)
-	assert.NotNil(vault)
-	assert.Equal(amount1, vault.Notional)
-	assert.Equal(rate1, vault.ExchangeRate)
-	assert.Equal(vault.Redeemable.Cmp(redeemable1), 0)
 
 	rate2 := big.NewInt(723456789)
 	tx, err = s.CErc20.ExchangeRateCurrentReturns(rate2)
 	assert.NotNil(tx)
 	assert.Nil(err)
 	s.Env.Blockchain.Commit()
-
-	amount2 := big.NewInt(20000000)
-	redeemable2 := big.NewInt(48600000)
-
-	// call AddNotional for Owner which already has vault and market is not matured
-	tx, err = s.VaultTracker.AddNotional(caller, amount1)
-	assert.Nil(err)
-	assert.NotNil(tx)
-
-	s.Env.Blockchain.Commit()
-
-	vault, err = s.VaultTracker.Vaults(s.Env.Owner.Opts.From)
-	assert.Nil(err)
-	assert.NotNil(vault)
-	assert.Equal(amount2, vault.Notional)
-	assert.Equal(rate2, vault.ExchangeRate)
-	assert.Equal(redeemable2, vault.Redeemable)
 
 	rate3 := big.NewInt(823456789)
 	tx, err = s.CErc20.ExchangeRateCurrentReturns(rate3)
@@ -232,11 +197,8 @@ func (s *addNotionalSuite) TestAddNotionalMatured() {
 	assert.Nil(err)
 	s.Env.Blockchain.Commit()
 
-	amount3 := big.NewInt(30000000)
-	redeemable3 := big.NewInt(51364505)
-
 	// call AddNotional for Owner which already has vault and market matured
-	tx, err = s.VaultTracker.AddNotional(caller, amount1)
+	tx, err = s.VaultTracker.RemoveNotional(caller, amount1)
 	assert.Nil(err)
 	assert.NotNil(tx)
 
@@ -245,11 +207,11 @@ func (s *addNotionalSuite) TestAddNotionalMatured() {
 	vault, err = s.VaultTracker.Vaults(s.Env.Owner.Opts.From)
 	assert.Nil(err)
 	assert.NotNil(vault)
-	assert.Equal(amount3, vault.Notional)
+	assert.Equal(vault.Notional.Cmp(ZERO),0)
 	assert.Equal(rate4, vault.ExchangeRate)
-	assert.Equal(redeemable3, vault.Redeemable)
+	assert.Equal(big.NewInt(56700000), vault.Redeemable)
 }
 
-func TestAddNotionalSuite(t *test.T) {
-	suite.Run(t, &addNotionalSuite{})
+func TestTrackerRemoveNotionalSuite(t *test.T) {
+	suite.Run(t, &removeNotionalSuite{})
 }

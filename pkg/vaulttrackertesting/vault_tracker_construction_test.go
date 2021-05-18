@@ -10,14 +10,14 @@ import (
 	"github.com/swivel-finance/gost/test/vaulttracker"
 )
 
-type trackerCtorSuite struct {
+type vaultTrackerCtorSuite struct {
 	suite.Suite
 	Env          *Env
 	Dep          *Dep
 	VaultTracker *vaulttracker.VaultTrackerSession // *Session objects are created by the go bindings
 }
 
-func (s *trackerCtorSuite) SetupSuite() {
+func (s *vaultTrackerCtorSuite) SetupSuite() {
 	var err error
 
 	s.Env = NewEnv(big.NewInt(ONE_ETH)) // each of the wallets in the env will begin with this balance
@@ -25,6 +25,12 @@ func (s *trackerCtorSuite) SetupSuite() {
 	if err != nil {
 		panic(err)
 	}
+
+	err = s.Env.Blockchain.AdjustTime(0) // set bc timestamp to 0
+	if err != nil {
+		panic(err)
+	}
+	s.Env.Blockchain.Commit()
 
 	// binding owner to both, kind of why it exists - but could be any of the env wallets
 	s.VaultTracker = &vaulttracker.VaultTrackerSession{
@@ -37,27 +43,27 @@ func (s *trackerCtorSuite) SetupSuite() {
 	}
 }
 
-func (s *trackerCtorSuite) TestAdmin() {
+func (s *vaultTrackerCtorSuite) TestAdmin() {
 	assert := assertions.New(s.T())
 	addr, err := s.VaultTracker.Admin()
 	assert.Nil(err)
 	assert.Equal(addr, s.Env.Owner.Opts.From)
 }
 
-func (s *trackerCtorSuite) TestCTokenAddress() {
+func (s *vaultTrackerCtorSuite) TestCTokenAddress() {
 	assert := assertions.New(s.T())
 	addr, err := s.VaultTracker.CTokenAddr()
 	assert.Nil(err)
 	assert.Equal(s.Dep.CErc20Address, addr)
 }
 
-func (s *trackerCtorSuite) TestMaturity() {
+func (s *vaultTrackerCtorSuite) TestMaturity() {
 	assert := assertions.New(s.T())
 	maturity, err := s.VaultTracker.Maturity()
 	assert.Nil(err)
 	assert.Equal(maturity, s.Dep.Maturity)
 }
 
-func TestTrackerCtorSuite(t *test.T) {
-	suite.Run(t, &trackerCtorSuite{})
+func TestVaultTrackerCtorSuite(t *test.T) {
+	suite.Run(t, &vaultTrackerCtorSuite{})
 }
