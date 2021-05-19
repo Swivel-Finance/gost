@@ -11,8 +11,8 @@ import "./Abstracts.sol";
 contract VaultTracker {
   address public admin;
   uint256 public maturity;
-  bool matured;
-  uint256 maturityRate;
+  bool private matured;
+  uint256 private maturityRate;
   address public cTokenAddr;
 
   struct Vault {
