@@ -189,7 +189,7 @@ func (s *EZFVESuite) TestEZFVE() {
 	assert.Equal(amt, amount)
 
 	// first call to utoken transferfrom 'from' should be sender here...
-	args, err := s.Erc20.TransferredFromArgs(s.Env.Owner.Opts.From)
+	args, err := s.Erc20.TransferredFromCalled(s.Env.Owner.Opts.From)
 	assert.Nil(err)
 	assert.NotNil(args)
 	assert.Equal(args.To, order.Maker)

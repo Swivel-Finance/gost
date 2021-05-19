@@ -15,43 +15,48 @@ contract Erc20 {
   }
 
   // mapping for arguments passed to approve
-  mapping (address => uint256) public approvedArgs;
+  mapping (address => uint256) public approveCalled;
   // a boolean flag which allows us to dictate the return of approve(). 
   bool private approveReturn;
+
   // mapping of arguments sent to transfer. key is the passed in address.
-  mapping (address => uint256) public transferredArgs;
+  mapping (address => uint256) public transferCalled;
+  // a boolean flag which allows us to dictate the return of transfer().
   bool private transferReturn;
+
   // mapping of arguments sent to transferFrom. key is passed from address.
-  mapping (address => TransferFromArgs) public transferredFromArgs;
+  mapping (address => TransferFromArgs) public transferredFromCalled;
+  // a boolean flag which allows us to dictate the return of transferFrom().
   bool private transferFromReturn;
+
+  function approve(address s, uint256 a) public returns (bool) {
+    approveCalled[s] = a;
+    return approveReturn;
+  }
 
   function approveReturns(bool b) public {
     approveReturn = b;
   }
 
-  function approve(address s, uint256 a) public returns (bool) {
-    approvedArgs[s] = a;  
-    return approveReturn;
+  function transfer(address t, uint256 a) public returns (bool) {
+    transferCalled[t] = a;
+    return transferReturn;
   }
 
   function transferReturns(bool b) public {
     transferReturn = b;
   }
 
-  function transfer(address t, uint256 a) public returns (bool) {
-    transferredArgs[t] = a;
-    return transferReturn;
+  function transferFrom(address f, address t, uint256 a) public returns (bool) {
+    TransferFromArgs memory args;
+    args.to = t;
+    args.amount = a;
+    transferredFromCalled[f] = args;
+    return transferFromReturn;
   }
 
   function transferFromReturns(bool b) public {
     transferFromReturn = b;
   }
 
-  function transferFrom(address f, address t, uint256 a) public returns (bool) {
-    TransferFromArgs memory args;
-    args.to = t;
-    args.amount = a;
-    transferredFromArgs[f] = args;
-    return transferFromReturn;
-  }
 }

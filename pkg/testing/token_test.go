@@ -65,7 +65,7 @@ func (s *tokenTestSuite) TestApprove() {
 	assert.Nil(err)
 	s.Env.Blockchain.Commit()
 	// check the args we passed
-	stored, err := s.Erc20.ApprovedArgs(address)
+	stored, err := s.Erc20.ApproveCalled(address)
 	assert.Nil(err)
 	assert.Equal(amount, stored)
 }
@@ -88,7 +88,7 @@ func (s *tokenTestSuite) TestTransfer() {
 	s.Env.Blockchain.Commit()
 
 	// mapping uses the passed address as key
-	stored, err := s.Erc20.TransferredArgs(s.Env.User2.Opts.From)
+	stored, err := s.Erc20.TransferCalled(s.Env.User2.Opts.From)
 	assert.Nil(err)
 	assert.Equal(stored, amount)
 }
@@ -112,7 +112,7 @@ func (s *tokenTestSuite) TestTransferFrom() {
 	s.Env.Blockchain.Commit()
 
 	// mapping uses the from address as key
-	stored, err := s.Erc20.TransferredFromArgs(s.Env.User1.Opts.From)
+	stored, err := s.Erc20.TransferredFromCalled(s.Env.User1.Opts.From)
 	assert.Nil(err)
 	assert.Equal(stored.To, s.Env.Owner.Opts.From)
 	assert.Equal(stored.Amount, amount)
@@ -154,7 +154,7 @@ func (s *tokenTestSuite) TestMint() {
 	assert.Nil(err)
 	s.Env.Blockchain.Commit()
 
-	stored, err := s.CErc20.MintedArgs()
+	stored, err := s.CErc20.MintCalled()
 	assert.Nil(err)
 	assert.Equal(minted, stored)
 }
@@ -176,7 +176,7 @@ func (s *tokenTestSuite) TestRedeemUnderlying() {
 	assert.Nil(err)
 	s.Env.Blockchain.Commit()
 
-	stored, err := s.CErc20.RedeemedUnderlyingArgs()
+	stored, err := s.CErc20.RedeemedUnderlyingCalled()
 	assert.Nil(err)
 	assert.Equal(redeemed, stored)
 }

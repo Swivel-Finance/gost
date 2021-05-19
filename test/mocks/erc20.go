@@ -27,10 +27,10 @@ var (
 )
 
 // Erc20ABI is the input ABI used to generate the binding from.
-const Erc20ABI = "[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"s\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"a\",\"type\":\"uint256\"}],\"name\":\"approve\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bool\",\"name\":\"b\",\"type\":\"bool\"}],\"name\":\"approveReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"approvedArgs\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"t\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"a\",\"type\":\"uint256\"}],\"name\":\"transfer\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"f\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"t\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"a\",\"type\":\"uint256\"}],\"name\":\"transferFrom\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bool\",\"name\":\"b\",\"type\":\"bool\"}],\"name\":\"transferFromReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bool\",\"name\":\"b\",\"type\":\"bool\"}],\"name\":\"transferReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"transferredArgs\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"transferredFromArgs\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"}]"
+const Erc20ABI = "[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"s\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"a\",\"type\":\"uint256\"}],\"name\":\"approve\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"approveCalled\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bool\",\"name\":\"b\",\"type\":\"bool\"}],\"name\":\"approveReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"t\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"a\",\"type\":\"uint256\"}],\"name\":\"transfer\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"transferCalled\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"f\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"t\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"a\",\"type\":\"uint256\"}],\"name\":\"transferFrom\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bool\",\"name\":\"b\",\"type\":\"bool\"}],\"name\":\"transferFromReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bool\",\"name\":\"b\",\"type\":\"bool\"}],\"name\":\"transferReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"transferredFromCalled\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"}]"
 
 // Erc20Bin is the compiled bytecode used for deploying new contracts.
-var Erc20Bin = "0x608060405234801561001057600080fd5b50610728806100206000396000f3fe608060405234801561001057600080fd5b50600436106100935760003560e01c806342b6cdbc1161006657806342b6cdbc146101585780635cfbfd87146101745780636521b96a146101a55780639dd0ff37146101c1578063a9059cbb146101dd57610093565b8063095ea7b3146100985780630c82708a146100c8578063153afce9146100f857806323b872dd14610128575b600080fd5b6100b260048036038101906100ad9190610574565b61020d565b6040516100bf919061062f565b60405180910390f35b6100e260048036038101906100dd91906104fc565b61026a565b6040516100ef919061064a565b60405180910390f35b610112600480360381019061010d91906104fc565b610282565b60405161011f919061064a565b60405180910390f35b610142600480360381019061013d9190610525565b61029a565b60405161014f919061062f565b60405180910390f35b610172600480360381019061016d91906105b0565b610394565b005b61018e600480360381019061018991906104fc565b6103b1565b60405161019c929190610606565b60405180910390f35b6101bf60048036038101906101ba91906105b0565b6103f5565b005b6101db60048036038101906101d691906105b0565b610412565b005b6101f760048036038101906101f29190610574565b61042f565b604051610204919061062f565b60405180910390f35b6000816000808573ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002081905550600160009054906101000a900460ff16905092915050565b60006020528060005260406000206000915090505481565b60026020528060005260406000206000915090505481565b60006102a461048d565b83816000019073ffffffffffffffffffffffffffffffffffffffff16908173ffffffffffffffffffffffffffffffffffffffff16815250508281602001818152505080600460008773ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060008201518160000160006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555060208201518160010155905050600560009054906101000a900460ff169150509392505050565b80600360006101000a81548160ff02191690831515021790555050565b60046020528060005260406000206000915090508060000160009054906101000a900473ffffffffffffffffffffffffffffffffffffffff16908060010154905082565b80600560006101000a81548160ff02191690831515021790555050565b80600160006101000a81548160ff02191690831515021790555050565b600081600260008573ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002081905550600360009054906101000a900460ff16905092915050565b6040518060400160405280600073ffffffffffffffffffffffffffffffffffffffff168152602001600081525090565b6000813590506104cc816106ad565b92915050565b6000813590506104e1816106c4565b92915050565b6000813590506104f6816106db565b92915050565b60006020828403121561050e57600080fd5b600061051c848285016104bd565b91505092915050565b60008060006060848603121561053a57600080fd5b6000610548868287016104bd565b9350506020610559868287016104bd565b925050604061056a868287016104e7565b9150509250925092565b6000806040838503121561058757600080fd5b6000610595858286016104bd565b92505060206105a6858286016104e7565b9150509250929050565b6000602082840312156105c257600080fd5b60006105d0848285016104d2565b91505092915050565b6105e281610665565b82525050565b6105f181610677565b82525050565b610600816106a3565b82525050565b600060408201905061061b60008301856105d9565b61062860208301846105f7565b9392505050565b600060208201905061064460008301846105e8565b92915050565b600060208201905061065f60008301846105f7565b92915050565b600061067082610683565b9050919050565b60008115159050919050565b600073ffffffffffffffffffffffffffffffffffffffff82169050919050565b6000819050919050565b6106b681610665565b81146106c157600080fd5b50565b6106cd81610677565b81146106d857600080fd5b50565b6106e4816106a3565b81146106ef57600080fd5b5056fea2646970667358221220c6cf84fcb22baa033dced8afeb800dac731fec50651738aa4db5d4981dc3585664736f6c63430008000033"
+var Erc20Bin = "0x608060405234801561001057600080fd5b50610728806100206000396000f3fe608060405234801561001057600080fd5b50600436106100935760003560e01c80636521b96a116100665780636521b96a146101455780636581d543146101615780639dd0ff3714610191578063a9059cbb146101ad578063c1d2e9a1146101dd57610093565b806302fc1bfc14610098578063095ea7b3146100c957806323b872dd146100f957806342b6cdbc14610129575b600080fd5b6100b260048036038101906100ad91906104fc565b61020d565b6040516100c0929190610606565b60405180910390f35b6100e360048036038101906100de9190610574565b610251565b6040516100f0919061062f565b60405180910390f35b610113600480360381019061010e9190610525565b6102ae565b604051610120919061062f565b60405180910390f35b610143600480360381019061013e91906105b0565b6103a8565b005b61015f600480360381019061015a91906105b0565b6103c5565b005b61017b600480360381019061017691906104fc565b6103e2565b604051610188919061064a565b60405180910390f35b6101ab60048036038101906101a691906105b0565b6103fa565b005b6101c760048036038101906101c29190610574565b610417565b6040516101d4919061062f565b60405180910390f35b6101f760048036038101906101f291906104fc565b610475565b604051610204919061064a565b60405180910390f35b60046020528060005260406000206000915090508060000160009054906101000a900473ffffffffffffffffffffffffffffffffffffffff16908060010154905082565b6000816000808573ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002081905550600160009054906101000a900460ff16905092915050565b60006102b861048d565b83816000019073ffffffffffffffffffffffffffffffffffffffff16908173ffffffffffffffffffffffffffffffffffffffff16815250508281602001818152505080600460008773ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060008201518160000160006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555060208201518160010155905050600560009054906101000a900460ff169150509392505050565b80600360006101000a81548160ff02191690831515021790555050565b80600560006101000a81548160ff02191690831515021790555050565b60006020528060005260406000206000915090505481565b80600160006101000a81548160ff02191690831515021790555050565b600081600260008573ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002081905550600360009054906101000a900460ff16905092915050565b60026020528060005260406000206000915090505481565b6040518060400160405280600073ffffffffffffffffffffffffffffffffffffffff168152602001600081525090565b6000813590506104cc816106ad565b92915050565b6000813590506104e1816106c4565b92915050565b6000813590506104f6816106db565b92915050565b60006020828403121561050e57600080fd5b600061051c848285016104bd565b91505092915050565b60008060006060848603121561053a57600080fd5b6000610548868287016104bd565b9350506020610559868287016104bd565b925050604061056a868287016104e7565b9150509250925092565b6000806040838503121561058757600080fd5b6000610595858286016104bd565b92505060206105a6858286016104e7565b9150509250929050565b6000602082840312156105c257600080fd5b60006105d0848285016104d2565b91505092915050565b6105e281610665565b82525050565b6105f181610677565b82525050565b610600816106a3565b82525050565b600060408201905061061b60008301856105d9565b61062860208301846105f7565b9392505050565b600060208201905061064460008301846105e8565b92915050565b600060208201905061065f60008301846105f7565b92915050565b600061067082610683565b9050919050565b60008115159050919050565b600073ffffffffffffffffffffffffffffffffffffffff82169050919050565b6000819050919050565b6106b681610665565b81146106c157600080fd5b50565b6106cd81610677565b81146106d857600080fd5b50565b6106e4816106a3565b81146106ef57600080fd5b5056fea2646970667358221220f1d61833e0aae0429a1268000703c71bf9f2f81928733ade7066230237c4c00d64736f6c63430008000033"
 
 // DeployErc20 deploys a new Ethereum contract, binding an instance of Erc20 to it.
 func DeployErc20(auth *bind.TransactOpts, backend bind.ContractBackend) (common.Address, *types.Transaction, *Erc20, error) {
@@ -188,12 +188,12 @@ func (_Erc20 *Erc20TransactorRaw) Transact(opts *bind.TransactOpts, method strin
 	return _Erc20.Contract.contract.Transact(opts, method, params...)
 }
 
-// ApprovedArgs is a free data retrieval call binding the contract method 0x0c82708a.
+// ApproveCalled is a free data retrieval call binding the contract method 0x6581d543.
 //
-// Solidity: function approvedArgs(address ) view returns(uint256)
-func (_Erc20 *Erc20Caller) ApprovedArgs(opts *bind.CallOpts, arg0 common.Address) (*big.Int, error) {
+// Solidity: function approveCalled(address ) view returns(uint256)
+func (_Erc20 *Erc20Caller) ApproveCalled(opts *bind.CallOpts, arg0 common.Address) (*big.Int, error) {
 	var out []interface{}
-	err := _Erc20.contract.Call(opts, &out, "approvedArgs", arg0)
+	err := _Erc20.contract.Call(opts, &out, "approveCalled", arg0)
 
 	if err != nil {
 		return *new(*big.Int), err
@@ -205,26 +205,26 @@ func (_Erc20 *Erc20Caller) ApprovedArgs(opts *bind.CallOpts, arg0 common.Address
 
 }
 
-// ApprovedArgs is a free data retrieval call binding the contract method 0x0c82708a.
+// ApproveCalled is a free data retrieval call binding the contract method 0x6581d543.
 //
-// Solidity: function approvedArgs(address ) view returns(uint256)
-func (_Erc20 *Erc20Session) ApprovedArgs(arg0 common.Address) (*big.Int, error) {
-	return _Erc20.Contract.ApprovedArgs(&_Erc20.CallOpts, arg0)
+// Solidity: function approveCalled(address ) view returns(uint256)
+func (_Erc20 *Erc20Session) ApproveCalled(arg0 common.Address) (*big.Int, error) {
+	return _Erc20.Contract.ApproveCalled(&_Erc20.CallOpts, arg0)
 }
 
-// ApprovedArgs is a free data retrieval call binding the contract method 0x0c82708a.
+// ApproveCalled is a free data retrieval call binding the contract method 0x6581d543.
 //
-// Solidity: function approvedArgs(address ) view returns(uint256)
-func (_Erc20 *Erc20CallerSession) ApprovedArgs(arg0 common.Address) (*big.Int, error) {
-	return _Erc20.Contract.ApprovedArgs(&_Erc20.CallOpts, arg0)
+// Solidity: function approveCalled(address ) view returns(uint256)
+func (_Erc20 *Erc20CallerSession) ApproveCalled(arg0 common.Address) (*big.Int, error) {
+	return _Erc20.Contract.ApproveCalled(&_Erc20.CallOpts, arg0)
 }
 
-// TransferredArgs is a free data retrieval call binding the contract method 0x153afce9.
+// TransferCalled is a free data retrieval call binding the contract method 0xc1d2e9a1.
 //
-// Solidity: function transferredArgs(address ) view returns(uint256)
-func (_Erc20 *Erc20Caller) TransferredArgs(opts *bind.CallOpts, arg0 common.Address) (*big.Int, error) {
+// Solidity: function transferCalled(address ) view returns(uint256)
+func (_Erc20 *Erc20Caller) TransferCalled(opts *bind.CallOpts, arg0 common.Address) (*big.Int, error) {
 	var out []interface{}
-	err := _Erc20.contract.Call(opts, &out, "transferredArgs", arg0)
+	err := _Erc20.contract.Call(opts, &out, "transferCalled", arg0)
 
 	if err != nil {
 		return *new(*big.Int), err
@@ -236,29 +236,29 @@ func (_Erc20 *Erc20Caller) TransferredArgs(opts *bind.CallOpts, arg0 common.Addr
 
 }
 
-// TransferredArgs is a free data retrieval call binding the contract method 0x153afce9.
+// TransferCalled is a free data retrieval call binding the contract method 0xc1d2e9a1.
 //
-// Solidity: function transferredArgs(address ) view returns(uint256)
-func (_Erc20 *Erc20Session) TransferredArgs(arg0 common.Address) (*big.Int, error) {
-	return _Erc20.Contract.TransferredArgs(&_Erc20.CallOpts, arg0)
+// Solidity: function transferCalled(address ) view returns(uint256)
+func (_Erc20 *Erc20Session) TransferCalled(arg0 common.Address) (*big.Int, error) {
+	return _Erc20.Contract.TransferCalled(&_Erc20.CallOpts, arg0)
 }
 
-// TransferredArgs is a free data retrieval call binding the contract method 0x153afce9.
+// TransferCalled is a free data retrieval call binding the contract method 0xc1d2e9a1.
 //
-// Solidity: function transferredArgs(address ) view returns(uint256)
-func (_Erc20 *Erc20CallerSession) TransferredArgs(arg0 common.Address) (*big.Int, error) {
-	return _Erc20.Contract.TransferredArgs(&_Erc20.CallOpts, arg0)
+// Solidity: function transferCalled(address ) view returns(uint256)
+func (_Erc20 *Erc20CallerSession) TransferCalled(arg0 common.Address) (*big.Int, error) {
+	return _Erc20.Contract.TransferCalled(&_Erc20.CallOpts, arg0)
 }
 
-// TransferredFromArgs is a free data retrieval call binding the contract method 0x5cfbfd87.
+// TransferredFromCalled is a free data retrieval call binding the contract method 0x02fc1bfc.
 //
-// Solidity: function transferredFromArgs(address ) view returns(address to, uint256 amount)
-func (_Erc20 *Erc20Caller) TransferredFromArgs(opts *bind.CallOpts, arg0 common.Address) (struct {
+// Solidity: function transferredFromCalled(address ) view returns(address to, uint256 amount)
+func (_Erc20 *Erc20Caller) TransferredFromCalled(opts *bind.CallOpts, arg0 common.Address) (struct {
 	To     common.Address
 	Amount *big.Int
 }, error) {
 	var out []interface{}
-	err := _Erc20.contract.Call(opts, &out, "transferredFromArgs", arg0)
+	err := _Erc20.contract.Call(opts, &out, "transferredFromCalled", arg0)
 
 	outstruct := new(struct {
 		To     common.Address
@@ -275,24 +275,24 @@ func (_Erc20 *Erc20Caller) TransferredFromArgs(opts *bind.CallOpts, arg0 common.
 
 }
 
-// TransferredFromArgs is a free data retrieval call binding the contract method 0x5cfbfd87.
+// TransferredFromCalled is a free data retrieval call binding the contract method 0x02fc1bfc.
 //
-// Solidity: function transferredFromArgs(address ) view returns(address to, uint256 amount)
-func (_Erc20 *Erc20Session) TransferredFromArgs(arg0 common.Address) (struct {
+// Solidity: function transferredFromCalled(address ) view returns(address to, uint256 amount)
+func (_Erc20 *Erc20Session) TransferredFromCalled(arg0 common.Address) (struct {
 	To     common.Address
 	Amount *big.Int
 }, error) {
-	return _Erc20.Contract.TransferredFromArgs(&_Erc20.CallOpts, arg0)
+	return _Erc20.Contract.TransferredFromCalled(&_Erc20.CallOpts, arg0)
 }
 
-// TransferredFromArgs is a free data retrieval call binding the contract method 0x5cfbfd87.
+// TransferredFromCalled is a free data retrieval call binding the contract method 0x02fc1bfc.
 //
-// Solidity: function transferredFromArgs(address ) view returns(address to, uint256 amount)
-func (_Erc20 *Erc20CallerSession) TransferredFromArgs(arg0 common.Address) (struct {
+// Solidity: function transferredFromCalled(address ) view returns(address to, uint256 amount)
+func (_Erc20 *Erc20CallerSession) TransferredFromCalled(arg0 common.Address) (struct {
 	To     common.Address
 	Amount *big.Int
 }, error) {
-	return _Erc20.Contract.TransferredFromArgs(&_Erc20.CallOpts, arg0)
+	return _Erc20.Contract.TransferredFromCalled(&_Erc20.CallOpts, arg0)
 }
 
 // Approve is a paid mutator transaction binding the contract method 0x095ea7b3.

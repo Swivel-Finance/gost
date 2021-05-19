@@ -200,14 +200,14 @@ func (s *IVFZISuite) TestIVFZI() {
 	assert.Equal(amt, amount)
 
 	// first call to utoken transferfrom 'from' should be owner here...
-	args, err := s.Erc20.TransferredFromArgs(s.Env.Owner.Opts.From)
+	args, err := s.Erc20.TransferredFromCalled(s.Env.Owner.Opts.From)
 	assert.Nil(err)
 	assert.NotNil(args)
 	assert.Equal(args.To, order.Maker)
 	assert.Equal(args.Amount.Cmp(amount), 0)
 
 	// second call will be keyed by order.Maker
-	args, err = s.Erc20.TransferredFromArgs(order.Maker)
+	args, err = s.Erc20.TransferredFromCalled(order.Maker)
 	assert.Nil(err)
 	assert.NotNil(args)
 	assert.Equal(args.To, s.Dep.SwivelAddress)
@@ -216,14 +216,14 @@ func (s *IVFZISuite) TestIVFZI() {
 	assert.Equal(pFilled.Cmp(big.NewInt(0)), 1) // should be > 0 regardless
 
 	// call to utoken approve...
-	arg, err := s.Erc20.ApprovedArgs(s.Dep.CErc20Address)
+	arg, err := s.Erc20.ApproveCalled(s.Dep.CErc20Address)
 	assert.Nil(err)
 	assert.NotNil(arg)
 	// the arg here should be the pFilled
 	assert.Equal(arg, pFilled)
 
 	// the call to ctoken mint, don't reuse arg as they should actually both be pFilled
-	mintArg, err := s.CErc20.MintedArgs()
+	mintArg, err := s.CErc20.MintCalled()
 	assert.Nil(err)
 	assert.NotNil(mintArg)
 	assert.Equal(mintArg, pFilled)
