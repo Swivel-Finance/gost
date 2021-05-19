@@ -54,7 +54,7 @@ func (s *balancesOfSuite) SetupTest() {
 	}
 }
 
-func (s *balancesOfSuite) TestBalanceOf() {
+func (s *balancesOfSuite) TestBalancesOf() {
 	assert := assertions.New(s.T())
 
 	rate1 := big.NewInt(123456789)
@@ -85,6 +85,6 @@ func (s *balancesOfSuite) TestBalanceOf() {
 	assert.Equal(redeemable.Cmp(ZERO), 0)
 }
 
-func TestBalanceOfSuite(t *test.T) {
+func TestBalancesOfSuite(t *test.T) {
 	suite.Run(t, &balancesOfSuite{})
 }
