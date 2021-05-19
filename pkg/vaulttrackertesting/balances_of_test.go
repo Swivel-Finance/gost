@@ -11,7 +11,7 @@ import (
 	"github.com/swivel-finance/gost/test/vaulttracker"
 )
 
-type balanceOfSuite struct {
+type balancesOfSuite struct {
 	suite.Suite
 	Env          *Env
 	Dep          *Dep
@@ -19,7 +19,7 @@ type balanceOfSuite struct {
 	VaultTracker *vaulttracker.VaultTrackerSession // *Session objects are created by the go bindings
 }
 
-func (s *balanceOfSuite) SetupTest() {
+func (s *balancesOfSuite) SetupTest() {
 	var err error
 
 	s.Env = NewEnv(big.NewInt(ONE_ETH)) // each of the wallets in the env will begin with this balance
@@ -54,7 +54,7 @@ func (s *balanceOfSuite) SetupTest() {
 	}
 }
 
-func (s *balanceOfSuite) TestBalanceOf() {
+func (s *balancesOfSuite) TestBalanceOf() {
 	assert := assertions.New(s.T())
 
 	rate1 := big.NewInt(123456789)
@@ -86,5 +86,5 @@ func (s *balanceOfSuite) TestBalanceOf() {
 }
 
 func TestBalanceOfSuite(t *test.T) {
-	suite.Run(t, &balanceOfSuite{})
+	suite.Run(t, &balancesOfSuite{})
 }
