@@ -1,13 +1,14 @@
 package vaulttrackertesting
 
 import (
+	"math/big"
+	test "testing"
+
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	assertions "github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 	"github.com/swivel-finance/gost/test/mocks"
 	"github.com/swivel-finance/gost/test/vaulttracker"
-	"math/big"
-	test "testing"
 )
 
 type balanceOfSuite struct {
