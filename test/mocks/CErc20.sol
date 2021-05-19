@@ -21,7 +21,7 @@ contract CErc20 {
   /// @dev allows us to dictate return from redeemUnderlying().
   uint256 private redeemUnderlyingReturn;
   /// @dev the last amount redeemUnderlying was called with
-  uint256 public redeemedUnderlyingCalled;
+  uint256 public redeemUnderlyingCalled;
 
   /// @dev allows us to dictate return from exchangeRateCurrent().
   uint256 private exchangeRateCurrentReturn;
@@ -45,7 +45,7 @@ contract CErc20 {
   }
 
   function redeemUnderlying(uint256 n) public returns (uint256) {
-    redeemedUnderlyingCalled = n;
+    redeemUnderlyingCalled = n;
     return redeemUnderlyingReturn;
   }
 

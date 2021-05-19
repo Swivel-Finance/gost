@@ -189,7 +189,7 @@ func (s *EVFZESuite) TestEVFZE() {
 	assert.Equal(amt, amount)
 
 	// first call to utoken transferfrom 'from' should be maker here...
-	args, err := s.Erc20.TransferredFromCalled(order.Maker)
+	args, err := s.Erc20.TransferFromCalled(order.Maker)
 	assert.Nil(err)
 	assert.NotNil(args)
 	assert.Equal(args.To, s.Env.Owner.Opts.From)

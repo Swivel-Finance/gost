@@ -190,14 +190,14 @@ func (s *IZFVISuite) TestIZFVI() {
 	assert.Equal(amt, amount)
 
 	// first call to utoken transferfrom 'from' should be maker here...
-	args, err := s.Erc20.TransferredFromCalled(order.Maker)
+	args, err := s.Erc20.TransferFromCalled(order.Maker)
 	assert.Nil(err)
 	assert.NotNil(args)
 	assert.Equal(args.To, s.Env.Owner.Opts.From)
 	assert.Equal(args.Amount.Cmp(big.NewInt(0)), 1) // amount is pFilled here so should be > 0
 
 	// second call will be keyed by owner...
-	args, err = s.Erc20.TransferredFromCalled(s.Env.Owner.Opts.From)
+	args, err = s.Erc20.TransferFromCalled(s.Env.Owner.Opts.From)
 	assert.Nil(err)
 	assert.NotNil(args)
 	assert.Equal(args.To, s.Dep.SwivelAddress)

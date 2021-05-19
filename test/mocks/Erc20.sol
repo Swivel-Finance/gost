@@ -25,7 +25,7 @@ contract Erc20 {
   bool private transferReturn;
 
   // mapping of arguments sent to transferFrom. key is passed from address.
-  mapping (address => TransferFromArgs) public transferredFromCalled;
+  mapping (address => TransferFromArgs) public transferFromCalled;
   // a boolean flag which allows us to dictate the return of transferFrom().
   bool private transferFromReturn;
 
@@ -51,7 +51,7 @@ contract Erc20 {
     TransferFromArgs memory args;
     args.to = t;
     args.amount = a;
-    transferredFromCalled[f] = args;
+    transferFromCalled[f] = args;
     return transferFromReturn;
   }
 

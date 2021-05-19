@@ -200,14 +200,14 @@ func (s *IVFZISuite) TestIVFZI() {
 	assert.Equal(amt, amount)
 
 	// first call to utoken transferfrom 'from' should be owner here...
-	args, err := s.Erc20.TransferredFromCalled(s.Env.Owner.Opts.From)
+	args, err := s.Erc20.TransferFromCalled(s.Env.Owner.Opts.From)
 	assert.Nil(err)
 	assert.NotNil(args)
 	assert.Equal(args.To, order.Maker)
 	assert.Equal(args.Amount.Cmp(amount), 0)
 
 	// second call will be keyed by order.Maker
-	args, err = s.Erc20.TransferredFromCalled(order.Maker)
+	args, err = s.Erc20.TransferFromCalled(order.Maker)
 	assert.Nil(err)
 	assert.NotNil(args)
 	assert.Equal(args.To, s.Dep.SwivelAddress)

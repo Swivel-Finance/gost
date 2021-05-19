@@ -112,7 +112,7 @@ func (s *tokenTestSuite) TestTransferFrom() {
 	s.Env.Blockchain.Commit()
 
 	// mapping uses the from address as key
-	stored, err := s.Erc20.TransferredFromCalled(s.Env.User1.Opts.From)
+	stored, err := s.Erc20.TransferFromCalled(s.Env.User1.Opts.From)
 	assert.Nil(err)
 	assert.Equal(stored.To, s.Env.Owner.Opts.From)
 	assert.Equal(stored.Amount, amount)
@@ -176,7 +176,7 @@ func (s *tokenTestSuite) TestRedeemUnderlying() {
 	assert.Nil(err)
 	s.Env.Blockchain.Commit()
 
-	stored, err := s.CErc20.RedeemedUnderlyingCalled()
+	stored, err := s.CErc20.RedeemUnderlyingCalled()
 	assert.Nil(err)
 	assert.Equal(redeemed, stored)
 }
