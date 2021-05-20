@@ -145,11 +145,26 @@ func (s *matureMarketTest) TestMaturityReached() {
 	assert.Nil(err)
 	s.Env.Blockchain.Commit()
 
+	rate := big.NewInt(123456789)
+	tx, err = s.CErc20.ExchangeRateCurrentReturns(rate)
+	assert.Nil(err)
+	assert.NotNil(tx)
+
+	s.Env.Blockchain.Commit()
+
 	tx, err = s.MarketPlace.MatureMarket(underlying, maturity)
 	assert.Nil(err)
 	assert.NotNil(tx)
 
 	s.Env.Blockchain.Commit()
+
+	maturityRate, err := s.MarketPlace.MaturityRate(underlying, maturity)
+	assert.Nil(err)
+	assert.Equal(rate, maturityRate)
+
+	mature, err := s.MarketPlace.Mature(underlying, maturity)
+	assert.Nil(err)
+	assert.Equal(true, mature)
 
 	receipt, err := s.Env.Blockchain.TransactionReceipt(context.Background(), tx.Hash())
 	assert.Nil(err)
