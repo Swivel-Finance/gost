@@ -1,6 +1,7 @@
 .PHONY: compile_solidity_mock_erc compile_go_mock_erc compile_mock_erc
 .PHONY: compile_solidity_mock_cerc compile_go_mock_cerc compile_mock_cerc
 .PHONY: compile_solidity_mock_marketplace compile_go_mock_marketplace
+.PHONY: compile_go_mock_vaulttracker compile_go_mock_zctoken
 .PHONY: compile_mocks
 
 # TODO under? api-specific sol?
@@ -56,7 +57,16 @@ compile_go_mock_marketplace:
 
 compile_mock_marketplace: compile_solidity_mock_marketplace compile_go_mock_marketplace
 
-compile_mocks: compile_mock_erc compile_mock_cerc compile_mock_marketplace
+# vaulttracker and zctoken do not require a solidity compile step as they are directly imported by another contract which compiles them
+compile_go_mock_vaulttracker:
+	@echo "compiling abi and bin files to golang"
+	abigen --abi ./test/marketplace/VaultTracker.abi --bin ./test/marketplace/VaultTracker.bin -pkg mocks -type VaultTracker -out ./test/mocks/vaulttracker.go
+
+compile_go_mock_zctoken:
+	@echo "compiling abi and bin files to golang"
+	abigen --abi ./test/marketplace/ZcToken.abi --bin ./test/marketplace/ZcToken.bin -pkg mocks -type ZcToken -out ./test/mocks/zctoken.go
+
+compile_mocks: compile_mock_erc compile_mock_cerc compile_mock_marketplace compile_go_mock_vaulttracker compile_go_mock_zctoken
 
 # Real Tokens
 compile_solidity_zct:
@@ -125,7 +135,7 @@ compile_go_vaulttracker_test:
 
 compile_vaulttracker_test: compile_solidity_vaulttracker_test compile_go_vaulttracker_test
 
-compile_test: compile_mocks compile_fakes compile_tokens compile_swivel_test compile_marketplace_test compile_vaulttracker_test
+compile_test: compile_fakes compile_tokens compile_swivel_test compile_marketplace_test compile_vaulttracker_test compile_mocks
 
 # Cleaning
 clean_test_abi:
