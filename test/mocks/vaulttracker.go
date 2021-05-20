@@ -27,10 +27,10 @@ var (
 )
 
 // VaultTrackerABI is the input ABI used to generate the binding from.
-const VaultTrackerABI = "[{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"m\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"c\",\"type\":\"address\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"inputs\":[],\"name\":\"cTokenAddr\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"maturity\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"n\",\"type\":\"uint256\"}],\"name\":\"maturityReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]"
+const VaultTrackerABI = "[{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"m\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"c\",\"type\":\"address\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"inputs\":[],\"name\":\"cTokenAddr\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"matureVault\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bool\",\"name\":\"m\",\"type\":\"bool\"}],\"name\":\"matureVaultReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"maturity\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"n\",\"type\":\"uint256\"}],\"name\":\"maturityReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]"
 
 // VaultTrackerBin is the compiled bytecode used for deploying new contracts.
-var VaultTrackerBin = "0x608060405234801561001057600080fd5b50604051610350380380610350833981810160405281019061003291906100aa565b81600181905550806000806101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff1602179055505050610150565b60008151905061008f81610122565b92915050565b6000815190506100a481610139565b92915050565b600080604083850312156100bd57600080fd5b60006100cb85828601610095565b92505060206100dc85828601610080565b9150509250929050565b60006100f1826100f8565b9050919050565b600073ffffffffffffffffffffffffffffffffffffffff82169050919050565b6000819050919050565b61012b816100e6565b811461013657600080fd5b50565b61014281610118565b811461014d57600080fd5b50565b6101f18061015f6000396000f3fe608060405234801561001057600080fd5b50600436106100415760003560e01c8063204f83f914610046578063b4c4a4c814610064578063b7dd348314610080575b600080fd5b61004e61009e565b60405161005b919061014d565b60405180910390f35b61007e600480360381019061007991906100eb565b6100a8565b005b6100886100b2565b6040516100959190610132565b60405180910390f35b6000600154905090565b8060018190555050565b60008054906101000a900473ffffffffffffffffffffffffffffffffffffffff1681565b6000813590506100e5816101a4565b92915050565b6000602082840312156100fd57600080fd5b600061010b848285016100d6565b91505092915050565b61011d81610168565b82525050565b61012c8161019a565b82525050565b60006020820190506101476000830184610114565b92915050565b60006020820190506101626000830184610123565b92915050565b60006101738261017a565b9050919050565b600073ffffffffffffffffffffffffffffffffffffffff82169050919050565b6000819050919050565b6101ad8161019a565b81146101b857600080fd5b5056fea2646970667358221220d399eddb5731edc38c50a05ba183d0321606fac3d537ddb86120d6fbfd84def364736f6c63430008000033"
+var VaultTrackerBin = "0x608060405234801561001057600080fd5b5060405161045f38038061045f833981810160405281019061003291906100aa565b81600181905550806000806101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff1602179055505050610150565b60008151905061008f81610122565b92915050565b6000815190506100a481610139565b92915050565b600080604083850312156100bd57600080fd5b60006100cb85828601610095565b92505060206100dc85828601610080565b9150509250929050565b60006100f1826100f8565b9050919050565b600073ffffffffffffffffffffffffffffffffffffffff82169050919050565b6000819050919050565b61012b816100e6565b811461013657600080fd5b50565b61014281610118565b811461014d57600080fd5b50565b6103008061015f6000396000f3fe608060405234801561001057600080fd5b50600436106100575760003560e01c8063204f83f91461005c5780636b868d511461007a578063b4c4a4c814610098578063b7dd3483146100b4578063da3de9e9146100d2575b600080fd5b6100646100ee565b6040516100719190610239565b60405180910390f35b6100826100f8565b60405161008f919061021e565b60405180910390f35b6100b260048036038101906100ad91906101ad565b61010f565b005b6100bc610119565b6040516100c99190610203565b60405180910390f35b6100ec60048036038101906100e79190610184565b61013d565b005b6000600154905090565b6000600260009054906101000a900460ff16905090565b8060018190555050565b60008054906101000a900473ffffffffffffffffffffffffffffffffffffffff1681565b80600260006101000a81548160ff02191690831515021790555050565b6000813590506101698161029c565b92915050565b60008135905061017e816102b3565b92915050565b60006020828403121561019657600080fd5b60006101a48482850161015a565b91505092915050565b6000602082840312156101bf57600080fd5b60006101cd8482850161016f565b91505092915050565b6101df81610254565b82525050565b6101ee81610266565b82525050565b6101fd81610292565b82525050565b600060208201905061021860008301846101d6565b92915050565b600060208201905061023360008301846101e5565b92915050565b600060208201905061024e60008301846101f4565b92915050565b600061025f82610272565b9050919050565b60008115159050919050565b600073ffffffffffffffffffffffffffffffffffffffff82169050919050565b6000819050919050565b6102a581610266565b81146102b057600080fd5b50565b6102bc81610292565b81146102c757600080fd5b5056fea26469706673582212203faaa4f773f2f03631496dc0888e233d63d3dc020a2ba8d170fcd8b8fd0ca7a564736f6c63430008000033"
 
 // DeployVaultTracker deploys a new Ethereum contract, binding an instance of VaultTracker to it.
 func DeployVaultTracker(auth *bind.TransactOpts, backend bind.ContractBackend, m *big.Int, c common.Address) (common.Address, *types.Transaction, *VaultTracker, error) {
@@ -248,6 +248,48 @@ func (_VaultTracker *VaultTrackerSession) Maturity() (*big.Int, error) {
 // Solidity: function maturity() view returns(uint256)
 func (_VaultTracker *VaultTrackerCallerSession) Maturity() (*big.Int, error) {
 	return _VaultTracker.Contract.Maturity(&_VaultTracker.CallOpts)
+}
+
+// MatureVault is a paid mutator transaction binding the contract method 0x6b868d51.
+//
+// Solidity: function matureVault() returns(bool)
+func (_VaultTracker *VaultTrackerTransactor) MatureVault(opts *bind.TransactOpts) (*types.Transaction, error) {
+	return _VaultTracker.contract.Transact(opts, "matureVault")
+}
+
+// MatureVault is a paid mutator transaction binding the contract method 0x6b868d51.
+//
+// Solidity: function matureVault() returns(bool)
+func (_VaultTracker *VaultTrackerSession) MatureVault() (*types.Transaction, error) {
+	return _VaultTracker.Contract.MatureVault(&_VaultTracker.TransactOpts)
+}
+
+// MatureVault is a paid mutator transaction binding the contract method 0x6b868d51.
+//
+// Solidity: function matureVault() returns(bool)
+func (_VaultTracker *VaultTrackerTransactorSession) MatureVault() (*types.Transaction, error) {
+	return _VaultTracker.Contract.MatureVault(&_VaultTracker.TransactOpts)
+}
+
+// MatureVaultReturns is a paid mutator transaction binding the contract method 0xda3de9e9.
+//
+// Solidity: function matureVaultReturns(bool m) returns()
+func (_VaultTracker *VaultTrackerTransactor) MatureVaultReturns(opts *bind.TransactOpts, m bool) (*types.Transaction, error) {
+	return _VaultTracker.contract.Transact(opts, "matureVaultReturns", m)
+}
+
+// MatureVaultReturns is a paid mutator transaction binding the contract method 0xda3de9e9.
+//
+// Solidity: function matureVaultReturns(bool m) returns()
+func (_VaultTracker *VaultTrackerSession) MatureVaultReturns(m bool) (*types.Transaction, error) {
+	return _VaultTracker.Contract.MatureVaultReturns(&_VaultTracker.TransactOpts, m)
+}
+
+// MatureVaultReturns is a paid mutator transaction binding the contract method 0xda3de9e9.
+//
+// Solidity: function matureVaultReturns(bool m) returns()
+func (_VaultTracker *VaultTrackerTransactorSession) MatureVaultReturns(m bool) (*types.Transaction, error) {
+	return _VaultTracker.Contract.MatureVaultReturns(&_VaultTracker.TransactOpts, m)
 }
 
 // MaturityReturns is a paid mutator transaction binding the contract method 0xb4c4a4c8.
