@@ -1,10 +1,11 @@
 package marketplacetesting
 
 import (
+	"math/big"
+
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/swivel-finance/gost/test/marketplace"
 	"github.com/swivel-finance/gost/test/mocks"
-	"math/big"
 )
 
 // TODO mock for marketplace...

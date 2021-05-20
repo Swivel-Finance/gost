@@ -2,7 +2,6 @@ package marketplacetesting
 
 import (
 	"context"
-	"github.com/swivel-finance/gost/test/mocks"
 	"math/big"
 	test "testing"
 	"time"
@@ -12,6 +11,7 @@ import (
 	assertions "github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 	"github.com/swivel-finance/gost/test/marketplace"
+	"github.com/swivel-finance/gost/test/mocks"
 )
 
 type matureMarketTest struct {
