@@ -12,6 +12,7 @@
 
 pragma solidity 0.8.0;
 
+import './Abstracts.sol';
 import './ZcToken.sol';
 import './VaultTracker.sol';
 
@@ -30,7 +31,7 @@ contract MarketPlace {
 
   // TODO what should be indexed here?
   event Create(address indexed underlying, uint256 indexed maturity, address cToken, address zcToken); 
-  event Mature(address underlying, uint256 maturity, uint256 maturityRate, uint256 matured);
+  event Mature(address indexed underlying, uint256 indexed maturity, uint256 maturityRate, uint256 matured);
 
   /// @notice Allows the owner to create new markets
   /// @param u Underlying token address associated with the new market
@@ -56,22 +57,25 @@ contract MarketPlace {
     return true;
   }
 
+  /// @notice Can be called after maturity, allowing all of the zcTokens to earn floating interest on Compound until they release their funds
+  /// @param u Underlying token address associated with the new market
+  /// @param m Maturity timestamp of the new market
   function matureMarket(address u, uint256 m) public returns (bool) {
-    // require mature...
-    // window...
-    // CErc20...
-    // zcToken...
-    // Vault...
+    require(mature[u][m] == false, 'Market already matured');
+    require(block.timestamp >= ZcToken(markets[u][m].zcTokenAddr).maturity(), "Maturity not reached");
 
-    // require zcToken.maturity...
+    // Set the base maturity cToken exchange rate at maturity to the current cToken exchange rate
+    uint256 currentExchangeRate = CErc20(markets[u][m].cTokenAddr).exchangeRateCurrent();
+    maturityRate[u][m] = currentExchangeRate;
 
-    // maturity rate stuff...
+    // Set Floating Market "matured" to true
+    require(VaultTracker(markets[u][m].vaultAddr).matureVault() == true, 'Maturity not reached');
 
-    // why does vault have matureMarket ?
+    // Set the maturity state to true (for zcb market)
+    mature[u][m] = true;
 
-    // set mature...
-
-    // emit mature
+    // TODO review indexed args...
+    emit Mature(u, m, block.timestamp, currentExchangeRate);
 
     return true;
   }
