@@ -61,15 +61,15 @@ contract MarketPlace {
   /// @param u Underlying token address associated with the new market
   /// @param m Maturity timestamp of the new market
   function matureMarket(address u, uint256 m) public returns (bool) {
-    require(mature[u][m] == false, 'Market already matured');
-    require(block.timestamp >= ZcToken(markets[u][m].zcTokenAddr).maturity(), "Maturity not reached");
+    require(mature[u][m] == false, 'market already matured');
+    require(block.timestamp >= ZcToken(markets[u][m].zcTokenAddr).maturity(), "maturity not reached");
 
     // Set the base maturity cToken exchange rate at maturity to the current cToken exchange rate
     uint256 currentExchangeRate = CErc20(markets[u][m].cTokenAddr).exchangeRateCurrent();
     maturityRate[u][m] = currentExchangeRate;
 
     // Set Floating Market "matured" to true
-    require(VaultTracker(markets[u][m].vaultAddr).matureVault() == true, 'Maturity not reached');
+    require(VaultTracker(markets[u][m].vaultAddr).matureVault() == true, 'maturity not reached');
 
     // Set the maturity state to true (for zcb market)
     mature[u][m] = true;

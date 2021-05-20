@@ -72,7 +72,7 @@ contract VaultTracker {
   /// @param o Address that owns a timelock in the vault
   /// @param a Amount to ...
   function removeNotional(address o, uint256 a) public onlyAdmin(admin) returns (bool) {
-    require(vaults[o].notional >= a, "Amount exceeds vault balance");
+    require(vaults[o].notional >= a, "amount exceeds vault balance");
 
     uint256 yield;
     uint256 interest;
@@ -141,7 +141,7 @@ contract VaultTracker {
   /// @param t Address recipient of the amount
   /// @param a Amount to transfer
   function transfer(address t, uint256 a) public returns (bool) {
-    require(vaults[msg.sender].notional >= a, "Amount exceeds vault balance");
+    require(vaults[msg.sender].notional >= a, "amount exceeds vault balance");
 
     uint256 yield;
     uint256 interest;

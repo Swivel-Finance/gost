@@ -86,7 +86,7 @@ func (s *transferSuite) TestTransferFailRequireAmount() {
 	amount2 := big.NewInt(1000)
 	tx, err = s.VaultTracker.Transfer(s.Env.User1.Opts.From, amount2)
 	assert.NotNil(err)
-	assert.Regexp("Amount exceeds vault balance", err.Error())
+	assert.Regexp("amount exceeds vault balance", err.Error())
 	assert.Nil(tx)
 
 	s.Env.Blockchain.Commit()
