@@ -5,12 +5,15 @@
 // TODO add setter for swivel address (only admin, once only if desired...)
 // TODO add onlySwivel
 // TODO add cTokenAddress
-// TODO add mintZcTokenAddingNotional
-// TODO add transferFromZcToken // remember to arrange args correcly for transferFrom
+// TODO add p2p methods
+// TODO add custodial methods
 
 // NOTE the pattern [underlying, maturity*, cToken, ...]
 
 pragma solidity 0.8.0;
+
+import './ZcToken.sol';
+import './VaultTracker.sol';
 
 contract MarketPlace {
   address public admin = msg.sender;
@@ -18,7 +21,7 @@ contract MarketPlace {
   struct Market {
     address cTokenAddr;
     address zcTokenAddr;
-    address vaultAddr; // TODO explore the relationship between MarketPlace.Market <-> VaultTracker.Vault (and the relationship of Swivel to both)
+    address vaultAddr;
   }
 
   mapping (address => mapping (uint256 => Market)) public markets;
@@ -26,30 +29,29 @@ contract MarketPlace {
   mapping (address => mapping (uint256 => uint256)) public maturityRate;
 
   // TODO what should be indexed here?
-  event Create(address underlying, uint256 maturity, address cToken, address zcToken); 
-  event Mature(address underlying, uint256 maturity, uint256 maturityRate, uint256 maturedOn);
+  event Create(address indexed underlying, uint256 indexed maturity, address cToken, address zcToken); 
+  event Mature(address underlying, uint256 maturity, uint256 maturityRate, uint256 matured);
 
-  // TODO constructor - likely passing the Swivel contract address...
-
-    /// @notice Allows the owner to create new markets
-    /// @param n Name of the new zcToken market
-    /// @param s Symbol of the new zcToken market
-    /// @param u Underlying token address associated with the new market
-    /// @param m Maturity timestamp of the new market
-    /// @param c cToken address associated with underlying for the new market 
+  /// @notice Allows the owner to create new markets
+  /// @param u Underlying token address associated with the new market
+  /// @param m Maturity timestamp of the new market
+  /// @param c cToken address associated with underlying for the new market 
+  /// @param n Name of the new zcToken market
+  /// @param s Symbol of the new zcToken market
   function createMarket(
-    string memory n,
-    string memory s,
     address u,
     uint256 m,
-    address c
+    address c,
+    string memory n,
+    string memory s
   ) public onlyAdmin(admin) returns (bool) {
     // TODO can we live with the factory pattern here both bytecode size wise and CREATE opcode cost wise?
-    // address zctAddr = address(new ZcToken(n, s, u, m));
-    // address vAddr = address(new VaultTracker(u, m, c));
-    // markets[u][m] = Market(c, zctAddr, vAddr);
+    address zctAddr = address(new ZcToken(u, m, n, s));
+    address vAddr = address(new VaultTracker(m, c));
+    markets[u][m] = Market(c, zctAddr, vAddr);
 
-    // emit Create(u, m, c, zctAddr);
+    // TODO review indexed args...
+    emit Create(u, m, c, zctAddr);
 
     return true;
   }
