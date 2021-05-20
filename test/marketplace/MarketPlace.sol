@@ -12,8 +12,8 @@
 
 pragma solidity 0.8.0;
 
-import './ZcToken.sol';
 import './Abstracts.sol';
+import './ZcToken.sol';
 import './VaultTracker.sol';
 
 contract MarketPlace {
@@ -65,17 +65,17 @@ contract MarketPlace {
     require(block.timestamp >= ZcToken(markets[u][m].zcTokenAddr).maturity(), "Maturity not reached");
 
     // Set the base maturity cToken exchange rate at maturity to the current cToken exchange rate
-    uint256 exchangeRateCurrent = CErc20(markets[u][m].cTokenAddr).exchangeRateCurrent();
-    maturityRate[u][m] = exchangeRateCurrent;
+    uint256 currentExchangeRate = CErc20(markets[u][m].cTokenAddr).exchangeRateCurrent();
+    maturityRate[u][m] = currentExchangeRate;
 
     // Set Floating Market "matured" to true
-    VaultTracker(markets[u][m].vaultAddr).matureVault();
+    require(VaultTracker(markets[u][m].vaultAddr).matureVault() == true, 'Maturity not reached');
 
     // Set the maturity state to true (for zcb market)
     mature[u][m] = true;
 
     // TODO review indexed args...
-    emit Mature(u, m, block.timestamp, exchangeRateCurrent);
+    emit Mature(u, m, block.timestamp, currentExchangeRate);
 
     return true;
   }

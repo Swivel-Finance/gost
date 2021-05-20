@@ -18,7 +18,7 @@ type matureMarketTest struct {
 	suite.Suite
 	Env         *Env
 	Dep         *Dep
-	CErc20		*mocks.CErc20Session
+	CErc20      *mocks.CErc20Session
 	MarketPlace *marketplace.MarketPlaceSession // *Session objects are created by the go bindings
 }
 
@@ -139,6 +139,22 @@ func (s *matureMarketTest) TestMaturityReached() {
 
 	zcMaturity, err := zcToken.Maturity()
 	assert.Equal(maturity, zcMaturity)
+
+	vaultTrackerContract, err := mocks.NewVaultTracker(market.VaultAddr, s.Env.Blockchain)
+	vaultTracker := &mocks.VaultTrackerSession{
+		Contract: vaultTrackerContract,
+		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
+		TransactOpts: bind.TransactOpts{
+			From:   s.Env.Owner.Opts.From,
+			Signer: s.Env.Owner.Opts.Signer,
+		},
+	}
+
+	tx, err = vaultTracker.MatureVaultReturns(true)
+	assert.Nil(err)
+	assert.NotNil(tx)
+
+	s.Env.Blockchain.Commit()
 
 	// move past the maturity
 	err = s.Env.Blockchain.AdjustTime(MATURITY * time.Second)
