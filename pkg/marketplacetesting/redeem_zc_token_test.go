@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
-	"github.com/ethereum/go-ethereum/common"
 	assertions "github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 	"github.com/swivel-finance/gost/test/marketplace"
@@ -17,7 +16,6 @@ type redeemZcTokenSuite struct {
 	suite.Suite
 	Env         *Env
 	Dep         *Dep
-	Erc20Addr   common.Address
 	Erc20       *mocks.Erc20Session
 	CErc20      *mocks.CErc20Session
 	MarketPlace *marketplace.MarketPlaceSession // *Session objects are created by the go bindings
@@ -39,17 +37,10 @@ func (s *redeemZcTokenSuite) SetupTest() {
 	}
 	s.Env.Blockchain.Commit()
 
-	ercAddress, _, ercContract, ercErr := mocks.DeployErc20(s.Env.Owner.Opts, s.Env.Blockchain)
-
-	if ercErr != nil {
-		panic(err)
-	}
-
 	s.Env.Blockchain.Commit()
 
-	s.Erc20Addr = ercAddress
 	s.Erc20 = &mocks.Erc20Session{
-		Contract: ercContract,
+		Contract: s.Dep.Erc20,
 		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
 		TransactOpts: bind.TransactOpts{
 			From:   s.Env.Owner.Opts.From,
@@ -79,7 +70,7 @@ func (s *redeemZcTokenSuite) SetupTest() {
 
 func (s *redeemZcTokenSuite) TestRedeemZcTokenNotMaturedRequireFails() {
 	assert := assertions.New(s.T())
-	underlying := s.Erc20Addr
+	underlying := s.Dep.Erc20Address
 	maturity := s.Dep.Maturity
 	ctoken := s.Dep.CErc20Address
 
@@ -140,7 +131,7 @@ func (s *redeemZcTokenSuite) TestRedeemZcTokenNotMaturedRequireFails() {
 
 func (s *redeemZcTokenSuite) TestRedeemZcTokenNotMatured() {
 	assert := assertions.New(s.T())
-	underlying := s.Erc20Addr
+	underlying := s.Dep.Erc20Address
 	maturity := s.Dep.Maturity
 	ctoken := s.Dep.CErc20Address
 
@@ -241,7 +232,7 @@ func (s *redeemZcTokenSuite) TestRedeemZcTokenNotMatured() {
 
 func (s *redeemZcTokenSuite) TestRedeemZcTokenNotMaturedBurnFails() {
 	assert := assertions.New(s.T())
-	underlying := s.Erc20Addr
+	underlying := s.Dep.Erc20Address
 	maturity := s.Dep.Maturity
 	ctoken := s.Dep.CErc20Address
 
@@ -313,7 +304,7 @@ func (s *redeemZcTokenSuite) TestRedeemZcTokenNotMaturedBurnFails() {
 
 func (s *redeemZcTokenSuite) TestRedeemZcTokenNotMaturedRedeemUnderlyingFails() {
 	assert := assertions.New(s.T())
-	underlying := s.Erc20Addr
+	underlying := s.Dep.Erc20Address
 	maturity := s.Dep.Maturity
 	ctoken := s.Dep.CErc20Address
 
@@ -391,7 +382,7 @@ func (s *redeemZcTokenSuite) TestRedeemZcTokenNotMaturedRedeemUnderlyingFails() 
 
 func (s *redeemZcTokenSuite) TestRedeemZcTokenNotMaturedTransferFails() {
 	assert := assertions.New(s.T())
-	underlying := s.Erc20Addr
+	underlying := s.Dep.Erc20Address
 	maturity := s.Dep.Maturity
 	ctoken := s.Dep.CErc20Address
 
@@ -475,7 +466,7 @@ func (s *redeemZcTokenSuite) TestRedeemZcTokenNotMaturedTransferFails() {
 
 func (s *redeemZcTokenSuite) TestRedeemZcTokenMatured() {
 	assert := assertions.New(s.T())
-	underlying := s.Erc20Addr
+	underlying := s.Dep.Erc20Address
 	maturity := s.Dep.Maturity
 	ctoken := s.Dep.CErc20Address
 
@@ -590,7 +581,7 @@ func (s *redeemZcTokenSuite) TestRedeemZcTokenMatured() {
 
 func (s *redeemZcTokenSuite) TestRedeemZcTokenMaturedBurnFails() {
 	assert := assertions.New(s.T())
-	underlying := s.Erc20Addr
+	underlying := s.Dep.Erc20Address
 	maturity := s.Dep.Maturity
 	ctoken := s.Dep.CErc20Address
 
@@ -676,7 +667,7 @@ func (s *redeemZcTokenSuite) TestRedeemZcTokenMaturedBurnFails() {
 
 func (s *redeemZcTokenSuite) TestRedeemZcTokenMaturedRedeemUnderlyingFails() {
 	assert := assertions.New(s.T())
-	underlying := s.Erc20Addr
+	underlying := s.Dep.Erc20Address
 	maturity := s.Dep.Maturity
 	ctoken := s.Dep.CErc20Address
 
@@ -768,7 +759,7 @@ func (s *redeemZcTokenSuite) TestRedeemZcTokenMaturedRedeemUnderlyingFails() {
 
 func (s *redeemZcTokenSuite) TestRedeemZcTokenMaturedTransferFails() {
 	assert := assertions.New(s.T())
-	underlying := s.Erc20Addr
+	underlying := s.Dep.Erc20Address
 	maturity := s.Dep.Maturity
 	ctoken := s.Dep.CErc20Address
 
