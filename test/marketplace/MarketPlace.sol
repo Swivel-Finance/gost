@@ -30,13 +30,13 @@ contract MarketPlace {
   mapping (address => mapping (uint256 => uint256)) public maturityRate;
 
   // TODO what should be indexed here?
-  event Create(address indexed underlying, uint256 indexed maturity, address cToken, address zcToken); 
+  event Create(address indexed underlying, uint256 indexed maturity, address cToken, address zcToken);
   event Mature(address indexed underlying, uint256 indexed maturity, uint256 maturityRate, uint256 matured);
 
   /// @notice Allows the owner to create new markets
   /// @param u Underlying token address associated with the new market
   /// @param m Maturity timestamp of the new market
-  /// @param c cToken address associated with underlying for the new market 
+  /// @param c cToken address associated with underlying for the new market
   /// @param n Name of the new zcToken market
   /// @param s Symbol of the new zcToken market
   function createMarket(
@@ -142,7 +142,7 @@ contract MarketPlace {
     uint256 rateDifference = CErc20(markets[u][m].cTokenAddr).exchangeRateCurrent() - maturityRate[u][m];
 
     // Calculate the yield generated after maturity in %. Precise to 9 decimals (5.25% = .0525 = 52500000)
-    uint256 residualYield = (((rateDifference * 1e26) / maturityRate[u][m])/1e17)+1E9;
+    uint256 residualYield = (((rateDifference * 1e26) / maturityRate[u][m]) / 1e17) + 1E9;
 
     // Calculate the total amount of underlying principle to return
     return (residualYield * a) / 1e9;
