@@ -85,8 +85,6 @@ contract MarketPlace {
   /// @param m Maturity timestamp of the new market
   /// @param a Amount of zcTokens being redeemed
   function redeemZcToken(address u, uint256 m, uint256 a) public returns (bool) {
-    // TODO Do we use a require here and require it to have been matured, or attempt to mature if it has not? Both require a comparison (just tested, if statement is cheaper)
-
     // If market hasn't matured, mature it and redeem exactly the amount
     if (mature[u][m] == false) {
       // Attempt to Mature it
