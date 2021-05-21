@@ -15,6 +15,11 @@ contract ZcToken {
   address private underlyingReturn;
   uint256 private maturityReturn;
 
+  // mapping of arguments sent to burn. key is the passed in address.
+  mapping (address => uint256) public burnCalled;
+  // a boolean flag which allows us to dictate the return of burn().
+  bool private burnReturn;
+
   /// @param u Underlying
   /// @param m Maturity
   /// @param n Name
@@ -26,6 +31,15 @@ contract ZcToken {
 
     name = n;
     symbol = s;
+  }
+
+  function burnReturns(bool b) public {
+    burnReturn = b;
+  }
+
+  function burn(address f, uint256 a) public returns(bool) {
+    burnCalled[f] = a;
+    return burnReturn;
   }
 
   function underlyingReturns(address u) public {
