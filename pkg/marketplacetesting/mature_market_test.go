@@ -195,6 +195,79 @@ func (s *matureMarketTest) TestMaturityReached() {
 	assert.Equal(maturity, logs[0].Topics[2].Big())
 }
 
+func (s *matureMarketTest) TestVaultMaturityNotReachedRequireFail() {
+	assert := assertions.New(s.T())
+	// addresses can be BS in this test as well...
+	underlying := common.HexToAddress("0x123")
+	maturity := s.Dep.Maturity
+	ctoken := s.Dep.CErc20Address
+
+	tx, err := s.MarketPlace.CreateMarket(
+		underlying,
+		maturity,
+		ctoken,
+		"awesome market",
+		"AM",
+	)
+
+	assert.Nil(err)
+	assert.NotNil(tx)
+	s.Env.Blockchain.Commit()
+
+	// we should be able to fetch the market now...
+	market, err := s.MarketPlace.Markets(underlying, maturity)
+	assert.Nil(err)
+	assert.Equal(market.CTokenAddr, ctoken)
+
+	zcTokenContract, err := mocks.NewZcToken(market.ZcTokenAddr, s.Env.Blockchain)
+	zcToken := &mocks.ZcTokenSession{
+		Contract: zcTokenContract,
+		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
+		TransactOpts: bind.TransactOpts{
+			From:   s.Env.Owner.Opts.From,
+			Signer: s.Env.Owner.Opts.Signer,
+		},
+	}
+
+	zcMaturity, err := zcToken.Maturity()
+	assert.Equal(maturity, zcMaturity)
+
+	vaultTrackerContract, err := mocks.NewVaultTracker(market.VaultAddr, s.Env.Blockchain)
+	vaultTracker := &mocks.VaultTrackerSession{
+		Contract: vaultTrackerContract,
+		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
+		TransactOpts: bind.TransactOpts{
+			From:   s.Env.Owner.Opts.From,
+			Signer: s.Env.Owner.Opts.Signer,
+		},
+	}
+
+	tx, err = vaultTracker.MatureVaultReturns(false)
+	assert.Nil(err)
+	assert.NotNil(tx)
+
+	s.Env.Blockchain.Commit()
+
+	// move past the maturity
+	err = s.Env.Blockchain.AdjustTime(MATURITY * time.Second)
+	assert.Nil(err)
+	s.Env.Blockchain.Commit()
+
+	rate := big.NewInt(123456789)
+	tx, err = s.CErc20.ExchangeRateCurrentReturns(rate)
+	assert.Nil(err)
+	assert.NotNil(tx)
+
+	s.Env.Blockchain.Commit()
+
+	tx, err = s.MarketPlace.MatureMarket(underlying, maturity)
+	assert.NotNil(err)
+	assert.Regexp("maturity not reached", err.Error())
+	assert.Nil(tx)
+
+	s.Env.Blockchain.Commit()
+}
+
 func TestMatureMarketTest(t *test.T) {
 	suite.Run(t, &matureMarketTest{})
 }
