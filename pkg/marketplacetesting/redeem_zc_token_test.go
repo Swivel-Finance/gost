@@ -35,7 +35,6 @@ func (s *redeemZcTokenSuite) SetupTest() {
 	if err != nil {
 		panic(err)
 	}
-	s.Env.Blockchain.Commit()
 
 	s.Env.Blockchain.Commit()
 
