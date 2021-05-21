@@ -195,7 +195,7 @@ func (s *matureMarketTest) TestMaturityReached() {
 	assert.Equal(maturity, logs[0].Topics[2].Big())
 }
 
-func (s *matureMarketTest) TestMaturityReachedVaultRequireFail() {
+func (s *matureMarketTest) TestVaultMaturityNotReachedRequireFail() {
 	assert := assertions.New(s.T())
 	// addresses can be BS in this test as well...
 	underlying := common.HexToAddress("0x123")
