@@ -1,14 +1,15 @@
 package marketplacetesting
 
 import (
+	"math/big"
+	test "testing"
+
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	assertions "github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 	"github.com/swivel-finance/gost/test/marketplace"
 	"github.com/swivel-finance/gost/test/mocks"
-	"math/big"
-	test "testing"
 )
 
 type redeemVaultInterestTest struct {
