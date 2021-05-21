@@ -97,7 +97,7 @@ func (s *matureMarketTest) TestMaturityNotReached() {
 
 	tx, err = s.MarketPlace.MatureMarket(underlying, maturity)
 	assert.NotNil(err)
-	assert.Regexp("Maturity not reached", err.Error())
+	assert.Regexp("maturity not reached", err.Error())
 	assert.Nil(tx)
 
 	s.Env.Blockchain.Commit()
