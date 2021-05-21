@@ -14,7 +14,7 @@ import (
 	"github.com/swivel-finance/gost/test/mocks"
 )
 
-type matureMarketTest struct {
+type matureMarketSuite struct {
 	suite.Suite
 	Env         *Env
 	Dep         *Dep
@@ -22,7 +22,7 @@ type matureMarketTest struct {
 	MarketPlace *marketplace.MarketPlaceSession // *Session objects are created by the go bindings
 }
 
-func (s *matureMarketTest) SetupTest() {
+func (s *matureMarketSuite) SetupTest() {
 	var err error
 
 	s.Env = NewEnv(big.NewInt(ONE_ETH)) // each of the wallets in the env will begin with this balance
@@ -58,7 +58,7 @@ func (s *matureMarketTest) SetupTest() {
 	}
 }
 
-func (s *matureMarketTest) TestMaturityNotReached() {
+func (s *matureMarketSuite) TestMaturityNotReached() {
 	assert := assertions.New(s.T())
 	// addresses can be BS in this test as well...
 	underlying := common.HexToAddress("0x123")
@@ -103,7 +103,7 @@ func (s *matureMarketTest) TestMaturityNotReached() {
 	s.Env.Blockchain.Commit()
 }
 
-func (s *matureMarketTest) TestMaturityReached() {
+func (s *matureMarketSuite) TestMaturityReached() {
 	assert := assertions.New(s.T())
 	// addresses can be BS in this test as well...
 	underlying := common.HexToAddress("0x123")
@@ -195,7 +195,7 @@ func (s *matureMarketTest) TestMaturityReached() {
 	assert.Equal(maturity, logs[0].Topics[2].Big())
 }
 
-func (s *matureMarketTest) TestVaultMaturityNotReachedRequireFail() {
+func (s *matureMarketSuite) TestVaultMaturityNotReachedRequireFail() {
 	assert := assertions.New(s.T())
 	// addresses can be BS in this test as well...
 	underlying := common.HexToAddress("0x123")
@@ -268,6 +268,6 @@ func (s *matureMarketTest) TestVaultMaturityNotReachedRequireFail() {
 	s.Env.Blockchain.Commit()
 }
 
-func TestMatureMarketTest(t *test.T) {
-	suite.Run(t, &matureMarketTest{})
+func TestMatureMarketSuite(t *test.T) {
+	suite.Run(t, &matureMarketSuite{})
 }

@@ -293,6 +293,6 @@ func (s *redeemVaultInterestSuite) TestRedeemVaultInterestTransferFails() {
 	assert.Nil(tx)
 }
 
-func TestRedeemVaultInterestTest(t *test.T) {
+func TestRedeemVaultInterestSuite(t *test.T) {
 	suite.Run(t, &redeemVaultInterestSuite{})
 }
