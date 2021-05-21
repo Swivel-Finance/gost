@@ -1,28 +1,26 @@
 package marketplacetesting
 
 import (
-	"context"
 	"math/big"
 	test "testing"
-	"time"
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
-	"github.com/ethereum/go-ethereum/common"
 	assertions "github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 	"github.com/swivel-finance/gost/test/marketplace"
 	"github.com/swivel-finance/gost/test/mocks"
 )
 
-type matureMarketSuite struct {
+type redeemVaultInterestSuite struct {
 	suite.Suite
 	Env         *Env
 	Dep         *Dep
+	Erc20       *mocks.Erc20Session
 	CErc20      *mocks.CErc20Session
 	MarketPlace *marketplace.MarketPlaceSession // *Session objects are created by the go bindings
 }
 
-func (s *matureMarketSuite) SetupTest() {
+func (s *redeemVaultInterestSuite) SetupTest() {
 	var err error
 
 	s.Env = NewEnv(big.NewInt(ONE_ETH)) // each of the wallets in the env will begin with this balance
@@ -37,6 +35,15 @@ func (s *matureMarketSuite) SetupTest() {
 		panic(err)
 	}
 	s.Env.Blockchain.Commit()
+
+	s.Erc20 = &mocks.Erc20Session{
+		Contract: s.Dep.Erc20,
+		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
+		TransactOpts: bind.TransactOpts{
+			From:   s.Env.Owner.Opts.From,
+			Signer: s.Env.Owner.Opts.Signer,
+		},
+	}
 
 	s.CErc20 = &mocks.CErc20Session{
 		Contract: s.Dep.CErc20,
@@ -58,17 +65,15 @@ func (s *matureMarketSuite) SetupTest() {
 	}
 }
 
-func (s *matureMarketSuite) TestMaturityNotReached() {
+func (s *redeemVaultInterestSuite) TestRedeemVaultInterest() {
 	assert := assertions.New(s.T())
-	// addresses can be BS in this test as well...
-	underlying := common.HexToAddress("0x123")
 	maturity := s.Dep.Maturity
-	ctoken := s.Dep.CErc20Address
+	ctokenAddr := s.Dep.CErc20Address
 
 	tx, err := s.MarketPlace.CreateMarket(
-		underlying,
+		s.Dep.Erc20Address,
 		maturity,
-		ctoken,
+		ctokenAddr,
 		"awesome market",
 		"AM",
 	)
@@ -78,54 +83,9 @@ func (s *matureMarketSuite) TestMaturityNotReached() {
 	s.Env.Blockchain.Commit()
 
 	// we should be able to fetch the market now...
-	market, err := s.MarketPlace.Markets(underlying, maturity)
+	market, err := s.MarketPlace.Markets(s.Dep.Erc20Address, maturity)
 	assert.Nil(err)
-	assert.Equal(market.CTokenAddr, ctoken)
-
-	zcTokenContract, err := mocks.NewZcToken(market.ZcTokenAddr, s.Env.Blockchain)
-	zcToken := &mocks.ZcTokenSession{
-		Contract: zcTokenContract,
-		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
-		TransactOpts: bind.TransactOpts{
-			From:   s.Env.Owner.Opts.From,
-			Signer: s.Env.Owner.Opts.Signer,
-		},
-	}
-
-	zcMaturity, err := zcToken.Maturity()
-	assert.Equal(maturity, zcMaturity)
-
-	tx, err = s.MarketPlace.MatureMarket(underlying, maturity)
-	assert.NotNil(err)
-	assert.Regexp("maturity not reached", err.Error())
-	assert.Nil(tx)
-
-	s.Env.Blockchain.Commit()
-}
-
-func (s *matureMarketSuite) TestMaturityReached() {
-	assert := assertions.New(s.T())
-	// addresses can be BS in this test as well...
-	underlying := common.HexToAddress("0x123")
-	maturity := s.Dep.Maturity
-	ctoken := s.Dep.CErc20Address
-
-	tx, err := s.MarketPlace.CreateMarket(
-		underlying,
-		maturity,
-		ctoken,
-		"awesome market",
-		"AM",
-	)
-
-	assert.Nil(err)
-	assert.NotNil(tx)
-	s.Env.Blockchain.Commit()
-
-	// we should be able to fetch the market now...
-	market, err := s.MarketPlace.Markets(underlying, maturity)
-	assert.Nil(err)
-	assert.Equal(market.CTokenAddr, ctoken)
+	assert.Equal(market.CTokenAddr, ctokenAddr)
 
 	zcTokenContract, err := mocks.NewZcToken(market.ZcTokenAddr, s.Env.Blockchain)
 	zcToken := &mocks.ZcTokenSession{
@@ -150,62 +110,53 @@ func (s *matureMarketSuite) TestMaturityReached() {
 		},
 	}
 
-	tx, err = vaultTracker.MatureVaultReturns(true)
+	vaultInterest := big.NewInt(123456789)
+	tx, err = vaultTracker.RedeemInterestReturns(vaultInterest)
 	assert.Nil(err)
 	assert.NotNil(tx)
 
 	s.Env.Blockchain.Commit()
 
-	// move past the maturity
-	err = s.Env.Blockchain.AdjustTime(MATURITY * time.Second)
+	tx, err = s.CErc20.RedeemUnderlyingReturns(ZERO)
+	assert.NotNil(tx)
 	assert.Nil(err)
+
 	s.Env.Blockchain.Commit()
 
-	rate := big.NewInt(123456789)
-	tx, err = s.CErc20.ExchangeRateCurrentReturns(rate)
+	tx, err = s.Erc20.TransferReturns(true)
+	assert.NotNil(tx)
+	assert.Nil(err)
+
+	s.Env.Blockchain.Commit()
+
+	tx, err = s.MarketPlace.RedeemVaultInterest(s.Dep.Erc20Address, maturity)
 	assert.Nil(err)
 	assert.NotNil(tx)
 
 	s.Env.Blockchain.Commit()
 
-	tx, err = s.MarketPlace.MatureMarket(underlying, maturity)
+	redeemUnderlying, err := s.CErc20.RedeemUnderlyingCalled()
 	assert.Nil(err)
-	assert.NotNil(tx)
+	assert.Equal(vaultInterest, redeemUnderlying)
 
 	s.Env.Blockchain.Commit()
 
-	maturityRate, err := s.MarketPlace.MaturityRate(underlying, maturity)
+	transfer, err := s.Erc20.TransferCalled(s.Env.Owner.Opts.From)
 	assert.Nil(err)
-	assert.Equal(rate, maturityRate)
+	assert.Equal(vaultInterest, transfer)
 
-	mature, err := s.MarketPlace.Mature(underlying, maturity)
-	assert.Nil(err)
-	assert.Equal(true, mature)
-
-	receipt, err := s.Env.Blockchain.TransactionReceipt(context.Background(), tx.Hash())
-	assert.Nil(err)
-	assert.NotNil(receipt)
-
-	logs := receipt.Logs
-	assert.NotNil(logs)
-	assert.Equal(1, len(logs))
-
-	assert.Equal(MATURE_EVENT_SIG, logs[0].Topics[0].Hex())
-	assert.Equal(underlying.Hex(), common.HexToAddress(logs[0].Topics[1].Hex()).String())
-	assert.Equal(maturity, logs[0].Topics[2].Big())
+	s.Env.Blockchain.Commit()
 }
 
-func (s *matureMarketSuite) TestVaultMaturityNotReachedRequireFail() {
+func (s *redeemVaultInterestSuite) TestRedeemVaultInterestRedeemUnderlyingFails() {
 	assert := assertions.New(s.T())
-	// addresses can be BS in this test as well...
-	underlying := common.HexToAddress("0x123")
 	maturity := s.Dep.Maturity
-	ctoken := s.Dep.CErc20Address
+	ctokenAddr := s.Dep.CErc20Address
 
 	tx, err := s.MarketPlace.CreateMarket(
-		underlying,
+		s.Dep.Erc20Address,
 		maturity,
-		ctoken,
+		ctokenAddr,
 		"awesome market",
 		"AM",
 	)
@@ -215,9 +166,9 @@ func (s *matureMarketSuite) TestVaultMaturityNotReachedRequireFail() {
 	s.Env.Blockchain.Commit()
 
 	// we should be able to fetch the market now...
-	market, err := s.MarketPlace.Markets(underlying, maturity)
+	market, err := s.MarketPlace.Markets(s.Dep.Erc20Address, maturity)
 	assert.Nil(err)
-	assert.Equal(market.CTokenAddr, ctoken)
+	assert.Equal(market.CTokenAddr, ctokenAddr)
 
 	zcTokenContract, err := mocks.NewZcToken(market.ZcTokenAddr, s.Env.Blockchain)
 	zcToken := &mocks.ZcTokenSession{
@@ -242,32 +193,95 @@ func (s *matureMarketSuite) TestVaultMaturityNotReachedRequireFail() {
 		},
 	}
 
-	tx, err = vaultTracker.MatureVaultReturns(false)
+	vaultInterest := big.NewInt(123456789)
+	tx, err = vaultTracker.RedeemInterestReturns(vaultInterest)
 	assert.Nil(err)
 	assert.NotNil(tx)
 
 	s.Env.Blockchain.Commit()
 
-	// move past the maturity
-	err = s.Env.Blockchain.AdjustTime(MATURITY * time.Second)
-	assert.Nil(err)
-	s.Env.Blockchain.Commit()
-
-	rate := big.NewInt(123456789)
-	tx, err = s.CErc20.ExchangeRateCurrentReturns(rate)
-	assert.Nil(err)
+	tx, err = s.CErc20.RedeemUnderlyingReturns(big.NewInt(1))
 	assert.NotNil(tx)
+	assert.Nil(err)
 
 	s.Env.Blockchain.Commit()
 
-	tx, err = s.MarketPlace.MatureMarket(underlying, maturity)
+	tx, err = s.MarketPlace.RedeemVaultInterest(s.Dep.Erc20Address, maturity)
 	assert.NotNil(err)
-	assert.Regexp("maturity not reached", err.Error())
+	assert.Regexp("redemption from Compound Failed", err.Error())
 	assert.Nil(tx)
-
-	s.Env.Blockchain.Commit()
 }
 
-func TestMatureMarketSuite(t *test.T) {
-	suite.Run(t, &matureMarketSuite{})
+func (s *redeemVaultInterestSuite) TestRedeemVaultInterestTransferFails() {
+	assert := assertions.New(s.T())
+	maturity := s.Dep.Maturity
+	ctokenAddr := s.Dep.CErc20Address
+
+	tx, err := s.MarketPlace.CreateMarket(
+		s.Dep.Erc20Address,
+		maturity,
+		ctokenAddr,
+		"awesome market",
+		"AM",
+	)
+
+	assert.Nil(err)
+	assert.NotNil(tx)
+	s.Env.Blockchain.Commit()
+
+	// we should be able to fetch the market now...
+	market, err := s.MarketPlace.Markets(s.Dep.Erc20Address, maturity)
+	assert.Nil(err)
+	assert.Equal(market.CTokenAddr, ctokenAddr)
+
+	zcTokenContract, err := mocks.NewZcToken(market.ZcTokenAddr, s.Env.Blockchain)
+	zcToken := &mocks.ZcTokenSession{
+		Contract: zcTokenContract,
+		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
+		TransactOpts: bind.TransactOpts{
+			From:   s.Env.Owner.Opts.From,
+			Signer: s.Env.Owner.Opts.Signer,
+		},
+	}
+
+	zcMaturity, err := zcToken.Maturity()
+	assert.Equal(maturity, zcMaturity)
+
+	vaultTrackerContract, err := mocks.NewVaultTracker(market.VaultAddr, s.Env.Blockchain)
+	vaultTracker := &mocks.VaultTrackerSession{
+		Contract: vaultTrackerContract,
+		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
+		TransactOpts: bind.TransactOpts{
+			From:   s.Env.Owner.Opts.From,
+			Signer: s.Env.Owner.Opts.Signer,
+		},
+	}
+
+	vaultInterest := big.NewInt(123456789)
+	tx, err = vaultTracker.RedeemInterestReturns(vaultInterest)
+	assert.Nil(err)
+	assert.NotNil(tx)
+
+	s.Env.Blockchain.Commit()
+
+	tx, err = s.CErc20.RedeemUnderlyingReturns(ZERO)
+	assert.NotNil(tx)
+	assert.Nil(err)
+
+	s.Env.Blockchain.Commit()
+
+	tx, err = s.Erc20.TransferReturns(false)
+	assert.NotNil(tx)
+	assert.Nil(err)
+
+	s.Env.Blockchain.Commit()
+
+	tx, err = s.MarketPlace.RedeemVaultInterest(s.Dep.Erc20Address, maturity)
+	assert.NotNil(err)
+	assert.Regexp("transfer of redeemable failed", err.Error())
+	assert.Nil(tx)
+}
+
+func TestRedeemVaultInterestSuite(t *test.T) {
+	suite.Run(t, &redeemVaultInterestSuite{})
 }
