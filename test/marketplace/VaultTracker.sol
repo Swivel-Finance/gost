@@ -15,12 +15,22 @@ contract VaultTracker {
 
   bool private matureVaultReturn;
 
+  uint256 private redeemInterestReturn;
+
   /// @param m Maturity
   /// @param c C Token Address
   constructor(uint256 m, address c) {
     // we can set the privates in the constructor as well...
     maturityReturn = m;
     cTokenAddr = c;
+  }
+
+  function redeemInterestReturns(uint256 a) public {
+    redeemInterestReturn = a;
+  }
+
+  function redeemInterest(address o) public returns (uint256) {
+    return redeemInterestReturn;
   }
 
   function maturityReturns(uint256 n) public {
