@@ -5,7 +5,6 @@ import (
 	test "testing"
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
-	"github.com/ethereum/go-ethereum/common"
 	assertions "github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 	"github.com/swivel-finance/gost/test/marketplace"
@@ -16,7 +15,6 @@ type redeemVaultInterestSuite struct {
 	suite.Suite
 	Env         *Env
 	Dep         *Dep
-	Erc20Addr   common.Address
 	Erc20       *mocks.Erc20Session
 	CErc20      *mocks.CErc20Session
 	MarketPlace *marketplace.MarketPlaceSession // *Session objects are created by the go bindings
@@ -38,17 +36,8 @@ func (s *redeemVaultInterestSuite) SetupTest() {
 	}
 	s.Env.Blockchain.Commit()
 
-	ercAddress, _, ercContract, ercErr := mocks.DeployErc20(s.Env.Owner.Opts, s.Env.Blockchain)
-
-	if ercErr != nil {
-		panic(err)
-	}
-
-	s.Env.Blockchain.Commit()
-
-	s.Erc20Addr = ercAddress
 	s.Erc20 = &mocks.Erc20Session{
-		Contract: ercContract,
+		Contract: s.Dep.Erc20,
 		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
 		TransactOpts: bind.TransactOpts{
 			From:   s.Env.Owner.Opts.From,
@@ -82,7 +71,7 @@ func (s *redeemVaultInterestSuite) TestRedeemVaultInterest() {
 	ctokenAddr := s.Dep.CErc20Address
 
 	tx, err := s.MarketPlace.CreateMarket(
-		s.Erc20Addr,
+		s.Dep.Erc20Address,
 		maturity,
 		ctokenAddr,
 		"awesome market",
@@ -94,7 +83,7 @@ func (s *redeemVaultInterestSuite) TestRedeemVaultInterest() {
 	s.Env.Blockchain.Commit()
 
 	// we should be able to fetch the market now...
-	market, err := s.MarketPlace.Markets(s.Erc20Addr, maturity)
+	market, err := s.MarketPlace.Markets(s.Dep.Erc20Address, maturity)
 	assert.Nil(err)
 	assert.Equal(market.CTokenAddr, ctokenAddr)
 
@@ -140,7 +129,7 @@ func (s *redeemVaultInterestSuite) TestRedeemVaultInterest() {
 
 	s.Env.Blockchain.Commit()
 
-	tx, err = s.MarketPlace.RedeemVaultInterest(s.Erc20Addr, maturity)
+	tx, err = s.MarketPlace.RedeemVaultInterest(s.Dep.Erc20Address, maturity)
 	assert.Nil(err)
 	assert.NotNil(tx)
 
@@ -165,7 +154,7 @@ func (s *redeemVaultInterestSuite) TestRedeemVaultInterestRedeemUnderlyingFails(
 	ctokenAddr := s.Dep.CErc20Address
 
 	tx, err := s.MarketPlace.CreateMarket(
-		s.Erc20Addr,
+		s.Dep.Erc20Address,
 		maturity,
 		ctokenAddr,
 		"awesome market",
@@ -177,7 +166,7 @@ func (s *redeemVaultInterestSuite) TestRedeemVaultInterestRedeemUnderlyingFails(
 	s.Env.Blockchain.Commit()
 
 	// we should be able to fetch the market now...
-	market, err := s.MarketPlace.Markets(s.Erc20Addr, maturity)
+	market, err := s.MarketPlace.Markets(s.Dep.Erc20Address, maturity)
 	assert.Nil(err)
 	assert.Equal(market.CTokenAddr, ctokenAddr)
 
@@ -217,7 +206,7 @@ func (s *redeemVaultInterestSuite) TestRedeemVaultInterestRedeemUnderlyingFails(
 
 	s.Env.Blockchain.Commit()
 
-	tx, err = s.MarketPlace.RedeemVaultInterest(s.Erc20Addr, maturity)
+	tx, err = s.MarketPlace.RedeemVaultInterest(s.Dep.Erc20Address, maturity)
 	assert.NotNil(err)
 	assert.Regexp("redemption from Compound Failed", err.Error())
 	assert.Nil(tx)
@@ -229,7 +218,7 @@ func (s *redeemVaultInterestSuite) TestRedeemVaultInterestTransferFails() {
 	ctokenAddr := s.Dep.CErc20Address
 
 	tx, err := s.MarketPlace.CreateMarket(
-		s.Erc20Addr,
+		s.Dep.Erc20Address,
 		maturity,
 		ctokenAddr,
 		"awesome market",
@@ -241,7 +230,7 @@ func (s *redeemVaultInterestSuite) TestRedeemVaultInterestTransferFails() {
 	s.Env.Blockchain.Commit()
 
 	// we should be able to fetch the market now...
-	market, err := s.MarketPlace.Markets(s.Erc20Addr, maturity)
+	market, err := s.MarketPlace.Markets(s.Dep.Erc20Address, maturity)
 	assert.Nil(err)
 	assert.Equal(market.CTokenAddr, ctokenAddr)
 
@@ -287,7 +276,7 @@ func (s *redeemVaultInterestSuite) TestRedeemVaultInterestTransferFails() {
 
 	s.Env.Blockchain.Commit()
 
-	tx, err = s.MarketPlace.RedeemVaultInterest(s.Erc20Addr, maturity)
+	tx, err = s.MarketPlace.RedeemVaultInterest(s.Dep.Erc20Address, maturity)
 	assert.NotNil(err)
 	assert.Regexp("transfer of redeemable failed", err.Error())
 	assert.Nil(tx)
