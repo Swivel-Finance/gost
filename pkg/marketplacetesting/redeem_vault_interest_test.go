@@ -12,7 +12,7 @@ import (
 	"github.com/swivel-finance/gost/test/mocks"
 )
 
-type redeemVaultInterestTest struct {
+type redeemVaultInterestSuite struct {
 	suite.Suite
 	Env         *Env
 	Dep         *Dep
@@ -22,7 +22,7 @@ type redeemVaultInterestTest struct {
 	MarketPlace *marketplace.MarketPlaceSession // *Session objects are created by the go bindings
 }
 
-func (s *redeemVaultInterestTest) SetupTest() {
+func (s *redeemVaultInterestSuite) SetupTest() {
 	var err error
 
 	s.Env = NewEnv(big.NewInt(ONE_ETH)) // each of the wallets in the env will begin with this balance
@@ -76,7 +76,7 @@ func (s *redeemVaultInterestTest) SetupTest() {
 	}
 }
 
-func (s *redeemVaultInterestTest) TestRedeemVaultInterest() {
+func (s *redeemVaultInterestSuite) TestRedeemVaultInterest() {
 	assert := assertions.New(s.T())
 	maturity := s.Dep.Maturity
 	ctokenAddr := s.Dep.CErc20Address
@@ -159,7 +159,7 @@ func (s *redeemVaultInterestTest) TestRedeemVaultInterest() {
 	s.Env.Blockchain.Commit()
 }
 
-func (s *redeemVaultInterestTest) TestRedeemVaultInterestRedeemUnderlyingFails() {
+func (s *redeemVaultInterestSuite) TestRedeemVaultInterestRedeemUnderlyingFails() {
 	assert := assertions.New(s.T())
 	maturity := s.Dep.Maturity
 	ctokenAddr := s.Dep.CErc20Address
@@ -223,7 +223,7 @@ func (s *redeemVaultInterestTest) TestRedeemVaultInterestRedeemUnderlyingFails()
 	assert.Nil(tx)
 }
 
-func (s *redeemVaultInterestTest) TestRedeemVaultInterestTransferFails() {
+func (s *redeemVaultInterestSuite) TestRedeemVaultInterestTransferFails() {
 	assert := assertions.New(s.T())
 	maturity := s.Dep.Maturity
 	ctokenAddr := s.Dep.CErc20Address
@@ -294,5 +294,5 @@ func (s *redeemVaultInterestTest) TestRedeemVaultInterestTransferFails() {
 }
 
 func TestRedeemVaultInterestTest(t *test.T) {
-	suite.Run(t, &redeemVaultInterestTest{})
+	suite.Run(t, &redeemVaultInterestSuite{})
 }
