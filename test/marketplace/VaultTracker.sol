@@ -17,6 +17,11 @@ contract VaultTracker {
 
   uint256 private redeemInterestReturn;
 
+  // mapping of arguments sent to addNotional. key is the passed in address.
+  mapping (address => uint256) public addNotionalCalled;
+  // a boolean flag which allows us to dictate the return of addNotional().
+  bool private addNotionalReturn;
+
   /// @param m Maturity
   /// @param c C Token Address
   constructor(uint256 m, address c) {
@@ -48,5 +53,14 @@ contract VaultTracker {
 
   function matureVaultReturns(bool m) public {
     matureVaultReturn = m;
+  }
+
+  function addNotionalReturns(bool n) public {
+    addNotionalReturn = n;
+  }
+
+  function addNotional(address o, uint256 a) public returns (bool) {
+    addNotionalCalled[o] = a;
+    return addNotionalReturn;
   }
 }

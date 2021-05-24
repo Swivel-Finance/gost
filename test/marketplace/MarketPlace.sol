@@ -156,6 +156,8 @@ contract MarketPlace {
   // called by swivel IVFZI && IZFVI
   // call with underlying, maturity, mint-target, add-notional-target and an amount
   function custodialInitiate(address u, uint256 m, address o, address t, uint256 a) external returns (bool) {
+    require(ZcToken(markets[u][m].zcTokenAddr).mint(o, a), 'mint failed');
+    require(VaultTracker(markets[u][m].vaultAddr).addNotional(t, a), 'add notional failed');
     return true;
   }
 

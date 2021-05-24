@@ -20,6 +20,11 @@ contract ZcToken {
   // a boolean flag which allows us to dictate the return of burn().
   bool private burnReturn;
 
+  // mapping of arguments sent to mint. key is the passed in address.
+  mapping (address => uint256) public mintCalled;
+  // a boolean flag which allows us to dictate the return of mint().
+  bool private mintReturn;
+
   /// @param u Underlying
   /// @param m Maturity
   /// @param n Name
@@ -40,6 +45,15 @@ contract ZcToken {
   function burn(address f, uint256 a) public returns(bool) {
     burnCalled[f] = a;
     return burnReturn;
+  }
+
+  function mintReturns(bool b) public {
+    mintReturn = b;
+  }
+
+  function mint(address f, uint256 a) public returns(bool) {
+    mintCalled[f] = a;
+    return mintReturn;
   }
 
   function underlyingReturns(address u) public {
