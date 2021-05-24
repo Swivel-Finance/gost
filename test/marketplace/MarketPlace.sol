@@ -1,12 +1,6 @@
 // SPDX-License-Identifier: UNLICENSED
 
 // TODO update to 0.8.4 (or whatever latest is...)
-// TODO add swivel address
-// TODO add setter for swivel address (only admin, once only if desired...)
-// TODO add onlySwivel
-// TODO add cTokenAddress
-// TODO add p2p methods
-// TODO add custodial methods
 
 // NOTE the pattern [underlying, maturity*, cToken, ...]
 
@@ -153,6 +147,34 @@ contract MarketPlace {
 
     // Calculate the total amount of underlying principle to return
     return (residualYield * a) / 1e9;
+  }
+
+  function cTokenAddress(address a, uint256 m) external view returns (address) {
+    return markets[a][m].cTokenAddr;
+  }
+
+  // called by swivel IVFZI && IZFVI
+  // call with underlying, maturity, mint-target, add-notional-target and an amount
+  function custodialInitiate(address u, uint256 m, address o, address t, uint256 a) external returns (bool) {
+    return true;
+  }
+
+  // called by swivel EVFZE FF EZFVE
+  // call with underlying, maturity, burn-target, remove-notional-target and an amount
+  function custodialExit(address u, uint256 m, address o, address t, uint256 a) external returns (bool) {
+    return true;
+  }
+
+  // called by swivel IZFZE, EZFZI
+  // call with underlying, maturity, transfer-from, transfer-to, amount
+  function p2pZcTokenExchange(address u, uint256 m, address o, address t, uint256 a) external returns (bool) {
+    return true;
+  }
+
+  // called by swivel IVFVE, EVFVI
+  // call with underlying, maturity, remove-from, add-to, amount
+  function p2pVaultExchange(address u, uint256 m, address o, address t, uint256 a) external returns (bool) {
+    return true;
   }
 
   modifier onlyAdmin(address a) {
