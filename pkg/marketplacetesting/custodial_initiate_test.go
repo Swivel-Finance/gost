@@ -147,7 +147,7 @@ func (s *custodialInitiateSuite) TestCustodialInitiate() {
 	s.Env.Blockchain.Commit()
 }
 
-func (s *custodialInitiateSuite) TestCustodialInitiateBurnFails() {
+func (s *custodialInitiateSuite) TestCustodialInitiateMintFails() {
 	assert := assertions.New(s.T())
 	underlying := s.Dep.Erc20Address
 	maturity := s.Dep.Maturity
