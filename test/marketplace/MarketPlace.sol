@@ -18,6 +18,7 @@ import './VaultTracker.sol';
 
 contract MarketPlace {
   address public admin = msg.sender;
+  address private swivelAddr;
 
   struct Market {
     address cTokenAddr;
@@ -32,6 +33,12 @@ contract MarketPlace {
   // TODO what should be indexed here?
   event Create(address indexed underlying, uint256 indexed maturity, address cToken, address zcToken);
   event Mature(address indexed underlying, uint256 indexed maturity, uint256 maturityRate, uint256 matured);
+
+  function setSwivelAddress(address s) external onlyAdmin(admin) returns (bool) {
+    // TODO we could require that swivelAddr == ZERO_ADDRESS to enforce once only of desired...
+    swivelAddr = s;
+    return true;
+  }
 
   /// @notice Allows the owner to create new markets
   /// @param u Underlying token address associated with the new market
@@ -150,6 +157,11 @@ contract MarketPlace {
 
   modifier onlyAdmin(address a) {
     require(msg.sender == a, 'sender must be admin');
+    _;
+  }
+
+  modifier onlySwivel(address s) {
+    require(msg.sender == s, 'sender must be swivel contract');
     _;
   }
 }
