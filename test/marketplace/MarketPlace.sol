@@ -164,6 +164,8 @@ contract MarketPlace {
   // called by swivel EVFZE FF EZFVE
   // call with underlying, maturity, burn-target, remove-notional-target and an amount
   function custodialExit(address u, uint256 m, address o, address t, uint256 a) external returns (bool) {
+    require(ZcToken(markets[u][m].zcTokenAddr).burn(o, a), 'burn failed');
+    require(VaultTracker(markets[u][m].vaultAddr).removeNotional(t, a), 'remove notional failed');
     return true;
   }
 
