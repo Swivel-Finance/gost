@@ -172,12 +172,15 @@ contract MarketPlace {
   // called by swivel IZFZE, EZFZI
   // call with underlying, maturity, transfer-from, transfer-to, amount
   function p2pZcTokenExchange(address u, uint256 m, address o, address t, uint256 a) external returns (bool) {
+    require(ZcToken(markets[u][m].zcTokenAddr).transferFrom(o, t, a), 'zero-coupon token transfer failed');
     return true;
   }
 
   // called by swivel IVFVE, EVFVI
   // call with underlying, maturity, remove-from, add-to, amount
   function p2pVaultExchange(address u, uint256 m, address o, address t, uint256 a) external returns (bool) {
+    require(VaultTracker(markets[u][m].vaultAddr).removeNotional(o, a), 'remove notional failed');
+    require(VaultTracker(markets[u][m].vaultAddr).addNotional(t, a), 'add notional failed');
     return true;
   }
 
