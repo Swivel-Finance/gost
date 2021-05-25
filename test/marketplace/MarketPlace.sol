@@ -172,7 +172,7 @@ contract MarketPlace {
   // called by swivel IZFZE, EZFZI
   // call with underlying, maturity, transfer-from, transfer-to, amount
   function p2pZcTokenExchange(address u, uint256 m, address o, address t, uint256 a) external returns (bool) {
-    require(ZcToken(markets[u][m].zcTokenAddr).transferFrom(o, t, a), 'zero-coupon token transfer failed');
+    require(ZcToken(markets[u][m].zcTokenAddr).transferFrom(o, t, a), 'zcToken transfer failed');
     return true;
   }
 

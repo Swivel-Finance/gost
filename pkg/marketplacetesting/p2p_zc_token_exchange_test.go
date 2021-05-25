@@ -184,7 +184,7 @@ func (s *p2pZCTokenExchangeSuite) TestP2PZCTokenExchangeTransferFromFails() {
 	amount := big.NewInt(100)
 	tx, err = s.MarketPlace.P2pZcTokenExchange(underlying, maturity, ownerOpts.From, user1Opts.From, amount)
 	assert.NotNil(err)
-	assert.Regexp("zero-coupon token transfer failed", err.Error())
+	assert.Regexp("zcToken transfer failed", err.Error())
 	assert.Nil(tx)
 
 	s.Env.Blockchain.Commit()
