@@ -156,24 +156,31 @@ contract MarketPlace {
   // called by swivel IVFZI && IZFVI
   // call with underlying, maturity, mint-target, add-notional-target and an amount
   function custodialInitiate(address u, uint256 m, address o, address t, uint256 a) external returns (bool) {
+    require(ZcToken(markets[u][m].zcTokenAddr).mint(o, a), 'mint failed');
+    require(VaultTracker(markets[u][m].vaultAddr).addNotional(t, a), 'add notional failed');
     return true;
   }
 
   // called by swivel EVFZE FF EZFVE
   // call with underlying, maturity, burn-target, remove-notional-target and an amount
   function custodialExit(address u, uint256 m, address o, address t, uint256 a) external returns (bool) {
+    require(ZcToken(markets[u][m].zcTokenAddr).burn(o, a), 'burn failed');
+    require(VaultTracker(markets[u][m].vaultAddr).removeNotional(t, a), 'remove notional failed');
     return true;
   }
 
   // called by swivel IZFZE, EZFZI
   // call with underlying, maturity, transfer-from, transfer-to, amount
   function p2pZcTokenExchange(address u, uint256 m, address o, address t, uint256 a) external returns (bool) {
+    require(ZcToken(markets[u][m].zcTokenAddr).transferFrom(o, t, a), 'zcToken transfer failed');
     return true;
   }
 
   // called by swivel IVFVE, EVFVI
   // call with underlying, maturity, remove-from, add-to, amount
   function p2pVaultExchange(address u, uint256 m, address o, address t, uint256 a) external returns (bool) {
+    require(VaultTracker(markets[u][m].vaultAddr).removeNotional(o, a), 'remove notional failed');
+    require(VaultTracker(markets[u][m].vaultAddr).addNotional(t, a), 'add notional failed');
     return true;
   }
 

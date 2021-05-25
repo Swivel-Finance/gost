@@ -27,10 +27,10 @@ var (
 )
 
 // ZcTokenABI is the input ABI used to generate the binding from.
-const ZcTokenABI = "[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"u\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"m\",\"type\":\"uint256\"},{\"internalType\":\"string\",\"name\":\"n\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"s\",\"type\":\"string\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"f\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"a\",\"type\":\"uint256\"}],\"name\":\"burn\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"burnCalled\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bool\",\"name\":\"b\",\"type\":\"bool\"}],\"name\":\"burnReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"maturity\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"n\",\"type\":\"uint256\"}],\"name\":\"maturityReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"underlying\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"u\",\"type\":\"address\"}],\"name\":\"underlyingReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]"
+const ZcTokenABI = "[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"u\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"m\",\"type\":\"uint256\"},{\"internalType\":\"string\",\"name\":\"n\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"s\",\"type\":\"string\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"f\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"a\",\"type\":\"uint256\"}],\"name\":\"burn\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"burnCalled\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bool\",\"name\":\"b\",\"type\":\"bool\"}],\"name\":\"burnReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"maturity\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"n\",\"type\":\"uint256\"}],\"name\":\"maturityReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"f\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"a\",\"type\":\"uint256\"}],\"name\":\"mint\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"mintCalled\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bool\",\"name\":\"b\",\"type\":\"bool\"}],\"name\":\"mintReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"f\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"t\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"a\",\"type\":\"uint256\"}],\"name\":\"transferFrom\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"transferFromCalled\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bool\",\"name\":\"b\",\"type\":\"bool\"}],\"name\":\"transferFromReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"underlying\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"u\",\"type\":\"address\"}],\"name\":\"underlyingReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]"
 
 // ZcTokenBin is the compiled bytecode used for deploying new contracts.
-var ZcTokenBin = "0x60806040523480156200001157600080fd5b506040516200091a3803806200091a83398181016040528101906200003791906200020b565b83600260006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555082600381905550816000908051906020019062000097929190620000bb565b508060019080519060200190620000b0929190620000bb565b50505050506200044c565b828054620000c99062000384565b90600052602060002090601f016020900481019282620000ed576000855562000139565b82601f106200010857805160ff191683800117855562000139565b8280016001018555821562000139579182015b82811115620001385782518255916020019190600101906200011b565b5b5090506200014891906200014c565b5090565b5b80821115620001675760008160009055506001016200014d565b5090565b6000620001826200017c84620002dd565b620002a9565b9050828152602081018484840111156200019b57600080fd5b620001a88482856200034e565b509392505050565b600081519050620001c18162000418565b92915050565b600082601f830112620001d957600080fd5b8151620001eb8482602086016200016b565b91505092915050565b600081519050620002058162000432565b92915050565b600080600080608085870312156200022257600080fd5b60006200023287828801620001b0565b94505060206200024587828801620001f4565b935050604085015167ffffffffffffffff8111156200026357600080fd5b6200027187828801620001c7565b925050606085015167ffffffffffffffff8111156200028f57600080fd5b6200029d87828801620001c7565b91505092959194509250565b6000604051905081810181811067ffffffffffffffff82111715620002d357620002d2620003e9565b5b8060405250919050565b600067ffffffffffffffff821115620002fb57620002fa620003e9565b5b601f19601f8301169050602081019050919050565b60006200031d8262000324565b9050919050565b600073ffffffffffffffffffffffffffffffffffffffff82169050919050565b6000819050919050565b60005b838110156200036e57808201518184015260208101905062000351565b838111156200037e576000848401525b50505050565b600060028204905060018216806200039d57607f821691505b60208210811415620003b457620003b3620003ba565b5b50919050565b7f4e487b7100000000000000000000000000000000000000000000000000000000600052602260045260246000fd5b7f4e487b7100000000000000000000000000000000000000000000000000000000600052604160045260246000fd5b620004238162000310565b81146200042f57600080fd5b50565b6200043d8162000344565b81146200044957600080fd5b50565b6104be806200045c6000396000f3fe608060405234801561001057600080fd5b506004361061007d5760003560e01c8063b4c4a4c81161005b578063b4c4a4c8146100ee578063b9bb928c1461010a578063bba0ad3914610126578063e7ba6774146101565761007d565b8063204f83f9146100825780636f307dc3146100a05780639dc29fac146100be575b600080fd5b61008a610172565b60405161009791906103e0565b60405180910390f35b6100a861017c565b6040516100b591906103aa565b60405180910390f35b6100d860048036038101906100d391906102ef565b6101a6565b6040516100e591906103c5565b60405180910390f35b61010860048036038101906101039190610354565b610204565b005b610124600480360381019061011f919061032b565b61020e565b005b610140600480360381019061013b91906102c6565b61022b565b60405161014d91906103e0565b60405180910390f35b610170600480360381019061016b91906102c6565b610243565b005b6000600354905090565b6000600260009054906101000a900473ffffffffffffffffffffffffffffffffffffffff16905090565b600081600460008573ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002081905550600560009054906101000a900460ff16905092915050565b8060038190555050565b80600560006101000a81548160ff02191690831515021790555050565b60046020528060005260406000206000915090505481565b80600260006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555050565b60008135905061029681610443565b92915050565b6000813590506102ab8161045a565b92915050565b6000813590506102c081610471565b92915050565b6000602082840312156102d857600080fd5b60006102e684828501610287565b91505092915050565b6000806040838503121561030257600080fd5b600061031085828601610287565b9250506020610321858286016102b1565b9150509250929050565b60006020828403121561033d57600080fd5b600061034b8482850161029c565b91505092915050565b60006020828403121561036657600080fd5b6000610374848285016102b1565b91505092915050565b610386816103fb565b82525050565b6103958161040d565b82525050565b6103a481610439565b82525050565b60006020820190506103bf600083018461037d565b92915050565b60006020820190506103da600083018461038c565b92915050565b60006020820190506103f5600083018461039b565b92915050565b600061040682610419565b9050919050565b60008115159050919050565b600073ffffffffffffffffffffffffffffffffffffffff82169050919050565b6000819050919050565b61044c816103fb565b811461045757600080fd5b50565b6104638161040d565b811461046e57600080fd5b50565b61047a81610439565b811461048557600080fd5b5056fea2646970667358221220ac2597315efe32d580dfe27276be385a6dab0cf7a3cc16466a1dfe77c0d1e44a64736f6c63430008000033"
+var ZcTokenBin = "0x60806040523480156200001157600080fd5b5060405162000cfb38038062000cfb83398181016040528101906200003791906200020b565b83600260006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555082600381905550816000908051906020019062000097929190620000bb565b508060019080519060200190620000b0929190620000bb565b50505050506200044c565b828054620000c99062000384565b90600052602060002090601f016020900481019282620000ed576000855562000139565b82601f106200010857805160ff191683800117855562000139565b8280016001018555821562000139579182015b82811115620001385782518255916020019190600101906200011b565b5b5090506200014891906200014c565b5090565b5b80821115620001675760008160009055506001016200014d565b5090565b6000620001826200017c84620002dd565b620002a9565b9050828152602081018484840111156200019b57600080fd5b620001a88482856200034e565b509392505050565b600081519050620001c18162000418565b92915050565b600082601f830112620001d957600080fd5b8151620001eb8482602086016200016b565b91505092915050565b600081519050620002058162000432565b92915050565b600080600080608085870312156200022257600080fd5b60006200023287828801620001b0565b94505060206200024587828801620001f4565b935050604085015167ffffffffffffffff8111156200026357600080fd5b6200027187828801620001c7565b925050606085015167ffffffffffffffff8111156200028f57600080fd5b6200029d87828801620001c7565b91505092959194509250565b6000604051905081810181811067ffffffffffffffff82111715620002d357620002d2620003e9565b5b8060405250919050565b600067ffffffffffffffff821115620002fb57620002fa620003e9565b5b601f19601f8301169050602081019050919050565b60006200031d8262000324565b9050919050565b600073ffffffffffffffffffffffffffffffffffffffff82169050919050565b6000819050919050565b60005b838110156200036e57808201518184015260208101905062000351565b838111156200037e576000848401525b50505050565b600060028204905060018216806200039d57607f821691505b60208210811415620003b457620003b3620003ba565b5b50919050565b7f4e487b7100000000000000000000000000000000000000000000000000000000600052602260045260246000fd5b7f4e487b7100000000000000000000000000000000000000000000000000000000600052604160045260246000fd5b620004238162000310565b81146200042f57600080fd5b50565b6200043d8162000344565b81146200044957600080fd5b50565b61089f806200045c6000396000f3fe608060405234801561001057600080fd5b50600436106100cf5760003560e01c8063b4c4a4c81161008c578063e541efa211610066578063e541efa214610224578063e7ba677414610255578063ee4db57014610271578063fdfe5f4d146102a1576100cf565b8063b4c4a4c8146101bc578063b9bb928c146101d8578063bba0ad39146101f4576100cf565b8063204f83f9146100d457806323b872dd146100f257806340c10f19146101225780636521b96a146101525780636f307dc31461016e5780639dc29fac1461018c575b600080fd5b6100dc6102bd565b6040516100e991906107c1565b60405180910390f35b61010c60048036038101906101079190610658565b6102c7565b60405161011991906107a6565b60405180910390f35b61013c600480360381019061013791906106a7565b6103c1565b60405161014991906107a6565b60405180910390f35b61016c600480360381019061016791906106e3565b61041f565b005b61017661043c565b6040516101839190610762565b60405180910390f35b6101a660048036038101906101a191906106a7565b610466565b6040516101b391906107a6565b60405180910390f35b6101d660048036038101906101d1919061070c565b6104c4565b005b6101f260048036038101906101ed91906106e3565b6104ce565b005b61020e6004803603810190610209919061062f565b6104eb565b60405161021b91906107c1565b60405180910390f35b61023e6004803603810190610239919061062f565b610503565b60405161024c92919061077d565b60405180910390f35b61026f600480360381019061026a919061062f565b610547565b005b61028b6004803603810190610286919061062f565b61058b565b60405161029891906107c1565b60405180910390f35b6102bb60048036038101906102b691906106e3565b6105a3565b005b6000600354905090565b60006102d16105c0565b83816000019073ffffffffffffffffffffffffffffffffffffffff16908173ffffffffffffffffffffffffffffffffffffffff16815250508281602001818152505080600860008773ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060008201518160000160006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555060208201518160010155905050600960009054906101000a900460ff169150509392505050565b600081600660008573ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002081905550600760009054906101000a900460ff16905092915050565b80600960006101000a81548160ff02191690831515021790555050565b6000600260009054906101000a900473ffffffffffffffffffffffffffffffffffffffff16905090565b600081600460008573ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002081905550600560009054906101000a900460ff16905092915050565b8060038190555050565b80600560006101000a81548160ff02191690831515021790555050565b60046020528060005260406000206000915090505481565b60086020528060005260406000206000915090508060000160009054906101000a900473ffffffffffffffffffffffffffffffffffffffff16908060010154905082565b80600260006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555050565b60066020528060005260406000206000915090505481565b80600760006101000a81548160ff02191690831515021790555050565b6040518060400160405280600073ffffffffffffffffffffffffffffffffffffffff168152602001600081525090565b6000813590506105ff81610824565b92915050565b6000813590506106148161083b565b92915050565b60008135905061062981610852565b92915050565b60006020828403121561064157600080fd5b600061064f848285016105f0565b91505092915050565b60008060006060848603121561066d57600080fd5b600061067b868287016105f0565b935050602061068c868287016105f0565b925050604061069d8682870161061a565b9150509250925092565b600080604083850312156106ba57600080fd5b60006106c8858286016105f0565b92505060206106d98582860161061a565b9150509250929050565b6000602082840312156106f557600080fd5b600061070384828501610605565b91505092915050565b60006020828403121561071e57600080fd5b600061072c8482850161061a565b91505092915050565b61073e816107dc565b82525050565b61074d816107ee565b82525050565b61075c8161081a565b82525050565b60006020820190506107776000830184610735565b92915050565b60006040820190506107926000830185610735565b61079f6020830184610753565b9392505050565b60006020820190506107bb6000830184610744565b92915050565b60006020820190506107d66000830184610753565b92915050565b60006107e7826107fa565b9050919050565b60008115159050919050565b600073ffffffffffffffffffffffffffffffffffffffff82169050919050565b6000819050919050565b61082d816107dc565b811461083857600080fd5b50565b610844816107ee565b811461084f57600080fd5b50565b61085b8161081a565b811461086657600080fd5b5056fea264697066735822122046baabc77728975beccd0515a97d8cf269997af59f9f35ea17d5cd4c84d937cb64736f6c63430008000033"
 
 // DeployZcToken deploys a new Ethereum contract, binding an instance of ZcToken to it.
 func DeployZcToken(auth *bind.TransactOpts, backend bind.ContractBackend, u common.Address, m *big.Int, n string, s string) (common.Address, *types.Transaction, *ZcToken, error) {
@@ -250,6 +250,82 @@ func (_ZcToken *ZcTokenCallerSession) Maturity() (*big.Int, error) {
 	return _ZcToken.Contract.Maturity(&_ZcToken.CallOpts)
 }
 
+// MintCalled is a free data retrieval call binding the contract method 0xee4db570.
+//
+// Solidity: function mintCalled(address ) view returns(uint256)
+func (_ZcToken *ZcTokenCaller) MintCalled(opts *bind.CallOpts, arg0 common.Address) (*big.Int, error) {
+	var out []interface{}
+	err := _ZcToken.contract.Call(opts, &out, "mintCalled", arg0)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
+}
+
+// MintCalled is a free data retrieval call binding the contract method 0xee4db570.
+//
+// Solidity: function mintCalled(address ) view returns(uint256)
+func (_ZcToken *ZcTokenSession) MintCalled(arg0 common.Address) (*big.Int, error) {
+	return _ZcToken.Contract.MintCalled(&_ZcToken.CallOpts, arg0)
+}
+
+// MintCalled is a free data retrieval call binding the contract method 0xee4db570.
+//
+// Solidity: function mintCalled(address ) view returns(uint256)
+func (_ZcToken *ZcTokenCallerSession) MintCalled(arg0 common.Address) (*big.Int, error) {
+	return _ZcToken.Contract.MintCalled(&_ZcToken.CallOpts, arg0)
+}
+
+// TransferFromCalled is a free data retrieval call binding the contract method 0xe541efa2.
+//
+// Solidity: function transferFromCalled(address ) view returns(address to, uint256 amount)
+func (_ZcToken *ZcTokenCaller) TransferFromCalled(opts *bind.CallOpts, arg0 common.Address) (struct {
+	To     common.Address
+	Amount *big.Int
+}, error) {
+	var out []interface{}
+	err := _ZcToken.contract.Call(opts, &out, "transferFromCalled", arg0)
+
+	outstruct := new(struct {
+		To     common.Address
+		Amount *big.Int
+	})
+	if err != nil {
+		return *outstruct, err
+	}
+
+	outstruct.To = out[0].(common.Address)
+	outstruct.Amount = out[1].(*big.Int)
+
+	return *outstruct, err
+
+}
+
+// TransferFromCalled is a free data retrieval call binding the contract method 0xe541efa2.
+//
+// Solidity: function transferFromCalled(address ) view returns(address to, uint256 amount)
+func (_ZcToken *ZcTokenSession) TransferFromCalled(arg0 common.Address) (struct {
+	To     common.Address
+	Amount *big.Int
+}, error) {
+	return _ZcToken.Contract.TransferFromCalled(&_ZcToken.CallOpts, arg0)
+}
+
+// TransferFromCalled is a free data retrieval call binding the contract method 0xe541efa2.
+//
+// Solidity: function transferFromCalled(address ) view returns(address to, uint256 amount)
+func (_ZcToken *ZcTokenCallerSession) TransferFromCalled(arg0 common.Address) (struct {
+	To     common.Address
+	Amount *big.Int
+}, error) {
+	return _ZcToken.Contract.TransferFromCalled(&_ZcToken.CallOpts, arg0)
+}
+
 // Underlying is a free data retrieval call binding the contract method 0x6f307dc3.
 //
 // Solidity: function underlying() view returns(address)
@@ -342,6 +418,90 @@ func (_ZcToken *ZcTokenSession) MaturityReturns(n *big.Int) (*types.Transaction,
 // Solidity: function maturityReturns(uint256 n) returns()
 func (_ZcToken *ZcTokenTransactorSession) MaturityReturns(n *big.Int) (*types.Transaction, error) {
 	return _ZcToken.Contract.MaturityReturns(&_ZcToken.TransactOpts, n)
+}
+
+// Mint is a paid mutator transaction binding the contract method 0x40c10f19.
+//
+// Solidity: function mint(address f, uint256 a) returns(bool)
+func (_ZcToken *ZcTokenTransactor) Mint(opts *bind.TransactOpts, f common.Address, a *big.Int) (*types.Transaction, error) {
+	return _ZcToken.contract.Transact(opts, "mint", f, a)
+}
+
+// Mint is a paid mutator transaction binding the contract method 0x40c10f19.
+//
+// Solidity: function mint(address f, uint256 a) returns(bool)
+func (_ZcToken *ZcTokenSession) Mint(f common.Address, a *big.Int) (*types.Transaction, error) {
+	return _ZcToken.Contract.Mint(&_ZcToken.TransactOpts, f, a)
+}
+
+// Mint is a paid mutator transaction binding the contract method 0x40c10f19.
+//
+// Solidity: function mint(address f, uint256 a) returns(bool)
+func (_ZcToken *ZcTokenTransactorSession) Mint(f common.Address, a *big.Int) (*types.Transaction, error) {
+	return _ZcToken.Contract.Mint(&_ZcToken.TransactOpts, f, a)
+}
+
+// MintReturns is a paid mutator transaction binding the contract method 0xfdfe5f4d.
+//
+// Solidity: function mintReturns(bool b) returns()
+func (_ZcToken *ZcTokenTransactor) MintReturns(opts *bind.TransactOpts, b bool) (*types.Transaction, error) {
+	return _ZcToken.contract.Transact(opts, "mintReturns", b)
+}
+
+// MintReturns is a paid mutator transaction binding the contract method 0xfdfe5f4d.
+//
+// Solidity: function mintReturns(bool b) returns()
+func (_ZcToken *ZcTokenSession) MintReturns(b bool) (*types.Transaction, error) {
+	return _ZcToken.Contract.MintReturns(&_ZcToken.TransactOpts, b)
+}
+
+// MintReturns is a paid mutator transaction binding the contract method 0xfdfe5f4d.
+//
+// Solidity: function mintReturns(bool b) returns()
+func (_ZcToken *ZcTokenTransactorSession) MintReturns(b bool) (*types.Transaction, error) {
+	return _ZcToken.Contract.MintReturns(&_ZcToken.TransactOpts, b)
+}
+
+// TransferFrom is a paid mutator transaction binding the contract method 0x23b872dd.
+//
+// Solidity: function transferFrom(address f, address t, uint256 a) returns(bool)
+func (_ZcToken *ZcTokenTransactor) TransferFrom(opts *bind.TransactOpts, f common.Address, t common.Address, a *big.Int) (*types.Transaction, error) {
+	return _ZcToken.contract.Transact(opts, "transferFrom", f, t, a)
+}
+
+// TransferFrom is a paid mutator transaction binding the contract method 0x23b872dd.
+//
+// Solidity: function transferFrom(address f, address t, uint256 a) returns(bool)
+func (_ZcToken *ZcTokenSession) TransferFrom(f common.Address, t common.Address, a *big.Int) (*types.Transaction, error) {
+	return _ZcToken.Contract.TransferFrom(&_ZcToken.TransactOpts, f, t, a)
+}
+
+// TransferFrom is a paid mutator transaction binding the contract method 0x23b872dd.
+//
+// Solidity: function transferFrom(address f, address t, uint256 a) returns(bool)
+func (_ZcToken *ZcTokenTransactorSession) TransferFrom(f common.Address, t common.Address, a *big.Int) (*types.Transaction, error) {
+	return _ZcToken.Contract.TransferFrom(&_ZcToken.TransactOpts, f, t, a)
+}
+
+// TransferFromReturns is a paid mutator transaction binding the contract method 0x6521b96a.
+//
+// Solidity: function transferFromReturns(bool b) returns()
+func (_ZcToken *ZcTokenTransactor) TransferFromReturns(opts *bind.TransactOpts, b bool) (*types.Transaction, error) {
+	return _ZcToken.contract.Transact(opts, "transferFromReturns", b)
+}
+
+// TransferFromReturns is a paid mutator transaction binding the contract method 0x6521b96a.
+//
+// Solidity: function transferFromReturns(bool b) returns()
+func (_ZcToken *ZcTokenSession) TransferFromReturns(b bool) (*types.Transaction, error) {
+	return _ZcToken.Contract.TransferFromReturns(&_ZcToken.TransactOpts, b)
+}
+
+// TransferFromReturns is a paid mutator transaction binding the contract method 0x6521b96a.
+//
+// Solidity: function transferFromReturns(bool b) returns()
+func (_ZcToken *ZcTokenTransactorSession) TransferFromReturns(b bool) (*types.Transaction, error) {
+	return _ZcToken.Contract.TransferFromReturns(&_ZcToken.TransactOpts, b)
 }
 
 // UnderlyingReturns is a paid mutator transaction binding the contract method 0xe7ba6774.
