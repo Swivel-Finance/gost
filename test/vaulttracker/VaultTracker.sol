@@ -34,8 +34,8 @@ contract VaultTracker {
   }
 
   /// @notice ...
-  /// @param o Address that owns a timelock in the vault
-  /// @param a Amount to ...
+  /// @param o Address that owns a vault
+  /// @param a Amount of notional added
   function addNotional(address o, uint256 a) public onlyAdmin(admin) returns (bool) {
     uint256 exchangeRate = CErc20(cTokenAddr).exchangeRateCurrent();
 
@@ -69,8 +69,8 @@ contract VaultTracker {
   }
 
   /// @notice ...
-  /// @param o Address that owns a timelock in the vault
-  /// @param a Amount to ...
+  /// @param o Address that owns a vault
+  /// @param a Amount of notional to remove
   function removeNotional(address o, uint256 a) public onlyAdmin(admin) returns (bool) {
     require(vaults[o].notional >= a, "amount exceeds vault balance");
 
@@ -99,7 +99,7 @@ contract VaultTracker {
   }
 
   /// @notice ...
-  /// @param o Address that owns a timelock in the vault
+  /// @param o Address that owns a vault
   function redeemInterest(address o) public onlyAdmin(admin) returns (uint256) {
     uint256 redeemAmount = vaults[o].redeemable;
 
@@ -205,7 +205,7 @@ contract VaultTracker {
   }
 
   /// @notice ...
-  /// @param o Address that owns a timelock in the vault
+  /// @param o Address that owns a vault
   function balancesOf(address o) public view returns (uint256, uint256) {
     return (vaults[o].notional, vaults[o].redeemable);
   }
