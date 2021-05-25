@@ -105,13 +105,7 @@ func (s *p2pVaultExchangeSuite) TestP2PVaultExchange() {
 		},
 	}
 
-	tx, err = vaultTracker.AddNotionalReturns(true)
-	assert.Nil(err)
-	assert.NotNil(tx)
-
-	s.Env.Blockchain.Commit()
-
-	tx, err = vaultTracker.RemoveNotionalReturns(true)
+	tx, err = vaultTracker.TransferNotionalFromReturns(true)
 	assert.Nil(err)
 	assert.NotNil(tx)
 
@@ -124,79 +118,15 @@ func (s *p2pVaultExchangeSuite) TestP2PVaultExchange() {
 
 	s.Env.Blockchain.Commit()
 
-	addNotionalAmount, err := vaultTracker.AddNotionalCalled(user1Opts.From)
+	transferNotionalFromArgs, err := vaultTracker.TransferNotionalFromCalled(ownerOpts.From)
 	assert.Nil(err)
-	assert.Equal(amount, addNotionalAmount)
-
-	s.Env.Blockchain.Commit()
-
-	removeNotionalAmount, err := vaultTracker.RemoveNotionalCalled(ownerOpts.From)
-	assert.Nil(err)
-	assert.Equal(amount, removeNotionalAmount)
+	assert.Equal(user1Opts.From, transferNotionalFromArgs.To)
+	assert.Equal(amount, transferNotionalFromArgs.Amount)
 
 	s.Env.Blockchain.Commit()
 }
 
-func (s *p2pVaultExchangeSuite) TestP2PVaultExchangeRemoveNotionalFails() {
-	assert := assertions.New(s.T())
-	underlying := s.Dep.Erc20Address
-	maturity := s.Dep.Maturity
-	ctoken := s.Dep.CErc20Address
-
-	tx, err := s.MarketPlace.CreateMarket(
-		underlying,
-		maturity,
-		ctoken,
-		"awesome market",
-		"AM",
-	)
-
-	assert.Nil(err)
-	assert.NotNil(tx)
-	s.Env.Blockchain.Commit()
-
-	ownerOpts := s.Env.Owner.Opts
-	user1Opts := s.Env.User1.Opts
-
-	// we should be able to fetch the market now...
-	market, err := s.MarketPlace.Markets(underlying, maturity)
-	assert.Nil(err)
-	assert.Equal(market.CTokenAddr, ctoken)
-
-	s.Env.Blockchain.Commit()
-
-	vaultTrackerContract, err := mocks.NewVaultTracker(market.VaultAddr, s.Env.Blockchain)
-	vaultTracker := &mocks.VaultTrackerSession{
-		Contract: vaultTrackerContract,
-		CallOpts: bind.CallOpts{From: ownerOpts.From, Pending: false},
-		TransactOpts: bind.TransactOpts{
-			From:   ownerOpts.From,
-			Signer: ownerOpts.Signer,
-		},
-	}
-
-	tx, err = vaultTracker.AddNotionalReturns(false)
-	assert.Nil(err)
-	assert.NotNil(tx)
-
-	s.Env.Blockchain.Commit()
-
-	tx, err = vaultTracker.RemoveNotionalReturns(true)
-	assert.Nil(err)
-	assert.NotNil(tx)
-
-	s.Env.Blockchain.Commit()
-
-	amount := big.NewInt(100)
-	tx, err = s.MarketPlace.P2pVaultExchange(underlying, maturity, ownerOpts.From, user1Opts.From, amount)
-	assert.NotNil(err)
-	assert.Regexp("add notional failed", err.Error())
-	assert.Nil(tx)
-
-	s.Env.Blockchain.Commit()
-}
-
-func (s *p2pVaultExchangeSuite) TestP2PVaultExchangeAddNotionalFails() {
+func (s *p2pVaultExchangeSuite) TestP2PVaultExchangeTransferNotionalFromFails() {
 	assert := assertions.New(s.T())
 	underlying := s.Dep.Erc20Address
 	maturity := s.Dep.Maturity
@@ -232,13 +162,7 @@ func (s *p2pVaultExchangeSuite) TestP2PVaultExchangeAddNotionalFails() {
 		},
 	}
 
-	tx, err = vaultTracker.AddNotionalReturns(false)
-	assert.Nil(err)
-	assert.NotNil(tx)
-
-	s.Env.Blockchain.Commit()
-
-	tx, err = vaultTracker.RemoveNotionalReturns(true)
+	tx, err = vaultTracker.TransferNotionalFromReturns(false)
 	assert.Nil(err)
 	assert.NotNil(tx)
 
@@ -247,7 +171,7 @@ func (s *p2pVaultExchangeSuite) TestP2PVaultExchangeAddNotionalFails() {
 	amount := big.NewInt(100)
 	tx, err = s.MarketPlace.P2pVaultExchange(underlying, maturity, ownerOpts.From, user1Opts.From, amount)
 	assert.NotNil(err)
-	assert.Regexp("add notional failed", err.Error())
+	assert.Regexp("transfer notional failed", err.Error())
 	assert.Nil(tx)
 
 	s.Env.Blockchain.Commit()

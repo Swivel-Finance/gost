@@ -27,10 +27,10 @@ var (
 )
 
 // VaultTrackerABI is the input ABI used to generate the binding from.
-const VaultTrackerABI = "[{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"m\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"c\",\"type\":\"address\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"o\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"a\",\"type\":\"uint256\"}],\"name\":\"addNotional\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"addNotionalCalled\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bool\",\"name\":\"n\",\"type\":\"bool\"}],\"name\":\"addNotionalReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"cTokenAddr\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"matureVault\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bool\",\"name\":\"m\",\"type\":\"bool\"}],\"name\":\"matureVaultReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"maturity\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"n\",\"type\":\"uint256\"}],\"name\":\"maturityReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"o\",\"type\":\"address\"}],\"name\":\"redeemInterest\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"a\",\"type\":\"uint256\"}],\"name\":\"redeemInterestReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"o\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"a\",\"type\":\"uint256\"}],\"name\":\"removeNotional\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"removeNotionalCalled\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bool\",\"name\":\"n\",\"type\":\"bool\"}],\"name\":\"removeNotionalReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]"
+const VaultTrackerABI = "[{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"m\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"c\",\"type\":\"address\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"o\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"a\",\"type\":\"uint256\"}],\"name\":\"addNotional\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"addNotionalCalled\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bool\",\"name\":\"n\",\"type\":\"bool\"}],\"name\":\"addNotionalReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"cTokenAddr\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"matureVault\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bool\",\"name\":\"m\",\"type\":\"bool\"}],\"name\":\"matureVaultReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"maturity\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"n\",\"type\":\"uint256\"}],\"name\":\"maturityReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"o\",\"type\":\"address\"}],\"name\":\"redeemInterest\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"a\",\"type\":\"uint256\"}],\"name\":\"redeemInterestReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"o\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"a\",\"type\":\"uint256\"}],\"name\":\"removeNotional\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"removeNotionalCalled\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bool\",\"name\":\"n\",\"type\":\"bool\"}],\"name\":\"removeNotionalReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"f\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"t\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"a\",\"type\":\"uint256\"}],\"name\":\"transferNotionalFrom\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"transferNotionalFromCalled\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bool\",\"name\":\"b\",\"type\":\"bool\"}],\"name\":\"transferNotionalFromReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]"
 
 // VaultTrackerBin is the compiled bytecode used for deploying new contracts.
-var VaultTrackerBin = "0x608060405234801561001057600080fd5b506040516107e83803806107e8833981810160405281019061003291906100aa565b81600181905550806000806101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff1602179055505050610150565b60008151905061008f81610122565b92915050565b6000815190506100a481610139565b92915050565b600080604083850312156100bd57600080fd5b60006100cb85828601610095565b92505060206100dc85828601610080565b9150509250929050565b60006100f1826100f8565b9050919050565b600073ffffffffffffffffffffffffffffffffffffffff82169050919050565b6000819050919050565b61012b816100e6565b811461013657600080fd5b50565b61014281610118565b811461014d57600080fd5b50565b6106898061015f6000396000f3fe608060405234801561001057600080fd5b50600436106100cf5760003560e01c8063613a28d11161008c578063b4c4a4c811610066578063b4c4a4c814610238578063b7dd348314610254578063d6cb2c0d14610272578063da3de9e91461028e576100cf565b8063613a28d1146101ba5780636b868d51146101ea578063a01cfffb14610208576100cf565b80630aa93b9b146100d457806319caf46c14610104578063204f83f9146101345780633dfa1f41146101525780635c70b7c1146101825780635dfe12ac1461019e575b600080fd5b6100ee60048036038101906100e99190610491565b6102aa565b6040516100fb91906105ab565b60405180910390f35b61011e60048036038101906101199190610491565b6102c2565b60405161012b91906105ab565b60405180910390f35b61013c6102ce565b60405161014991906105ab565b60405180910390f35b61016c60048036038101906101679190610491565b6102d8565b60405161017991906105ab565b60405180910390f35b61019c600480360381019061019791906104f6565b6102f0565b005b6101b860048036038101906101b391906104f6565b61030d565b005b6101d460048036038101906101cf91906104ba565b61032a565b6040516101e19190610590565b60405180910390f35b6101f2610388565b6040516101ff9190610590565b60405180910390f35b610222600480360381019061021d91906104ba565b61039f565b60405161022f9190610590565b60405180910390f35b610252600480360381019061024d919061051f565b6103fd565b005b61025c610407565b6040516102699190610575565b60405180910390f35b61028c6004803603810190610287919061051f565b61042b565b005b6102a860048036038101906102a391906104f6565b610435565b005b60066020528060005260406000206000915090505481565b60006003549050919050565b6000600154905090565b60046020528060005260406000206000915090505481565b80600560006101000a81548160ff02191690831515021790555050565b80600760006101000a81548160ff02191690831515021790555050565b600081600660008573ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002081905550600760009054906101000a900460ff16905092915050565b6000600260009054906101000a900460ff16905090565b600081600460008573ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002081905550600560009054906101000a900460ff16905092915050565b8060018190555050565b60008054906101000a900473ffffffffffffffffffffffffffffffffffffffff1681565b8060038190555050565b80600260006101000a81548160ff02191690831515021790555050565b6000813590506104618161060e565b92915050565b60008135905061047681610625565b92915050565b60008135905061048b8161063c565b92915050565b6000602082840312156104a357600080fd5b60006104b184828501610452565b91505092915050565b600080604083850312156104cd57600080fd5b60006104db85828601610452565b92505060206104ec8582860161047c565b9150509250929050565b60006020828403121561050857600080fd5b600061051684828501610467565b91505092915050565b60006020828403121561053157600080fd5b600061053f8482850161047c565b91505092915050565b610551816105c6565b82525050565b610560816105d8565b82525050565b61056f81610604565b82525050565b600060208201905061058a6000830184610548565b92915050565b60006020820190506105a56000830184610557565b92915050565b60006020820190506105c06000830184610566565b92915050565b60006105d1826105e4565b9050919050565b60008115159050919050565b600073ffffffffffffffffffffffffffffffffffffffff82169050919050565b6000819050919050565b610617816105c6565b811461062257600080fd5b50565b61062e816105d8565b811461063957600080fd5b50565b61064581610604565b811461065057600080fd5b5056fea264697066735822122036d1c6801cecf3c6965f2498f4762ab6d754382d45021cd20084281c795f56a964736f6c63430008000033"
+var VaultTrackerBin = "0x608060405234801561001057600080fd5b50604051610a99380380610a99833981810160405281019061003291906100aa565b81600181905550806000806101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff1602179055505050610150565b60008151905061008f81610122565b92915050565b6000815190506100a481610139565b92915050565b600080604083850312156100bd57600080fd5b60006100cb85828601610095565b92505060206100dc85828601610080565b9150509250929050565b60006100f1826100f8565b9050919050565b600073ffffffffffffffffffffffffffffffffffffffff82169050919050565b6000819050919050565b61012b816100e6565b811461013657600080fd5b50565b61014281610118565b811461014d57600080fd5b50565b61093a8061015f6000396000f3fe608060405234801561001057600080fd5b50600436106101005760003560e01c80636b868d5111610097578063d0b9d03211610066578063d0b9d032146102d3578063d6cb2c0d146102ef578063da3de9e91461030b578063e590c3621461032757610100565b80636b868d511461024b578063a01cfffb14610269578063b4c4a4c814610299578063b7dd3483146102b557610100565b80633dfa1f41116100d35780633dfa1f41146101b35780635c70b7c1146101e35780635dfe12ac146101ff578063613a28d11461021b57610100565b80630aa93b9b14610105578063177946731461013557806319caf46c14610165578063204f83f914610195575b600080fd5b61011f600480360381019061011a91906106ca565b610358565b60405161012c919061085c565b60405180910390f35b61014f600480360381019061014a91906106f3565b610370565b60405161015c9190610841565b60405180910390f35b61017f600480360381019061017a91906106ca565b61046a565b60405161018c919061085c565b60405180910390f35b61019d610476565b6040516101aa919061085c565b60405180910390f35b6101cd60048036038101906101c891906106ca565b610480565b6040516101da919061085c565b60405180910390f35b6101fd60048036038101906101f8919061077e565b610498565b005b6102196004803603810190610214919061077e565b6104b5565b005b61023560048036038101906102309190610742565b6104d2565b6040516102429190610841565b60405180910390f35b610253610530565b6040516102609190610841565b60405180910390f35b610283600480360381019061027e9190610742565b610547565b6040516102909190610841565b60405180910390f35b6102b360048036038101906102ae91906107a7565b6105a5565b005b6102bd6105af565b6040516102ca91906107fd565b60405180910390f35b6102ed60048036038101906102e8919061077e565b6105d3565b005b610309600480360381019061030491906107a7565b6105f0565b005b6103256004803603810190610320919061077e565b6105fa565b005b610341600480360381019061033c91906106ca565b610617565b60405161034f929190610818565b60405180910390f35b60066020528060005260406000206000915090505481565b600061037a61065b565b83816000019073ffffffffffffffffffffffffffffffffffffffff16908173ffffffffffffffffffffffffffffffffffffffff16815250508281602001818152505080600860008773ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060008201518160000160006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555060208201518160010155905050600960009054906101000a900460ff169150509392505050565b60006003549050919050565b6000600154905090565b60046020528060005260406000206000915090505481565b80600560006101000a81548160ff02191690831515021790555050565b80600760006101000a81548160ff02191690831515021790555050565b600081600660008573ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002081905550600760009054906101000a900460ff16905092915050565b6000600260009054906101000a900460ff16905090565b600081600460008573ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002081905550600560009054906101000a900460ff16905092915050565b8060018190555050565b60008054906101000a900473ffffffffffffffffffffffffffffffffffffffff1681565b80600960006101000a81548160ff02191690831515021790555050565b8060038190555050565b80600260006101000a81548160ff02191690831515021790555050565b60086020528060005260406000206000915090508060000160009054906101000a900473ffffffffffffffffffffffffffffffffffffffff16908060010154905082565b6040518060400160405280600073ffffffffffffffffffffffffffffffffffffffff168152602001600081525090565b60008135905061069a816108bf565b92915050565b6000813590506106af816108d6565b92915050565b6000813590506106c4816108ed565b92915050565b6000602082840312156106dc57600080fd5b60006106ea8482850161068b565b91505092915050565b60008060006060848603121561070857600080fd5b60006107168682870161068b565b93505060206107278682870161068b565b9250506040610738868287016106b5565b9150509250925092565b6000806040838503121561075557600080fd5b60006107638582860161068b565b9250506020610774858286016106b5565b9150509250929050565b60006020828403121561079057600080fd5b600061079e848285016106a0565b91505092915050565b6000602082840312156107b957600080fd5b60006107c7848285016106b5565b91505092915050565b6107d981610877565b82525050565b6107e881610889565b82525050565b6107f7816108b5565b82525050565b600060208201905061081260008301846107d0565b92915050565b600060408201905061082d60008301856107d0565b61083a60208301846107ee565b9392505050565b600060208201905061085660008301846107df565b92915050565b600060208201905061087160008301846107ee565b92915050565b600061088282610895565b9050919050565b60008115159050919050565b600073ffffffffffffffffffffffffffffffffffffffff82169050919050565b6000819050919050565b6108c881610877565b81146108d357600080fd5b50565b6108df81610889565b81146108ea57600080fd5b50565b6108f6816108b5565b811461090157600080fd5b5056fea2646970667358221220a7923cb4ae781a2021b79a02ba90f908c5dbfe018ec7f2cf6fb77d81b8a6c52a64736f6c63430008000033"
 
 // DeployVaultTracker deploys a new Ethereum contract, binding an instance of VaultTracker to it.
 func DeployVaultTracker(auth *bind.TransactOpts, backend bind.ContractBackend, m *big.Int, c common.Address) (common.Address, *types.Transaction, *VaultTracker, error) {
@@ -312,6 +312,51 @@ func (_VaultTracker *VaultTrackerCallerSession) RemoveNotionalCalled(arg0 common
 	return _VaultTracker.Contract.RemoveNotionalCalled(&_VaultTracker.CallOpts, arg0)
 }
 
+// TransferNotionalFromCalled is a free data retrieval call binding the contract method 0xe590c362.
+//
+// Solidity: function transferNotionalFromCalled(address ) view returns(address to, uint256 amount)
+func (_VaultTracker *VaultTrackerCaller) TransferNotionalFromCalled(opts *bind.CallOpts, arg0 common.Address) (struct {
+	To     common.Address
+	Amount *big.Int
+}, error) {
+	var out []interface{}
+	err := _VaultTracker.contract.Call(opts, &out, "transferNotionalFromCalled", arg0)
+
+	outstruct := new(struct {
+		To     common.Address
+		Amount *big.Int
+	})
+	if err != nil {
+		return *outstruct, err
+	}
+
+	outstruct.To = out[0].(common.Address)
+	outstruct.Amount = out[1].(*big.Int)
+
+	return *outstruct, err
+
+}
+
+// TransferNotionalFromCalled is a free data retrieval call binding the contract method 0xe590c362.
+//
+// Solidity: function transferNotionalFromCalled(address ) view returns(address to, uint256 amount)
+func (_VaultTracker *VaultTrackerSession) TransferNotionalFromCalled(arg0 common.Address) (struct {
+	To     common.Address
+	Amount *big.Int
+}, error) {
+	return _VaultTracker.Contract.TransferNotionalFromCalled(&_VaultTracker.CallOpts, arg0)
+}
+
+// TransferNotionalFromCalled is a free data retrieval call binding the contract method 0xe590c362.
+//
+// Solidity: function transferNotionalFromCalled(address ) view returns(address to, uint256 amount)
+func (_VaultTracker *VaultTrackerCallerSession) TransferNotionalFromCalled(arg0 common.Address) (struct {
+	To     common.Address
+	Amount *big.Int
+}, error) {
+	return _VaultTracker.Contract.TransferNotionalFromCalled(&_VaultTracker.CallOpts, arg0)
+}
+
 // AddNotional is a paid mutator transaction binding the contract method 0xa01cfffb.
 //
 // Solidity: function addNotional(address o, uint256 a) returns(bool)
@@ -499,4 +544,46 @@ func (_VaultTracker *VaultTrackerSession) RemoveNotionalReturns(n bool) (*types.
 // Solidity: function removeNotionalReturns(bool n) returns()
 func (_VaultTracker *VaultTrackerTransactorSession) RemoveNotionalReturns(n bool) (*types.Transaction, error) {
 	return _VaultTracker.Contract.RemoveNotionalReturns(&_VaultTracker.TransactOpts, n)
+}
+
+// TransferNotionalFrom is a paid mutator transaction binding the contract method 0x17794673.
+//
+// Solidity: function transferNotionalFrom(address f, address t, uint256 a) returns(bool)
+func (_VaultTracker *VaultTrackerTransactor) TransferNotionalFrom(opts *bind.TransactOpts, f common.Address, t common.Address, a *big.Int) (*types.Transaction, error) {
+	return _VaultTracker.contract.Transact(opts, "transferNotionalFrom", f, t, a)
+}
+
+// TransferNotionalFrom is a paid mutator transaction binding the contract method 0x17794673.
+//
+// Solidity: function transferNotionalFrom(address f, address t, uint256 a) returns(bool)
+func (_VaultTracker *VaultTrackerSession) TransferNotionalFrom(f common.Address, t common.Address, a *big.Int) (*types.Transaction, error) {
+	return _VaultTracker.Contract.TransferNotionalFrom(&_VaultTracker.TransactOpts, f, t, a)
+}
+
+// TransferNotionalFrom is a paid mutator transaction binding the contract method 0x17794673.
+//
+// Solidity: function transferNotionalFrom(address f, address t, uint256 a) returns(bool)
+func (_VaultTracker *VaultTrackerTransactorSession) TransferNotionalFrom(f common.Address, t common.Address, a *big.Int) (*types.Transaction, error) {
+	return _VaultTracker.Contract.TransferNotionalFrom(&_VaultTracker.TransactOpts, f, t, a)
+}
+
+// TransferNotionalFromReturns is a paid mutator transaction binding the contract method 0xd0b9d032.
+//
+// Solidity: function transferNotionalFromReturns(bool b) returns()
+func (_VaultTracker *VaultTrackerTransactor) TransferNotionalFromReturns(opts *bind.TransactOpts, b bool) (*types.Transaction, error) {
+	return _VaultTracker.contract.Transact(opts, "transferNotionalFromReturns", b)
+}
+
+// TransferNotionalFromReturns is a paid mutator transaction binding the contract method 0xd0b9d032.
+//
+// Solidity: function transferNotionalFromReturns(bool b) returns()
+func (_VaultTracker *VaultTrackerSession) TransferNotionalFromReturns(b bool) (*types.Transaction, error) {
+	return _VaultTracker.Contract.TransferNotionalFromReturns(&_VaultTracker.TransactOpts, b)
+}
+
+// TransferNotionalFromReturns is a paid mutator transaction binding the contract method 0xd0b9d032.
+//
+// Solidity: function transferNotionalFromReturns(bool b) returns()
+func (_VaultTracker *VaultTrackerTransactorSession) TransferNotionalFromReturns(b bool) (*types.Transaction, error) {
+	return _VaultTracker.Contract.TransferNotionalFromReturns(&_VaultTracker.TransactOpts, b)
 }
