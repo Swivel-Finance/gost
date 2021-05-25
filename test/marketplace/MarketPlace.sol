@@ -179,8 +179,7 @@ contract MarketPlace {
   // called by swivel IVFVE, EVFVI
   // call with underlying, maturity, remove-from, add-to, amount
   function p2pVaultExchange(address u, uint256 m, address o, address t, uint256 a) external returns (bool) {
-    require(VaultTracker(markets[u][m].vaultAddr).removeNotional(o, a), 'remove notional failed');
-    require(VaultTracker(markets[u][m].vaultAddr).addNotional(t, a), 'add notional failed');
+    require(VaultTracker(markets[u][m].vaultAddr).transferNotionalFrom(o, t, a), 'transfer notional failed');
     return true;
   }
 

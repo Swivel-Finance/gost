@@ -195,6 +195,16 @@ contract VaultTracker {
   }
 
   /// @notice ...
+  /// @param f Address of the sender
+  /// @param t Address of the recipient
+  /// @param a Amount to transfer
+  function transferNotionalFrom(address f, address t, uint256 a) public returns (bool) {
+    require(removeNotional(f, a), 'remove notional failed');
+    require(addNotional(t, a), 'add notional failed');
+    return true;
+  }
+
+  /// @notice ...
   /// @param o Address that owns a timelock in the vault
   function balancesOf(address o) public view returns (uint256, uint256) {
     return (vaults[o].notional, vaults[o].redeemable);

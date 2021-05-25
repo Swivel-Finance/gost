@@ -8,6 +8,12 @@
 pragma solidity 0.8.0;
 
 contract VaultTracker {
+
+  struct TransferNotionalFromArgs {
+    address to;
+    uint256 amount;
+  }
+
   // can just be default as its not needed to be exposed...
   address public cTokenAddr;
   
@@ -26,6 +32,11 @@ contract VaultTracker {
   mapping (address => uint256) public removeNotionalCalled;
   // a boolean flag which allows us to dictate the return of removeNotional().
   bool private removeNotionalReturn;
+
+  // mapping of arguments sent to transferNotionalFrom. key is the passed in address.
+  mapping (address => TransferNotionalFromArgs) public transferNotionalFromCalled;
+  // a boolean flag which allows us to dictate the return of transferNotionalFrom().
+  bool private transferNotionalFromReturn;
 
   /// @param m Maturity
   /// @param c C Token Address
@@ -76,5 +87,17 @@ contract VaultTracker {
   function removeNotional(address o, uint256 a) public returns (bool) {
     removeNotionalCalled[o] = a;
     return removeNotionalReturn;
+  }
+
+  function transferNotionalFromReturns(bool b) public {
+    transferNotionalFromReturn = b;
+  }
+
+  function transferNotionalFrom(address f, address t, uint256 a) public returns (bool) {
+    TransferNotionalFromArgs memory args;
+    args.to = t;
+    args.amount = a;
+    transferNotionalFromCalled[f] = args;
+    return transferNotionalFromReturn;
   }
 }
