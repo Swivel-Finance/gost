@@ -44,8 +44,11 @@ func (s *swivelAddrSuite) TestSetSwivelAddr() {
 	tx, err := s.MarketPlace.SetSwivelAddress(bsAddr)
 	assert.Nil(err)
 	assert.NotNil(tx)
-	// it's private and i don't want to write a getter so we won't test for it's presence, but
-	// we can test for a lack of revert errors on tests that are onlySwivel...
+
+	s.Env.Blockchain.Commit()
+
+	addr, _ := s.MarketPlace.Swivel()
+	assert.Equal(bsAddr, addr)
 }
 
 func TestSwivelAddrSuite(t *test.T) {

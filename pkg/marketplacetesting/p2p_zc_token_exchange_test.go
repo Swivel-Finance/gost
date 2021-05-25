@@ -64,6 +64,9 @@ func (s *p2pZCTokenExchangeSuite) SetupTest() {
 			Signer: s.Env.Owner.Opts.Signer,
 		},
 	}
+
+	s.MarketPlace.SetSwivelAddress(s.Env.Owner.Opts.From)
+	s.Env.Blockchain.Commit()
 }
 
 func (s *p2pZCTokenExchangeSuite) TestP2PZCTokenExchange() {

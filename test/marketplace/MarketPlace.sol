@@ -12,7 +12,7 @@ import './VaultTracker.sol';
 
 contract MarketPlace {
   address public admin = msg.sender;
-  address private swivelAddr;
+  address public swivel;
 
   struct Market {
     address cTokenAddr;
@@ -29,8 +29,7 @@ contract MarketPlace {
   event Mature(address indexed underlying, uint256 indexed maturity, uint256 maturityRate, uint256 matured);
 
   function setSwivelAddress(address s) external onlyAdmin(admin) returns (bool) {
-    // TODO we could require that swivelAddr == ZERO_ADDRESS to enforce once only of desired...
-    swivelAddr = s;
+    swivel = s;
     return true;
   }
 
@@ -59,8 +58,8 @@ contract MarketPlace {
   }
 
   /// @notice Can be called after maturity, allowing all of the zcTokens to earn floating interest on Compound until they release their funds
-  /// @param u Underlying token address associated with the new market
-  /// @param m Maturity timestamp of the new market
+  /// @param u Underlying token address associated with the market
+  /// @param m Maturity timestamp of the market
   function matureMarket(address u, uint256 m) public returns (bool) {
     require(mature[u][m] == false, 'market already matured');
     require(block.timestamp >= ZcToken(markets[u][m].zcTokenAddr).maturity(), "maturity not reached");
@@ -82,8 +81,8 @@ contract MarketPlace {
   }
 
   /// @notice Allows zcToken holders to redeem their tokens for underlying tokens after maturity has been reached.
-  /// @param u Underlying token address associated with the new market
-  /// @param m Maturity timestamp of the new market
+  /// @param u Underlying token address associated with the market
+  /// @param m Maturity timestamp of the market
   /// @param a Amount of zcTokens being redeemed
   function redeemZcToken(address u, uint256 m, uint256 a) public returns (bool) {
     // If market hasn't matured, mature it and redeem exactly the amount
@@ -119,8 +118,8 @@ contract MarketPlace {
   }
 
   /// @notice Allows Vault owners to redeem any currently accrued interest within a given ____
-  /// @param u Underlying token address associated with the new market
-  /// @param m Maturity timestamp of the new market
+  /// @param u Underlying token address associated with the market
+  /// @param m Maturity timestamp of the market
   function redeemVaultInterest(address u, uint256 m) public returns (bool) {
     // Call to the floating market contract to release the position and calculate the interest generated
     uint256 interestGenerated = VaultTracker(markets[u][m].vaultAddr).redeemInterest(msg.sender);
@@ -135,8 +134,8 @@ contract MarketPlace {
   }
 
   /// @notice Calculates the total amount of underlying returned including interest generated since the `matureMarket` function has been called
-  /// @param u Underlying token address associated with the new market
-  /// @param m Maturity timestamp of the new market
+  /// @param u Underlying token address associated with the market
+  /// @param m Maturity timestamp of the market
   /// @param a Amount of zcTokens being redeemed
   function calculateReturn(address u, uint256 m, uint256 a) internal returns (uint256) {
     // Calculate difference between the cToken exchange rate @ maturity and the current cToken exchange rate
@@ -153,32 +152,37 @@ contract MarketPlace {
     return markets[a][m].cTokenAddr;
   }
 
-  // called by swivel IVFZI && IZFVI
-  // call with underlying, maturity, mint-target, add-notional-target and an amount
-  function custodialInitiate(address u, uint256 m, address o, address t, uint256 a) external returns (bool) {
+  /// @notice called by swivel IVFZI && IZFVI
+  /// @dev call with underlying, maturity, mint-target, add-notional-target and an amount
+  /// @param u Underlying token address associated with the market
+  /// @param m Maturity timestamp of the market
+  /// @param o Recipient of the minted zcToken
+  /// @param t Recipient of the added notional
+  /// @param a Amount of zcToken minted and notional added
+  function custodialInitiate(address u, uint256 m, address o, address t, uint256 a) external onlySwivel(swivel) returns (bool) {
     require(ZcToken(markets[u][m].zcTokenAddr).mint(o, a), 'mint failed');
     require(VaultTracker(markets[u][m].vaultAddr).addNotional(t, a), 'add notional failed');
     return true;
   }
 
-  // called by swivel EVFZE FF EZFVE
-  // call with underlying, maturity, burn-target, remove-notional-target and an amount
-  function custodialExit(address u, uint256 m, address o, address t, uint256 a) external returns (bool) {
+  /// @notice called by swivel EVFZE FF EZFVE
+  /// @dev call with underlying, maturity, burn-target, remove-notional-target and an amount
+  function custodialExit(address u, uint256 m, address o, address t, uint256 a) external onlySwivel(swivel) returns (bool) {
     require(ZcToken(markets[u][m].zcTokenAddr).burn(o, a), 'burn failed');
     require(VaultTracker(markets[u][m].vaultAddr).removeNotional(t, a), 'remove notional failed');
     return true;
   }
 
-  // called by swivel IZFZE, EZFZI
-  // call with underlying, maturity, transfer-from, transfer-to, amount
-  function p2pZcTokenExchange(address u, uint256 m, address o, address t, uint256 a) external returns (bool) {
+  /// @notice called by swivel IZFZE, EZFZI
+  /// @dev call with underlying, maturity, transfer-from, transfer-to, amount
+  function p2pZcTokenExchange(address u, uint256 m, address o, address t, uint256 a) external onlySwivel(swivel) returns (bool) {
     require(ZcToken(markets[u][m].zcTokenAddr).transferFrom(o, t, a), 'zcToken transfer failed');
     return true;
   }
 
-  // called by swivel IVFVE, EVFVI
-  // call with underlying, maturity, remove-from, add-to, amount
-  function p2pVaultExchange(address u, uint256 m, address o, address t, uint256 a) external returns (bool) {
+  /// @notice called by swivel IVFVE, EVFVI
+  /// @dev call with underlying, maturity, remove-from, add-to, amount
+  function p2pVaultExchange(address u, uint256 m, address o, address t, uint256 a) external onlySwivel(swivel) returns (bool) {
     require(VaultTracker(markets[u][m].vaultAddr).transferNotionalFrom(o, t, a), 'transfer notional failed');
     return true;
   }

@@ -64,6 +64,11 @@ func (s *custodialExitSuite) SetupTest() {
 			Signer: s.Env.Owner.Opts.Signer,
 		},
 	}
+
+	// the Marketplace needs to have a swivel addr set, we'll use the owner addr so as not to have to generate a new signer
+	// and re-do all the calls...
+	s.MarketPlace.SetSwivelAddress(s.Env.Owner.Opts.From)
+	s.Env.Blockchain.Commit()
 }
 
 func (s *custodialExitSuite) TestCustodialExit() {
@@ -132,13 +137,11 @@ func (s *custodialExitSuite) TestCustodialExit() {
 
 	s.Env.Blockchain.Commit()
 
-
 	mintAmount, err := zcToken.BurnCalled(ownerOpts.From)
 	assert.Nil(err)
 	assert.Equal(amount, mintAmount)
 
 	s.Env.Blockchain.Commit()
-
 
 	addNotionalAmount, err := vaultTracker.RemoveNotionalCalled(user1Opts.From)
 	assert.Nil(err)
