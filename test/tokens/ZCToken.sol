@@ -25,20 +25,20 @@ contract ZCToken is ERC20, IZCToken {
   
   /// @param f From
   /// @param a Amount
-  function burn(address f, uint256 a) external restricted(admin) override returns(bool) {
+  function burn(address f, uint256 a) external onlyAdmin(admin) override returns(bool) {
       _burn(f, a);
       return true;
   }
 
   /// @param t To
   /// @param a Amount
-  function mint(address t, uint256 a) external restricted(admin) override returns(bool) {
+  function mint(address t, uint256 a) external onlyAdmin(admin) override returns(bool) {
       _mint(t, a);
       return true;
   }
 
   /// @param a Admin address
-  modifier restricted(address a) {
+  modifier onlyAdmin(address a) {
     require(msg.sender == a, 'sender must be admin');
     _;
   }
