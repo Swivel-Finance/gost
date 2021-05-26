@@ -16,6 +16,8 @@ contract VaultTracker {
 
   // can just be default as its not needed to be exposed...
   address public cTokenAddr;
+  // 'bs' vars avoid compiler warnings that we don't want to surpress
+  address public bsAddr;
   
   uint256 private maturityReturn;
 
@@ -51,6 +53,7 @@ contract VaultTracker {
   }
 
   function redeemInterest(address o) public returns (uint256) {
+    bsAddr = o;
     return redeemInterestReturn;
   }
 
@@ -63,7 +66,7 @@ contract VaultTracker {
     return maturityReturn;
   }
 
-  function matureVault() public returns (bool) {
+  function matureVault() public view returns (bool) {
     return matureVaultReturn;
   }
 

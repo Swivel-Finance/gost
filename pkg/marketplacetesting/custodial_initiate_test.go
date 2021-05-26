@@ -64,6 +64,9 @@ func (s *custodialInitiateSuite) SetupTest() {
 			Signer: s.Env.Owner.Opts.Signer,
 		},
 	}
+
+	s.MarketPlace.SetSwivelAddress(s.Env.Owner.Opts.From)
+	s.Env.Blockchain.Commit()
 }
 
 func (s *custodialInitiateSuite) TestCustodialInitiate() {
@@ -132,13 +135,11 @@ func (s *custodialInitiateSuite) TestCustodialInitiate() {
 
 	s.Env.Blockchain.Commit()
 
-
 	mintAmount, err := zcToken.MintCalled(ownerOpts.From)
 	assert.Nil(err)
 	assert.Equal(amount, mintAmount)
 
 	s.Env.Blockchain.Commit()
-
 
 	addNotionalAmount, err := vaultTracker.AddNotionalCalled(user1Opts.From)
 	assert.Nil(err)

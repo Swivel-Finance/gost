@@ -63,7 +63,6 @@ func (s *createMarketSuite) TestCreateMarket() {
 	assert.Nil(err)
 	assert.Equal(market.CTokenAddr, ctoken)
 	assert.NotEqual(market.ZcTokenAddr, common.HexToAddress("0x0"))
-	s.T().Log(market)
 	assert.NotEqual(market.VaultAddr, common.HexToAddress("0x0"))
 }
 
