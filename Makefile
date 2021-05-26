@@ -71,11 +71,11 @@ compile_mocks: compile_mock_erc compile_mock_cerc compile_mock_marketplace compi
 # Real Tokens
 compile_solidity_zct:
 	@echo "compiling ZCT solidity source into abi and bin files"
-	solc -o ./test/tokens --abi --bin --overwrite ./test/tokens/ZCToken.sol
+	solc -o ./test/tokens --abi --bin --overwrite ./test/tokens/ZcToken.sol
 
 compile_go_zct:
 	@echo "compiling abi and bin files to golang"
-	abigen --abi ./test/tokens/ZCToken.abi --bin ./test/tokens/ZCToken.bin -pkg tokens -type ZCToken -out ./test/tokens/zctoken.go 
+	abigen --abi ./test/tokens/ZcToken.abi --bin ./test/tokens/ZcToken.bin -pkg tokens -type ZcToken -out ./test/tokens/zctoken.go 
 
 compile_zct: compile_solidity_zct compile_go_zct
 

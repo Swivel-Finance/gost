@@ -5,10 +5,10 @@
 
 pragma solidity 0.8.0;
 
-import "./ERC20.sol";
-import "./IZCToken.sol";
+import "./Erc20.sol";
+import "./IZcToken.sol";
 
-contract ZCToken is ERC20, IZCToken {
+contract ZcToken is Erc20, IZcToken {
   address public admin;
   address public underlying;
   uint256 public maturity;
@@ -17,7 +17,7 @@ contract ZCToken is ERC20, IZCToken {
   /// @param m Maturity
   /// @param n Name
   /// @param s Symbol
-  constructor(address u, uint256 m, string memory n, string memory s) ERC20(n, s) {
+  constructor(address u, uint256 m, string memory n, string memory s) Erc20(n, s) {
       underlying = u;
       maturity = m;
       admin = msg.sender;
