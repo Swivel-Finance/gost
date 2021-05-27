@@ -24,9 +24,14 @@ contract MarketPlace {
   mapping (address => mapping (uint256 => bool)) public mature;
   mapping (address => mapping (uint256 => uint256)) public maturityRate;
 
-  // TODO what should be indexed here?
   event Create(address indexed underlying, uint256 indexed maturity, address cToken, address zcToken);
   event Mature(address indexed underlying, uint256 indexed maturity, uint256 maturityRate, uint256 matured);
+  event RedeemZcToken(address indexed underlying, uint256 indexed maturity, address indexed sender, uint256 amount);
+  event RedeemVaultInterest(address indexed underlying, uint256 indexed maturity, address indexed sender);
+  event CustodialInitiate(address indexed underlying, uint256 indexed maturity, address zcTarget, address nTarget, uint256 amount);
+  event CustodialExit(address indexed underlying, uint256 indexed maturity, address zcTarget, address nTarget, uint256 amount);
+  event P2pZcTokenExchange(address indexed underlying, uint256 indexed maturity, address from, address to, uint256 amount);
+  event P2pVaultExchange(address indexed underlying, uint256 indexed maturity, address from, address to, uint256 amount);
 
   function setSwivelAddress(address s) external onlyAdmin(admin) returns (bool) {
     swivel = s;
@@ -51,7 +56,6 @@ contract MarketPlace {
     address vAddr = address(new VaultTracker(m, c));
     markets[u][m] = Market(c, zctAddr, vAddr);
 
-    // TODO review indexed args...
     emit Create(u, m, c, zctAddr);
 
     return true;
@@ -74,7 +78,6 @@ contract MarketPlace {
     // Set the maturity state to true (for zcb market)
     mature[u][m] = true;
 
-    // TODO review indexed args...
     emit Mature(u, m, block.timestamp, currentExchangeRate);
 
     return true;
@@ -114,6 +117,9 @@ contract MarketPlace {
       require(Erc20(u).transfer(msg.sender, principleReturned), 'transfer of redemption failed');
 
     }
+
+    emit RedeemZcToken(u, m, msg.sender, a);
+
     return true;
   }
 
@@ -129,6 +135,8 @@ contract MarketPlace {
 
     // Transfer the interest generated in underlying tokens to the user
     require(Erc20(u).transfer(msg.sender, interestGenerated), 'transfer of redeemable failed');
+
+    emit RedeemVaultInterest(u, m, msg.sender);
 
     return true;
   }
@@ -162,6 +170,7 @@ contract MarketPlace {
   function custodialInitiate(address u, uint256 m, address z, address n, uint256 a) external onlySwivel(swivel) returns (bool) {
     require(ZcToken(markets[u][m].zcTokenAddr).mint(z, a), 'mint failed');
     require(VaultTracker(markets[u][m].vaultAddr).addNotional(n, a), 'add notional failed');
+    emit CustodialInitiate(u, m, z, n, a);
     return true;
   }
 
@@ -175,6 +184,7 @@ contract MarketPlace {
   function custodialExit(address u, uint256 m, address z, address n, uint256 a) external onlySwivel(swivel) returns (bool) {
     require(ZcToken(markets[u][m].zcTokenAddr).burn(z, a), 'burn failed');
     require(VaultTracker(markets[u][m].vaultAddr).removeNotional(n, a), 'remove notional failed');
+    emit CustodialExit(u, m, z, n, a);
     return true;
   }
 
@@ -187,6 +197,7 @@ contract MarketPlace {
   /// @param a Amount of zcToken transfer
   function p2pZcTokenExchange(address u, uint256 m, address f, address t, uint256 a) external onlySwivel(swivel) returns (bool) {
     require(ZcToken(markets[u][m].zcTokenAddr).transferFrom(f, t, a), 'zcToken transfer failed');
+    emit P2pZcTokenExchange(u, m, f, t, a);
     return true;
   }
 
@@ -199,6 +210,7 @@ contract MarketPlace {
   /// @param a Amount of notional transfer
   function p2pVaultExchange(address u, uint256 m, address f, address t, uint256 a) external onlySwivel(swivel) returns (bool) {
     require(VaultTracker(markets[u][m].vaultAddr).transferNotionalFrom(f, t, a), 'transfer notional failed');
+    emit P2pVaultExchange(u, m, f, t, a);
     return true;
   }
 
