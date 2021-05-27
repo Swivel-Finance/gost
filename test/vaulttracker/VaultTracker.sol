@@ -9,7 +9,7 @@ pragma solidity 0.8.0;
 import "./Abstracts.sol";
 
 contract VaultTracker {
-  address public admin;
+  address public admin; // marketplace
   uint256 public maturity;
   bool private matured;
   uint256 private maturityRate;
@@ -22,8 +22,6 @@ contract VaultTracker {
   }
 
   mapping(address => Vault) public vaults;
-
-  event RedeemInterest(address indexed owner, uint256 indexed amount);
 
   /// @param m Maturity timestamp of the new market
   /// @param c cToken address associated with underlying for the new market
@@ -125,7 +123,6 @@ contract VaultTracker {
     vaults[o].exchangeRate = exchangeRate;
     vaults[o].redeemable = 0;
 
-    emit RedeemInterest(o, redeemAmount);
     return(redeemAmount);
   }
 
@@ -140,6 +137,7 @@ contract VaultTracker {
   /// @notice ...
   /// @param t Address recipient of the amount
   /// @param a Amount to transfer
+  /// TODO create an exposed method on marketplace to do this "notionalTransfer"
   function transfer(address t, uint256 a) public returns (bool) {
     require(vaults[msg.sender].notional >= a, "amount exceeds vault balance");
 

@@ -22,6 +22,14 @@ contract Swivel {
 
   /// @notice Emitted on order cancellation
   event Cancel (bytes32 indexed key);
+  /// @notice Emitted on any initiate*
+  /// @dev filled is 'principalFilled' when (vault:false, exit:false) && (vault:true, exit:true)
+  /// @dev filled is 'premiumFilled' when (vault:true, exit:false) && (vault:false, exit:true)
+  event Initiate(bytes32 indexed key, address indexed maker, bool vault, bool exit, address indexed sender, uint256 amount, uint256 filled);
+  /// @notice Emitted on any exit*
+  /// @dev filled is 'principalFilled' when (vault:false, exit:false) && (vault:true, exit:true)
+  /// @dev filled is 'premiumFilled' when (vault:true, exit:false) && (vault:false, exit:true)
+  event Exit(bytes32 indexed key, address indexed maker, bool vault, bool exit, address indexed sender, uint256 amount, uint256 filled);
 
   /// @param m deployed MarketPlace contract address
   constructor(address m) {
@@ -83,6 +91,8 @@ contract Swivel {
 
     filled[o.key] += a;
 
+    emit Initiate(o.key, o.maker, o.vault, o.exit, msg.sender, a, principalFilled);
+
     return true;
   }
 
@@ -112,6 +122,8 @@ contract Swivel {
     
     filled[o.key] += a;
 
+    emit Initiate(o.key, o.maker, o.vault, o.exit, msg.sender, a, premiumFilled);
+
     return true;
   }
 
@@ -134,6 +146,8 @@ contract Swivel {
     
     filled[o.key] += a;
             
+    emit Initiate(o.key, o.maker, o.vault, o.exit, msg.sender, a, premiumFilled);
+
     return true;
   }
 
@@ -154,6 +168,8 @@ contract Swivel {
     require(MarketPlace(marketPlaceAddr).p2pVaultExchange(o.underlying, o.maturity, o.maker, msg.sender, principalFilled), 'vault exchange failed');
     
     filled[o.key] += a;
+
+    emit Initiate(o.key, o.maker, o.vault, o.exit, msg.sender, a, principalFilled);
 
     return true;
   }
@@ -208,7 +224,8 @@ contract Swivel {
     
     filled[o.key] += a;       
     
-    // TODO events?
+    emit Exit(o.key, o.maker, o.vault, o.exit, msg.sender, a, principalFilled);
+
     return true;
   }
   
@@ -229,7 +246,9 @@ contract Swivel {
     require(Erc20(o.underlying).transferFrom(o.maker, msg.sender, premiumFilled), 'transfer failed');
     
     filled[o.key] += a;
-    // TODO events?
+
+    emit Exit(o.key, o.maker, o.vault, o.exit, msg.sender, a, premiumFilled);
+
     return true;
   }
 
@@ -257,7 +276,7 @@ contract Swivel {
     
     filled[o.key] += a;
     
-    // TODO events?
+    emit Exit(o.key, o.maker, o.vault, o.exit, msg.sender, a, premiumFilled);
 
     return true;
   }
@@ -286,7 +305,7 @@ contract Swivel {
     
     filled[o.key] += a;
     
-    // TODO events
+    emit Exit(o.key, o.maker, o.vault, o.exit, msg.sender, a, principalFilled);
 
     return true;
   }
