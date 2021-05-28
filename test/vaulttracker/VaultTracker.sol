@@ -98,7 +98,7 @@ contract VaultTracker {
 
   /// @notice ...
   /// @param o Address that owns a vault
-  function redeemInterest(address o) public onlyAdmin(admin) returns (uint256) {
+  function redeemInterest(address o) external onlyAdmin(admin) returns (uint256) {
     uint256 redeemAmount = vaults[o].redeemable;
 
     uint256 yield;
@@ -135,11 +135,11 @@ contract VaultTracker {
   }
 
   /// @notice ...
-  /// @param t Address recipient of the amount
+  /// @param f Owner of the amount
+  /// @param t Recipient of the amount
   /// @param a Amount to transfer
-  /// TODO create an exposed method on marketplace to do this "notionalTransfer"
-  function transfer(address t, uint256 a) public returns (bool) {
-    require(vaults[msg.sender].notional >= a, "amount exceeds vault balance");
+  function transfer(address f, address t, uint256 a) external onlyAdmin(admin) returns (bool) {
+    require(vaults[f].notional >= a, "amount exceeds vault balance");
 
     uint256 yield;
     uint256 interest;
@@ -149,19 +149,19 @@ contract VaultTracker {
     // Otherwise, calculate marginal exchange rate between current and previous exchange rate.
     if (matured == true) {
       // Calculate marginal interest
-      yield = ((maturityRate * 1e26) / vaults[msg.sender].exchangeRate) - 1e26;
-      interest = (yield * vaults[msg.sender].notional) / 1e26;
+      yield = ((maturityRate * 1e26) / vaults[f].exchangeRate) - 1e26;
+      interest = (yield * vaults[f].notional) / 1e26;
     }
     else {
       // Calculate marginal interest
-      yield = ((exchangeRate * 1e26) / vaults[msg.sender].exchangeRate) - 1e26;
-      interest = (yield * vaults[msg.sender].notional) / 1e26;
+      yield = ((exchangeRate * 1e26) / vaults[f].exchangeRate) - 1e26;
+      interest = (yield * vaults[f].notional) / 1e26;
     }
 
     // Remove amount from position, Add interest to position, reset cToken exchange rate
-    vaults[msg.sender].redeemable += interest;
-    vaults[msg.sender].notional -= a;
-    vaults[msg.sender].exchangeRate = exchangeRate;
+    vaults[f].redeemable += interest;
+    vaults[f].notional -= a;
+    vaults[f].exchangeRate = exchangeRate;
 
     // transfer notional to address "t", calculate interest if necessary
     if (vaults[t].notional > 0) {
@@ -189,6 +189,7 @@ contract VaultTracker {
       vaults[t].notional += a;
       vaults[t].exchangeRate = exchangeRate;
     }
+
     return true;
   }
 
@@ -196,7 +197,7 @@ contract VaultTracker {
   /// @param f Address of the sender
   /// @param t Address of the recipient
   /// @param a Amount to transfer
-  function transferNotionalFrom(address f, address t, uint256 a) public returns (bool) {
+  function transferNotionalFrom(address f, address t, uint256 a) external onlyAdmin(admin) returns (bool) {
     require(removeNotional(f, a), 'remove notional failed');
     require(addNotional(t, a), 'add notional failed');
     return true;
