@@ -9,7 +9,6 @@
 .PHONY: compile_solidity_zct compile_go_zct compile_zct
 .PHONY: compile_tokens
 
-
 .PHONY: compile_solidity_sig_fake compile_go_sig_fake compile_sig_fake
 .PHONY: compile_solidity_hash_fake compile_go_hash_fake compile_hash_fake
 .PHONY: compile_fakes
@@ -19,12 +18,16 @@
 .PHONY: compile_solidity_vaulttracker_test compile_go_vaulttracker_test compile_vaulttracker_test
 .PHONY: compile_test
 
-.PHONY: clean_test_abi
-.PHONY: clean_test_bin
-.PHONY: clean_test_go
+.PHONY: clean_test_abi clean_test_bin clean_test_go
 .PHONY: clean_test
 
-# TODO build/ jobs...
+.PHONY: clean_build_sol clean_build_abi clean_build_bin clean_build_go
+.PHONY: clean_build
+
+.PHONY: copy_zctoken_to_build copy_vaulttracker_to_build copy_marketplace_to_build copy_swivel_to_build
+.PHONY: copy_to_build
+
+.PHONY: all
 
 # Mocks
 compile_solidity_mock_erc:
@@ -152,4 +155,53 @@ clean_test_go:
 
 clean_test: clean_test_abi clean_test_bin clean_test_go
 
-# TODO we will compile and clean dist/ in other jobs...
+clean_build_sol:
+	@echo "removing sol files from build/ dirs"
+	rm build/**/*.sol
+
+clean_build_abi:
+	@echo "removing abi files from build/ dirs"
+	rm build/**/*.abi
+
+clean_build_bin:
+	@echo "removing bin files from build/ dirs"
+	rm build/**/*.bin
+
+clean_build_go:
+	@echo "removing go files from build/ dirs"
+	rm build/**/*.go
+
+clean_build: clean_build_sol clean_build_abi clean_build_bin clean_build_go
+
+# Copying to build
+copy_zctoken_to_build:
+	@echo "copying ZcToken files to marketplace build"
+	cp test/tokens/Erc20.* build/marketplace
+	cp test/tokens/IErc20.* build/marketplace
+	cp test/tokens/IErc20Metadata.* build/marketplace
+	cp test/tokens/ZcToken.* build/marketplace
+	cp test/tokens/IZcToken.* build/marketplace
+	cp test/tokens/zctoken.go build/marketplace
+
+copy_vaulttracker_to_build:
+	@echo "copying vaulttracker files to marketplace build"
+	cp test/vaulttracker/VaultTracker.* build/marketplace
+	cp test/vaulttracker/vaulttracker.go build/marketplace
+
+copy_marketplace_to_build:
+	@echo "copying marketplace files to marketplace build"
+	cp test/marketplace/Abstracts.sol build/marketplace
+	cp test/marketplace/MarketPlace.* build/marketplace
+	cp test/marketplace/marketplace.go build/marketplace
+
+copy_swivel_to_build:
+	@echo "copying swivel files to marketplace build"
+	cp test/swivel/Abstracts.sol build/swivel
+	cp test/swivel/Hash.* build/swivel
+	cp test/swivel/Sig.* build/swivel
+	cp test/swivel/Swivel.* build/swivel
+	cp test/swivel/swivel.go build/swivel
+
+copy_to_build: copy_zctoken_to_build copy_vaulttracker_to_build copy_marketplace_to_build copy_swivel_to_build
+
+all: clean_test compile_test clean_build copy_to_build
