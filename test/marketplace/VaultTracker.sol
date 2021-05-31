@@ -14,6 +14,11 @@ contract VaultTracker {
     uint256 amount;
   }
 
+  struct TransferArgs {
+    address to;
+    uint256 amount;
+  }
+
   // can just be default as its not needed to be exposed...
   address public cTokenAddr;
   // 'bs' vars avoid compiler warnings that we don't want to surpress
@@ -37,8 +42,10 @@ contract VaultTracker {
 
   // mapping of arguments sent to transferNotionalFrom. key is the passed in address.
   mapping (address => TransferNotionalFromArgs) public transferNotionalFromCalled;
+  mapping (address => TransferArgs) public transferCalled;
   // a boolean flag which allows us to dictate the return of transferNotionalFrom().
   bool private transferNotionalFromReturn;
+  bool private transferReturn;
 
   /// @param m Maturity
   /// @param c C Token Address
@@ -102,5 +109,17 @@ contract VaultTracker {
     args.amount = a;
     transferNotionalFromCalled[f] = args;
     return transferNotionalFromReturn;
+  }
+
+  function transferReturns(bool b) public {
+    transferReturn = b;
+  }
+
+  function transfer(address f, address t, uint256 a) public returns (bool) {
+    TransferArgs memory args;
+    args.to = t;
+    args.amount = a;
+    transferCalled[f] = args;
+    return transferReturn;
   }
 }

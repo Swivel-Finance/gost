@@ -70,7 +70,7 @@ func (s *transferSuite) TestTransferFailRequireAmount() {
 	assert.NotNil(vault)
 	assert.Equal(vault.Redeemable.Cmp(ZERO), 0)
 	assert.Equal(vault.Notional.Cmp(ZERO), 0)
-	assert.Equal(vault.ExchangeRate.Cmp(ZERO),0)
+	assert.Equal(vault.ExchangeRate.Cmp(ZERO), 0)
 
 	// call AddNotional for Owner with no vault and add "small" amount
 	caller := s.Env.Owner.Opts.From
@@ -82,9 +82,9 @@ func (s *transferSuite) TestTransferFailRequireAmount() {
 	s.Env.Blockchain.Commit()
 
 	// call RemoveNotional for Owner with vault amount lower than removal amount
-	caller = s.Env.Owner.Opts.From
+	// caller = s.Env.Owner.Opts.From
 	amount2 := big.NewInt(1000)
-	tx, err = s.VaultTracker.Transfer(s.Env.User1.Opts.From, amount2)
+	tx, err = s.VaultTracker.Transfer(caller, s.Env.User1.Opts.From, amount2)
 	assert.NotNil(err)
 	assert.Regexp("amount exceeds vault balance", err.Error())
 	assert.Nil(tx)
@@ -107,7 +107,7 @@ func (s *transferSuite) TestTransferNotMaturedNotExistingVault() {
 	assert.NotNil(vaultO)
 	assert.Equal(vaultO.Redeemable.Cmp(ZERO), 0)
 	assert.Equal(vaultO.Notional.Cmp(ZERO), 0)
-	assert.Equal(vaultO.ExchangeRate.Cmp(ZERO),0)
+	assert.Equal(vaultO.ExchangeRate.Cmp(ZERO), 0)
 
 	// call AddNotional for Owner
 	callerO := s.Env.Owner.Opts.From
@@ -138,7 +138,7 @@ func (s *transferSuite) TestTransferNotMaturedNotExistingVault() {
 
 	s.Env.Blockchain.Commit()
 
-	vaultO, err = s.VaultTracker.Vaults(s.Env.Owner.Opts.From)
+	vaultO, err = s.VaultTracker.Vaults(callerO)
 	assert.Nil(err)
 	assert.NotNil(vaultO)
 	assert.Equal(big.NewInt(2000), vaultO.Notional)
@@ -151,7 +151,7 @@ func (s *transferSuite) TestTransferNotMaturedNotExistingVault() {
 	assert.NotNil(vaultU)
 	assert.Equal(vaultU.Redeemable.Cmp(ZERO), 0)
 	assert.Equal(vaultU.Notional.Cmp(ZERO), 0)
-	assert.Equal(vaultU.ExchangeRate.Cmp(ZERO),0)
+	assert.Equal(vaultU.ExchangeRate.Cmp(ZERO), 0)
 
 	rate3 := big.NewInt(323456789)
 	tx, err = s.CErc20.ExchangeRateCurrentReturns(rate3)
@@ -160,13 +160,13 @@ func (s *transferSuite) TestTransferNotMaturedNotExistingVault() {
 
 	// call Transfer Owner -> User1
 	transferAmount := big.NewInt(500)
-	tx, err = s.VaultTracker.Transfer(s.Env.User1.Opts.From, transferAmount)
+	tx, err = s.VaultTracker.Transfer(callerO, s.Env.User1.Opts.From, transferAmount)
 	assert.Nil(err)
 	assert.NotNil(tx)
 
 	s.Env.Blockchain.Commit()
 
-	vaultO, err = s.VaultTracker.Vaults(s.Env.Owner.Opts.From)
+	vaultO, err = s.VaultTracker.Vaults(callerO)
 	assert.Nil(err)
 	assert.NotNil(vaultO)
 	assert.Equal(big.NewInt(1500), vaultO.Notional)
@@ -196,7 +196,7 @@ func (s *transferSuite) TestTransferNotMaturedExistingVault() {
 	assert.NotNil(vaultO)
 	assert.Equal(vaultO.Redeemable.Cmp(ZERO), 0)
 	assert.Equal(vaultO.Notional.Cmp(ZERO), 0)
-	assert.Equal(vaultO.ExchangeRate.Cmp(ZERO),0)
+	assert.Equal(vaultO.ExchangeRate.Cmp(ZERO), 0)
 
 	// call AddNotional for Owner
 	callerO := s.Env.Owner.Opts.From
@@ -207,7 +207,7 @@ func (s *transferSuite) TestTransferNotMaturedExistingVault() {
 	s.Env.Blockchain.Commit()
 
 	// found vault for Owner
-	vaultO, err = s.VaultTracker.Vaults(s.Env.Owner.Opts.From)
+	vaultO, err = s.VaultTracker.Vaults(callerO)
 	assert.Nil(err)
 	assert.NotNil(vaultO)
 	assert.Equal(big.NewInt(1000), vaultO.Notional)
@@ -227,7 +227,7 @@ func (s *transferSuite) TestTransferNotMaturedExistingVault() {
 
 	s.Env.Blockchain.Commit()
 
-	vaultO, err = s.VaultTracker.Vaults(s.Env.Owner.Opts.From)
+	vaultO, err = s.VaultTracker.Vaults(callerO)
 	assert.Nil(err)
 	assert.NotNil(vaultO)
 	assert.Equal(big.NewInt(2000), vaultO.Notional)
@@ -240,7 +240,7 @@ func (s *transferSuite) TestTransferNotMaturedExistingVault() {
 	assert.NotNil(vaultU)
 	assert.Equal(vaultU.Redeemable.Cmp(ZERO), 0)
 	assert.Equal(vaultU.Notional.Cmp(ZERO), 0)
-	assert.Equal(vaultU.ExchangeRate.Cmp(ZERO),0)
+	assert.Equal(vaultU.ExchangeRate.Cmp(ZERO), 0)
 
 	rate3 := big.NewInt(323456789)
 	tx, err = s.CErc20.ExchangeRateCurrentReturns(rate3)
@@ -266,20 +266,20 @@ func (s *transferSuite) TestTransferNotMaturedExistingVault() {
 
 	// call Transfer Owner -> User1
 	transferAmount := big.NewInt(500)
-	tx, err = s.VaultTracker.Transfer(s.Env.User1.Opts.From, transferAmount)
+	tx, err = s.VaultTracker.Transfer(callerO, callerU, transferAmount)
 	assert.Nil(err)
 	assert.NotNil(tx)
 
 	s.Env.Blockchain.Commit()
 
-	vaultO, err = s.VaultTracker.Vaults(s.Env.Owner.Opts.From)
+	vaultO, err = s.VaultTracker.Vaults(callerO)
 	assert.Nil(err)
 	assert.NotNil(vaultO)
 	assert.Equal(big.NewInt(1500), vaultO.Notional)
 	assert.Equal(rate3, vaultO.ExchangeRate)
 	assert.Equal(vaultO.Redeemable.Cmp(big.NewInt(1705)), 0)
 
-	vaultU, err = s.VaultTracker.Vaults(s.Env.User1.Opts.From)
+	vaultU, err = s.VaultTracker.Vaults(callerU)
 	assert.Nil(err)
 	assert.NotNil(vaultU)
 	assert.Equal(big.NewInt(2500), vaultU.Notional)
@@ -302,7 +302,7 @@ func (s *transferSuite) TestTransferMaturedNotExistingVault() {
 	assert.NotNil(vaultO)
 	assert.Equal(vaultO.Redeemable.Cmp(ZERO), 0)
 	assert.Equal(vaultO.Notional.Cmp(ZERO), 0)
-	assert.Equal(vaultO.ExchangeRate.Cmp(ZERO),0)
+	assert.Equal(vaultO.ExchangeRate.Cmp(ZERO), 0)
 
 	// call AddNotional for Owner
 	callerO := s.Env.Owner.Opts.From
@@ -313,7 +313,7 @@ func (s *transferSuite) TestTransferMaturedNotExistingVault() {
 	s.Env.Blockchain.Commit()
 
 	// found vault for Owner
-	vaultO, err = s.VaultTracker.Vaults(s.Env.Owner.Opts.From)
+	vaultO, err = s.VaultTracker.Vaults(callerO)
 	assert.Nil(err)
 	assert.NotNil(vaultO)
 	assert.Equal(big.NewInt(1000), vaultO.Notional)
@@ -333,7 +333,7 @@ func (s *transferSuite) TestTransferMaturedNotExistingVault() {
 
 	s.Env.Blockchain.Commit()
 
-	vaultO, err = s.VaultTracker.Vaults(s.Env.Owner.Opts.From)
+	vaultO, err = s.VaultTracker.Vaults(callerO)
 	assert.Nil(err)
 	assert.NotNil(vaultO)
 	assert.Equal(big.NewInt(2000), vaultO.Notional)
@@ -346,7 +346,7 @@ func (s *transferSuite) TestTransferMaturedNotExistingVault() {
 	assert.NotNil(vaultU)
 	assert.Equal(vaultU.Redeemable.Cmp(ZERO), 0)
 	assert.Equal(vaultU.Notional.Cmp(ZERO), 0)
-	assert.Equal(vaultU.ExchangeRate.Cmp(ZERO),0)
+	assert.Equal(vaultU.ExchangeRate.Cmp(ZERO), 0)
 
 	rate3 := big.NewInt(823456789)
 	tx, err = s.CErc20.ExchangeRateCurrentReturns(rate3)
@@ -368,13 +368,13 @@ func (s *transferSuite) TestTransferMaturedNotExistingVault() {
 
 	// call Transfer Owner -> User1
 	transferAmount := big.NewInt(500)
-	tx, err = s.VaultTracker.Transfer(s.Env.User1.Opts.From, transferAmount)
+	tx, err = s.VaultTracker.Transfer(callerO, s.Env.User1.Opts.From, transferAmount)
 	assert.Nil(err)
 	assert.NotNil(tx)
 
 	s.Env.Blockchain.Commit()
 
-	vaultO, err = s.VaultTracker.Vaults(s.Env.Owner.Opts.From)
+	vaultO, err = s.VaultTracker.Vaults(callerO)
 	assert.Nil(err)
 	assert.NotNil(vaultO)
 	assert.Equal(big.NewInt(1500), vaultO.Notional)
@@ -404,7 +404,7 @@ func (s *transferSuite) TestTransferMaturedExistingVault() {
 	assert.NotNil(vaultO)
 	assert.Equal(vaultO.Redeemable.Cmp(ZERO), 0)
 	assert.Equal(vaultO.Notional.Cmp(ZERO), 0)
-	assert.Equal(vaultO.ExchangeRate.Cmp(ZERO),0)
+	assert.Equal(vaultO.ExchangeRate.Cmp(ZERO), 0)
 
 	// call AddNotional for Owner
 	callerO := s.Env.Owner.Opts.From
@@ -415,7 +415,7 @@ func (s *transferSuite) TestTransferMaturedExistingVault() {
 	s.Env.Blockchain.Commit()
 
 	// found vault for Owner
-	vaultO, err = s.VaultTracker.Vaults(s.Env.Owner.Opts.From)
+	vaultO, err = s.VaultTracker.Vaults(callerO)
 	assert.Nil(err)
 	assert.NotNil(vaultO)
 	assert.Equal(big.NewInt(1000), vaultO.Notional)
@@ -435,7 +435,7 @@ func (s *transferSuite) TestTransferMaturedExistingVault() {
 
 	s.Env.Blockchain.Commit()
 
-	vaultO, err = s.VaultTracker.Vaults(s.Env.Owner.Opts.From)
+	vaultO, err = s.VaultTracker.Vaults(callerO)
 	assert.Nil(err)
 	assert.NotNil(vaultO)
 	assert.Equal(big.NewInt(2000), vaultO.Notional)
@@ -448,7 +448,7 @@ func (s *transferSuite) TestTransferMaturedExistingVault() {
 	assert.NotNil(vaultU)
 	assert.Equal(vaultU.Redeemable.Cmp(ZERO), 0)
 	assert.Equal(vaultU.Notional.Cmp(ZERO), 0)
-	assert.Equal(vaultU.ExchangeRate.Cmp(ZERO),0)
+	assert.Equal(vaultU.ExchangeRate.Cmp(ZERO), 0)
 
 	rate3 := big.NewInt(323456789)
 	tx, err = s.CErc20.ExchangeRateCurrentReturns(rate3)
@@ -465,7 +465,7 @@ func (s *transferSuite) TestTransferMaturedExistingVault() {
 	s.Env.Blockchain.Commit()
 
 	// found vault for User1
-	vaultU, err = s.VaultTracker.Vaults(s.Env.User1.Opts.From)
+	vaultU, err = s.VaultTracker.Vaults(callerU)
 	assert.Nil(err)
 	assert.NotNil(vaultU)
 	assert.Equal(notionalAmountU, vaultU.Notional)
@@ -492,20 +492,20 @@ func (s *transferSuite) TestTransferMaturedExistingVault() {
 
 	// call Transfer Owner -> User1
 	transferAmount := big.NewInt(500)
-	tx, err = s.VaultTracker.Transfer(s.Env.User1.Opts.From, transferAmount)
+	tx, err = s.VaultTracker.Transfer(callerO, callerU, transferAmount)
 	assert.Nil(err)
 	assert.NotNil(tx)
 
 	s.Env.Blockchain.Commit()
 
-	vaultO, err = s.VaultTracker.Vaults(s.Env.Owner.Opts.From)
+	vaultO, err = s.VaultTracker.Vaults(callerO)
 	assert.Nil(err)
 	assert.NotNil(vaultO)
 	assert.Equal(big.NewInt(1500), vaultO.Notional)
 	assert.Equal(rate4, vaultO.ExchangeRate)
 	assert.Equal(vaultO.Redeemable.Cmp(big.NewInt(6180)), 0)
 
-	vaultU, err = s.VaultTracker.Vaults(s.Env.User1.Opts.From)
+	vaultU, err = s.VaultTracker.Vaults(callerU)
 	assert.Nil(err)
 	assert.NotNil(vaultU)
 	assert.Equal(big.NewInt(2500), vaultU.Notional)
