@@ -64,7 +64,7 @@ func (s *hashTestSuite) TestDomain() {
 	s.Separator, err = s.Dep.HashFake.DomainTest(
 		nil,
 		"Swivel Finance",
-		"1.0.0",
+		"2.0.0",
 		big.NewInt(5),
 		common.HexToAddress("0x6a6BeC42A5Dd6F2766F806F91Ad12034F43b6361"),
 	)

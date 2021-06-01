@@ -78,21 +78,21 @@ func (s *vaultTransferSuite) TestVaultTransfer() {
 	}
 
 	// stub the mock vaulttracker...
-	tx, err = vaultTracker.TransferReturns(true)
+	tx, err = vaultTracker.TransferNotionalReturns(true)
 	assert.Nil(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
 
 	amount := big.NewInt(100)
 
-	tx, err = s.MarketPlace.VaultTransfer(underlying, maturity, user1Opts.From, amount)
+	tx, err = s.MarketPlace.TransferVaultNotional(underlying, maturity, user1Opts.From, amount)
 	assert.Nil(err)
 	assert.NotNil(tx)
 
 	s.Env.Blockchain.Commit()
 
 	// marketplace should have called transfer with the msg.sender as owner
-	transferArgs, err := vaultTracker.TransferCalled(ownerOpts.From)
+	transferArgs, err := vaultTracker.TransferNotionalCalled(ownerOpts.From)
 	assert.Nil(err)
 	assert.Equal(user1Opts.From, transferArgs.To)
 	assert.Equal(amount, transferArgs.Amount)
