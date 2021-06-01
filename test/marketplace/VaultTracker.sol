@@ -14,7 +14,7 @@ contract VaultTracker {
     uint256 amount;
   }
 
-  struct TransferArgs {
+  struct TransferNotionalArgs {
     address to;
     uint256 amount;
   }
@@ -42,10 +42,10 @@ contract VaultTracker {
 
   // mapping of arguments sent to transferNotionalFrom. key is the passed in address.
   mapping (address => TransferNotionalFromArgs) public transferNotionalFromCalled;
-  mapping (address => TransferArgs) public transferCalled;
+  mapping (address => TransferNotionalArgs) public transferNotionalCalled;
   // a boolean flag which allows us to dictate the return of transferNotionalFrom().
   bool private transferNotionalFromReturn;
-  bool private transferReturn;
+  bool private transferNotionalReturn;
 
   /// @param m Maturity
   /// @param c C Token Address
@@ -111,15 +111,15 @@ contract VaultTracker {
     return transferNotionalFromReturn;
   }
 
-  function transferReturns(bool b) public {
-    transferReturn = b;
+  function transferNotionalReturns(bool b) public {
+    transferNotionalReturn = b;
   }
 
-  function transfer(address f, address t, uint256 a) public returns (bool) {
-    TransferArgs memory args;
+  function transferNotional(address f, address t, uint256 a) public returns (bool) {
+    TransferNotionalArgs memory args;
     args.to = t;
     args.amount = a;
-    transferCalled[f] = args;
-    return transferReturn;
+    transferNotionalCalled[f] = args;
+    return transferNotionalReturn;
   }
 }

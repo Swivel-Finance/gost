@@ -32,7 +32,7 @@ contract MarketPlace {
   event CustodialExit(address indexed underlying, uint256 indexed maturity, address zcTarget, address nTarget, uint256 amount);
   event P2pZcTokenExchange(address indexed underlying, uint256 indexed maturity, address from, address to, uint256 amount);
   event P2pVaultExchange(address indexed underlying, uint256 indexed maturity, address from, address to, uint256 amount);
-  event VaultTransfer(address indexed underlying, uint256 indexed maturity, address from, address to, uint256 amount);
+  event TransferVaultNotional(address indexed underlying, uint256 indexed maturity, address from, address to, uint256 amount);
 
   function setSwivelAddress(address s) external onlyAdmin(admin) returns (bool) {
     swivel = s;
@@ -221,9 +221,9 @@ contract MarketPlace {
   /// @param m Maturity timestamp of the market
   /// @param t Target to be transferred to
   /// @param a Amount of notional to be transferred
-  function vaultTransfer(address u, uint256 m, address t, uint256 a) public returns (bool) {
-    require(VaultTracker(markets[u][m].vaultAddr).transfer(msg.sender, t, a), 'vault transfer failed');
-    emit VaultTransfer(u, m, msg.sender, t, a);
+  function transferVaultNotional(address u, uint256 m, address t, uint256 a) public returns (bool) {
+    require(VaultTracker(markets[u][m].vaultAddr).transferNotional(msg.sender, t, a), 'vault transfer failed');
+    emit TransferVaultNotional(u, m, msg.sender, t, a);
     return true;
   }
 

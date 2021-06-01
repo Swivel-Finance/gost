@@ -138,8 +138,8 @@ contract VaultTracker {
   /// @param f Owner of the amount
   /// @param t Recipient of the amount
   /// @param a Amount to transfer
-  function transfer(address f, address t, uint256 a) external onlyAdmin(admin) returns (bool) {
-    require(vaults[f].notional >= a, "amount exceeds vault balance");
+  function transferNotional(address f, address t, uint256 a) external onlyAdmin(admin) returns (bool) {
+    require(vaults[f].notional >= a, "amount exceeds available balance");
 
     uint256 yield;
     uint256 interest;

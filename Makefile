@@ -167,10 +167,6 @@ clean_build_bin:
 	@echo "removing bin files from build/ dirs"
 	rm build/**/*.bin
 
-clean_build_go:
-	@echo "removing go files from build/ dirs"
-	rm build/**/*.go
-
 clean_build: clean_build_sol clean_build_abi clean_build_bin clean_build_go
 
 # Copying to build
@@ -181,18 +177,15 @@ copy_zctoken_to_build:
 	cp test/tokens/IErc20Metadata.* build/marketplace
 	cp test/tokens/ZcToken.* build/marketplace
 	cp test/tokens/IZcToken.* build/marketplace
-	cp test/tokens/zctoken.go build/marketplace
 
 copy_vaulttracker_to_build:
 	@echo "copying vaulttracker files to marketplace build"
 	cp test/vaulttracker/VaultTracker.* build/marketplace
-	cp test/vaulttracker/vaulttracker.go build/marketplace
 
 copy_marketplace_to_build:
 	@echo "copying marketplace files to marketplace build"
 	cp test/marketplace/Abstracts.sol build/marketplace
 	cp test/marketplace/MarketPlace.* build/marketplace
-	cp test/marketplace/marketplace.go build/marketplace
 
 copy_swivel_to_build:
 	@echo "copying swivel files to marketplace build"
@@ -200,7 +193,6 @@ copy_swivel_to_build:
 	cp test/swivel/Hash.* build/swivel
 	cp test/swivel/Sig.* build/swivel
 	cp test/swivel/Swivel.* build/swivel
-	cp test/swivel/swivel.go build/swivel
 
 copy_to_build: copy_zctoken_to_build copy_vaulttracker_to_build copy_marketplace_to_build copy_swivel_to_build
 

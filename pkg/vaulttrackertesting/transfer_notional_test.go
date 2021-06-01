@@ -84,9 +84,9 @@ func (s *transferSuite) TestTransferFailRequireAmount() {
 	// call RemoveNotional for Owner with vault amount lower than removal amount
 	// caller = s.Env.Owner.Opts.From
 	amount2 := big.NewInt(1000)
-	tx, err = s.VaultTracker.Transfer(caller, s.Env.User1.Opts.From, amount2)
+	tx, err = s.VaultTracker.TransferNotional(caller, s.Env.User1.Opts.From, amount2)
 	assert.NotNil(err)
-	assert.Regexp("amount exceeds vault balance", err.Error())
+	assert.Regexp("amount exceeds available balance", err.Error())
 	assert.Nil(tx)
 
 	s.Env.Blockchain.Commit()
@@ -160,7 +160,7 @@ func (s *transferSuite) TestTransferNotMaturedNotExistingVault() {
 
 	// call Transfer Owner -> User1
 	transferAmount := big.NewInt(500)
-	tx, err = s.VaultTracker.Transfer(callerO, s.Env.User1.Opts.From, transferAmount)
+	tx, err = s.VaultTracker.TransferNotional(callerO, s.Env.User1.Opts.From, transferAmount)
 	assert.Nil(err)
 	assert.NotNil(tx)
 
@@ -266,7 +266,7 @@ func (s *transferSuite) TestTransferNotMaturedExistingVault() {
 
 	// call Transfer Owner -> User1
 	transferAmount := big.NewInt(500)
-	tx, err = s.VaultTracker.Transfer(callerO, callerU, transferAmount)
+	tx, err = s.VaultTracker.TransferNotional(callerO, callerU, transferAmount)
 	assert.Nil(err)
 	assert.NotNil(tx)
 
@@ -368,7 +368,7 @@ func (s *transferSuite) TestTransferMaturedNotExistingVault() {
 
 	// call Transfer Owner -> User1
 	transferAmount := big.NewInt(500)
-	tx, err = s.VaultTracker.Transfer(callerO, s.Env.User1.Opts.From, transferAmount)
+	tx, err = s.VaultTracker.TransferNotional(callerO, s.Env.User1.Opts.From, transferAmount)
 	assert.Nil(err)
 	assert.NotNil(tx)
 
@@ -492,7 +492,7 @@ func (s *transferSuite) TestTransferMaturedExistingVault() {
 
 	// call Transfer Owner -> User1
 	transferAmount := big.NewInt(500)
-	tx, err = s.VaultTracker.Transfer(callerO, callerU, transferAmount)
+	tx, err = s.VaultTracker.TransferNotional(callerO, callerU, transferAmount)
 	assert.Nil(err)
 	assert.NotNil(tx)
 
