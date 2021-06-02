@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: UNLICENSED
 
-// TODO update to 0.8.4 (or whatever latest is...)
-pragma solidity 0.8.0;
+pragma solidity 0.8.4;
 
 import './Hash.sol';
 import './Sig.sol';

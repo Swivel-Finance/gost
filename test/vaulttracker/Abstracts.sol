@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: UNLICENSED
 
-pragma solidity 0.8.0;
+pragma solidity 0.8.4;
 
 abstract contract Erc20 {
 	function approve(address, uint256) virtual external returns (bool);

@@ -1,10 +1,6 @@
 // SPDX-License-Identifier: UNLICENSED
 
-// TODO update to 0.8.4 (or whatever latest is...)
-
-// NOTE the pattern [underlying, [maturity,], cToken, ...]
-
-pragma solidity 0.8.0;
+pragma solidity 0.8.4;
 
 import "./Abstracts.sol";
 
