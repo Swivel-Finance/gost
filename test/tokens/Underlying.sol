@@ -6,7 +6,7 @@
   NOTE: with the addition of the ZCToken, we may just be able to use its bindings vs maintaining this... TODO
 */
 
-pragma solidity 0.8.0;
+pragma solidity 0.8.4;
 
 contract Underlying {
   mapping (address => uint256) public balances;

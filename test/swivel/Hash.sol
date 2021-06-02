@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: UNLICENSED
 
-pragma solidity 0.8.0;
+pragma solidity 0.8.4;
 
 /**
   @notice Encapsulation of the logic to produce EIP712 hashed domain and messages.
@@ -35,8 +35,6 @@ library Hash {
   //     'uint256 expiry',
   //     ')'
   // ));
-
-  // TODO recalc
   bytes32 constant internal ORDER_TYPEHASH = 0x7ddd38ab5ed1c16b61ca90eeb9579e29da1ba821cf42d8cdef8f30a31a6a4146;
 
   /// @dev struct represents the attributes of an offchain Swivel.Order

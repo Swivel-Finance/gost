@@ -4,7 +4,7 @@
 
 // NOTE the pattern [underlying, maturity*, cToken, ...]
 
-pragma solidity 0.8.0;
+pragma solidity 0.8.4;
 
 import './Abstracts.sol';
 import './ZcToken.sol';
