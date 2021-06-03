@@ -53,13 +53,6 @@ func (s *swivelCtorSuite) TestVersion() {
 	assert.Equal(verz, "2.0.0")
 }
 
-func (s *swivelCtorSuite) TestAdmin() {
-	assert := assert.New(s.T())
-	addr, err := s.Swivel.Admin()
-	assert.Nil(err)
-	assert.Equal(addr, s.Env.Owner.Opts.From)
-}
-
 func (s *swivelCtorSuite) TestDomain() {
 	assert := assert.New(s.T())
 	separator, err := s.Swivel.DOMAIN()
