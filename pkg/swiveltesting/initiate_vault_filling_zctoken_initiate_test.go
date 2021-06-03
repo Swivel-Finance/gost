@@ -75,7 +75,7 @@ func (s *IVFZISuite) SetupTest() {
 
 func (s *IVFZISuite) TestMarketPlaceAddress() {
 	assert := assert.New(s.T())
-	addr, err := s.Swivel.MarketPlaceAddr()
+	addr, err := s.Swivel.MarketPlace()
 	assert.Nil(err)
 	assert.Equal(addr, s.Dep.MarketPlaceAddress)
 }
