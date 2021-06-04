@@ -175,6 +175,8 @@ copy_zctoken_to_build:
 	cp test/tokens/Erc20.* build/marketplace
 	cp test/tokens/IErc20.* build/marketplace
 	cp test/tokens/IErc20Metadata.* build/marketplace
+	cp test/tokens/Erc2612.* build/marketplace
+	cp test/tokens/IErc2612.* build/marketplace
 	cp test/tokens/ZcToken.* build/marketplace
 	cp test/tokens/IZcToken.* build/marketplace
 

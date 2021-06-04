@@ -48,12 +48,14 @@ func (s *hashTestSuite) SetupSuite() {
 	}
 }
 
-// NOTE: present just to calculate the hashed values stored in the contract
+// NOTE: present just to calculate the hashed values stored in the contracts
 func (s *hashTestSuite) TestTypeHashes() {
 	domainTypehash, _ := s.Dep.HashFake.DomainTypeHash(nil)
 	orderTypehash, _ := s.Dep.HashFake.OrderTypeHash(nil)
+	permitTypehash, _ := s.Dep.HashFake.PermitTypeHash(nil)
 	s.T().Logf("Domain Typehash: %v", hexutil.Encode(domainTypehash[:]))
 	s.T().Logf("Order Typehash: %v", hexutil.Encode(orderTypehash[:]))
+	s.T().Logf("Permit Typehash: %v", hexutil.Encode(permitTypehash[:]))
 }
 
 func (s *hashTestSuite) TestDomain() {
