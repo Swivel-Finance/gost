@@ -172,9 +172,12 @@ clean_build: clean_build_sol clean_build_abi clean_build_bin clean_build_go
 # Copying to build
 copy_zctoken_to_build:
 	@echo "copying ZcToken files to marketplace build"
+	cp test/tokens/Hash.* build/marketplace
 	cp test/tokens/Erc20.* build/marketplace
 	cp test/tokens/IErc20.* build/marketplace
 	cp test/tokens/IErc20Metadata.* build/marketplace
+	cp test/tokens/Erc2612.* build/marketplace
+	cp test/tokens/IErc2612.* build/marketplace
 	cp test/tokens/ZcToken.* build/marketplace
 	cp test/tokens/IZcToken.* build/marketplace
 

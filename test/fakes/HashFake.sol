@@ -49,4 +49,17 @@ contract HashFake {
   function orderTest(Hash.Order calldata o) external pure returns (bytes32) {
     return Hash.order(o);
   }
+
+  /// @dev convenience method to generate the /token/hash permit type hash
+  function permitTypeHash() public pure returns (bytes32) {
+    return keccak256(abi.encodePacked(
+      'Permit(',
+      'address owner,',
+      'address spender,',
+      'uint256 value,',
+      'uint256 nonce,',
+      'uint256 deadline,',
+      ')'
+    ));
+  }
 }
