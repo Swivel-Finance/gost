@@ -7,8 +7,8 @@ import "./Abstracts.sol";
 contract VaultTracker {
   address public admin; // marketplace
   uint256 public maturity;
-  bool private matured;
-  uint256 private maturityRate;
+  bool public matured;
+  uint256 public maturityRate;
   address public cTokenAddr;
 
   struct Vault {
