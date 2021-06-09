@@ -2,11 +2,12 @@
 
 pragma solidity 0.8.4;
 
-import "./IErc20.sol";
-import "./IErc20Metadata.sol";
+import "./IERC20.sol";
+import "./IERC20Metadata.sol";
 
 /**
  * @dev Implementation of the {IERC20} interface.
+ * NOTE: Naming convention is kept OZStyle vs our own OzStyle to prevent clashing
  *
  * This implementation is agnostic to the way tokens are created. This means
  * that a supply mechanism has to be added in a derived contract using {_mint}.
@@ -29,7 +30,7 @@ import "./IErc20Metadata.sol";
  * functions have been added to mitigate the well-known issues around setting
  * allowances. See {IERC20-approve}.
  */
-contract Erc20 is IErc20, IErc20Metadata {
+contract ERC20 is IERC20, IERC20Metadata {
     mapping (address => uint256) private _balances;
     mapping (address => mapping (address => uint256)) private _allowances;
     uint256 private _totalSupply;
