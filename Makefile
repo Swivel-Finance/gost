@@ -26,6 +26,7 @@
 
 .PHONY: copy_zctoken_to_build copy_vaulttracker_to_build copy_marketplace_to_build copy_swivel_to_build
 .PHONY: copy_to_build
+.PHONY: compile_marketplace_build compile_swivel_build compile_build
 
 .PHONY: all
 
@@ -167,36 +168,52 @@ clean_build_bin:
 	@echo "removing bin files from build/ dirs"
 	rm build/**/*.bin
 
+clean_build_go:
+	@echo "removing go files from build/ dirs"
+	rm build/**/*.go
+
 clean_build: clean_build_sol clean_build_abi clean_build_bin clean_build_go
 
 # Copying to build
 copy_zctoken_to_build:
 	@echo "copying ZcToken files to marketplace build"
-	cp test/tokens/Hash.* build/marketplace
-	cp test/tokens/Erc20.* build/marketplace
-	cp test/tokens/IErc20.* build/marketplace
-	cp test/tokens/IErc20Metadata.* build/marketplace
-	cp test/tokens/Erc2612.* build/marketplace
-	cp test/tokens/IErc2612.* build/marketplace
-	cp test/tokens/ZcToken.* build/marketplace
-	cp test/tokens/IZcToken.* build/marketplace
+	cp test/tokens/Hash.sol build/marketplace
+	cp test/tokens/ERC20.sol build/marketplace
+	cp test/tokens/IERC20.sol build/marketplace
+	cp test/tokens/IERC20Metadata.sol build/marketplace
+	cp test/tokens/ERC2612.sol build/marketplace
+	cp test/tokens/IERC2612.sol build/marketplace
+	cp test/tokens/ZcToken.sol build/marketplace
+	cp test/tokens/IZcToken.sol build/marketplace
 
 copy_vaulttracker_to_build:
 	@echo "copying vaulttracker files to marketplace build"
-	cp test/vaulttracker/VaultTracker.* build/marketplace
+	cp test/vaulttracker/VaultTracker.sol build/marketplace
 
 copy_marketplace_to_build:
 	@echo "copying marketplace files to marketplace build"
 	cp test/marketplace/Abstracts.sol build/marketplace
-	cp test/marketplace/MarketPlace.* build/marketplace
+	cp test/marketplace/MarketPlace.sol build/marketplace
 
 copy_swivel_to_build:
 	@echo "copying swivel files to marketplace build"
 	cp test/swivel/Abstracts.sol build/swivel
-	cp test/swivel/Hash.* build/swivel
-	cp test/swivel/Sig.* build/swivel
-	cp test/swivel/Swivel.* build/swivel
+	cp test/swivel/Hash.sol build/swivel
+	cp test/swivel/Sig.sol build/swivel
+	cp test/swivel/Swivel.sol build/swivel
 
 copy_to_build: copy_zctoken_to_build copy_vaulttracker_to_build copy_marketplace_to_build copy_swivel_to_build
 
-all: clean_test compile_test clean_build copy_to_build
+compile_marketplace_build:
+	@echo "compiling MarketPlace solidity build source into deploy ready files"
+	solc -o ./build/marketplace --optimize --optimize-runs=22000 --abi --bin --overwrite ./build/marketplace/MarketPlace.sol
+	abigen --abi ./build/marketplace/MarketPlace.abi --bin ./build/marketplace/MarketPlace.bin -pkg marketplace -type MarketPlace -out ./build/marketplace/marketplace.go 
+
+compile_swivel_build:
+	@echo "compiling Swivel solidity build source into deploy ready files"
+	solc -o ./build/swivel --optimize --optimize-runs=22000 --abi --bin --overwrite ./build/swivel/Swivel.sol
+	abigen --abi ./build/swivel/Swivel.abi --bin ./build/swivel/Swivel.bin -pkg swivel -type Swivel -out ./build/swivel/swivel.go 
+
+compile_build: compile_marketplace_build compile_swivel_build
+
+all: clean_test compile_test clean_build copy_to_build compile_build

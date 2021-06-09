@@ -2,14 +2,14 @@
 
 pragma solidity 0.8.4;
 
-import "./IErc20.sol";
+import "./IERC20.sol";
 
 /**
  * @dev Interface for the optional metadata functions from the ERC20 standard.
  *
  * _Available since v4.1._
  */
-interface IErc20Metadata is IErc20 {
+interface IERC20Metadata is IERC20 {
     /**
      * @dev Returns the name of the token.
      */

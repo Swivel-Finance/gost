@@ -2,14 +2,16 @@
 
 pragma solidity 0.8.4;
 
-import "./IErc20Metadata.sol";
-import "./IErc20.sol";
+import "./IERC20Metadata.sol";
+import "./IERC20.sol";
 
 /**
  * @dev Mint and burn interface for the ZCToken
+ * NOTE: The OZStyle naming conventions (vs our OzStlye) are kept 
+ * in the OZ '20 and '2612 members.
  *
  */
-interface IZcToken is IErc20, IErc20Metadata {
+interface IZcToken is IERC20, IERC20Metadata {
     /**
      * @dev Mints...
      */

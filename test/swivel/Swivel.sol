@@ -2,9 +2,9 @@
 
 pragma solidity 0.8.4;
 
+import './Abstracts.sol';
 import './Hash.sol';
 import './Sig.sol';
-import './Abstracts.sol';
 
 contract Swivel {
   string constant public NAME = "Swivel Finance";
