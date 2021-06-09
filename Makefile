@@ -168,6 +168,10 @@ clean_build_bin:
 	@echo "removing bin files from build/ dirs"
 	rm build/**/*.bin
 
+clean_build_go:
+	@echo "removing go files from build/ dirs"
+	rm build/**/*.go
+
 clean_build: clean_build_sol clean_build_abi clean_build_bin clean_build_go
 
 # Copying to build
@@ -202,12 +206,12 @@ copy_to_build: copy_zctoken_to_build copy_vaulttracker_to_build copy_marketplace
 
 compile_marketplace_build:
 	@echo "compiling MarketPlace solidity build source into deploy ready files"
-	solc -o ./build/marketplace --abi --bin --overwrite ./build/marketplace/MarketPlace.sol
+	solc -o ./build/marketplace --optimize --optimize-runs=22000 --abi --bin --overwrite ./build/marketplace/MarketPlace.sol
 	abigen --abi ./build/marketplace/MarketPlace.abi --bin ./build/marketplace/MarketPlace.bin -pkg marketplace -type MarketPlace -out ./build/marketplace/marketplace.go 
 
 compile_swivel_build:
 	@echo "compiling Swivel solidity build source into deploy ready files"
-	solc -o ./build/swivel --abi --bin --overwrite ./build/swivel/Swivel.sol
+	solc -o ./build/swivel --optimize --optimize-runs=22000 --abi --bin --overwrite ./build/swivel/Swivel.sol
 	abigen --abi ./build/swivel/Swivel.abi --bin ./build/swivel/Swivel.bin -pkg swivel -type Swivel -out ./build/swivel/swivel.go 
 
 compile_build: compile_marketplace_build compile_swivel_build
