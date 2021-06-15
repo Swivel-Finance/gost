@@ -234,8 +234,8 @@ func (s *IVFZISuite) TestIVFZI() {
 	assert.NotNil(fillingArgs)
 	assert.Equal(fillingArgs.Maturity, order.Maturity)
 	assert.Equal(fillingArgs.Amount, pFilled)
-	assert.Equal(fillingArgs.Two, order.Maker)
-	assert.Equal(fillingArgs.One, s.Env.Owner.Opts.From)
+	assert.Equal(fillingArgs.One, order.Maker)
+	assert.Equal(fillingArgs.Two, s.Env.Owner.Opts.From)
 }
 
 func TestIVFZISuite(t *test.T) {
