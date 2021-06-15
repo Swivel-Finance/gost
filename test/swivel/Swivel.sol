@@ -63,7 +63,7 @@ contract Swivel {
   }
 
   /// @notice Allows a user to initiate a Vault by filling an offline zcToken initiate order
-  /// @dev This method should pass (underlying, maturity, sender, maker, principalFilled) to MarketPlace.initiateFillingInitiate
+  /// @dev This method should pass (underlying, maturity, maker, sender, principalFilled) to MarketPlace.custodialInitiate
   /// @param o The order being filled
   /// @param a Amount of volume (interest) being filled by the taker's exit
   /// @param c Components of a valid ECDSA signature
@@ -84,7 +84,7 @@ contract Swivel {
     require(uToken.approve(cTokenAddr, principalFilled), 'underlying approval failed'); 
     require(CErc20(cTokenAddr).mint(principalFilled) == 0, 'minting CToken failed');
     // alert MarketPlace.
-    require(mPlace.custodialInitiate(o.underlying, o.maturity, msg.sender, o.maker, principalFilled), 'custodial initiate failed');
+    require(mPlace.custodialInitiate(o.underlying, o.maturity, o.maker, msg.sender, principalFilled), 'custodial initiate failed');
 
     filled[o.key] += a;
 
@@ -93,8 +93,8 @@ contract Swivel {
     return true;
   }
 
-  /// @notice Allows a user to initiate a zcToken _ by filling an offline vault initiate order
-  /// @dev This method should pass (underlying, maturity, sender, maker, a) to MarketPlace.initiateFillingInitiate
+  /// @notice Allows a user to initiate a zcToken by filling an offline vault initiate order
+  /// @dev This method should pass (underlying, maturity, sender, maker, a) to MarketPlace.custodialInitiate
   /// @param o The order being filled
   /// @param o Amount of volume (principal) being filled by the taker's exit
   /// @param c Components of a valid ECDSA signature
