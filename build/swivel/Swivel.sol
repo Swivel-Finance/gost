@@ -35,6 +35,37 @@ contract Swivel {
     marketPlace = m;
   }
 
+  /// @notice Allows users to deposit underlying and in the process split it into/mint zcTokens and vault notional. Calls mPlace.splitUnderlying.
+  /// @param u Underlying token address associated with the market
+  /// @param m Maturity timestamp of the market
+  /// @param a Amount of underlying being deposited
+  function splitUnderlying(address u, uint256 m, uint256 a) public returns (bool) {
+      
+    Erc20 uToken = Erc20(u);
+    require(uToken.transferFrom(msg.sender, address(this), a), 'transfer failed');
+    MarketPlace mPlace = MarketPlace(marketPlace);
+    mPlace.splitUnderlying(u,m,a);
+    
+    return true;
+  }
+  
+  /// @notice Allows users deposit/burn 1-1 amounts of both zcTokens and vault notional, in the process "combining" the two, and redeeming underlying. Calls mPlace.combineTokens.
+  /// @param u Underlying token address associated with the market
+  /// @param m Maturity timestamp of the market
+  /// @param a Amount of zcTokens being redeemed
+  function combineTokens(address u, uint256 m, uint256 a) public returns (bool) {
+      
+    Erc20 uToken = Erc20(u);
+    MarketPlace mPlace = MarketPlace(marketPlace);
+    mPlace.combineTokens(u,m,a);
+    require(uToken.transfer(msg.sender, a), 'transfer failed');
+    
+    return true;
+  }
+
+
+
+
   // ********* INITIATING *************
 
   /// @notice Allows a user to initiate a position
