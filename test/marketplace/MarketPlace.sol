@@ -11,8 +11,8 @@ import './ZcToken.sol';
 import './VaultTracker.sol';
 
 contract MarketPlace {
-  address public admin = msg.sender;
-  address public swivel;
+  address public constant admin = msg.sender;
+  address public immutable swivel;
 
   struct Market {
     address cTokenAddr;
@@ -34,6 +34,7 @@ contract MarketPlace {
   event P2pVaultExchange(address indexed underlying, uint256 indexed maturity, address from, address to, uint256 amount);
   event TransferVaultNotional(address indexed underlying, uint256 indexed maturity, address from, address to, uint256 amount);
 
+  /// @param s Address of the deployed swivel contract
   function setSwivelAddress(address s) external onlyAdmin(admin) returns (bool) {
     swivel = s;
     return true;
