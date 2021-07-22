@@ -11,7 +11,7 @@ import './IZcToken.sol';
 /// NOTE the OZStlye naming conventions are kept for the internal methods
 /// _burn and _mint as dangling underscores are generally not allowed.
 contract ZcToken is Erc2612, IZcToken {
-  address public constant admin = msg.sender;
+  address public immutable  admin = msg.sender;
   address public immutable underlying;
   uint256 public immutable maturity;
 

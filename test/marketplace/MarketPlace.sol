@@ -11,8 +11,8 @@ import './ZcToken.sol';
 import './VaultTracker.sol';
 
 contract MarketPlace {
-  address public constant admin = msg.sender;
-  address public immutable swivel;
+  address public immutable admin = msg.sender;
+  address public swivel;
 
   struct Market {
     address cTokenAddr;

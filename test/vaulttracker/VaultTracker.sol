@@ -5,7 +5,7 @@ pragma solidity 0.8.4;
 import "./Abstracts.sol";
 
 contract VaultTracker {
-  address public constant admin = msg.sender;
+  address public immutable admin = msg.sender;
   address public immutable cTokenAddr;
   uint256 public immutable maturity;
   uint256 public maturityRate;
