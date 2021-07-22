@@ -4,8 +4,8 @@
 pragma solidity 0.8.4;
 
 import './Hash.sol';
-import './ERC20.sol';
-import './IERC2612.sol';
+import './PErc20.sol';
+import './IErc2612.sol';
 
 /**
 * @dev Extension of {ERC20} that allows token holders to use their tokens
@@ -16,14 +16,14 @@ import './IERC2612.sol';
 *
 * The {permit} signature mechanism conforms to the {IERC2612} interface.
 */
-contract ERC2612 is ERC20, IERC2612 {
+contract Erc2612 is PErc20, IErc2612 {
   mapping (address => uint256) public override nonces;
 
   bytes32 public immutable DOMAIN;
 
   /// @param n name for the token
   /// @param s symbol for the token
-  constructor(string memory n, string memory s) ERC20(n, s) {
+  constructor(string memory n, string memory s) PErc20(n, s) {
     DOMAIN = Hash.domain(n, '1', block.chainid, address(this));
   }
 
@@ -40,13 +40,13 @@ contract ERC2612 is ERC20, IERC2612 {
   * NOTE: Last three args (v, r, s) are the components of a valid ECDSA signature
   */
   function permit(address o, address spender, uint256 a, uint256 d, uint8 v, bytes32 r, bytes32 s) public virtual override {
-    require(d >= block.timestamp, 'ERC2612: expired deadline');
+    require(d >= block.timestamp, 'erc2612 expired deadline');
 
     bytes32 hashStruct = Hash.permit(o, spender, a, nonces[o]++, d);
     bytes32 hash = Hash.message(DOMAIN, hashStruct); 
     address signer = ecrecover(hash, v, r, s);
 
-    require(signer != address(0) && signer == o, 'ERC2612: invalid signature');
+    require(signer != address(0) && signer == o, 'erc2612 invalid signature');
     _approve(o, spender, a);
   }
 }

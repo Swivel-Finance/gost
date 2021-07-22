@@ -11,10 +11,17 @@ pragma solidity 0.8.4;
  *
  * See https://eips.ethereum.org/EIPS/eip-2612.
  */
-interface IERC2612 {
+interface IErc2612 {
     /**
      * @dev Sets `amount` as the allowance of `spender` over `owner`'s tokens,
      * given `owner`'s signed approval.
+     * @param o The owner
+     * @param spender The spender
+     * @param a The amount
+     * @param d The deadline
+     * @param v v portion of the ECDSA
+     * @param r r portion of the ECDSA
+     * @param s s portion of the ECDSA
      *
      * IMPORTANT: The same issues {IERC20-approve} has related to transaction
      * ordering also apply here.
@@ -34,14 +41,16 @@ interface IERC2612 {
      * https://eips.ethereum.org/EIPS/eip-2612#specification[relevant EIP
      * section].
      */
-    function permit(address owner, address spender, uint256 amount, uint256 deadline, uint8 v, bytes32 r, bytes32 s) external;
+    function permit(address o, address spender, uint256 a, uint256 d, uint8 v, bytes32 r, bytes32 s) external;
 
     /**
      * @dev Returns the current ERC2612 nonce for `owner`. This value must be
+     * @param o The owner
+     *
      * included whenever a signature is generated for {permit}.
      *
      * Every successful call to {permit} increases ``owner``'s nonce by one. This
      * prevents a signature from being used multiple times.
      */
-    function nonces(address owner) external view returns (uint256);
+    function nonces(address o) external view returns (uint256);
 }
