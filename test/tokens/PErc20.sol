@@ -2,7 +2,7 @@
 
 pragma solidity 0.8.4;
 
-import "./IPerc20.sol";
+import "./IPErc20.sol";
 
 /**
  * @dev Implementation of the {IERC20} interface.
@@ -43,7 +43,7 @@ import "./IPerc20.sol";
 
 
  */
-contract Perc20 is IPerc20 {
+contract PErc20 is IPErc20 {
     uint256 public totalSupply;
     string public name; // NOTE: cannot make strings immutable
     string public symbol; // NOTE: see above

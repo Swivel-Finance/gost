@@ -2,13 +2,13 @@
 
 pragma solidity 0.8.4;
 
-import "./IPerc20.sol";
+import "./IPErc20.sol";
 
 /**
  * @dev Mint and burn interface for the ZCToken
  *
  */
-interface IZcToken is IPerc20 {
+interface IZcToken is IPErc20 {
     /**
      * @dev Mints...
      */

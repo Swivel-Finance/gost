@@ -4,7 +4,7 @@
 pragma solidity 0.8.4;
 
 import './Hash.sol';
-import './Perc20.sol';
+import './PErc20.sol';
 import './IErc2612.sol';
 
 /**
@@ -16,14 +16,14 @@ import './IErc2612.sol';
 *
 * The {permit} signature mechanism conforms to the {IERC2612} interface.
 */
-contract Erc2612 is Perc20, IErc2612 {
+contract Erc2612 is PErc20, IErc2612 {
   mapping (address => uint256) public override nonces;
 
   bytes32 public immutable DOMAIN;
 
   /// @param n name for the token
   /// @param s symbol for the token
-  constructor(string memory n, string memory s) Perc20(n, s) {
+  constructor(string memory n, string memory s) PErc20(n, s) {
     DOMAIN = Hash.domain(n, '1', block.chainid, address(this));
   }
 
