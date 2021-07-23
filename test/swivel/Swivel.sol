@@ -44,14 +44,14 @@ contract Swivel {
   function initiate(Hash.Order[] calldata o, uint256[] calldata a, Sig.Components[] calldata c) public returns (bool) {
     for (uint256 i=0; i < o.length; i++) {
       // TODO explain the scenarios
-      if (o[i].exit == false) {
-        if (o[i].vault == false) {
+      if (!o[i].exit) {
+        if (!o[i].vault) {
           require(initiateVaultFillingZcTokenInitiate(o[i], a[i], c[i]));
         } else {
           require(initiateZcTokenFillingVaultInitiate(o[i], a[i], c[i]));
         }
       } else {
-        if (o[i].vault == false) {
+        if (!o[i].vault) {
           require(initiateZcTokenFillingZcTokenExit(o[i], a[i], c[i]));
         } else {
           require(initiateVaultFillingVaultExit(o[i], a[i], c[i]));
@@ -180,9 +180,9 @@ contract Swivel {
   function exit(Hash.Order[] calldata o, uint256[] calldata a, Sig.Components[] calldata c) public returns (bool) {
     for (uint256 i=0; i < o.length; i++) {
       // Determine whether the order being filled is an exit
-      if (o[i].exit == false) {
+      if (!o[i].exit) {
         // Determine whether the order being filled is a vault initiate or a zcToken initiate
-          if (o[i].vault == false) {
+          if (!o[i].vault) {
             // If filling a zcToken initiate with an exit, one is exiting zcTokens
             require(exitZcTokenFillingZcTokenInitiate(o[i], a[i], c[i]));
           } else {
@@ -191,7 +191,7 @@ contract Swivel {
           }
       } else {
         // Determine whether the order being filled is a vault exit or zcToken exit
-        if (o[i].vault == false) {
+        if (!o[i].vault) {
           // If filling a zcToken exit with an exit, one is exiting vault
           require(exitVaultFillingZcTokenExit(o[i], a[i], c[i]));
         } else {
@@ -323,7 +323,7 @@ contract Swivel {
   /// @param o An offline Swivel.Order
   /// @param c Components of a valid ECDSA signature
   modifier valid(Hash.Order calldata o, Sig.Components calldata c) {
-    require(cancelled[o.key] == false, 'order cancelled');
+    require(!cancelled[o.key], 'order cancelled');
     require(o.expiry >= block.timestamp, 'order expired');
     require(o.maker == Sig.recover(Hash.message(DOMAIN, Hash.order(o)), c), 'invalid signature');
     _;

@@ -5,7 +5,7 @@ pragma solidity 0.8.4;
 import "./Abstracts.sol";
 
 contract VaultTracker {
-  address public immutable admin = msg.sender;
+  address public immutable admin;
   address public immutable cTokenAddr;
   uint256 public immutable maturity;
   uint256 public maturityRate;
@@ -22,6 +22,7 @@ contract VaultTracker {
   /// @param m Maturity timestamp of the new market
   /// @param c cToken address associated with underlying for the new market
   constructor(uint256 m, address c) {
+    admin = msg.sender;
     maturity = m;
     cTokenAddr = c;
   }
@@ -38,7 +39,7 @@ contract VaultTracker {
 
       // If market has matured, calculate marginal interest between the maturity rate and previous position exchange rate
       // Otherwise, calculate marginal exchange rate between current and previous exchange rate.
-      if (matured == true) {
+      if (matured) {
         // Calculate marginal interest
         yield = ((maturityRate * 1e26) / vaults[o].exchangeRate) - 1e26;
         interest = (yield * vaults[o].notional) / 1e26;
@@ -73,7 +74,7 @@ contract VaultTracker {
 
     // If market has matured, calculate marginal interest between the maturity rate and previous position exchange rate
     // Otherwise, calculate marginal exchange rate between current and previous exchange rate.
-    if (matured == true) {
+    if (matured) {
       // Calculate marginal interest
       yield = ((maturityRate * 1e26) / vaults[o].exchangeRate) - 1e26;
       interest = (yield * vaults[o].notional) / 1e26;
@@ -102,7 +103,7 @@ contract VaultTracker {
 
     // If market has matured, calculate marginal interest between the maturity rate and previous position exchange rate
     // Otherwise, calculate marginal exchange rate between current and previous exchange rate.
-    if (matured == true) {
+    if (matured) {
       // Calculate marginal interest
       yield = ((maturityRate * 1e26) / vaults[o].exchangeRate) - 1e26;
       interest = (yield * vaults[o].notional) / 1e26;
@@ -142,7 +143,7 @@ contract VaultTracker {
 
     // If market has matured, calculate marginal interest between the maturity rate and previous position exchange rate
     // Otherwise, calculate marginal exchange rate between current and previous exchange rate.
-    if (matured == true) {
+    if (matured) {
       // Calculate marginal interest
       yield = ((maturityRate * 1e26) / vaults[f].exchangeRate) - 1e26;
       interest = (yield * vaults[f].notional) / 1e26;
@@ -164,7 +165,7 @@ contract VaultTracker {
 
       // If market has matured, calculate marginal interest between the maturity rate and previous position exchange rate
       // Otherwise, calculate marginal exchange rate between current and previous exchange rate.
-      if (matured == true) {
+      if (matured) {
         // Calculate marginal interest
         yield = ((maturityRate * 1e26) / vaults[t].exchangeRate) - 1e26;
         newVaultInterest = (yield * vaults[t].notional) / 1e26;
