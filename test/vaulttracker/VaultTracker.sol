@@ -5,7 +5,7 @@ pragma solidity 0.8.4;
 import "./Abstracts.sol";
 
 contract VaultTracker {
-  address public immutable admin = msg.sender;
+  address public immutable admin;
   address public immutable cTokenAddr;
   uint256 public immutable maturity;
   uint256 public maturityRate;
@@ -22,6 +22,7 @@ contract VaultTracker {
   /// @param m Maturity timestamp of the new market
   /// @param c cToken address associated with underlying for the new market
   constructor(uint256 m, address c) {
+    admin = msg.sender;
     maturity = m;
     cTokenAddr = c;
   }
