@@ -5,11 +5,11 @@ pragma solidity 0.8.4;
 import "./Abstracts.sol";
 
 contract VaultTracker {
-  address public admin; // marketplace
-  uint256 public maturity;
-  bool public matured;
+  address public immutable admin;
+  address public immutable cTokenAddr;
+  uint256 public immutable maturity;
   uint256 public maturityRate;
-  address public cTokenAddr;
+  bool public matured;
 
   struct Vault {
     uint256 notional;

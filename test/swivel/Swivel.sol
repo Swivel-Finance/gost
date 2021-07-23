@@ -9,8 +9,8 @@ import './Sig.sol';
 contract Swivel {
   string constant public NAME = "Swivel Finance";
   string constant public VERSION = "2.0.0";
-  bytes32 public DOMAIN;
-  address public marketPlace;
+  bytes32 public immutable DOMAIN;
+  address public immutable marketPlace;
 
   /// @dev maps the key of an order to a boolean indicating if an order was cancelled
   mapping (bytes32 => bool) public cancelled;
