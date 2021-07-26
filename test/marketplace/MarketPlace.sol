@@ -105,7 +105,7 @@ contract MarketPlace {
       require(CErc20(markets[u][m].cTokenAddr).redeemUnderlying(a) == 0 ,'cToken redemption failed');
 
       // Transfer the principleReturned in underlying tokens to the user
-      require(Erc20(u).transfer(msg.sender, a), 'transfer of redemption failed');
+      Erc20(u).transfer(msg.sender, a);
     }
     // If market has matured, redeem the amount + the marginal floating interest generated on Compound since maturity
     else {
@@ -119,8 +119,7 @@ contract MarketPlace {
       require(CErc20(markets[u][m].cTokenAddr).redeemUnderlying(principleReturned) == 0 ,'cToken redemption failed');
 
       // Transfer the principleReturned in underlying tokens to the user
-      require(Erc20(u).transfer(msg.sender, principleReturned), 'transfer of redemption failed');
-
+      Erc20(u).transfer(msg.sender, principleReturned);
     }
 
     emit RedeemZcToken(u, m, msg.sender, a);
@@ -139,7 +138,7 @@ contract MarketPlace {
     require(CErc20(markets[u][m].cTokenAddr).redeemUnderlying(interestGenerated) == 0, "redemption from Compound Failed");
 
     // Transfer the interest generated in underlying tokens to the user
-    require(Erc20(u).transfer(msg.sender, interestGenerated), 'transfer of redeemable failed');
+    Erc20(u).transfer(msg.sender, interestGenerated);
 
     emit RedeemVaultInterest(u, m, msg.sender);
 
