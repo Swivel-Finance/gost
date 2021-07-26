@@ -70,23 +70,21 @@ contract Swivel {
   function initiateVaultFillingZcTokenInitiate(Hash.Order calldata o, uint256 a, Sig.Components calldata c) internal valid(o, c) returns (bool) {
     // Checks the side, and the amount compared to amount available
     require(a <= (o.premium - filled[o.key]), 'taker amount > available volume');
-    
-    uint256 principalFilled = (((a * 1e18) / o.premium) * o.principal) / 1e18;
+
+    filled[o.key] += a;
     
     // transfer tokens to this contract
     Erc20 uToken = Erc20(o.underlying);
     require(uToken.transferFrom(msg.sender, o.maker, a), 'transfer failed');
+    uint256 principalFilled = (((a * 1e18) / o.premium) * o.principal) / 1e18;
     require(uToken.transferFrom(o.maker, address(this), principalFilled), 'transfer failed');
 
     MarketPlace mPlace = MarketPlace(marketPlace);
     address cTokenAddr = mPlace.cTokenAddress(o.underlying, o.maturity);
-
     require(uToken.approve(cTokenAddr, principalFilled), 'underlying approval failed'); 
     require(CErc20(cTokenAddr).mint(principalFilled) == 0, 'minting CToken failed');
     // alert MarketPlace.
     require(mPlace.custodialInitiate(o.underlying, o.maturity, o.maker, msg.sender, principalFilled), 'custodial initiate failed');
-
-    filled[o.key] += a;
 
     emit Initiate(o.key, o.maker, o.vault, o.exit, msg.sender, a, principalFilled);
 
@@ -102,10 +100,11 @@ contract Swivel {
     // Checks the side, and the amount compared to amount available
     require((a <= o.principal - filled[o.key]), 'taker amount > available volume');
 
-    uint256 premiumFilled = (((a * 1e18) / o.principal) * o.premium) / 1e18;
+    filled[o.key] += a;
 
     // transfer tokens to this contract
     Erc20 uToken = Erc20(o.underlying);
+    uint256 premiumFilled = (((a * 1e18) / o.principal) * o.premium) / 1e18;
     require(uToken.transferFrom(o.maker, msg.sender, premiumFilled), 'transfer failed');
     require(uToken.transferFrom(msg.sender, address(this), a), 'transfer failed');
     
@@ -116,8 +115,6 @@ contract Swivel {
     require(CErc20(cTokenAddr).mint(a) == 0, 'minting CToken Failed');
     // alert MarketPlace
     require(mPlace.custodialInitiate(o.underlying, o.maturity, msg.sender, o.maker, a), 'custodial initiate failed');
-    
-    filled[o.key] += a;
 
     emit Initiate(o.key, o.maker, o.vault, o.exit, msg.sender, a, premiumFilled);
 
@@ -132,16 +129,15 @@ contract Swivel {
   function initiateZcTokenFillingZcTokenExit(Hash.Order calldata o, uint256 a, Sig.Components calldata c) internal valid(o, c) returns (bool) {
     // Checks the side, and the amount compared to amount available
     require(a <= ((o.principal - filled[o.key])), 'taker amount > available volume');
+
+    filled[o.key] += a;
     
     // .interest is interest * ratio / 1e18 where ratio is (a * 1e18) / principal
     uint256 premiumFilled = (((a * 1e18) / o.principal) * o.premium) / 1e18;
-
     // transfer tokens to this contract
     require(Erc20(o.underlying).transferFrom(msg.sender, o.maker, (a - premiumFilled)), 'transfer failed');
     // notify the marketplace...
     require(MarketPlace(marketPlace).p2pZcTokenExchange(o.underlying, o.maturity, o.maker, msg.sender, a), 'zcToken exchange failed');
-    
-    filled[o.key] += a;
             
     emit Initiate(o.key, o.maker, o.vault, o.exit, msg.sender, a, premiumFilled);
 
@@ -157,14 +153,13 @@ contract Swivel {
     // Checks the side, and the amount compared to amount available
     require(a <= (o.premium - filled[o.key]), 'taker amount > available volume');
     
-    uint256 principalFilled = (((a * 1e18) / o.premium) * o.principal) / 1e18;
- 
+    filled[o.key] += a;
+
     // transfer tokens to this contract
     require(Erc20(o.underlying).transferFrom(msg.sender, o.maker, a), 'transfer failed');
     // notify marketplace
+    uint256 principalFilled = (((a * 1e18) / o.premium) * o.principal) / 1e18;
     require(MarketPlace(marketPlace).p2pVaultExchange(o.underlying, o.maturity, o.maker, msg.sender, principalFilled), 'vault exchange failed');
-    
-    filled[o.key] += a;
 
     emit Initiate(o.key, o.maker, o.vault, o.exit, msg.sender, a, principalFilled);
 
@@ -212,14 +207,13 @@ contract Swivel {
   function exitZcTokenFillingZcTokenInitiate(Hash.Order calldata o, uint256 a, Sig.Components calldata c) valid(o,c) internal returns (bool) {
     require(a <= (o.premium - filled[o.key]), 'taker amount > available volume');
     
-    uint256 principalFilled = (((a * 1e18) / o.premium) * o.principal) / 1e18;
+    filled[o.key] += a;       
+
     // notify marketplace...
+    uint256 principalFilled = (((a * 1e18) / o.premium) * o.principal) / 1e18;
     require(MarketPlace(marketPlace).p2pZcTokenExchange(o.underlying, o.maturity, msg.sender, o.maker, principalFilled), 'zcToken exchange failed');
     // Transfer underlying from initiating party to exiting party, minus the price the exit party pays for the exit (interest).
-    // TODO audit these revert messages...
     require(Erc20(o.underlying).transferFrom(o.maker, msg.sender, (principalFilled - a)), 'transfer failed');
-    
-    filled[o.key] += a;       
     
     emit Exit(o.key, o.maker, o.vault, o.exit, msg.sender, a, principalFilled);
 
@@ -234,15 +228,12 @@ contract Swivel {
   function exitVaultFillingVaultInitiate(Hash.Order calldata o, uint256 a, Sig.Components calldata c) valid(o,c) internal returns (bool) {
     require(a <= (o.principal - filled[o.key]), 'taker amount > available volume');
     
-    uint256 premiumFilled = (((a * 1e18) / o.principal) * o.premium) / 1e18;
+    filled[o.key] += a;
         
     // market should transfer <a> notional from sender to maker
-    // NOTE the method naming is being addressed in a follow up PR
-    // this will prevent errors with argument passing and such...
     require(MarketPlace(marketPlace).p2pVaultExchange(o.underlying, o.maturity, msg.sender, o.maker, a), 'vault exchange failed');
+    uint256 premiumFilled = (((a * 1e18) / o.principal) * o.premium) / 1e18;
     require(Erc20(o.underlying).transferFrom(o.maker, msg.sender, premiumFilled), 'transfer failed');
-    
-    filled[o.key] += a;
 
     emit Exit(o.key, o.maker, o.vault, o.exit, msg.sender, a, premiumFilled);
 
@@ -257,21 +248,20 @@ contract Swivel {
   function exitVaultFillingZcTokenExit(Hash.Order calldata o, uint256 a, Sig.Components calldata c) valid(o,c) internal returns (bool) {
     require(a <= (o.principal - filled[o.key]), 'taker amount > available volume');
     
-    uint256 premiumFilled = (((a * 1e18) / o.principal) * o.premium) / 1e18;
+    filled[o.key] += a;
     
     MarketPlace mPlace = MarketPlace(marketPlace);
     // alert MarketPlace...
     require(mPlace.custodialExit(o.underlying, o.maturity, o.maker, msg.sender, a), 'custodial exit failed');
     // transfer cost of interest coupon to floating party
     Erc20 uToken = Erc20(o.underlying);
+    uint256 premiumFilled = (((a * 1e18) / o.principal) * o.premium) / 1e18;
     require(uToken.transferFrom(o.maker, msg.sender, premiumFilled), 'transfer failed');
     // redeem principal from compound now that coupon and zcb have been redeemed
     address cTokenAddr = mPlace.cTokenAddress(o.underlying, o.maturity);
     require((CErc20(cTokenAddr).redeemUnderlying(a) == 0), "compound redemption error");
     // Transfer principal back to fixed exit party now that the interest coupon and zcb have been redeemed
     require(uToken.transfer(o.maker, a), 'transfer failed');
-    
-    filled[o.key] += a;
     
     emit Exit(o.key, o.maker, o.vault, o.exit, msg.sender, a, premiumFilled);
 
@@ -286,10 +276,11 @@ contract Swivel {
   function exitZcTokenFillingVaultExit(Hash.Order calldata o, uint256 a, Sig.Components calldata c) valid(o,c) internal returns (bool) {
     require(a <= (o.premium - filled[o.key]));
     
-    uint256 principalFilled = (((a * 1e18) / o.premium) * o.principal) / 1e18;
-    
+    filled[o.key] += a;
+
     MarketPlace mPlace = MarketPlace(marketPlace);
     // inform MarketPlace what happened...
+    uint256 principalFilled = (((a * 1e18) / o.premium) * o.principal) / 1e18;
     require(mPlace.custodialExit(o.underlying, o.maturity, msg.sender, o.maker, principalFilled), 'custodial exit failed');
     // Transfer cost of interest coupon to floating party
     Erc20 uToken = Erc20(o.underlying);
@@ -299,8 +290,6 @@ contract Swivel {
     require((CErc20(cTokenAddr).redeemUnderlying(principalFilled) == 0), "compound redemption Error");
     // Transfer principal back to fixed exit party now that the interest coupon and zcb have been redeemed
     require(uToken.transfer(msg.sender, principalFilled), 'transfer failed');
-    
-    filled[o.key] += a;
     
     emit Exit(o.key, o.maker, o.vault, o.exit, msg.sender, a, principalFilled);
 
