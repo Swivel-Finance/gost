@@ -77,12 +77,11 @@ contract MarketPlace {
     // Set the base maturity cToken exchange rate at maturity to the current cToken exchange rate
     uint256 currentExchangeRate = CErc20(markets[u][m].cTokenAddr).exchangeRateCurrent();
     maturityRate[u][m] = currentExchangeRate;
+    // Set the maturity state to true (for zcb market)
+    mature[u][m] = true;
 
     // Set Floating Market "matured" to true
     require(VaultTracker(markets[u][m].vaultAddr).matureVault(), 'maturity not reached');
-
-    // Set the maturity state to true (for zcb market)
-    mature[u][m] = true;
 
     emit Mature(u, m, block.timestamp, currentExchangeRate);
 
