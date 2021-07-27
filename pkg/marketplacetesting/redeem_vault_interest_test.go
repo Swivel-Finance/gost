@@ -208,7 +208,7 @@ func (s *redeemVaultInterestSuite) TestRedeemVaultInterestRedeemUnderlyingFails(
 
 	tx, err = s.MarketPlace.RedeemVaultInterest(s.Dep.Erc20Address, maturity)
 	assert.NotNil(err)
-	assert.Regexp("redemption from Compound Failed", err.Error())
+	assert.Regexp("redemption from Compound failed", err.Error())
 	assert.Nil(tx)
 }
 
@@ -264,12 +264,14 @@ func (s *redeemVaultInterestSuite) TestRedeemVaultInterestTransferFails() {
 
 	s.Env.Blockchain.Commit()
 
-	tx, err = s.CErc20.RedeemUnderlyingReturns(ZERO)
+	// test should fail if cerc20 does not return 0
+	tx, err = s.CErc20.RedeemUnderlyingReturns(big.NewInt(1))
 	assert.NotNil(tx)
 	assert.Nil(err)
 
 	s.Env.Blockchain.Commit()
 
+	// this doesn't really matter as the contract ignores transfer bools atm
 	tx, err = s.Erc20.TransferReturns(false)
 	assert.NotNil(tx)
 	assert.Nil(err)
@@ -278,7 +280,7 @@ func (s *redeemVaultInterestSuite) TestRedeemVaultInterestTransferFails() {
 
 	tx, err = s.MarketPlace.RedeemVaultInterest(s.Dep.Erc20Address, maturity)
 	assert.NotNil(err)
-	assert.Regexp("transfer of redeemable failed", err.Error())
+	assert.Regexp("redemption from Compound failed", err.Error())
 	assert.Nil(tx)
 }
 

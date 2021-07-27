@@ -437,12 +437,14 @@ func (s *redeemZcTokenSuite) TestRedeemZcTokenNotMaturedTransferFails() {
 
 	s.Env.Blockchain.Commit()
 
-	tx, err = s.CErc20.RedeemUnderlyingReturns(ZERO)
+	// we should see failure if compound returns non zero
+	tx, err = s.CErc20.RedeemUnderlyingReturns(big.NewInt(1))
 	assert.NotNil(tx)
 	assert.Nil(err)
 
 	s.Env.Blockchain.Commit()
 
+	// this is not consequential atm because the contracts ignore transfer bools
 	tx, err = s.Erc20.TransferReturns(false)
 	assert.NotNil(tx)
 	assert.Nil(err)
@@ -457,7 +459,7 @@ func (s *redeemZcTokenSuite) TestRedeemZcTokenNotMaturedTransferFails() {
 	amount := big.NewInt(123456789)
 	tx, err = s.MarketPlace.RedeemZcToken(underlying, maturity, amount)
 	assert.NotNil(err)
-	assert.Regexp("transfer of redemption failed", err.Error())
+	assert.Regexp("cToken redemption failed", err.Error())
 	assert.Nil(tx)
 
 	s.Env.Blockchain.Commit()
@@ -792,18 +794,21 @@ func (s *redeemZcTokenSuite) TestRedeemZcTokenMaturedTransferFails() {
 	zcMaturity, err := zcToken.Maturity()
 	assert.Equal(maturity, zcMaturity)
 
-	tx, err = zcToken.BurnReturns(true)
+	// we should see a failure if the zctoken won't burn...
+	tx, err = zcToken.BurnReturns(false)
 	assert.Nil(err)
 	assert.NotNil(tx)
 
 	s.Env.Blockchain.Commit()
 
+	// we could also force failure here, but that is covered elsewhere...
 	tx, err = s.CErc20.RedeemUnderlyingReturns(ZERO)
 	assert.NotNil(tx)
 	assert.Nil(err)
 
 	s.Env.Blockchain.Commit()
 
+	// this is a non factor atm as the contract ignores transfer return bools
 	tx, err = s.Erc20.TransferReturns(false)
 	assert.NotNil(tx)
 	assert.Nil(err)
@@ -848,7 +853,7 @@ func (s *redeemZcTokenSuite) TestRedeemZcTokenMaturedTransferFails() {
 	amount := big.NewInt(123456789)
 	tx, err = s.MarketPlace.RedeemZcToken(underlying, maturity, amount)
 	assert.NotNil(err)
-	assert.Regexp("transfer of redemption failed", err.Error())
+	assert.Regexp("could not burn", err.Error())
 	assert.Nil(tx)
 
 	s.Env.Blockchain.Commit()
