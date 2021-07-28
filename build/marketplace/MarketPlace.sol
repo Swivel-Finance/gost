@@ -11,9 +11,6 @@ import './ZcToken.sol';
 import './VaultTracker.sol';
 
 contract MarketPlace {
-  address public immutable admin;
-  address public swivel;
-
   struct Market {
     address cTokenAddr;
     address zcTokenAddr;
@@ -23,6 +20,9 @@ contract MarketPlace {
   mapping (address => mapping (uint256 => Market)) public markets;
   mapping (address => mapping (uint256 => bool)) public mature;
   mapping (address => mapping (uint256 => uint256)) public maturityRate;
+
+  address public immutable admin;
+  address public swivel;
 
   event Create(address indexed underlying, uint256 indexed maturity, address cToken, address zcToken);
   event Mature(address indexed underlying, uint256 indexed maturity, uint256 maturityRate, uint256 matured);

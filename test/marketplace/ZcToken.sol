@@ -14,25 +14,22 @@ contract ZcToken {
     uint256 amount;
   }
 
+  // mapping of arguments sent to burn. key is the passed in address.
+  mapping (address => uint256) public burnCalled;
+  // mapping of arguments sent to mint. key is the passed in address.
+  mapping (address => uint256) public mintCalled;
+  // mapping of arguments sent to transferFrom. key is passed from address.
+  mapping (address => TransferFromArgs) public transferFromCalled;
+
   // don't feel the need to setup return/returns for the strings...
   string name;
   string symbol;
-
   address private underlyingReturn;
   uint256 private maturityReturn;
-
-  // mapping of arguments sent to burn. key is the passed in address.
-  mapping (address => uint256) public burnCalled;
   // a boolean flag which allows us to dictate the return of burn().
   bool private burnReturn;
-
-  // mapping of arguments sent to mint. key is the passed in address.
-  mapping (address => uint256) public mintCalled;
   // a boolean flag which allows us to dictate the return of mint().
   bool private mintReturn;
-
-  // mapping of arguments sent to transferFrom. key is passed from address.
-  mapping (address => TransferFromArgs) public transferFromCalled;
   // a boolean flag which allows us to dictate the return of transferFrom().
   bool private transferFromReturn;
 

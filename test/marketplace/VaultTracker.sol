@@ -8,7 +8,6 @@
 pragma solidity 0.8.4;
 
 contract VaultTracker {
-
   struct TransferNotionalFromArgs {
     address to;
     uint256 amount;
@@ -19,30 +18,25 @@ contract VaultTracker {
     uint256 amount;
   }
 
+  // mapping of arguments sent to addNotional. key is the passed in address.
+  mapping (address => uint256) public addNotionalCalled;
+  // mapping of arguments sent to removeNotional. key is the passed in address.
+  mapping (address => uint256) public removeNotionalCalled;
+  // mapping of arguments sent to transferNotionalFrom. key is the passed in address.
+  mapping (address => TransferNotionalFromArgs) public transferNotionalFromCalled;
+  mapping (address => TransferNotionalArgs) public transferNotionalCalled;
+
   // can just be default as its not needed to be exposed...
   address public cTokenAddr;
   // 'bs' vars avoid compiler warnings that we don't want to surpress
   address public bsAddr;
-  
   uint256 private maturityReturn;
-
-  bool private matureVaultReturn;
-
   uint256 private redeemInterestReturn;
-
-  // mapping of arguments sent to addNotional. key is the passed in address.
-  mapping (address => uint256) public addNotionalCalled;
+  bool private matureVaultReturn;
   // a boolean flag which allows us to dictate the return of addNotional().
   bool private addNotionalReturn;
-
-  // mapping of arguments sent to removeNotional. key is the passed in address.
-  mapping (address => uint256) public removeNotionalCalled;
   // a boolean flag which allows us to dictate the return of removeNotional().
   bool private removeNotionalReturn;
-
-  // mapping of arguments sent to transferNotionalFrom. key is the passed in address.
-  mapping (address => TransferNotionalFromArgs) public transferNotionalFromCalled;
-  mapping (address => TransferNotionalArgs) public transferNotionalCalled;
   // a boolean flag which allows us to dictate the return of transferNotionalFrom().
   bool private transferNotionalFromReturn;
   bool private transferNotionalReturn;

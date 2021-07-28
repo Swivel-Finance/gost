@@ -10,6 +10,19 @@ pragma solidity 0.8.4;
 */
 
 library Hash {
+  /// @dev struct represents the attributes of an offchain Swivel.Order
+  struct Order {
+    bytes32 key;
+    address maker;
+    address underlying;
+    bool vault;
+    bool exit;
+    uint256 principal;
+    uint256 premium;
+    uint256 maturity;
+    uint256 expiry;
+  }
+
   // EIP712 Domain Separator typeHash
   // keccak256(abi.encodePacked(
   //     'EIP712Domain(',
@@ -36,19 +49,6 @@ library Hash {
   //     ')'
   // ));
   bytes32 constant internal ORDER_TYPEHASH = 0x7ddd38ab5ed1c16b61ca90eeb9579e29da1ba821cf42d8cdef8f30a31a6a4146;
-
-  /// @dev struct represents the attributes of an offchain Swivel.Order
-  struct Order {
-    bytes32 key;
-    address maker;
-    address underlying;
-    bool vault;
-    bool exit;
-    uint256 principal;
-    uint256 premium;
-    uint256 maturity;
-    uint256 expiry;
-  }
 
   /// @param n EIP712 domain name
   /// @param version EIP712 semantic version string
