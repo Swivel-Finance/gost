@@ -45,8 +45,7 @@ contract VaultTracker {
         // Calculate marginal interest
         yield = ((maturityRate * 1e26) / v.exchangeRate) - 1e26;
         interest = (yield * v.notional) / 1e26;
-      }
-      else {
+      } else {
         // Calculate marginal interest
         yield = ((exchangeRate * 1e26) / v.exchangeRate) - 1e26;
         interest = (yield * v.notional) / 1e26;
@@ -57,12 +56,12 @@ contract VaultTracker {
       v.notional += a;
       v.exchangeRate = exchangeRate;
       vaults[o] = v;
-    }
-    else {
+    } else {
       v.notional = a;
       v.exchangeRate = exchangeRate;
       vaults[o] = v;
     }
+
     return true;
   }
 
@@ -85,8 +84,7 @@ contract VaultTracker {
       // Calculate marginal interest
       yield = ((maturityRate * 1e26) / v.exchangeRate) - 1e26;
       interest = (yield * v.notional) / 1e26;
-    }
-    else {
+    } else {
       // Calculate marginal interest
       yield = ((exchangeRate * 1e26) / v.exchangeRate) - 1e26;
       interest = (yield * v.notional) / 1e26;
@@ -120,8 +118,7 @@ contract VaultTracker {
       // Calculate marginal interest
       yield = ((maturityRate * 1e26) / v.exchangeRate) - 1e26;
       interest = (yield * v.notional) / 1e26;
-    }
-    else {
+    } else {
       // Calculate marginal interest
       yield = ((exchangeRate * 1e26) / v.exchangeRate) - 1e26;
       interest = (yield * v.notional) / 1e26;

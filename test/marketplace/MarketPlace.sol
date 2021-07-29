@@ -109,11 +109,8 @@ contract MarketPlace {
 
       // Transfer the principleReturned in underlying tokens to the user
       Erc20(u).transfer(msg.sender, a);
-    }
-    // If market has matured, redeem the amount + the marginal floating interest generated on Compound since maturity
-    else {
-      // Burn user's zcTokens
-      require(ZcToken(mkt.zcTokenAddr).burn(msg.sender, a), 'could not burn');
+    } else { // If market has matured, redeem the amount + the marginal floating interest generated on Compound since maturity
+      require(ZcToken(mkt.zcTokenAddr).burn(msg.sender, a), 'could not burn'); // Burn user's zcTokens
 
       // Call internal function to determine the amount of principle to return (including marginal interest since maturity)
       uint256 principleReturned = calculateReturn(u, m, a);
