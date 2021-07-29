@@ -66,7 +66,7 @@ contract Swivel {
   /// @param o The order being filled
   /// @param a Amount of volume (interest) being filled by the taker's exit
   /// @param c Components of a valid ECDSA signature
-  function initiateVaultFillingZcTokenInitiate(Hash.Order calldata o, uint256 a, Sig.Components calldata c) internal valid(o, c) returns (bool) {
+  function initiateVaultFillingZcTokenInitiate(Hash.Order calldata o, uint256 a, Sig.Components calldata c) internal valid(o, c) {
     // Checks the side, and the amount compared to amount available
     require(a <= (o.premium - filled[o.key]), 'taker amount > available volume');
 
@@ -86,8 +86,6 @@ contract Swivel {
     require(mPlace.custodialInitiate(o.underlying, o.maturity, o.maker, msg.sender, principalFilled), 'custodial initiate failed');
 
     emit Initiate(o.key, o.maker, o.vault, o.exit, msg.sender, a, principalFilled);
-
-    return true;
   }
 
   /// @notice Allows a user to initiate a zcToken by filling an offline vault initiate order
@@ -95,7 +93,7 @@ contract Swivel {
   /// @param o The order being filled
   /// @param o Amount of volume (principal) being filled by the taker's exit
   /// @param c Components of a valid ECDSA signature
-  function initiateZcTokenFillingVaultInitiate(Hash.Order calldata o, uint256 a, Sig.Components calldata c) internal valid(o, c) returns (bool) {
+  function initiateZcTokenFillingVaultInitiate(Hash.Order calldata o, uint256 a, Sig.Components calldata c) internal valid(o, c) {
     // Checks the side, and the amount compared to amount available
     require((a <= o.principal - filled[o.key]), 'taker amount > available volume');
 
@@ -116,8 +114,6 @@ contract Swivel {
     require(mPlace.custodialInitiate(o.underlying, o.maturity, msg.sender, o.maker, a), 'custodial initiate failed');
 
     emit Initiate(o.key, o.maker, o.vault, o.exit, msg.sender, a, premiumFilled);
-
-    return true;
   }
 
   /// @notice Allows a user to initiate zcToken? by filling an offline zcToken exit order
@@ -125,7 +121,7 @@ contract Swivel {
   /// @param o The order being filled
   /// @param a Amount of volume (principal) being filled by the taker's exit
   /// @param c Components of a valid ECDSA signature
-  function initiateZcTokenFillingZcTokenExit(Hash.Order calldata o, uint256 a, Sig.Components calldata c) internal valid(o, c) returns (bool) {
+  function initiateZcTokenFillingZcTokenExit(Hash.Order calldata o, uint256 a, Sig.Components calldata c) internal valid(o, c) {
     // Checks the side, and the amount compared to amount available
     require(a <= ((o.principal - filled[o.key])), 'taker amount > available volume');
 
@@ -139,8 +135,6 @@ contract Swivel {
     require(MarketPlace(marketPlace).p2pZcTokenExchange(o.underlying, o.maturity, o.maker, msg.sender, a), 'zcToken exchange failed');
             
     emit Initiate(o.key, o.maker, o.vault, o.exit, msg.sender, a, premiumFilled);
-
-    return true;
   }
 
   /// @notice Allows a user to initiate a Vault by filling an offline vault exit order
@@ -148,7 +142,7 @@ contract Swivel {
   /// @param o The order being filled
   /// @param a Amount of volume (interest) being filled by the taker's exit
   /// @param c Components of a valid ECDSA signature
-  function initiateVaultFillingVaultExit(Hash.Order calldata o, uint256 a, Sig.Components calldata c) internal valid(o, c) returns (bool) {
+  function initiateVaultFillingVaultExit(Hash.Order calldata o, uint256 a, Sig.Components calldata c) internal valid(o, c) {
     // Checks the side, and the amount compared to amount available
     require(a <= (o.premium - filled[o.key]), 'taker amount > available volume');
     
@@ -161,8 +155,6 @@ contract Swivel {
     require(MarketPlace(marketPlace).p2pVaultExchange(o.underlying, o.maturity, o.maker, msg.sender, principalFilled), 'vault exchange failed');
 
     emit Initiate(o.key, o.maker, o.vault, o.exit, msg.sender, a, principalFilled);
-
-    return true;
   }
 
   // ********* EXITING ***************
@@ -203,7 +195,7 @@ contract Swivel {
   /// @param o The order being filled
   /// @param a Amount of volume (interest) being filled by the taker's exit
   /// @param c Components of a valid ECDSA signature
-  function exitZcTokenFillingZcTokenInitiate(Hash.Order calldata o, uint256 a, Sig.Components calldata c) valid(o,c) internal returns (bool) {
+  function exitZcTokenFillingZcTokenInitiate(Hash.Order calldata o, uint256 a, Sig.Components calldata c) internal valid(o,c) {
     require(a <= (o.premium - filled[o.key]), 'taker amount > available volume');
     
     filled[o.key] += a;       
@@ -215,8 +207,6 @@ contract Swivel {
     Erc20(o.underlying).transferFrom(o.maker, msg.sender, (principalFilled - a));
     
     emit Exit(o.key, o.maker, o.vault, o.exit, msg.sender, a, principalFilled);
-
-    return true;
   }
   
   /// @notice Allows a user to exit their Vault by filling an offline vault initiate order
@@ -224,7 +214,7 @@ contract Swivel {
   /// @param o The order being filled
   /// @param a Amount of volume (principal) being filled by the taker's exit
   /// @param c Components of a valid ECDSA signature
-  function exitVaultFillingVaultInitiate(Hash.Order calldata o, uint256 a, Sig.Components calldata c) valid(o,c) internal returns (bool) {
+  function exitVaultFillingVaultInitiate(Hash.Order calldata o, uint256 a, Sig.Components calldata c) internal valid(o,c) {
     require(a <= (o.principal - filled[o.key]), 'taker amount > available volume');
     
     filled[o.key] += a;
@@ -235,8 +225,6 @@ contract Swivel {
     Erc20(o.underlying).transferFrom(o.maker, msg.sender, premiumFilled);
 
     emit Exit(o.key, o.maker, o.vault, o.exit, msg.sender, a, premiumFilled);
-
-    return true;
   }
 
   /// @notice Allows a user to exit their Vault filling an offline zcToken exit order
@@ -244,7 +232,7 @@ contract Swivel {
   /// @param o The order being filled
   /// @param a Amount of volume (principal) being filled by the taker's exit
   /// @param c Components of a valid ECDSA signature
-  function exitVaultFillingZcTokenExit(Hash.Order calldata o, uint256 a, Sig.Components calldata c) valid(o,c) internal returns (bool) {
+  function exitVaultFillingZcTokenExit(Hash.Order calldata o, uint256 a, Sig.Components calldata c) internal valid(o,c) {
     require(a <= (o.principal - filled[o.key]), 'taker amount > available volume');
     
     filled[o.key] += a;
@@ -263,8 +251,6 @@ contract Swivel {
     uToken.transfer(o.maker, a);
     
     emit Exit(o.key, o.maker, o.vault, o.exit, msg.sender, a, premiumFilled);
-
-    return true;
   }
 
   /// @notice Allows a user to exit their zcTokens by filling an offline vault exit order
@@ -272,7 +258,7 @@ contract Swivel {
   /// @param o The order being filled
   /// @param a Amount of volume (interest) being filled by the taker's exit
   /// @param c Components of a valid ECDSA signature
-  function exitZcTokenFillingVaultExit(Hash.Order calldata o, uint256 a, Sig.Components calldata c) valid(o,c) internal returns (bool) {
+  function exitZcTokenFillingVaultExit(Hash.Order calldata o, uint256 a, Sig.Components calldata c) internal valid(o,c) {
     require(a <= (o.premium - filled[o.key]), 'taker amount > available volume');
     
     filled[o.key] += a;
@@ -291,8 +277,6 @@ contract Swivel {
     uToken.transfer(msg.sender, principalFilled);
     
     emit Exit(o.key, o.maker, o.vault, o.exit, msg.sender, a, principalFilled);
-
-    return true;
   }
 
   /// @notice Allows a user to cancel an order, preventing it from being filled in the future
