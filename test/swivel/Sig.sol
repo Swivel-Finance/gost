@@ -37,8 +37,12 @@ library Sig {
   /// @return v The verification bit
   /// @return r First 32 bytes
   /// @return s Next 32 bytes
-  function split(bytes memory sig) internal pure returns (uint8 v, bytes32 r, bytes32 s) {
+  function split(bytes memory sig) internal pure returns (uint8, bytes32, bytes32) {
     require(sig.length == 65, 'invalid signature length'); // TODO standardize error messages
+
+    bytes32 r;
+    bytes32 s;
+    uint8 v;
 
     assembly {
       r := mload(add(sig, 32))
