@@ -4,28 +4,27 @@ pragma solidity 0.8.4;
 
 /// @dev MarketPlace is a mock whose bindings are imported by unit tests in any pkg/*testing that needs it
 contract MarketPlace {
-  // the address that will be returned when marketCTokenAddress is called
-  address private cTokenAddr;
-  // the arguments that were passed to marketCTokenAddress when it was called
-  // TODO: we should likely standardize on using the `Called` suffix for these mappings in the mocks.
-  //       the token mocks use a differnt pattern, change them to match this...
-  mapping (address => uint256) public cTokenAddressCalled;
-  bool private custodialInitiateReturn;
-  bool private custodialExitReturn;
-  bool private p2pZcTokenExchangeReturn;
-  bool private p2pVaultExchangeReturn;
-
   struct MethodArgs {
     uint256 maturity;
     address one; // is sender or maker depending on method
     address two; // same as above
     uint256 amount;
   }
-
+  // the arguments that were passed to marketCTokenAddress when it was called
+  // TODO: we should likely standardize on using the `Called` suffix for these mappings in the mocks.
+  //       the token mocks use a differnt pattern, change them to match this...
+  mapping (address => uint256) public cTokenAddressCalled;
   mapping (address => MethodArgs) public custodialInitiateCalled;
   mapping (address => MethodArgs) public custodialExitCalled;
   mapping (address => MethodArgs) public p2pZcTokenExchangeCalled;
   mapping (address => MethodArgs) public p2pVaultExchangeCalled;
+
+  // the address that will be returned when marketCTokenAddress is called
+  address private cTokenAddr;
+  bool private custodialInitiateReturn;
+  bool private custodialExitReturn;
+  bool private p2pZcTokenExchangeReturn;
+  bool private p2pVaultExchangeReturn;
 
   function cTokenAddressReturns(address a) external {
     cTokenAddr = a;

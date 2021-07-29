@@ -16,16 +16,15 @@ contract Erc20 {
 
   // mapping for arguments passed to approve
   mapping (address => uint256) public approveCalled;
-  // a boolean flag which allows us to dictate the return of approve(). 
-  bool private approveReturn;
-
   // mapping of arguments sent to transfer. key is the passed in address.
   mapping (address => uint256) public transferCalled;
-  // a boolean flag which allows us to dictate the return of transfer().
-  bool private transferReturn;
-
   // mapping of arguments sent to transferFrom. key is passed from address.
   mapping (address => TransferFromArgs) public transferFromCalled;
+
+  // a boolean flag which allows us to dictate the return of approve(). 
+  bool private approveReturn;
+  // a boolean flag which allows us to dictate the return of transfer().
+  bool private transferReturn;
   // a boolean flag which allows us to dictate the return of transferFrom().
   bool private transferFromReturn;
 

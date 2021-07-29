@@ -44,12 +44,12 @@ import "./IPErc20.sol";
 
  */
 contract PErc20 is IPErc20 {
+    mapping (address => uint256) private balances;
+    mapping (address => mapping (address => uint256)) private allowances;
+
     uint256 public totalSupply;
     string public name; // NOTE: cannot make strings immutable
     string public symbol; // NOTE: see above
-
-    mapping (address => uint256) private balances;
-    mapping (address => mapping (address => uint256)) private allowances;
 
     /**
      * @dev Sets the values for {name} and {symbol}.

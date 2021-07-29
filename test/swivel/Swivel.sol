@@ -7,16 +7,15 @@ import './Hash.sol';
 import './Sig.sol';
 
 contract Swivel {
+  /// @dev maps the key of an order to a boolean indicating if an order was cancelled
+  mapping (bytes32 => bool) public cancelled;
+  /// @dev maps the key of an order to an amount representing its taken volume
+  mapping (bytes32 => uint256) public filled;
+
   string constant public NAME = "Swivel Finance";
   string constant public VERSION = "2.0.0";
   bytes32 public immutable DOMAIN;
   address public immutable marketPlace;
-
-  /// @dev maps the key of an order to a boolean indicating if an order was cancelled
-  mapping (bytes32 => bool) public cancelled;
-    
-  /// @dev maps the key of an order to an amount representing its taken volume
-  mapping (bytes32 => uint256) public filled;  
 
   /// @notice Emitted on order cancellation
   event Cancel (bytes32 indexed key);
