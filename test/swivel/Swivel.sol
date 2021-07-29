@@ -45,15 +45,15 @@ contract Swivel {
       // TODO explain the scenarios
       if (!o[i].exit) {
         if (!o[i].vault) {
-          require(initiateVaultFillingZcTokenInitiate(o[i], a[i], c[i]));
+          initiateVaultFillingZcTokenInitiate(o[i], a[i], c[i]);
         } else {
-          require(initiateZcTokenFillingVaultInitiate(o[i], a[i], c[i]));
+          initiateZcTokenFillingVaultInitiate(o[i], a[i], c[i]);
         }
       } else {
         if (!o[i].vault) {
-          require(initiateZcTokenFillingZcTokenExit(o[i], a[i], c[i]));
+          initiateZcTokenFillingZcTokenExit(o[i], a[i], c[i]);
         } else {
-          require(initiateVaultFillingVaultExit(o[i], a[i], c[i]));
+          initiateVaultFillingVaultExit(o[i], a[i], c[i]);
         }
       }
     }
@@ -178,19 +178,19 @@ contract Swivel {
         // Determine whether the order being filled is a vault initiate or a zcToken initiate
           if (!o[i].vault) {
             // If filling a zcToken initiate with an exit, one is exiting zcTokens
-            require(exitZcTokenFillingZcTokenInitiate(o[i], a[i], c[i]));
+            exitZcTokenFillingZcTokenInitiate(o[i], a[i], c[i]);
           } else {
             // If filling a vault initiate with an exit, one is exiting vault notional
-            require(exitVaultFillingVaultInitiate(o[i], a[i], c[i]));
+            exitVaultFillingVaultInitiate(o[i], a[i], c[i]);
           }
       } else {
         // Determine whether the order being filled is a vault exit or zcToken exit
         if (!o[i].vault) {
           // If filling a zcToken exit with an exit, one is exiting vault
-          require(exitVaultFillingZcTokenExit(o[i], a[i], c[i]));
+          exitVaultFillingZcTokenExit(o[i], a[i], c[i]);
         } else {
           // If filling a vault exit with an exit, one is exiting zcTokens
-          require(exitZcTokenFillingVaultExit(o[i], a[i], c[i]));
+          exitZcTokenFillingVaultExit(o[i], a[i], c[i]);
         }   
       }   
     }
@@ -273,7 +273,7 @@ contract Swivel {
   /// @param a Amount of volume (interest) being filled by the taker's exit
   /// @param c Components of a valid ECDSA signature
   function exitZcTokenFillingVaultExit(Hash.Order calldata o, uint256 a, Sig.Components calldata c) valid(o,c) internal returns (bool) {
-    require(a <= (o.premium - filled[o.key]));
+    require(a <= (o.premium - filled[o.key]), 'taker amount > available volume');
     
     filled[o.key] += a;
 
