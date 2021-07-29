@@ -47,7 +47,7 @@ contract Swivel {
     address cTokenAddr = mPlace.cTokenAddress(u, m);
     uToken.approve(cTokenAddr, a);
     require(CErc20(cTokenAddr).mint(a) == 0, 'minting CToken Failed');
-    mPlace.splitUnderlying(u,m,a);
+    mPlace.splitUnderlying(u, m, msg.sender, a);
     
     return true;
   }
@@ -60,7 +60,7 @@ contract Swivel {
       
     Erc20 uToken = Erc20(u);
     MarketPlace mPlace = MarketPlace(marketPlace);
-    mPlace.combineTokens(u, m, a);
+    mPlace.combineTokens(u, m, msg.sender, a);
     address cTokenAddr = mPlace.cTokenAddress(u, m);
     require((CErc20(cTokenAddr).redeemUnderlying(a) == 0), "compound redemption error");
     require(uToken.transfer(msg.sender, a), 'transfer failed');

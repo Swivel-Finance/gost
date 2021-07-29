@@ -87,9 +87,10 @@ contract MarketPlace {
   /// @notice Allows tx.origin to deposit their underlying, in the process splitting it/minting both zcTokens and vault notional.
   /// @param u Underlying token address associated with the market
   /// @param m Maturity timestamp of the market
+  /// @param t Address of the depositing user
   /// @param a Amount of underlying being deposited
-  function splitUnderlying(address u, uint256 m, uint256 a) public onlyAdmin(admin) returns (bool) {
-    require(ZcToken(markets[u][m].zcTokenAddr).mint(tx.origin, a), 'mint zcToken failed');
+  function splitUnderlying(address u, uint256 m, address t, uint256 a) public onlyAdmin(admin) returns (bool) {
+    require(ZcToken(markets[u][m].zcTokenAddr).mint(t, a), 'mint zcToken failed');
     require(VaultTracker(markets[u][m].vaultAddr).addNotional(tx.origin, a), 'add notional failed');
     
     return(true);
@@ -98,9 +99,10 @@ contract MarketPlace {
   /// @notice Allows tx.origin to deposit/burn both zcTokens+vault notional, in the process "combining" the two, and redeeming underlying.
   /// @param u Underlying token address associated with the market
   /// @param m Maturity timestamp of the market
+  /// @param t Address of the combining/redeeming user
   /// @param a Amount of zcTokens being redeemed
-  function combineTokens(address u, uint256 m, uint256 a) public onlyAdmin(admin) returns(bool) {
-    require(ZcToken(markets[u][m].zcTokenAddr).burn(tx.origin, a), 'burn failed');
+  function combineTokens(address u, uint256 m, address t, uint256 a) public onlyAdmin(admin) returns(bool) {
+    require(ZcToken(markets[u][m].zcTokenAddr).burn(t, a), 'burn failed');
     require(VaultTracker(markets[u][m].vaultAddr).removeNotional(tx.origin, a), 'remove notional failed');
     
     return(true);

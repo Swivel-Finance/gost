@@ -27,7 +27,7 @@ abstract contract MarketPlace {
   // IVFVE && EVFVI call this, removing notional from one party and adding to the other
   function p2pVaultExchange(address, uint256, address, address, uint256) virtual external returns (bool);
   //splitUnderlying calls this, adding notional and minting zctokens to tx.origin
-  function splitUnderlying(address, uint256, uint256) virtual external returns (bool);
+  function splitUnderlying(address, uint256, address, uint256) virtual external returns (bool);
   //combineTokens calls this, removing notional and burning zctokens from tx.origin
-  function combineTokens(address, uint256, uint256) virtual external returns (bool);
+  function combineTokens(address, uint256, address, uint256) virtual external returns (bool);
 }
