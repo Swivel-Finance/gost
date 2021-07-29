@@ -94,29 +94,29 @@ contract MarketPlace {
   /// @param a Amount of zcTokens being redeemed
   function redeemZcToken(address u, uint256 m, uint256 a) public returns (bool) {
     // If market hasn't matured, mature it and redeem exactly the amount
+
+    Market memory mkt = markets[u][m];
+
     if (!mature[u][m]) {
       // Attempt to Mature it
       require(matureMarket(u, m), 'failed to mature the market');
 
       // Burn user's zcTokens
-      require(ZcToken(markets[u][m].zcTokenAddr).burn(msg.sender, a), 'could not burn');
+      require(ZcToken(mkt.zcTokenAddr).burn(msg.sender, a), 'could not burn');
 
       // Redeem principleReturned of underlying token to Swivel Contract from Compound
-      require(CErc20(markets[u][m].cTokenAddr).redeemUnderlying(a) == 0 ,'cToken redemption failed');
+      require(CErc20(mkt.cTokenAddr).redeemUnderlying(a) == 0 ,'cToken redemption failed');
 
       // Transfer the principleReturned in underlying tokens to the user
       Erc20(u).transfer(msg.sender, a);
-    }
-    // If market has matured, redeem the amount + the marginal floating interest generated on Compound since maturity
-    else {
-      // Burn user's zcTokens
-      require(ZcToken(markets[u][m].zcTokenAddr).burn(msg.sender, a), 'could not burn');
+    } else { // If market has matured, redeem the amount + the marginal floating interest generated on Compound since maturity
+      require(ZcToken(mkt.zcTokenAddr).burn(msg.sender, a), 'could not burn'); // Burn user's zcTokens
 
       // Call internal function to determine the amount of principle to return (including marginal interest since maturity)
       uint256 principleReturned = calculateReturn(u, m, a);
 
       // Redeem principleReturned of underlying token to Swivel Contract from Compound
-      require(CErc20(markets[u][m].cTokenAddr).redeemUnderlying(principleReturned) == 0 ,'cToken redemption failed');
+      require(CErc20(mkt.cTokenAddr).redeemUnderlying(principleReturned) == 0 ,'cToken redemption failed');
 
       // Transfer the principleReturned in underlying tokens to the user
       Erc20(u).transfer(msg.sender, principleReturned);
