@@ -134,7 +134,7 @@ contract VaultTracker {
   /// @param f Owner of the amount
   /// @param t Recipient of the amount
   /// @param a Amount to transfer
-  function transferNotional(address f, address t, uint256 a) external onlyAdmin(admin) returns (bool) {
+  function transferNotionalFrom(address f, address t, uint256 a) external onlyAdmin(admin) returns (bool) {
     require(vaults[f].notional >= a, "amount exceeds available balance");
 
     uint256 yield;
@@ -186,16 +186,6 @@ contract VaultTracker {
       vaults[t].exchangeRate = exchangeRate;
     }
 
-    return true;
-  }
-
-  /// @notice ...
-  /// @param f Address of the sender
-  /// @param t Address of the recipient
-  /// @param a Amount to transfer
-  function transferNotionalFrom(address f, address t, uint256 a) external onlyAdmin(admin) returns (bool) {
-    require(removeNotional(f, a), 'remove notional failed');
-    require(addNotional(t, a), 'add notional failed');
     return true;
   }
 
