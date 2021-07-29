@@ -91,7 +91,7 @@ contract MarketPlace {
   /// @param a Amount of underlying being deposited
   function splitUnderlying(address u, uint256 m, address t, uint256 a) public onlyAdmin(admin) returns (bool) {
     require(ZcToken(markets[u][m].zcTokenAddr).mint(t, a), 'mint zcToken failed');
-    require(VaultTracker(markets[u][m].vaultAddr).addNotional(tx.origin, a), 'add notional failed');
+    require(VaultTracker(markets[u][m].vaultAddr).addNotional(t, a), 'add notional failed');
     
     return(true);
   }
@@ -103,7 +103,7 @@ contract MarketPlace {
   /// @param a Amount of zcTokens being redeemed
   function combineTokens(address u, uint256 m, address t, uint256 a) public onlyAdmin(admin) returns(bool) {
     require(ZcToken(markets[u][m].zcTokenAddr).burn(t, a), 'burn failed');
-    require(VaultTracker(markets[u][m].vaultAddr).removeNotional(tx.origin, a), 'remove notional failed');
+    require(VaultTracker(markets[u][m].vaultAddr).removeNotional(t, a), 'remove notional failed');
     
     return(true);
   }
