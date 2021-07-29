@@ -127,7 +127,7 @@ func (s *transferNotionalFromSuite) TestTransferNotionalFromAmountExceedsFail() 
 
 	tx, err = s.VaultTracker.TransferNotionalFrom(s.Env.Owner.Opts.From, s.Env.User1.Opts.From, big.NewInt(2000))
 	assert.NotNil(err)
-	assert.Regexp("amount exceeds vault balance", err.Error())
+	assert.Regexp("amount exceeds available balance", err.Error())
 	assert.Nil(tx)
 
 	s.Env.Blockchain.Commit()
