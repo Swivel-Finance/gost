@@ -51,14 +51,11 @@ contract VaultTracker {
       // Add interest and amount to position, reset cToken exchange rate
       vlt.redeemable += interest;
       vlt.notional += a;
-      vlt.exchangeRate = exchangeRate;
-      
     } else {
       vlt.notional = a;
-      vlt.exchangeRate = exchangeRate;
-
     }
 
+    vlt.exchangeRate = exchangeRate;
     vaults[o] = vlt;
 
     return true;
@@ -182,14 +179,11 @@ contract VaultTracker {
       // Add interest and amount to position, reset cToken exchange rate
       to.redeemable += newVaultInterest;
       to.notional += a;
-      to.exchangeRate = exchangeRate;
-
     } else {
       to.notional += a;
-      to.exchangeRate = exchangeRate;
-
     }
 
+    to.exchangeRate = exchangeRate;
     vaults[t] = to;
 
     return true;

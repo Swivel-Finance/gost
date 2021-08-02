@@ -15,9 +15,9 @@ contract VaultTracker {
 
   address public immutable admin;
   address public immutable cTokenAddr;
+  bool public matured;
   uint256 public immutable maturity;
   uint256 public maturityRate;
-  bool public matured;
 
   /// @param m Maturity timestamp of the new market
   /// @param c cToken address associated with underlying for the new market
@@ -51,13 +51,12 @@ contract VaultTracker {
       // Add interest and amount to position, reset cToken exchange rate
       vlt.redeemable += interest;
       vlt.notional += a;
-      vlt.exchangeRate = exchangeRate;
-      vaults[o] = vlt;
     } else {
       vlt.notional = a;
-      vlt.exchangeRate = exchangeRate;
-      vaults[o] = vlt;
     }
+
+    vlt.exchangeRate = exchangeRate;
+    vaults[o] = vlt;
 
     return true;
   }
@@ -180,15 +179,12 @@ contract VaultTracker {
       // Add interest and amount to position, reset cToken exchange rate
       to.redeemable += newVaultInterest;
       to.notional += a;
-      to.exchangeRate = exchangeRate;
-
-      vaults[t] = to;
     } else {
       to.notional += a;
-      to.exchangeRate = exchangeRate;
-
-      vaults[t] = to;
     }
+
+    to.exchangeRate = exchangeRate;
+    vaults[t] = to;
 
     return true;
   }
