@@ -88,6 +88,30 @@ contract MarketPlace {
     return true;
   }
 
+  /// @notice Allows Swivel caller to deposit their underlying, in the process splitting it - minting both zcTokens and vault notional.
+  /// @param u Underlying token address associated with the market
+  /// @param m Maturity timestamp of the market
+  /// @param t Address of the depositing user
+  /// @param a Amount of notional being added
+  function mintZcTokenAddingNotional(address u, uint256 m, address t, uint256 a) external onlySwivel(swivel) returns (bool) {
+    require(ZcToken(markets[u][m].zcTokenAddr).mint(t, a), 'mint zcToken failed');
+    require(VaultTracker(markets[u][m].vaultAddr).addNotional(t, a), 'add notional failed');
+    
+    return true;
+  }
+
+  /// @notice Allows Swivel caller to deposit/burn both zcTokens + vault notional. This process is "combining" the two and redeeming underlying.
+  /// @param u Underlying token address associated with the market
+  /// @param m Maturity timestamp of the market
+  /// @param t Address of the combining/redeeming user
+  /// @param a Amount of zcTokens being burned
+  function burnZcTokenRemovingNotional(address u, uint256 m, address t, uint256 a) external onlySwivel(swivel) returns(bool) {
+    require(ZcToken(markets[u][m].zcTokenAddr).burn(t, a), 'burn failed');
+    require(VaultTracker(markets[u][m].vaultAddr).removeNotional(t, a), 'remove notional failed');
+    
+    return true;
+  }
+
   /// @notice Allows zcToken holders to redeem their tokens for underlying tokens after maturity has been reached.
   /// @param u Underlying token address associated with the market
   /// @param m Maturity timestamp of the market
