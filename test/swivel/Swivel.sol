@@ -299,7 +299,8 @@ contract Swivel {
   /// @param m Maturity timestamp of the market
   /// @param a Amount of underlying being deposited
   function splitUnderlying(address u, uint256 m, uint256 a) external returns (bool) {
-    Erc20(u).transferFrom(msg.sender, address(this), a);
+    Erc20 uToken = Erc20(u);
+    uToken.transferFrom(msg.sender, address(this), a);
     MarketPlace mPlace = MarketPlace(marketPlace);
     address cTokenAddr = mPlace.cTokenAddress(u, m);
     uToken.approve(cTokenAddr, a);

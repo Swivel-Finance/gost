@@ -17,6 +17,10 @@ abstract contract CErc20 is Erc20 {
 }
 
 abstract contract MarketPlace {
+  //adds notional and mints zctokens to msg.sender
+  function mintZcTokenAddingNotional(address, uint256, address, uint256) virtual external returns (bool);
+  //removes notional and burns zctokens from msg.sender
+  function burnZcTokenRemovingNotional(address, uint256, address, uint256) virtual external returns (bool);
   function cTokenAddress(address, uint256) virtual external returns (address);
   // EVFZE FF EZFVE call this which would then burn zctoken and remove notional
   function custodialExit(address, uint256, address, address, uint256) virtual external returns (bool);

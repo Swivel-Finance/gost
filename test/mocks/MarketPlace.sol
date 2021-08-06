@@ -18,6 +18,8 @@ contract MarketPlace {
   mapping (address => MethodArgs) public custodialExitCalled;
   mapping (address => MethodArgs) public p2pZcTokenExchangeCalled;
   mapping (address => MethodArgs) public p2pVaultExchangeCalled;
+  mapping (address => MethodArgs) public mintZcTokenAddingNotionalCalled;
+  mapping (address => MethodArgs) public burnZcTokenRemovingNotionalCalled;
 
   // the address that will be returned when marketCTokenAddress is called
   address private cTokenAddr;
@@ -25,6 +27,8 @@ contract MarketPlace {
   bool private custodialExitReturn;
   bool private p2pZcTokenExchangeReturn;
   bool private p2pVaultExchangeReturn;
+  bool private mintZcTokenAddingNotionalReturn;
+  bool private burnZcTokenRemovingNotionalReturn;
 
   function cTokenAddressReturns(address a) external {
     cTokenAddr = a;
@@ -101,5 +105,35 @@ contract MarketPlace {
     p2pVaultExchangeCalled[u] = args;
 
     return p2pVaultExchangeReturn;
+  }
+
+  function mintZcTokenAddingNotionalReturns(bool b) external {
+    mintZcTokenAddingNotionalReturn = b;
+  }
+
+  // call with underlying, maturity, mint-to, amount
+  function mintZcTokenAddingNotional(address u, uint256 m, address t, uint256 a) external returns (bool) {
+    MethodArgs memory args;
+    args.maturity = m;
+    args.one = t;
+    args.amount = a;
+    mintZcTokenAddingNotionalCalled[u] = args;
+
+    return mintZcTokenAddingNotionalReturn;
+  }
+
+  function burnZcTokenRemovingNotionalReturns(bool b) external {
+    burnZcTokenRemovingNotionalReturn = b;
+  }
+
+  // call with underlying, maturity, mint-to, amount
+  function burnZcTokenRemovingNotional(address u, uint256 m, address t, uint256 a) external returns (bool) {
+    MethodArgs memory args;
+    args.maturity = m;
+    args.one = t;
+    args.amount = a;
+    burnZcTokenRemovingNotionalCalled[u] = args;
+
+    return burnZcTokenRemovingNotionalReturn;
   }
 }

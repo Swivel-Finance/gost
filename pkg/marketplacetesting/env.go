@@ -40,7 +40,7 @@ func NewEnv(b *big.Int) *Env {
 	alloc[u1.From] = core.GenesisAccount{Balance: b}
 	alloc[u2.From] = core.GenesisAccount{Balance: b}
 	// 2nd arg is a gas limit, a uint64. we'll use...
-	bc := backends.NewSimulatedBackend(alloc, 5700000)
+	bc := backends.NewSimulatedBackend(alloc, 6700000)
 
 	return &Env{
 		Alloc:      alloc,
