@@ -291,6 +291,39 @@ contract Swivel {
     return true;
   }
 
+  // ********* PROTOCOL UTILITY ***************
+
+  /// @notice Allows users to deposit underlying and in the process split it into/mint 
+  /// zcTokens and vault notional. Calls mPlace.mintZcTokenAddingNotional
+  /// @param u Underlying token address associated with the market
+  /// @param m Maturity timestamp of the market
+  /// @param a Amount of underlying being deposited
+  function splitUnderlying(address u, uint256 m, uint256 a) external returns (bool) {
+    Erc20(u).transferFrom(msg.sender, address(this), a);
+    MarketPlace mPlace = MarketPlace(marketPlace);
+    address cTokenAddr = mPlace.cTokenAddress(u, m);
+    uToken.approve(cTokenAddr, a);
+    require(CErc20(cTokenAddr).mint(a) == 0, 'minting CToken Failed');
+    require(mPlace.mintZcTokenAddingNotional(u, m, msg.sender, a), 'mint ZcToken adding Notional failed');
+
+    return true;
+  }
+
+  /// @notice Allows users deposit/burn 1-1 amounts of both zcTokens and vault notional,
+  /// in the process "combining" the two, and redeeming underlying. Calls mPlace.burnZcTokenRemovingNotional.
+  /// @param u Underlying token address associated with the market
+  /// @param m Maturity timestamp of the market
+  /// @param a Amount of zcTokens being redeemed
+  function combineTokens(address u, uint256 m, uint256 a) external returns (bool) {
+    MarketPlace mPlace = MarketPlace(marketPlace);
+    require(mPlace.burnZcTokenRemovingNotional(u, m, msg.sender, a), 'burn ZcToken removing Notional failed');
+    address cTokenAddr = mPlace.cTokenAddress(u, m);
+    require((CErc20(cTokenAddr).redeemUnderlying(a) == 0), "compound redemption error");
+    Erc20(u).transfer(msg.sender, a);
+
+    return true;
+  }
+
   /// @dev Agreements may only be Initiated if the Order is valid.
   /// @param o An offline Swivel.Order
   /// @param c Components of a valid ECDSA signature
