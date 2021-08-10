@@ -189,7 +189,45 @@ contract VaultTracker {
     return true;
   }
 
-  /// @notice ...
+  /// @notice transfers notional fee to the Swivel contract without recalculating marginal interest for from
+  /// @param f Owner of the amount
+  /// @param t Address of swivel.sol
+  /// @param a Amount to transfer
+  function transferNotionalFee(address f, address t, uint256 a) external onlyAdmin(admin) returns(bool) {
+    Vault memory from = vaults[f];
+    Vault memory swivel = vaults[t];
+    
+    // Remove notional from sender
+    from.notional = from.notional - a;
+    
+    uint256 exchangeRate = CErc20(cTokenAddr).exchangeRateCurrent();
+    
+    uint256 yield;
+    uint256 newVaultInterest;
+    
+    // Check if exchangeRate has been stored already this block. If not, calculate marginal interest + store exchangeRate
+    if (swivel.exchangeRate != exchangeRate) {
+        // If market has matured, calculate marginal interest between the maturity rate and previous position exchange rate
+        // Otherwise, calculate marginal exchange rate between current and previous exchange rate.
+        if (matured) { // Calculate marginal interest
+            yield = ((maturityRate * 1e26) / swivel.exchangeRate) - 1e26;
+        } else {
+            yield = ((exchangeRate * 1e26) / swivel.exchangeRate) - 1e26;
+        }
+    
+        newVaultInterest = (yield * swivel.notional) / 1e26;
+        // Add interest and amount to position, reset cToken exchange rate
+        swivel.redeemable += newVaultInterest;
+        swivel.exchangeRate = exchangeRate;
+    }
+    // Add notional to swivel
+    swivel.notional += a;
+    
+    vaults[t] = swivel;
+    return true;
+  }
+
+  /// @notice Returns both relevant balances for a given user's vault
   /// @param o Address that owns a vault
   function balancesOf(address o) public view returns (uint256, uint256) {
     return (vaults[o].notional, vaults[o].redeemable);
