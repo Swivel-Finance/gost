@@ -16,6 +16,8 @@ contract Swivel {
   string constant public VERSION = "2.0.0";
   bytes32 public immutable DOMAIN;
   address public immutable marketPlace;
+  address public immutable admin;
+  uint256 public feeDenominator;
 
   /// @notice Emitted on order cancellation
   event Cancel (bytes32 indexed key);
@@ -32,6 +34,16 @@ contract Swivel {
   constructor(address m) {
     DOMAIN = Hash.domain(NAME, VERSION, block.chainid, address(this));
     marketPlace = m;
+    admin = msg.sender;
+  }
+
+
+  // ********* ADMIN FUNCTIONS *************
+
+  // @notice Allows the admin to set a new fee denominator
+  // @param f The new fee denominator
+  function setFee(uint256 d) external onlyAdmin(admin) {
+      feeDenominator = d;
   }
 
   // ********* INITIATING *************
@@ -74,7 +86,7 @@ contract Swivel {
     
     Erc20 uToken = Erc20(o.underlying);
     uint256 principalFilled = (((a * 1e18) / o.premium) * o.principal) / 1e18;
-    uint256 fee = ((principalFilled * 1e18) / 400) / 1e18;
+    uint256 fee = ((principalFilled * 1e18) / feeDenominator) / 1e18;
     
     uToken.transferFrom(msg.sender, o.maker, a);
     uToken.transferFrom(o.maker, address(this), principalFilled);
@@ -106,7 +118,7 @@ contract Swivel {
 
     Erc20 uToken = Erc20(o.underlying);
     uint256 premiumFilled = (((a * 1e18) / o.principal) * o.premium) / 1e18;
-    uint256 fee = ((premiumFilled * 1e18) / 400) / 1e18;
+    uint256 fee = ((premiumFilled * 1e18) / feeDenominator) / 1e18;
     
     uToken.transferFrom(o.maker, msg.sender, premiumFilled);
     uToken.transferFrom(msg.sender, address(this), a);
@@ -138,7 +150,7 @@ contract Swivel {
     
     Erc20 uToken = Erc20(o.underlying);
     uint256 premiumFilled = (((a * 1e18) / o.principal) * o.premium) / 1e18;
-    uint256 fee = ((premiumFilled * 1e18) / 400) / 1e18;
+    uint256 fee = ((premiumFilled * 1e18) / feeDenominator) / 1e18;
     
     uToken.transferFrom(msg.sender, o.maker, (a - premiumFilled));
     // notify the marketplace...
@@ -161,7 +173,7 @@ contract Swivel {
     filled[o.key] += a;
     
     uint256 principalFilled = (((a * 1e18) / o.premium) * o.principal) / 1e18;
-    uint256 fee = ((principalFilled * 1e18) / 400) / 1e18;
+    uint256 fee = ((principalFilled * 1e18) / feeDenominator) / 1e18;
 
     MarketPlace mPlace = MarketPlace(marketPlace);
 
@@ -220,7 +232,7 @@ contract Swivel {
     
     Erc20 uToken = Erc20(o.underlying);
     uint256 principalFilled = (((a * 1e18) / o.premium) * o.principal) / 1e18;
-    uint256 fee = ((principalFilled * 1e18) / 400) / 1e18;
+    uint256 fee = ((principalFilled * 1e18) / feeDenominator) / 1e18;
     
     // transfer underlying from initiating party to exiting party, minus the price the exit party pays for the exit (interest), and the fee.
     uToken.transferFrom(o.maker, msg.sender, (principalFilled - a - fee));
@@ -245,7 +257,7 @@ contract Swivel {
     
     Erc20 uToken = Erc20(o.underlying);
     uint256 premiumFilled = (((a * 1e18) / o.principal) * o.premium) / 1e18;
-    uint256 fee = ((premiumFilled * 1e18) / 400) / 1e18;
+    uint256 fee = ((premiumFilled * 1e18) / feeDenominator) / 1e18;
 
     // transfer premium from o.maker to msg.sender
     uToken.transferFrom(o.maker, msg.sender, premiumFilled-fee);
@@ -271,7 +283,7 @@ contract Swivel {
     
     Erc20 uToken = Erc20(o.underlying);
     uint256 premiumFilled = (((a * 1e18) / o.principal) * o.premium) / 1e18;
-    uint256 fee = ((premiumFilled * 1e18) / 400) / 1e18;
+    uint256 fee = ((premiumFilled * 1e18) / feeDenominator) / 1e18;
     
     MarketPlace mPlace = MarketPlace(marketPlace);
     // alert MarketPlace...
@@ -303,7 +315,7 @@ contract Swivel {
 
     Erc20 uToken = Erc20(o.underlying);
     uint256 principalFilled = (((a * 1e18) / o.premium) * o.principal) / 1e18;
-    uint256 fee = ((principalFilled * 1e18) / 400) / 1e18;
+    uint256 fee = ((principalFilled * 1e18) / feeDenominator) / 1e18;
     
     MarketPlace mPlace = MarketPlace(marketPlace);
     // alert MarketPlace...
@@ -376,6 +388,11 @@ contract Swivel {
     require(!cancelled[o.key], 'order cancelled');
     require(o.expiry >= block.timestamp, 'order expired');
     require(o.maker == Sig.recover(Hash.message(DOMAIN, Hash.order(o)), c), 'invalid signature');
+    _;
+  }
+
+  modifier onlyAdmin(address a) {
+    require(msg.sender == admin, 'sender must be admin');
     _;
   }
 }
