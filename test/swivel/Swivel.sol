@@ -387,4 +387,9 @@ contract Swivel {
     require(o.maker == Sig.recover(Hash.message(DOMAIN, Hash.order(o)), c), 'invalid signature');
     _;
   }
+
+  modifier onlyAdmin(address a) {
+    require(msg.sender == a, 'sender must be admin');
+    _;
+  }
 }
