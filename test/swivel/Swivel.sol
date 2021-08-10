@@ -63,7 +63,7 @@ contract Swivel {
   /// @notice Allows the admin to queue the withdrawal of arbitrary tokens
   /// @param e Address of token to withdraw
   function queueTokenWithdrawal(address e) external onlyAdmin(admin) {
-      queuedTimestamp[e] = block.timestamp;
+      queuedTimestamp[e] = block.timestamp + 259200;
       withdrawalQueue[e] = true;
       emit withdrawalQueued(e, (block.timestamp + 259200));
   }
@@ -77,26 +77,13 @@ contract Swivel {
   /// @notice Allows the admin to withdraw any arbitrary token
   /// @param e Address of token to withdraw
   function withdrawTokens(address e) external onlyAdmin(admin) {
-      require (block.timestamp - queuedTimestamp[e] > 259200, "withdrawal currently timelocked");
+      require (block.timestamp >= queuedTimestamp[e], "withdrawal currently timelocked");
       require (withdrawalQueue[e], "withdrawal not queued");
       
       withdrawalQueue[e] = false;
       Erc20 token = Erc20(e);
       uint256 amount = token.balanceOf(address(this));
       token.transfer(admin,amount);
-  }
-  
-  /// @notice Allows the current admin to transfer admin powers to another address
-  /// @param t Address of the new admin
-  function transferAdmin(address t) external onlyAdmin(admin) {
-      previousAdmin = admin;
-      admin = t;
-  }
-  
-  /// @notice Emergency function to recover admin (Seems pointless, but in a bundle can block malicious token withdrawals)
-  function recoverAdmin() external {
-      require (msg.sender == previousAdmin, "must be the previous admin");
-      admin = previousAdmin;
   }
   
 
