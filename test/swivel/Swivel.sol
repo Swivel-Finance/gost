@@ -35,6 +35,7 @@ contract Swivel {
     DOMAIN = Hash.domain(NAME, VERSION, block.chainid, address(this));
     marketPlace = m;
     admin = msg.sender;
+    feeDenominator = 400;
   }
 
 
