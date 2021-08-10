@@ -11,12 +11,25 @@ contract Swivel {
   mapping (bytes32 => bool) public cancelled;
   /// @dev maps the key of an order to an amount representing its taken volume
   mapping (bytes32 => uint256) public filled;
+  /// @dev maps a token address to a bool representing whether a withdrawal is currently queued for that token
+  mapping (address => bool) public withdrawalQueue;
+  /// @dev maps a token address to a timestamp representing the time at which a withdrawal is possible for that token
+  mapping (address => uint256) public queuedTimestamp;
 
   string constant public NAME = "Swivel Finance";
   string constant public VERSION = "2.0.0";
   bytes32 public immutable DOMAIN;
   address public immutable marketPlace;
+  address public admin;
+  address public previousAdmin;
 
+  /// ********* ADMIN EVENTS *************
+  /// @notice Emitted on token withdrawal que transfer
+  /// @dev token is the address of the token queued for withdrawal
+  /// @dev withdrawalTime is the timestamp at which the queued withdrawal will be possible
+  event withdrawalQueued (address indexed token, uint256 withdrawalTime);
+
+  /// ********* SWIVEL EVENTS *************
   /// @notice Emitted on order cancellation
   event Cancel (bytes32 indexed key);
   /// @notice Emitted on any initiate*
@@ -32,7 +45,60 @@ contract Swivel {
   constructor(address m) {
     DOMAIN = Hash.domain(NAME, VERSION, block.chainid, address(this));
     marketPlace = m;
+    admin = msg.sender;
   }
+
+  // ********* ADMIN FUNCTIONS *************
+  // TODO Consider scope of admin functions and admin role separation: token withdrawals / fee distributions
+  
+  // Malicious Attacker Recovery Path:
+  // 1. Multisig admin loses control
+  // 2. Attacker transfers admin
+  // 3. Unprompted withdrawal is queued (any cToken or unplanned underlying)
+  // 4. As a fallback, previous admin recovers their admin 
+  // 5. Within the same flashbots bundle, recovered admin blocks the malicious withdrawal
+  // Users can always withdraw funds if multisig control is "lost", and have a window for recovery if Swivel is malicious
+
+  
+  /// @notice Allows the admin to queue the withdrawal of arbitrary tokens
+  /// @param e Address of token to withdraw
+  function queueTokenWithdrawal(address e) external onlyAdmin(admin) {
+      queuedTimestamp[e] = block.timestamp;
+      withdrawalQueue[e] = true;
+      emit withdrawalQueued(e, (block.timestamp + 259200));
+  }
+  
+  /// @notice Emergency function to block unplanned withdrawals
+  /// @param e Address of token withdrawal to block
+  function blockWithdrawal(address e) external onlyAdmin(admin) {
+      withdrawalQueue[e] = false;
+  }
+  
+  /// @notice Allows the admin to withdraw any arbitrary token
+  /// @param e Address of token to withdraw
+  function withdrawTokens(address e) external onlyAdmin(admin) {
+      require (block.timestamp - queuedTimestamp[e] > 259200, "withdrawal currently timelocked");
+      require (withdrawalQueue[e], "withdrawal not queued");
+      
+      withdrawalQueue[e] = false;
+      Erc20 token = Erc20(e);
+      uint256 amount = token.balanceOf(address(this));
+      token.transfer(admin,amount);
+  }
+  
+  /// @notice Allows the current admin to transfer admin powers to another address
+  /// @param t Address of the new admin
+  function transferAdmin(address t) external onlyAdmin(admin) {
+      previousAdmin = admin;
+      admin = t;
+  }
+  
+  /// @notice Emergency function to recover admin (Seems pointless, but in a bundle can block malicious token withdrawals)
+  function recoverAdmin() external {
+      require (msg.sender == previousAdmin, "must be the previous admin");
+      admin = previousAdmin;
+  }
+  
 
   // ********* INITIATING *************
 
