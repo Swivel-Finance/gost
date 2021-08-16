@@ -17,7 +17,11 @@ contract Swivel {
   bytes32 public immutable DOMAIN;
   address public immutable marketPlace;
   address public immutable admin;
-  uint256 public feeDenominator;
+  uint16[] public feeDenominator;
+  //0 = zcTokenInitiate Fee Denominator
+  //1 = zcTokenExit Fee Denominator
+  //2 = VaultInitiate Fee Denominator
+  //3 = VaultExit Fee Denominator
 
   /// @notice Emitted on order cancellation
   event Cancel (bytes32 indexed key);
@@ -35,16 +39,17 @@ contract Swivel {
     DOMAIN = Hash.domain(NAME, VERSION, block.chainid, address(this));
     marketPlace = m;
     admin = msg.sender;
-    feeDenominator = 400;
+    feeDenominator = [200,600,400,200];
   }
 
 
   // ********* ADMIN FUNCTIONS *************
 
   // @notice Allows the admin to set a new fee denominator
+  // @param t The type of order 
   // @param f The new fee denominator
-  function setFee(uint256 d) external onlyAdmin(admin) {
-      feeDenominator = d;
+  function setFee(uint8 t, uint16 d) external onlyAdmin(admin) {
+      feeDenominator[t] = d;
   }
 
   // ********* INITIATING *************
@@ -87,7 +92,7 @@ contract Swivel {
     
     Erc20 uToken = Erc20(o.underlying);
     uint256 principalFilled = (((a * 1e18) / o.premium) * o.principal) / 1e18;
-    uint256 fee = ((principalFilled * 1e18) / feeDenominator) / 1e18;
+    uint256 fee = ((principalFilled * 1e18) / feeDenominator[2]) / 1e18;
     
     uToken.transferFrom(msg.sender, o.maker, a);
     uToken.transferFrom(o.maker, address(this), principalFilled);
@@ -119,7 +124,7 @@ contract Swivel {
 
     Erc20 uToken = Erc20(o.underlying);
     uint256 premiumFilled = (((a * 1e18) / o.principal) * o.premium) / 1e18;
-    uint256 fee = ((premiumFilled * 1e18) / (feeDenominator/2)) / 1e18;
+    uint256 fee = ((premiumFilled * 1e18) / feeDenominator[0]) / 1e18;
     
     uToken.transferFrom(o.maker, msg.sender, premiumFilled);
     uToken.transferFrom(msg.sender, address(this), a);
@@ -151,7 +156,7 @@ contract Swivel {
     
     Erc20 uToken = Erc20(o.underlying);
     uint256 premiumFilled = (((a * 1e18) / o.principal) * o.premium) / 1e18;
-    uint256 fee = ((premiumFilled * 1e18) / (feeDenominator/2)) / 1e18;
+    uint256 fee = ((premiumFilled * 1e18) / feeDenominator[0]) / 1e18;
     
     uToken.transferFrom(msg.sender, o.maker, (a - premiumFilled));
     // notify the marketplace...
@@ -174,7 +179,7 @@ contract Swivel {
     filled[o.key] += a;
     
     uint256 principalFilled = (((a * 1e18) / o.premium) * o.principal) / 1e18;
-    uint256 fee = ((principalFilled * 1e18) / feeDenominator) / 1e18;
+    uint256 fee = ((principalFilled * 1e18) / feeDenominator[2]) / 1e18;
 
     MarketPlace mPlace = MarketPlace(marketPlace);
 
@@ -233,7 +238,7 @@ contract Swivel {
     
     Erc20 uToken = Erc20(o.underlying);
     uint256 principalFilled = (((a * 1e18) / o.premium) * o.principal) / 1e18;
-    uint256 fee = ((principalFilled * 1e18) / feeDenominator) / 1e18;
+    uint256 fee = ((principalFilled * 1e18) / feeDenominator[1]) / 1e18;
     
     // transfer underlying from initiating party to exiting party, minus the price the exit party pays for the exit (interest), and the fee.
     uToken.transferFrom(o.maker, msg.sender, (principalFilled - a - fee));
@@ -258,7 +263,7 @@ contract Swivel {
     
     Erc20 uToken = Erc20(o.underlying);
     uint256 premiumFilled = (((a * 1e18) / o.principal) * o.premium) / 1e18;
-    uint256 fee = ((premiumFilled * 1e18) / (feeDenominator/2)) / 1e18;
+    uint256 fee = ((premiumFilled * 1e18) / feeDenominator[3]) / 1e18;
 
     // transfer premium from o.maker to msg.sender
     uToken.transferFrom(o.maker, msg.sender, premiumFilled-fee);
@@ -284,7 +289,7 @@ contract Swivel {
     
     Erc20 uToken = Erc20(o.underlying);
     uint256 premiumFilled = (((a * 1e18) / o.principal) * o.premium) / 1e18;
-    uint256 fee = ((premiumFilled * 1e18) / (feeDenominator/2)) / 1e18;
+    uint256 fee = ((premiumFilled * 1e18) / feeDenominator[3]) / 1e18;
     
     MarketPlace mPlace = MarketPlace(marketPlace);
     // alert MarketPlace...
@@ -316,7 +321,7 @@ contract Swivel {
 
     Erc20 uToken = Erc20(o.underlying);
     uint256 principalFilled = (((a * 1e18) / o.premium) * o.principal) / 1e18;
-    uint256 fee = ((principalFilled * 1e18) / feeDenominator) / 1e18;
+    uint256 fee = ((principalFilled * 1e18) / feeDenominator[1]) / 1e18;
     
     MarketPlace mPlace = MarketPlace(marketPlace);
     // alert MarketPlace...
