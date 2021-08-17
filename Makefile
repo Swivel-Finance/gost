@@ -91,10 +91,10 @@ compile_go_underlying:
 	@echo "compiling abi and bin files to golang"
 	abigen --abi ./test/tokens/Underlying.abi --bin ./test/tokens/Underlying.bin -pkg tokens -type Underlying -out ./test/tokens/underlying.go
 
-compile_zct: compile_solidity_underlying compile_go_underlying
+compile_underlying: compile_solidity_underlying compile_go_underlying
 
 
-compile_tokens: compile_zct
+compile_tokens: compile_zct compile_underlying
 
 # Fakes
 compile_solidity_sig_fake:
