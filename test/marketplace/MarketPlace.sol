@@ -48,17 +48,19 @@ contract MarketPlace {
   /// @param u Underlying token address associated with the new market
   /// @param m Maturity timestamp of the new market
   /// @param c cToken address associated with underlying for the new market
+  /// @param d Number of decimals the underlying token supports
   /// @param n Name of the new zcToken market
   /// @param s Symbol of the new zcToken market
   function createMarket(
     address u,
     uint256 m,
     address c,
+    uint256 d,
     string memory n,
     string memory s
   ) public onlyAdmin(admin) returns (bool) {
     // TODO can we live with the factory pattern here both bytecode size wise and CREATE opcode cost wise?
-    address zctAddr = address(new ZcToken(u, m, n, s));
+    address zctAddr = address(new ZcToken(u, m, d, n, s));
     address vAddr = address(new VaultTracker(m, c));
     markets[u][m] = Market(c, zctAddr, vAddr);
 

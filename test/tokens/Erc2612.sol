@@ -21,9 +21,10 @@ contract Erc2612 is PErc20, IErc2612 {
 
   bytes32 public immutable DOMAIN;
 
+  /// @param d number of decimals for the token
   /// @param n name for the token
   /// @param s symbol for the token
-  constructor(string memory n, string memory s) PErc20(n, s) {
+  constructor(uint16 d, string memory n, string memory s) PErc20(d, n, s) {
     DOMAIN = Hash.domain(n, '1', block.chainid, address(this));
   }
 

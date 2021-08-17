@@ -48,11 +48,13 @@ contract PErc20 is IPErc20 {
     mapping (address => mapping (address => uint256)) private allowances;
 
     uint256 public totalSupply;
+    uint16 public immutable decimals;
     string public name; // NOTE: cannot make strings immutable
     string public symbol; // NOTE: see above
 
     /**
      * @dev Sets the values for {name} and {symbol}.
+     * @dev d Number of decimals for the token
      * @param n Name of the token
      * @param s Symbol of the token
      *
@@ -62,26 +64,10 @@ contract PErc20 is IPErc20 {
      * All two of these values are immutable: they can only be set once during
      * construction.
      */
-    constructor (string memory n, string memory s) {
+    constructor (uint16 d, string memory n, string memory s) {
         name = n;
         symbol = s;
-    }
-
-    /**
-     * @dev Returns the number of decimals used to get its user representation.
-     * For example, if `decimals` equals `2`, a balance of `505` tokens should
-     * be displayed to a user as `5,05` (`505 / 10 ** 2`).
-     *
-     * Tokens usually opt for a value of 18, imitating the relationship between
-     * Ether and Wei. This is the value {ERC20} uses, unless this function is
-     * overridden;
-     *
-     * NOTE: This information is only used for _display_ purposes: it in
-     * no way affects any of the arithmetic of the contract, including
-     * {IERC20-balanceOf} and {IERC20-transfer}.
-     */
-    function decimals() public view virtual returns (uint8) {
-        return 18;
+        decimals = d;
     }
 
     /**
