@@ -11,11 +11,15 @@ contract Swivel {
   mapping (bytes32 => bool) public cancelled;
   /// @dev maps the key of an order to an amount representing its taken volume
   mapping (bytes32 => uint256) public filled;
+  /// @dev maps a token address to a point in time, a hold, after which a withdrawal can be made
+  mapping (address => uint256) public withdrawals;
 
   string constant public NAME = "Swivel Finance";
   string constant public VERSION = "2.0.0";
+  uint256 constant public HOLD = 259200; // obvs could be a smaller uint but packing? TODO
   bytes32 public immutable DOMAIN;
   address public immutable marketPlace;
+  address public immutable admin;
 
   /// @notice Emitted on order cancellation
   event Cancel (bytes32 indexed key);
@@ -27,9 +31,14 @@ contract Swivel {
   /// @dev filled is 'principalFilled' when (vault:false, exit:false) && (vault:true, exit:true)
   /// @dev filled is 'premiumFilled' when (vault:true, exit:false) && (vault:false, exit:true)
   event Exit(bytes32 indexed key, address indexed maker, bool vault, bool exit, address indexed sender, uint256 amount, uint256 filled);
+  /// @notice Emitted on token withdrawal scheduling
+  /// @dev token is the address of the token scheduled for withdrawal
+  /// @dev withdrawalTime is the timestamp at which the queued withdrawal will be possible
+  event WithdrawalScheduled (address indexed token, uint256 hold);
 
   /// @param m deployed MarketPlace contract address
   constructor(address m) {
+    admin = msg.sender;
     DOMAIN = Hash.domain(NAME, VERSION, block.chainid, address(this));
     marketPlace = m;
   }
@@ -291,6 +300,35 @@ contract Swivel {
     return true;
   }
 
+  // ********* ADMINISTRATIVE ***************
+
+  /// @notice Allows the admin to schedule the withdrawal of tokens
+  /// @param e Address of token to withdraw
+  function scheduleWithdrawal(address e) external onlyAdmin(admin) {
+    uint256 when = block.timestamp + HOLD;
+    withdrawals[e] = when;
+    emit WithdrawalScheduled(e, when);
+  }
+
+  /// @notice Emergency function to block unplanned withdrawals
+  /// @param e Address of token withdrawal to block
+  function blockWithdrawal(address e) external onlyAdmin(admin) {
+      withdrawals[e] = 0;
+  }
+
+  /// @notice Allows the admin to withdraw the given token, provided the holding period has been observed
+  /// @param e Address of token to withdraw
+  function withdraw(address e) external onlyAdmin(admin) {
+    uint256 when = withdrawals[e];
+    require (when != 0, 'no withdrawal scheduled');
+    require (block.timestamp >= when, 'withdrawal still on hold');
+
+    withdrawals[e] = 0;
+
+    Erc20 token = Erc20(e);
+    token.transfer(admin, token.balanceOf(address(this)));
+  }
+
   // ********* PROTOCOL UTILITY ***************
 
   /// @notice Allows users to deposit underlying and in the process split it into/mint 
@@ -323,6 +361,11 @@ contract Swivel {
     Erc20(u).transfer(msg.sender, a);
 
     return true;
+  }
+
+  modifier onlyAdmin(address a) {
+    require(msg.sender == a, 'sender must be admin');
+    _;
   }
 
   /// @dev Agreements may only be Initiated if the Order is valid.
