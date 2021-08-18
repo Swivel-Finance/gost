@@ -12,8 +12,8 @@ contract Swivel {
   /// @dev maps the key of an order to an amount representing its taken volume
   mapping (bytes32 => uint256) public filled;
 
-  string constant public NAME = "Swivel Finance";
-  string constant public VERSION = "2.0.0";
+  string constant public NAME = 'Swivel Finance';
+  string constant public VERSION = '2.0.0';
   bytes32 public immutable DOMAIN;
   address public immutable marketPlace;
   address public immutable admin;
@@ -82,7 +82,7 @@ contract Swivel {
   /// @notice Allows a user to initiate a Vault by filling an offline zcToken initiate order
   /// @dev This method should pass (underlying, maturity, maker, sender, principalFilled) to MarketPlace.custodialInitiate
   /// @param o The order being filled
-  /// @param a Amount of volume (interest) being filled by the taker's exit
+  /// @param a Amount of volume (premium) being filled by the taker's exit
   /// @param c Components of a valid ECDSA signature
   function initiateVaultFillingZcTokenInitiate(Hash.Order calldata o, uint256 a, Sig.Components calldata c) internal valid(o, c) {
     // Checks the side, and the amount compared to amount available
@@ -105,8 +105,8 @@ contract Swivel {
     
     // alert MarketPlace.
     require(mPlace.custodialInitiate(o.underlying, o.maturity, o.maker, msg.sender, principalFilled), 'custodial initiate failed');
-    // transfer fee in vault notional to admin (from msg.sender)
-    require(mPlace.transferVaultNotionalFee(o.underlying, o.maturity, msg.sender, admin, fee), "notional fee transfer failed");
+    // transfer fee in vault notional to swivel (from msg.sender)
+    require(mPlace.transferVaultNotionalFee(o.underlying, o.maturity, msg.sender, address(this), fee), "notional fee transfer failed");
     
     emit Initiate(o.key, o.maker, o.vault, o.exit, msg.sender, a, principalFilled);
   }
@@ -127,7 +127,8 @@ contract Swivel {
     uint256 fee = ((premiumFilled * 1e18) / feeDenominator[0]) / 1e18;
     
     uToken.transferFrom(o.maker, msg.sender, premiumFilled);
-    uToken.transferFrom(msg.sender, address(this), a);
+    // transfer principal + fee in underlying to swivel (from msg.sender)
+    uToken.transferFrom(msg.sender, address(this), (a+fee));
     
     MarketPlace mPlace = MarketPlace(marketPlace);
     address cTokenAddr = mPlace.cTokenAddress(o.underlying, o.maturity);
@@ -137,8 +138,6 @@ contract Swivel {
     
     // alert MarketPlace
     require(mPlace.custodialInitiate(o.underlying, o.maturity, msg.sender, o.maker, a), 'custodial initiate failed');
-    // transfer fee in underlying to admin (from msg.sender)
-    uToken.transferFrom(msg.sender, admin, fee);
     
     emit Initiate(o.key, o.maker, o.vault, o.exit, msg.sender, a, premiumFilled);
   }
@@ -158,11 +157,10 @@ contract Swivel {
     uint256 premiumFilled = (((a * 1e18) / o.principal) * o.premium) / 1e18;
     uint256 fee = ((premiumFilled * 1e18) / feeDenominator[0]) / 1e18;
     
-    uToken.transferFrom(msg.sender, o.maker, (a - premiumFilled));
+    // transfer principal - the premium paid + fee in underlying to swivel (from msg.sender)
+    uToken.transferFrom(msg.sender, o.maker, ((a - premiumFilled)+fee));
     // notify the marketplace...
     require(MarketPlace(marketPlace).p2pZcTokenExchange(o.underlying, o.maturity, o.maker, msg.sender, a), 'zcToken exchange failed');
-    // transfer fee in underlying to admin (from msg.sender)
-    uToken.transferFrom(msg.sender, admin, fee);
     
     emit Initiate(o.key, o.maker, o.vault, o.exit, msg.sender, a, premiumFilled);
   }
@@ -170,7 +168,7 @@ contract Swivel {
   /// @notice Allows a user to initiate a Vault by filling an offline vault exit order
   /// @dev This method should pass (underlying, maturity, maker, sender, principalFilled) to MarketPlace.p2pVaultExchange
   /// @param o The order being filled
-  /// @param a Amount of volume (interest) being filled by the taker's exit
+  /// @param a Amount of volume (premium) being filled by the taker's exit
   /// @param c Components of a valid ECDSA signature
   function initiateVaultFillingVaultExit(Hash.Order calldata o, uint256 a, Sig.Components calldata c) internal valid(o, c) {
     // Checks the side, and the amount compared to amount available
@@ -187,8 +185,8 @@ contract Swivel {
     // notify marketplace
     require(MarketPlace(marketPlace).p2pVaultExchange(o.underlying, o.maturity, o.maker, msg.sender, principalFilled), 'vault exchange failed');
 
-    // transfer fee in vault notional to admin (from msg.sender)
-    require(mPlace.transferVaultNotionalFee(o.underlying, o.maturity, msg.sender, admin, fee), "notional fee transfer failed");
+    // transfer fee in vault notional to swivel (from msg.sender)
+    require(mPlace.transferVaultNotionalFee(o.underlying, o.maturity, msg.sender, address(this), fee), "notional fee transfer failed");
     
     emit Initiate(o.key, o.maker, o.vault, o.exit, msg.sender, a, principalFilled);
   }
@@ -229,7 +227,7 @@ contract Swivel {
   /// @notice Allows a user to exit their zcTokens by filling an offline zcToken initiate order
   /// @dev This method should pass (underlying, maturity, sender, maker, principalFilled) to MarketPlace.p2pZcTokenExchange
   /// @param o The order being filled
-  /// @param a Amount of volume (interest) being filled by the taker's exit
+  /// @param a Amount of volume (premium) being filled by the taker's exit
   /// @param c Components of a valid ECDSA signature
   function exitZcTokenFillingZcTokenInitiate(Hash.Order calldata o, uint256 a, Sig.Components calldata c) internal valid(o,c) {
     require(a <= (o.premium - filled[o.key]), 'taker amount > available volume');
@@ -240,13 +238,13 @@ contract Swivel {
     uint256 principalFilled = (((a * 1e18) / o.premium) * o.principal) / 1e18;
     uint256 fee = ((principalFilled * 1e18) / feeDenominator[1]) / 1e18;
     
-    // transfer underlying from initiating party to exiting party, minus the price the exit party pays for the exit (interest), and the fee.
+    // transfer underlying from initiating party to exiting party, minus the price the exit party pays for the exit (premium), and the fee.
     uToken.transferFrom(o.maker, msg.sender, (principalFilled - a - fee));
     // notify marketplace
     require(MarketPlace(marketPlace).p2pZcTokenExchange(o.underlying, o.maturity, msg.sender, o.maker, principalFilled), 'zcToken exchange failed');
     
-    // transfer fee in underlying to admin (with msg.sender's change)
-    uToken.transferFrom(o.maker, admin, fee);
+    // transfer fee in underlying to swivel (with msg.sender's change)
+    uToken.transferFrom(o.maker, address(this), fee);
     
     emit Exit(o.key, o.maker, o.vault, o.exit, msg.sender, a, principalFilled);
   }
@@ -271,8 +269,8 @@ contract Swivel {
     // market should transfer <a> notional from sender to maker
     require(MarketPlace(marketPlace).p2pVaultExchange(o.underlying, o.maturity, msg.sender, o.maker, a), 'vault exchange failed');
 
-    // transfer fee in underlying to admin (from msg.sender)
-    uToken.transferFrom(msg.sender, admin, fee);
+    // transfer fee in underlying to swivel (from msg.sender)
+    uToken.transferFrom(msg.sender, address(this), fee);
 
     emit Exit(o.key, o.maker, o.vault, o.exit, msg.sender, a, premiumFilled);
   }
@@ -297,14 +295,12 @@ contract Swivel {
     
     // redeem principal from compound now that coupon and zcb have been burnt
     address cTokenAddr = mPlace.cTokenAddress(o.underlying, o.maturity);
-    require((CErc20(cTokenAddr).redeemUnderlying(a) == 0), "compound redemption error");
-    
-    // transfer principal back to fixed exit party now that the interest coupon and zcb have been redeemed
-    uToken.transfer(o.maker, a);
-    // transfer premium to vault exit party now that the zctoken exit (maker) has the capital to do so
-    uToken.transferFrom(o.maker, msg.sender, (premiumFilled-fee));
-    // transfer fee in underlying to admin (from msg.sender)
-    uToken.transferFrom(msg.sender, admin, fee);
+    require((CErc20(cTokenAddr).redeemUnderlying(a) == 0), 'compound redemption error');
+    //1000
+    // transfer principal-premium back to fixed exit party now that the interest coupon and zcb have been redeemed
+    uToken.transfer(o.maker, (a-premiumFilled));
+    // transfer premium-fee to floating exit party
+    uToken.transfer(msg.sender, (premiumFilled-fee));
     
     emit Exit(o.key, o.maker, o.vault, o.exit, msg.sender, a, premiumFilled);
   }
@@ -312,7 +308,7 @@ contract Swivel {
   /// @notice Allows a user to exit their zcTokens by filling an offline vault exit order
   /// @dev This method should pass (underlying, maturity, sender, maker, principalFilled) to MarketPlace.exitFillingExit
   /// @param o The order being filled
-  /// @param a Amount of volume (interest) being filled by the taker's exit
+  /// @param a Amount of volume (premium) being filled by the taker's exit
   /// @param c Components of a valid ECDSA signature
   function exitZcTokenFillingVaultExit(Hash.Order calldata o, uint256 a, Sig.Components calldata c) internal valid(o,c) {
     require(a <= (o.premium - filled[o.key]), 'taker amount > available volume');
@@ -329,15 +325,13 @@ contract Swivel {
 
     // redeem principal from compound now that coupon and zcb have been burnt
     address cTokenAddr = mPlace.cTokenAddress(o.underlying, o.maturity);
-    require((CErc20(cTokenAddr).redeemUnderlying(principalFilled) == 0), "compound redemption Error");
-    
-    // transfer principal back to fixed exit party now that the interest coupon and zcb have been redeemed
-    uToken.transfer(msg.sender, (principalFilled-fee));
-    // transfer premium to vault exit party now that the fixed party has the capital to do so    
-    uToken.transferFrom(msg.sender, o.maker, a);
-    // transfer fee in underlying to admin (with msg.sender's change)
-    uToken.transfer(admin, fee);
-    
+    require((CErc20(cTokenAddr).redeemUnderlying(principalFilled) == 0), 'compound redemption Error');
+
+    // transfer principal-premium-fee back to fixed exit party now that the interest coupon and zcb have been redeemed
+    uToken.transfer(msg.sender, ((principalFilled-a)-fee));
+    // transfer premium to floating exit party
+    uToken.transfer(o.maker, (a));
+
     emit Exit(o.key, o.maker, o.vault, o.exit, msg.sender, a, principalFilled);
   }
 
@@ -381,7 +375,7 @@ contract Swivel {
     MarketPlace mPlace = MarketPlace(marketPlace);
     require(mPlace.burnZcTokenRemovingNotional(u, m, msg.sender, a), 'burn ZcToken removing Notional failed');
     address cTokenAddr = mPlace.cTokenAddress(u, m);
-    require((CErc20(cTokenAddr).redeemUnderlying(a) == 0), "compound redemption error");
+    require((CErc20(cTokenAddr).redeemUnderlying(a) == 0), 'compound redemption error');
     Erc20(u).transfer(msg.sender, a);
 
     return true;
