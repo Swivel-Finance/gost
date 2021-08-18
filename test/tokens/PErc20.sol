@@ -48,7 +48,7 @@ contract PErc20 is IPErc20 {
     mapping (address => mapping (address => uint256)) private allowances;
 
     uint256 public totalSupply;
-    uint16 public immutable decimals;
+    uint16 public decimals;
     string public name; // NOTE: cannot make strings immutable
     string public symbol; // NOTE: see above
 
