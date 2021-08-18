@@ -33,7 +33,7 @@ contract Swivel {
   event Exit(bytes32 indexed key, address indexed maker, bool vault, bool exit, address indexed sender, uint256 amount, uint256 filled);
   /// @notice Emitted on token withdrawal scheduling
   /// @dev token is the address of the token scheduled for withdrawal
-  /// @dev withdrawalTime is the timestamp at which the queued withdrawal will be possible
+  /// @dev hold is the timestamp at which the scheduled withdrawal will be possible
   event WithdrawalScheduled (address indexed token, uint256 hold);
 
   /// @param m deployed MarketPlace contract address
