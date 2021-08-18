@@ -130,7 +130,7 @@ func (s *EZFVESuite) TestEZFVE() {
 	assert.NotNil(orderHash)
 
 	// put the hashed order together with the eip712 domain and hash those
-	separator, _ := s.Swivel.DOMAIN()
+	separator, _ := s.Swivel.Domain()
 	messageHash, err := s.Dep.HashFake.MessageTest(nil, separator, orderHash)
 	assert.Nil(err)
 	assert.NotNil(messageHash)

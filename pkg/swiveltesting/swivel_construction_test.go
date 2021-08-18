@@ -55,7 +55,7 @@ func (s *swivelCtorSuite) TestVersion() {
 
 func (s *swivelCtorSuite) TestDomain() {
 	assert := assert.New(s.T())
-	separator, err := s.Swivel.DOMAIN()
+	separator, err := s.Swivel.Domain()
 	assert.Nil(err)
 	assert.Equal(32, len(separator))
 }
