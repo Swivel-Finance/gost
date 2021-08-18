@@ -20,9 +20,13 @@ contract Erc20 {
   mapping (address => uint256) public transferCalled;
   // mapping of arguments sent to transferFrom. key is passed from address.
   mapping (address => TransferFromArgs) public transferFromCalled;
+  // balanceOf does not require a mapping.
+  address public balanceOfCalled;
 
   // a boolean flag which allows us to dictate the return of approve(). 
   bool private approveReturn;
+  // a uint to return for balanceOf calls
+  uint256 private balanceOfReturn;
   // a boolean flag which allows us to dictate the return of transfer().
   bool private transferReturn;
   // a boolean flag which allows us to dictate the return of transferFrom().
@@ -35,6 +39,15 @@ contract Erc20 {
 
   function approveReturns(bool b) public {
     approveReturn = b;
+  }
+
+  function balanceOfReturns(uint256 b) public {
+    balanceOfReturn = b;
+  }
+
+  function balanceOf(address t) public returns (uint256) {
+    balanceOfCalled = t;
+    return balanceOfReturn;
   }
 
   function transfer(address t, uint256 a) public returns (bool) {

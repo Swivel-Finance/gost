@@ -17,7 +17,7 @@ contract Swivel {
   string constant public NAME = "Swivel Finance";
   string constant public VERSION = "2.0.0";
   uint256 constant public HOLD = 259200; // obvs could be a smaller uint but packing? TODO
-  bytes32 public immutable DOMAIN;
+  bytes32 public immutable domain;
   address public immutable marketPlace;
   address public immutable admin;
 
@@ -39,7 +39,7 @@ contract Swivel {
   /// @param m deployed MarketPlace contract address
   constructor(address m) {
     admin = msg.sender;
-    DOMAIN = Hash.domain(NAME, VERSION, block.chainid, address(this));
+    domain = Hash.domain(NAME, VERSION, block.chainid, address(this));
     marketPlace = m;
   }
 
@@ -292,7 +292,7 @@ contract Swivel {
   /// @param o An offline Swivel.Order
   /// @param c Components of a valid ECDSA signature
   function cancel(Hash.Order calldata o, Sig.Components calldata c) public returns (bool) {
-    require(o.maker == Sig.recover(Hash.message(DOMAIN, Hash.order(o)), c), 'invalid signature');
+    require(o.maker == Sig.recover(Hash.message(domain, Hash.order(o)), c), 'invalid signature');
     cancelled[o.key] = true;
 
     emit Cancel(o.key);
@@ -374,7 +374,7 @@ contract Swivel {
   modifier valid(Hash.Order calldata o, Sig.Components calldata c) {
     require(!cancelled[o.key], 'order cancelled');
     require(o.expiry >= block.timestamp, 'order expired');
-    require(o.maker == Sig.recover(Hash.message(DOMAIN, Hash.order(o)), c), 'invalid signature');
+    require(o.maker == Sig.recover(Hash.message(domain, Hash.order(o)), c), 'invalid signature');
     _;
   }
 }
