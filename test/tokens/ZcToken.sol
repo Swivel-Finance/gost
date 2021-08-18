@@ -20,7 +20,7 @@ contract ZcToken is Erc2612, IZcToken {
   /// @param d Decimals
   /// @param n Name
   /// @param s Symbol
-  constructor(address u, uint256 m, uint16 d, string memory n, string memory s) Erc2612(d, n, s) {
+  constructor(address u, uint256 m, uint8 d, string memory n, string memory s) Erc2612(d, n, s) {
     admin = msg.sender;  
     underlying = u;
     maturity = m;

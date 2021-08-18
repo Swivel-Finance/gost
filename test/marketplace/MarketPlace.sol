@@ -55,7 +55,7 @@ contract MarketPlace {
     address u,
     uint256 m,
     address c,
-    uint16 d,
+    uint8 d,
     string memory n,
     string memory s
   ) public onlyAdmin(admin) returns (bool) {

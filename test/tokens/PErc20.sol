@@ -48,7 +48,7 @@ contract PErc20 is IPErc20 {
     mapping (address => mapping (address => uint256)) private allowances;
 
     uint256 public totalSupply;
-    uint16 public decimals;
+    uint8 public decimals;
     string public name; // NOTE: cannot make strings immutable
     string public symbol; // NOTE: see above
 
@@ -64,7 +64,7 @@ contract PErc20 is IPErc20 {
      * All two of these values are immutable: they can only be set once during
      * construction.
      */
-    constructor (uint16 d, string memory n, string memory s) {
+    constructor (uint8 d, string memory n, string memory s) {
         name = n;
         symbol = s;
         decimals = d;
