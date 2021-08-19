@@ -19,6 +19,8 @@ type Dep struct {
 	MarketPlace        *marketplace.MarketPlace
 
 	Maturity *big.Int
+
+	SwivelAddress common.Address
 }
 
 func Deploy(e *Env) (*Dep, error) {
@@ -55,6 +57,7 @@ func Deploy(e *Env) (*Dep, error) {
 		CErc20:             cercContract,
 		Erc20Address:       ercAddress,
 		Erc20:              ercContract,
+		SwivelAddress:      common.HexToAddress("0xAbC123"),
 		Maturity:           maturity,
 	}, nil
 }

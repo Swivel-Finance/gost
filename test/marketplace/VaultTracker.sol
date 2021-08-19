@@ -19,9 +19,12 @@ contract VaultTracker {
   mapping (address => uint256) public removeNotionalCalled;
   // mapping of arguments sent to transferNotionalFrom. key is the passed in address.
   mapping (address => TransferNotionalFromArgs) public transferNotionalFromCalled;
+  // mapping of args sent to transferFee, key is the given payer's address
+  mapping (address => uint256) public transferNotionalFeeCalled;
 
-  // can just be default as its not needed to be exposed...
   address public cTokenAddr;
+  address public swivel;
+
   // 'bs' vars avoid compiler warnings that we don't want to surpress
   address public bsAddr;
   uint256 private maturityReturn;
@@ -33,13 +36,15 @@ contract VaultTracker {
   bool private removeNotionalReturn;
   // a boolean flag which allows us to dictate the return of transferNotionalFrom().
   bool private transferNotionalFromReturn;
+  bool private transferNotionalFeeReturn;
 
-  /// @param m Maturity
-  /// @param c C Token Address
-  constructor(uint256 m, address c) {
-    // we can set the privates in the constructor as well...
+  /// @param m maturity
+  /// @param c cToken address
+  /// @param s deployed swivel contract address
+  constructor(uint256 m, address c, address s) {
     maturityReturn = m;
     cTokenAddr = c;
+    swivel = s;
   }
 
   function redeemInterestReturns(uint256 a) public {
@@ -64,12 +69,12 @@ contract VaultTracker {
     return matureVaultReturn;
   }
 
-  function matureVaultReturns(bool m) public {
-    matureVaultReturn = m;
+  function matureVaultReturns(bool b) public {
+    matureVaultReturn = b;
   }
 
-  function addNotionalReturns(bool n) public {
-    addNotionalReturn = n;
+  function addNotionalReturns(bool b) public {
+    addNotionalReturn = b;
   }
 
   function addNotional(address o, uint256 a) public returns (bool) {
@@ -77,8 +82,8 @@ contract VaultTracker {
     return addNotionalReturn;
   }
 
-  function removeNotionalReturns(bool n) public {
-    removeNotionalReturn = n;
+  function removeNotionalReturns(bool b) public {
+    removeNotionalReturn = b;
   }
 
   function removeNotional(address o, uint256 a) public returns (bool) {
@@ -96,5 +101,14 @@ contract VaultTracker {
     args.amount = a;
     transferNotionalFromCalled[f] = args;
     return transferNotionalFromReturn;
+  }
+
+  function transferNotionalFeeReturns(bool b) public {
+    transferNotionalFeeReturn = b;
+  }
+
+  function transferNotionalFee(address f, uint256 a) public returns (bool) {
+    transferNotionalFeeCalled[f] = a;
+    return transferNotionalFeeReturn;
   }
 }

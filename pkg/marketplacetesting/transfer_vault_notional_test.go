@@ -21,13 +21,11 @@ type vaultTransferSuite struct {
 
 func (s *vaultTransferSuite) SetupTest() {
 	var err error
+	assert := assertions.New(s.T())
 
 	s.Env = NewEnv(big.NewInt(ONE_ETH)) // each of the wallets in the env will begin with this balance
 	s.Dep, err = Deploy(s.Env)
-
-	if err != nil {
-		panic(err)
-	}
+	assert.Nil(err)
 
 	s.MarketPlace = &marketplace.MarketPlaceSession{
 		Contract: s.Dep.MarketPlace,
@@ -37,6 +35,11 @@ func (s *vaultTransferSuite) SetupTest() {
 			Signer: s.Env.Owner.Opts.Signer,
 		},
 	}
+
+	// the swivel address must be set
+	_, err = s.MarketPlace.SetSwivelAddress(s.Dep.SwivelAddress)
+	assert.Nil(err)
+	s.Env.Blockchain.Commit()
 }
 
 func (s *vaultTransferSuite) TestVaultTransfer() {
