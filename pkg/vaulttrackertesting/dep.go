@@ -12,6 +12,8 @@ type Dep struct {
 	CErc20        *mocks.CErc20
 	CErc20Address common.Address
 
+	SwivelAddress common.Address
+
 	VaultTracker        *vaulttracker.VaultTracker
 	VaultTrackerAddress common.Address
 
@@ -28,12 +30,16 @@ func Deploy(e *Env) (*Dep, error) {
 
 	e.Blockchain.Commit()
 
+	// vaultTracker expects a swivel address passed to it
+	swivelAddress := common.HexToAddress("0xAbC123")
+
 	// deploy contract...
 	trackerAddress, _, trackerContract, trackerErr := vaulttracker.DeployVaultTracker(
 		e.Owner.Opts,
 		e.Blockchain,
 		maturity,
 		cercAddress,
+		swivelAddress,
 	)
 
 	if trackerErr != nil {
@@ -43,6 +49,7 @@ func Deploy(e *Env) (*Dep, error) {
 	e.Blockchain.Commit()
 
 	return &Dep{
+		SwivelAddress:       swivelAddress,
 		VaultTrackerAddress: trackerAddress,
 		VaultTracker:        trackerContract,
 		Maturity:            maturity,

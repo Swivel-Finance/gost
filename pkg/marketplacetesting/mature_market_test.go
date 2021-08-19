@@ -24,18 +24,14 @@ type matureMarketSuite struct {
 
 func (s *matureMarketSuite) SetupTest() {
 	var err error
+	assert := assertions.New(s.T())
 
 	s.Env = NewEnv(big.NewInt(ONE_ETH)) // each of the wallets in the env will begin with this balance
 	s.Dep, err = Deploy(s.Env)
-
-	if err != nil {
-		panic(err)
-	}
+	assert.Nil(err)
 
 	err = s.Env.Blockchain.AdjustTime(0) // set bc timestamp to 0
-	if err != nil {
-		panic(err)
-	}
+	assert.Nil(err)
 	s.Env.Blockchain.Commit()
 
 	s.CErc20 = &mocks.CErc20Session{
@@ -56,6 +52,11 @@ func (s *matureMarketSuite) SetupTest() {
 			Signer: s.Env.Owner.Opts.Signer,
 		},
 	}
+
+	// the swivel address must be set
+	_, err = s.MarketPlace.SetSwivelAddress(s.Dep.SwivelAddress)
+	assert.Nil(err)
+	s.Env.Blockchain.Commit()
 }
 
 func (s *matureMarketSuite) TestMaturityNotReached() {

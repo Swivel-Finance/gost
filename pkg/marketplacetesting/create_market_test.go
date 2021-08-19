@@ -41,6 +41,10 @@ func (s *createMarketSuite) SetupSuite() {
 
 func (s *createMarketSuite) TestCreateMarket() {
 	assert := assert.New(s.T())
+	// the swivel address must be set
+	_, err := s.MarketPlace.SetSwivelAddress(s.Dep.SwivelAddress)
+	assert.Nil(err)
+	s.Env.Blockchain.Commit()
 	// addresses can be BS in this test...
 	underlying := common.HexToAddress("0x123")
 	maturity := big.NewInt(123456789)
