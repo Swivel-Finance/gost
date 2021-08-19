@@ -22,18 +22,14 @@ type custodialInitiateSuite struct {
 
 func (s *custodialInitiateSuite) SetupTest() {
 	var err error
+	assert := assertions.New(s.T())
 
 	s.Env = NewEnv(big.NewInt(ONE_ETH)) // each of the wallets in the env will begin with this balance
 	s.Dep, err = Deploy(s.Env)
-
-	if err != nil {
-		panic(err)
-	}
+	assert.Nil(err)
 
 	err = s.Env.Blockchain.AdjustTime(0) // set bc timestamp to 0
-	if err != nil {
-		panic(err)
-	}
+	assert.Nil(err)
 
 	s.Env.Blockchain.Commit()
 
