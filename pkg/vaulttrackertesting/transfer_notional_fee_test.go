@@ -60,19 +60,6 @@ func (s *transferNotionalFeeSuite) TestTransferNotionalFee() {
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
 
-	// swivel needs a vault
-	swiVaultAmt := big.NewInt(100)
-	tx, err = s.VaultTracker.AddNotional(s.Dep.SwivelAddress, swiVaultAmt)
-	assert.Nil(err)
-	assert.NotNil(tx)
-	s.Env.Blockchain.Commit()
-
-	// establish that the swivel vault has only those funds
-	swiVault, err := s.VaultTracker.Vaults(s.Dep.SwivelAddress)
-	assert.Nil(err)
-	assert.NotNil(swiVault)
-	assert.Equal(swiVaultAmt, swiVault.Notional)
-
 	// user needs funds in their vault
 	userVaultAmt := big.NewInt(1000)
 	userFee := big.NewInt(500)
@@ -82,18 +69,18 @@ func (s *transferNotionalFeeSuite) TestTransferNotionalFee() {
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
 
-	// transfer from user to swivel
+	// transfer from user to swivel, which will have no vault up til now...
 	tx, err = s.VaultTracker.TransferNotionalFee(s.Env.User1.Opts.From, userFee)
 	assert.Nil(err)
 	assert.NotNil(tx)
 
 	s.Env.Blockchain.Commit()
 
-	swiVault, err = s.VaultTracker.Vaults(s.Dep.SwivelAddress)
+	swiVault, err := s.VaultTracker.Vaults(s.Dep.SwivelAddress)
 	assert.Nil(err)
 	assert.NotNil(swiVault)
-	assert.Equal(swiVault.Notional, big.NewInt(600))
-	s.T().Log(swiVault.Notional)
+	assert.Equal(swiVault.Notional, userFee)
+	// s.T().Log(swiVault.Notional)
 
 	userVault, err := s.VaultTracker.Vaults(s.Env.User1.Opts.From)
 	assert.Nil(err)
