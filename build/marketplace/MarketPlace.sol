@@ -255,6 +255,16 @@ contract MarketPlace {
     return true;
   }
 
+  /// @notice transfers notional fee to the Swivel contract without recalculating marginal interest for from
+  /// @param u Underlying token address associated with the market
+  /// @param m Maturity timestamp of the market
+  /// @param f Owner of the amount
+  /// @param a Amount to transfer
+  function transferVaultNotionalFee(address u, uint256 m, address f, uint256 a) public onlySwivel(swivel) returns (bool) {
+    VaultTracker(markets[u][m].vaultAddr).transferNotionalFee(f, a);
+    return true;
+  }
+
   modifier onlyAdmin(address a) {
     require(msg.sender == a, 'sender must be admin');
     _;
