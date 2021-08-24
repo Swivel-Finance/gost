@@ -63,7 +63,7 @@ func (s *IVFVESuite) SetupTest() {
 	}
 }
 
-func (s *IVFVESuite) TestIZFZE() {
+func (s *IVFVESuite) TestIVFVE() {
 	assert := assert.New(s.T())
 
 	// stub underlying (erc20) transferfrom to return true
@@ -74,6 +74,11 @@ func (s *IVFVESuite) TestIZFZE() {
 
 	// and the marketplace api methods...
 	tx, err = s.MarketPlace.P2pVaultExchangeReturns(true)
+	assert.Nil(err)
+	assert.NotNil(tx)
+	s.Env.Blockchain.Commit()
+
+	tx, err = s.MarketPlace.TransferVaultNotionalFeeReturns(true)
 	assert.Nil(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
@@ -145,7 +150,7 @@ func (s *IVFVESuite) TestIZFZE() {
 	}
 
 	// call it (finally)...
-	amount := big.NewInt(25) // 1/2 the premium
+	amount := big.NewInt(25)
 	// initiate wants slices...
 	orders := []swivel.HashOrder{order}
 	amounts := []*big.Int{amount}
@@ -178,6 +183,12 @@ func (s *IVFVESuite) TestIZFZE() {
 	assert.Equal(notionalTransferArgs.Amount.Cmp(big.NewInt(0)), 1) // it's pFilled, so should be > 0 at the least...
 	assert.Equal(notionalTransferArgs.One, order.Maker)
 	assert.Equal(notionalTransferArgs.Two, s.Env.Owner.Opts.From)
+
+	// transfer fee call...
+	feeTransferArgs, err := s.MarketPlace.TransferVaultNotionalFeeCalled(order.Underlying)
+	assert.Nil(err)
+	assert.NotNil(feeTransferArgs)
+	assert.Equal(feeTransferArgs.Amount, big.NewInt(6)) // 6.25 will be truncated to 6
 }
 
 func TestIVFVESuite(t *test.T) {

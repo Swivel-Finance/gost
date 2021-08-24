@@ -106,6 +106,11 @@ func (s *IVFZISuite) TestIVFZI() {
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
 
+	tx, err = s.MarketPlace.TransferVaultNotionalFeeReturns(true)
+	assert.Nil(err)
+	assert.NotNil(tx)
+	s.Env.Blockchain.Commit()
+
 	// and the ctoken mint
 	tx, err = s.CErc20.MintReturns(big.NewInt(0))
 	assert.NotNil(tx)
@@ -236,6 +241,12 @@ func (s *IVFZISuite) TestIVFZI() {
 	assert.Equal(fillingArgs.Amount, pFilled)
 	assert.Equal(fillingArgs.One, order.Maker)
 	assert.Equal(fillingArgs.Two, s.Env.Owner.Opts.From)
+
+	// transfer fee call...
+	feeTransferArgs, err := s.MarketPlace.TransferVaultNotionalFeeCalled(order.Underlying)
+	assert.Nil(err)
+	assert.NotNil(feeTransferArgs)
+	assert.Equal(feeTransferArgs.Amount, big.NewInt(6)) // 6.25 will be truncated to 6
 }
 
 func TestIVFZISuite(t *test.T) {
