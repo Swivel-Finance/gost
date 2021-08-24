@@ -14,12 +14,14 @@ contract Swivel {
   /// @dev maps a token address to a point in time, a hold, after which a withdrawal can be made
   mapping (address => uint256) public withdrawals;
 
-  string constant public NAME = "Swivel Finance";
-  string constant public VERSION = "2.0.0";
-  uint256 constant public HOLD = 259200; // obvs could be a smaller uint but packing? TODO
+  string constant public NAME = 'Swivel Finance';
+  string constant public VERSION = '2.0.0';
+  uint256 constant public HOLD = 259200; // obvs could be a smaller uint but packing?
   bytes32 public immutable domain;
   address public immutable marketPlace;
   address public immutable admin;
+  /// @dev holds the fee demoninators for [zcTokenInitiate, zcTokenExit, vaultInitiate, vaultExit]
+  uint16[] public fenominator;
 
   /// @notice Emitted on order cancellation
   event Cancel (bytes32 indexed key);
@@ -41,6 +43,7 @@ contract Swivel {
     admin = msg.sender;
     domain = Hash.domain(NAME, VERSION, block.chainid, address(this));
     marketPlace = m;
+    fenominator = [200, 600, 400, 200];
   }
 
   // ********* INITIATING *************
@@ -73,7 +76,7 @@ contract Swivel {
   /// @notice Allows a user to initiate a Vault by filling an offline zcToken initiate order
   /// @dev This method should pass (underlying, maturity, maker, sender, principalFilled) to MarketPlace.custodialInitiate
   /// @param o The order being filled
-  /// @param a Amount of volume (interest) being filled by the taker's exit
+  /// @param a Amount of volume (premium) being filled by the taker's exit
   /// @param c Components of a valid ECDSA signature
   function initiateVaultFillingZcTokenInitiate(Hash.Order calldata o, uint256 a, Sig.Components calldata c) internal valid(o, c) {
     // Checks the side, and the amount compared to amount available
@@ -81,18 +84,23 @@ contract Swivel {
 
     filled[o.key] += a;
     
-    // transfer tokens to this contract
+    uint256 principalFilled = (((a * 1e18) / o.premium) * o.principal) / 1e18;
+    uint256 fee = ((principalFilled * 1e18) / fenominator[2]) / 1e18;
+
     Erc20 uToken = Erc20(o.underlying);
     uToken.transferFrom(msg.sender, o.maker, a);
-    uint256 principalFilled = (((a * 1e18) / o.premium) * o.principal) / 1e18;
     uToken.transferFrom(o.maker, address(this), principalFilled);
 
     MarketPlace mPlace = MarketPlace(marketPlace);
     address cTokenAddr = mPlace.cTokenAddress(o.underlying, o.maturity);
+    // mint cTokens
     uToken.approve(cTokenAddr, principalFilled); 
     require(CErc20(cTokenAddr).mint(principalFilled) == 0, 'minting CToken failed');
+
     // alert MarketPlace.
     require(mPlace.custodialInitiate(o.underlying, o.maturity, o.maker, msg.sender, principalFilled), 'custodial initiate failed');
+    // transfer fee in vault notional to swivel (from msg.sender)
+    require(mPlace.transferVaultNotionalFee(o.underlying, o.maturity, msg.sender, fee), "notional fee transfer failed");
 
     emit Initiate(o.key, o.maker, o.vault, o.exit, msg.sender, a, principalFilled);
   }
@@ -108,15 +116,17 @@ contract Swivel {
 
     filled[o.key] += a;
 
-    // transfer tokens to this contract
-    Erc20 uToken = Erc20(o.underlying);
     uint256 premiumFilled = (((a * 1e18) / o.principal) * o.premium) / 1e18;
+    uint256 fee = ((premiumFilled * 1e18) / fenominator[0]) / 1e18;
+
+    Erc20 uToken = Erc20(o.underlying);
     uToken.transferFrom(o.maker, msg.sender, premiumFilled);
-    uToken.transferFrom(msg.sender, address(this), a);
+    // transfer principal + fee in underlying to swivel (from sender)
+    uToken.transferFrom(msg.sender, address(this), (a + fee));
     
     MarketPlace mPlace = MarketPlace(marketPlace);
     address cTokenAddr = mPlace.cTokenAddress(o.underlying, o.maturity);
-
+    // mint cTokens
     uToken.approve(cTokenAddr, a);
     require(CErc20(cTokenAddr).mint(a) == 0, 'minting CToken Failed');
     // alert MarketPlace
@@ -138,8 +148,10 @@ contract Swivel {
     
     // .interest is interest * ratio / 1e18 where ratio is (a * 1e18) / principal
     uint256 premiumFilled = (((a * 1e18) / o.principal) * o.premium) / 1e18;
-    // transfer tokens to this contract
-    Erc20(o.underlying).transferFrom(msg.sender, o.maker, (a - premiumFilled));
+    uint256 fee = ((premiumFilled * 1e18) / fenominator[0]) / 1e18;
+
+    // transfer principal - the premium paid + fee in underliyng to swivel (from sender)
+    Erc20(o.underlying).transferFrom(msg.sender, o.maker, ((a - premiumFilled) + fee));
     // notify the marketplace...
     require(MarketPlace(marketPlace).p2pZcTokenExchange(o.underlying, o.maturity, o.maker, msg.sender, a), 'zcToken exchange failed');
             
@@ -157,11 +169,16 @@ contract Swivel {
     
     filled[o.key] += a;
 
-    // transfer tokens to this contract
     Erc20(o.underlying).transferFrom(msg.sender, o.maker, a);
-    // notify marketplace
+
     uint256 principalFilled = (((a * 1e18) / o.premium) * o.principal) / 1e18;
-    require(MarketPlace(marketPlace).p2pVaultExchange(o.underlying, o.maturity, o.maker, msg.sender, principalFilled), 'vault exchange failed');
+    uint256 fee = ((principalFilled * 1e18) / fenominator[2]) / 1e18;
+
+    // notify marketplace
+    MarketPlace mPlace = MarketPlace(marketPlace);
+    require(mPlace.p2pVaultExchange(o.underlying, o.maturity, o.maker, msg.sender, principalFilled), 'vault exchange failed');
+    // transfer fee in vault notional to swivel (from msg.sender)
+    require(mPlace.transferVaultNotionalFee(o.underlying, o.maturity, msg.sender, fee), "notional fee transfer failed");
 
     emit Initiate(o.key, o.maker, o.vault, o.exit, msg.sender, a, principalFilled);
   }
@@ -327,6 +344,14 @@ contract Swivel {
 
     Erc20 token = Erc20(e);
     token.transfer(admin, token.balanceOf(address(this)));
+  }
+
+  /// @notice Allows the admin to set a new fee denominator
+  /// @param t The index of the new fee denominator
+  /// @param d The new fee denominator
+  function setFee(uint16 t, uint16 d) external onlyAdmin(admin) returns (bool) {
+    fenominator[t] = d;
+    return true;
   }
 
   // ********* PROTOCOL UTILITY ***************

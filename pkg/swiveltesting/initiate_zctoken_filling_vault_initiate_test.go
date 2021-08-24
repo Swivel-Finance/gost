@@ -107,7 +107,7 @@ func (s *IZFVISuite) TestIZFVI() {
 
 	// hashed order...
 	orderKey := helpers.GenBytes32("order")
-	principal := big.NewInt(5000)
+	principal := big.NewInt(1000)
 	premium := big.NewInt(50)
 	maturity := big.NewInt(10000)
 	expiry := big.NewInt(20000)
@@ -172,7 +172,7 @@ func (s *IZFVISuite) TestIZFVI() {
 	}
 
 	// call it (finally)...
-	amount := big.NewInt(2500) // 1/2 the principal
+	amount := big.NewInt(25)
 	// initiate wants slices...
 	orders := []swivel.HashOrder{order}
 	amounts := []*big.Int{amount}
@@ -210,6 +210,11 @@ func (s *IZFVISuite) TestIZFVI() {
 	assert.NotNil(arg)
 	// the arg here should be the passed "a"
 	assert.Equal(arg, amt)
+
+	transferFromArgs, err := s.Erc20.TransferFromCalled(s.Env.Owner.Opts.From)
+	assert.Nil(err)
+	assert.NotNil(transferFromArgs)
+	// s.T().Log(transferFromArgs.Amount) // is just 25 atm as the fee is < 0
 
 	// the call to ctoken mint, don't reuse arg as they should actually both be "a"
 	mintArg, err := s.CErc20.MintCalled()
