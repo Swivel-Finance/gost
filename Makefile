@@ -122,7 +122,7 @@ compile_fakes: compile_sig_fake compile_hash_fake
 # Contracts
 compile_solidity_swivel_test:
 	@echo "compiling Swivel solidity source into abi and bin files"
-	solc -o ./test/swivel --optimize --optimize-runs=50000 --abi --bin --overwrite ./test/swivel/Swivel.sol
+	solc -o ./test/swivel --optimize --optimize-runs=51000 --abi --bin --overwrite ./test/swivel/Swivel.sol
 
 compile_go_swivel_test:
 	@echo "compiling abi and bin files to golang"
