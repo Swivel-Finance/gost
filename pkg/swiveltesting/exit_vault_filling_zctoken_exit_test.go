@@ -107,7 +107,9 @@ func (s *EVFZESuite) TestEVFZE() {
 	// hashed order...
 	orderKey := helpers.GenBytes32("order")
 	principal := big.NewInt(5000)
+	principal = principal.Mul(principal, big.NewInt(1e18))
 	premium := big.NewInt(50)
+	premium = premium.Mul(premium, big.NewInt(1e18))
 	maturity := big.NewInt(10000)
 	expiry := big.NewInt(20000)
 
@@ -172,6 +174,7 @@ func (s *EVFZESuite) TestEVFZE() {
 
 	// call it (finally)...
 	amount := big.NewInt(2500) // 1/2 the principal
+	amount = amount.Mul(amount, big.NewInt(1e18))
 	// initiate wants slices...
 	orders := []swivel.HashOrder{order}
 	amounts := []*big.Int{amount}
@@ -188,12 +191,17 @@ func (s *EVFZESuite) TestEVFZE() {
 	amt, err := s.Swivel.Filled(orderKey)
 	assert.Equal(amt, amount)
 
-	// first call to utoken transferfrom 'from' should be maker here...
-	args, err := s.Erc20.TransferFromCalled(order.Maker)
+	// first call to utoken transfer... (maker)
+	amt1, err := s.Erc20.TransferCalled(order.Maker)
 	assert.Nil(err)
-	assert.NotNil(args)
-	assert.Equal(args.To, s.Env.Owner.Opts.From)
-	assert.Equal(amt.Cmp(args.Amount), 1) // amt should be greater than computed pFilled
+	assert.NotNil(amt1)
+	assert.Equal(amount.Cmp(amt1), 1) // should be less than amount
+
+	// 2nd call to utoken transfer...(sender)
+	amt2, err := s.Erc20.TransferCalled(s.Env.Owner.Opts.From)
+	assert.Nil(err)
+	assert.NotNil(amt1)
+	assert.Equal(amt2.Cmp(big.NewInt(0)), 1) // should be non zero
 
 	// market zctoken burn...
 	burnArgs, err := s.MarketPlace.CustodialExitCalled(order.Underlying)
