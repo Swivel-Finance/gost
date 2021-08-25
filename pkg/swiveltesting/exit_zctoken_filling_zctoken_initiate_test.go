@@ -81,7 +81,9 @@ func (s *EZFZISuite) TestEZFZI() {
 	// hashed order...
 	orderKey := helpers.GenBytes32("order")
 	principal := big.NewInt(5000)
+	principal = principal.Mul(principal, big.NewInt(1e18))
 	premium := big.NewInt(50)
+	premium = premium.Mul(premium, big.NewInt(1e18))
 	maturity := big.NewInt(10000)
 	expiry := big.NewInt(20000)
 
@@ -146,6 +148,7 @@ func (s *EZFZISuite) TestEZFZI() {
 
 	// call it (finally)...
 	amount := big.NewInt(25) // 1/2 the premium
+	amount = amount.Mul(amount, big.NewInt(1e18))
 	// initiate wants slices...
 	orders := []swivel.HashOrder{order}
 	amounts := []*big.Int{amount}
@@ -163,11 +166,20 @@ func (s *EZFZISuite) TestEZFZI() {
 	assert.Equal(amt, amount)
 
 	// first call to utoken transferfrom 'from' should be maker here...
+	// TODO this call will now be overwritten by a 2nd call with the same From, re-instate this test when the hash-key-fix goes in
+	// args, err := s.Erc20.TransferFromCalled(order.Maker)
+	// assert.Nil(err)
+	// assert.NotNil(args)
+	// assert.Equal(args.To, s.Env.Owner.Opts.From)
+	// assert.Equal(args.Amount.Cmp(amt), 1) // amount should be greater than the passed in filled premium
+
+	// this is the 2nd call to transferfrom with from as maker where the fee is transferred
 	args, err := s.Erc20.TransferFromCalled(order.Maker)
 	assert.Nil(err)
 	assert.NotNil(args)
-	assert.Equal(args.To, s.Env.Owner.Opts.From)
-	assert.Equal(args.Amount.Cmp(amt), 1) // amount should be greater than the passed in filled premium
+	assert.Equal(args.To, s.Dep.SwivelAddress)      // fee goes to the swivel contract
+	assert.Equal(args.Amount.Cmp(big.NewInt(0)), 1) // fee should be something...
+	// s.T().Log(args.Amount)
 
 	// market zctoken transfer from call...
 	zcTransferArgs, err := s.MarketPlace.P2pZcTokenExchangeCalled(order.Underlying)

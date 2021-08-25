@@ -81,7 +81,9 @@ func (s *EVFVISuite) TestEVFVI() {
 	// hashed order...
 	orderKey := helpers.GenBytes32("order")
 	principal := big.NewInt(5000)
+	principal = principal.Mul(principal, big.NewInt(1e18))
 	premium := big.NewInt(50)
+	premium = premium.Mul(premium, big.NewInt(1e18))
 	maturity := big.NewInt(10000)
 	expiry := big.NewInt(20000)
 
@@ -146,6 +148,7 @@ func (s *EVFVISuite) TestEVFVI() {
 
 	// call it (finally)...
 	amount := big.NewInt(2500) // 1/2 the principal
+	amount = amount.Mul(amount, big.NewInt(1e18))
 	// initiate wants slices...
 	orders := []swivel.HashOrder{order}
 	amounts := []*big.Int{amount}
@@ -168,6 +171,13 @@ func (s *EVFVISuite) TestEVFVI() {
 	assert.NotNil(args)
 	assert.Equal(args.To, s.Env.Owner.Opts.From)
 	assert.Equal(amt.Cmp(args.Amount), 1) // amt should be greater than computed pFilled
+
+	// 2nd call from is sender (owner)
+	args2, err := s.Erc20.TransferFromCalled(s.Env.Owner.Opts.From)
+	assert.Nil(err)
+	assert.NotNil(args2)
+	assert.Equal(args2.To, s.Dep.SwivelAddress)      // should go to swivel
+	assert.Equal(args2.Amount.Cmp(big.NewInt(0)), 1) // fee should be non zero
 
 	// market zctoken transfer from call...
 	noTransferArgs, err := s.MarketPlace.P2pVaultExchangeCalled(order.Underlying)
