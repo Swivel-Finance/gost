@@ -221,11 +221,12 @@ contract MarketPlace {
   /// @dev call with underlying, maturity, transfer-from, transfer-to, amount
   /// @param u Underlying token address associated with the market
   /// @param m Maturity timestamp of the market
-  /// @param f Owner of the zcToken to be transferred
-  /// @param t Target to be transferred to
+  /// @param f Owner of the zcToken to be burned
+  /// @param t Target to be minted to
   /// @param a Amount of zcToken transfer
   function p2pZcTokenExchange(address u, uint256 m, address f, address t, uint256 a) external onlySwivel(swivel) returns (bool) {
-    require(ZcToken(markets[u][m].zcTokenAddr).transferFrom(f, t, a), 'zcToken transfer failed');
+    require(ZcToken(markets[u][m].zcTokenAddr).burn(f, a), 'zcToken burn failed');
+    require(ZcToken(markets[u][m].zcTokenAddr).mint(t, a), 'zcToken mint failed');
     emit P2pZcTokenExchange(u, m, f, t, a);
     return true;
   }

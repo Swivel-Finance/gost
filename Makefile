@@ -122,7 +122,7 @@ compile_fakes: compile_sig_fake compile_hash_fake
 # Contracts
 compile_solidity_swivel_test:
 	@echo "compiling Swivel solidity source into abi and bin files"
-	solc -o ./test/swivel --optimize --optimize-runs=22000 --abi --bin --overwrite ./test/swivel/Swivel.sol
+	solc -o ./test/swivel --optimize --optimize-runs=50000 --abi --bin --overwrite ./test/swivel/Swivel.sol
 
 compile_go_swivel_test:
 	@echo "compiling abi and bin files to golang"
@@ -216,12 +216,12 @@ copy_to_build: copy_zctoken_to_build copy_vaulttracker_to_build copy_marketplace
 
 compile_marketplace_build:
 	@echo "compiling MarketPlace solidity build source into deploy ready files"
-	solc -o ./build/marketplace --optimize --optimize-runs=22000 --abi --bin --overwrite ./build/marketplace/MarketPlace.sol
+	solc -o ./build/marketplace --optimize --optimize-runs=15000 --abi --bin --overwrite ./build/marketplace/MarketPlace.sol
 	abigen --abi ./build/marketplace/MarketPlace.abi --bin ./build/marketplace/MarketPlace.bin -pkg marketplace -type MarketPlace -out ./build/marketplace/marketplace.go 
 
 compile_swivel_build:
 	@echo "compiling Swivel solidity build source into deploy ready files"
-	solc -o ./build/swivel --optimize --optimize-runs=22000 --abi --bin --overwrite ./build/swivel/Swivel.sol
+	solc -o ./build/swivel --optimize --optimize-runs=51000 --abi --bin --overwrite ./build/swivel/Swivel.sol
 	abigen --abi ./build/swivel/Swivel.abi --bin ./build/swivel/Swivel.bin -pkg swivel -type Swivel -out ./build/swivel/swivel.go 
 
 compile_build: compile_marketplace_build compile_swivel_build

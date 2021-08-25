@@ -113,7 +113,13 @@ func (s *p2pZCTokenExchangeSuite) TestP2PZCTokenExchange() {
 
 	s.Env.Blockchain.Commit()
 
-	tx, err = zcToken.TransferFromReturns(true)
+	tx, err = zcToken.BurnReturns(true)
+	assert.Nil(err)
+	assert.NotNil(tx)
+
+	s.Env.Blockchain.Commit()
+
+	tx, err = zcToken.MintReturns(true)
 	assert.Nil(err)
 	assert.NotNil(tx)
 
@@ -126,71 +132,13 @@ func (s *p2pZCTokenExchangeSuite) TestP2PZCTokenExchange() {
 
 	s.Env.Blockchain.Commit()
 
-	args, err := zcToken.TransferFromCalled(ownerOpts.From)
+	burnAmt, err := zcToken.BurnCalled(ownerOpts.From)
 	assert.Nil(err)
-	assert.Equal(user1Opts.From, args.To)
-	assert.Equal(amount, args.Amount)
+	assert.Equal(amount, burnAmt)
 
-	s.Env.Blockchain.Commit()
-}
-
-func (s *p2pZCTokenExchangeSuite) TestP2PZCTokenExchangeTransferFromFails() {
-	assert := assertions.New(s.T())
-	underlying := s.Dep.Erc20Address
-	maturity := s.Dep.Maturity
-	ctoken := s.Dep.CErc20Address
-
-	tx, err := s.MarketPlace.CreateMarket(
-		underlying,
-		maturity,
-		ctoken,
-		"awesome market",
-		"AM",
-	)
-
+	mintAmt, err := zcToken.MintCalled(user1Opts.From)
 	assert.Nil(err)
-	assert.NotNil(tx)
-
-	s.Env.Blockchain.Commit()
-
-	ownerOpts := s.Env.Owner.Opts
-	user1Opts := s.Env.User1.Opts
-
-	// we should be able to fetch the market now...
-	market, err := s.MarketPlace.Markets(underlying, maturity)
-	assert.Nil(err)
-	assert.Equal(market.CTokenAddr, ctoken)
-
-	s.Env.Blockchain.Commit()
-
-	zcTokenContract, err := mocks.NewZcToken(market.ZcTokenAddr, s.Env.Blockchain)
-	zcToken := &mocks.ZcTokenSession{
-		Contract: zcTokenContract,
-		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
-		TransactOpts: bind.TransactOpts{
-			From:   s.Env.Owner.Opts.From,
-			Signer: s.Env.Owner.Opts.Signer,
-		},
-	}
-
-	zcMaturity, err := zcToken.Maturity()
-	assert.Equal(maturity, zcMaturity)
-
-	s.Env.Blockchain.Commit()
-
-	tx, err = zcToken.TransferFromReturns(false)
-	assert.Nil(err)
-	assert.NotNil(tx)
-
-	s.Env.Blockchain.Commit()
-
-	amount := big.NewInt(100)
-	tx, err = s.MarketPlace.P2pZcTokenExchange(underlying, maturity, ownerOpts.From, user1Opts.From, amount)
-	assert.NotNil(err)
-	assert.Regexp("zcToken transfer failed", err.Error())
-	assert.Nil(tx)
-
-	s.Env.Blockchain.Commit()
+	assert.Equal(amount, mintAmt)
 }
 
 func TestP2PZCTokenExchangeSuite(t *test.T) {
