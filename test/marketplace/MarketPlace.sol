@@ -55,11 +55,12 @@ contract MarketPlace {
     uint256 m,
     address c,
     string memory n,
-    string memory s
+    string memory s,
+    uint8 d
   ) public onlyAdmin(admin) returns (bool) {
     require(swivel != address(0), 'swivel contract address not set');
     // TODO can we live with the factory pattern here both bytecode size wise and CREATE opcode cost wise?
-    address zctAddr = address(new ZcToken(u, m, n, s));
+    address zctAddr = address(new ZcToken(u, m, n, s, d));
     address vAddr = address(new VaultTracker(m, c, swivel));
     markets[u][m] = Market(c, zctAddr, vAddr);
 

@@ -80,6 +80,7 @@ func (s *redeemZcTokenSuite) TestRedeemZcTokenNotMaturedRequireFails() {
 		ctoken,
 		"awesome market",
 		"AM",
+		18,
 	)
 
 	assert.Nil(err)
@@ -141,6 +142,7 @@ func (s *redeemZcTokenSuite) TestRedeemZcTokenNotMatured() {
 		ctoken,
 		"awesome market",
 		"AM",
+		18,
 	)
 
 	assert.Nil(err)
@@ -242,6 +244,7 @@ func (s *redeemZcTokenSuite) TestRedeemZcTokenNotMaturedBurnFails() {
 		ctoken,
 		"awesome market",
 		"AM",
+		18,
 	)
 
 	assert.Nil(err)
@@ -314,6 +317,7 @@ func (s *redeemZcTokenSuite) TestRedeemZcTokenNotMaturedRedeemUnderlyingFails() 
 		ctoken,
 		"awesome market",
 		"AM",
+		18,
 	)
 
 	assert.Nil(err)
@@ -392,6 +396,7 @@ func (s *redeemZcTokenSuite) TestRedeemZcTokenNotMaturedTransferFails() {
 		ctoken,
 		"awesome market",
 		"AM",
+		18,
 	)
 
 	assert.Nil(err)
@@ -478,6 +483,7 @@ func (s *redeemZcTokenSuite) TestRedeemZcTokenMatured() {
 		ctoken,
 		"awesome market",
 		"AM",
+		18,
 	)
 
 	assert.Nil(err)
@@ -593,6 +599,7 @@ func (s *redeemZcTokenSuite) TestRedeemZcTokenMaturedBurnFails() {
 		ctoken,
 		"awesome market",
 		"AM",
+		18,
 	)
 
 	assert.Nil(err)
@@ -679,6 +686,7 @@ func (s *redeemZcTokenSuite) TestRedeemZcTokenMaturedRedeemUnderlyingFails() {
 		ctoken,
 		"awesome market",
 		"AM",
+		18,
 	)
 
 	assert.Nil(err)
@@ -771,6 +779,7 @@ func (s *redeemZcTokenSuite) TestRedeemZcTokenMaturedTransferFails() {
 		ctoken,
 		"awesome market",
 		"AM",
+		18,
 	)
 
 	assert.Nil(err)

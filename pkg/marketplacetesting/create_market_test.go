@@ -9,6 +9,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 	"github.com/swivel-finance/gost/test/marketplace"
+	"github.com/swivel-finance/gost/test/mocks"
 )
 
 type createMarketSuite struct {
@@ -39,7 +40,7 @@ func (s *createMarketSuite) SetupSuite() {
 	}
 }
 
-func (s *createMarketSuite) TestCreateMarket() {
+func (s *createMarketSuite) TestCreateMarket18Decimals() {
 	assert := assert.New(s.T())
 	// the swivel address must be set
 	_, err := s.MarketPlace.SetSwivelAddress(s.Dep.SwivelAddress)
@@ -56,6 +57,7 @@ func (s *createMarketSuite) TestCreateMarket() {
 		ctoken,
 		"awesome market",
 		"AM",
+		uint8(18),
 	)
 
 	assert.Nil(err)
@@ -68,6 +70,64 @@ func (s *createMarketSuite) TestCreateMarket() {
 	assert.Equal(market.CTokenAddr, ctoken)
 	assert.NotEqual(market.ZcTokenAddr, common.HexToAddress("0x0"))
 	assert.NotEqual(market.VaultAddr, common.HexToAddress("0x0"))
+
+	zcTokenContract, err := mocks.NewZcToken(market.ZcTokenAddr, s.Env.Blockchain)
+	zcToken := &mocks.ZcTokenSession{
+		Contract: zcTokenContract,
+		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
+		TransactOpts: bind.TransactOpts{
+			From:   s.Env.Owner.Opts.From,
+			Signer: s.Env.Owner.Opts.Signer,
+		},
+	}
+
+	decimals, err := zcToken.Decimals()
+	assert.Equal(decimals, uint8(18))
+}
+
+func (s *createMarketSuite) TestCreateMarket6Decimals() {
+	assert := assert.New(s.T())
+	// the swivel address must be set
+	_, err := s.MarketPlace.SetSwivelAddress(s.Dep.SwivelAddress)
+	assert.Nil(err)
+	s.Env.Blockchain.Commit()
+	// addresses can be BS in this test...
+	underlying := common.HexToAddress("0x234")
+	maturity := big.NewInt(123456781)
+	ctoken := common.HexToAddress("0x567")
+
+	tx, err := s.MarketPlace.CreateMarket(
+		underlying,
+		maturity,
+		ctoken,
+		"awesomer market",
+		"ARM",
+		uint8(6),
+	)
+
+	assert.Nil(err)
+	assert.NotNil(tx)
+	s.Env.Blockchain.Commit()
+
+	// we should be able to fetch the market now...
+	market, err := s.MarketPlace.Markets(underlying, maturity)
+	assert.Nil(err)
+	assert.Equal(market.CTokenAddr, ctoken)
+	assert.NotEqual(market.ZcTokenAddr, common.HexToAddress("0x0"))
+	assert.NotEqual(market.VaultAddr, common.HexToAddress("0x0"))
+
+	zcTokenContract, err := mocks.NewZcToken(market.ZcTokenAddr, s.Env.Blockchain)
+	zcToken := &mocks.ZcTokenSession{
+		Contract: zcTokenContract,
+		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
+		TransactOpts: bind.TransactOpts{
+			From:   s.Env.Owner.Opts.From,
+			Signer: s.Env.Owner.Opts.Signer,
+		},
+	}
+
+	decimals, err := zcToken.Decimals()
+	assert.Equal(decimals, uint8(6))
 }
 
 func TestCreateMarketSuite(t *test.T) {

@@ -77,6 +77,7 @@ func (s *custodialInitiateSuite) TestCustodialInitiate() {
 		ctoken,
 		"awesome market",
 		"AM",
+		18,
 	)
 
 	assert.Nil(err)
@@ -156,6 +157,7 @@ func (s *custodialInitiateSuite) TestCustodialInitiateMintFails() {
 		ctoken,
 		"awesome market",
 		"AM",
+		18,
 	)
 
 	assert.Nil(err)
@@ -224,6 +226,7 @@ func (s *custodialInitiateSuite) TestCustodialInitiateAddNotionalFails() {
 		ctoken,
 		"awesome market",
 		"AM",
+		18,
 	)
 
 	assert.Nil(err)

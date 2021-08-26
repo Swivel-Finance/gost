@@ -19,12 +19,13 @@ import './IErc2612.sol';
 contract Erc2612 is PErc20, IErc2612 {
   mapping (address => uint256) public override nonces;
 
-  bytes32 public immutable DOMAIN;
+  bytes32 public immutable domain;
 
   /// @param n name for the token
   /// @param s symbol for the token
-  constructor(string memory n, string memory s) PErc20(n, s) {
-    DOMAIN = Hash.domain(n, '1', block.chainid, address(this));
+  /// @param d decimals for the token
+  constructor(string memory n, string memory s, uint8 d) PErc20(n, s, d) {
+    domain = Hash.domain(n, '1', block.chainid, address(this));
   }
 
   /**
@@ -43,7 +44,7 @@ contract Erc2612 is PErc20, IErc2612 {
     require(d >= block.timestamp, 'erc2612 expired deadline');
 
     bytes32 hashStruct = Hash.permit(o, spender, a, nonces[o]++, d);
-    bytes32 hash = Hash.message(DOMAIN, hashStruct); 
+    bytes32 hash = Hash.message(domain, hashStruct); 
     address signer = ecrecover(hash, v, r, s);
 
     require(signer != address(0) && signer == o, 'erc2612 invalid signature');

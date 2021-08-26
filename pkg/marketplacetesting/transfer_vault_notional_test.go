@@ -59,6 +59,7 @@ func (s *vaultTransferSuite) TestVaultTransfer() {
 		ctoken,
 		"awesome market",
 		"AM",
+		18,
 	)
 
 	assert.Nil(err)

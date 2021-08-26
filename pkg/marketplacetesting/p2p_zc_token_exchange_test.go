@@ -81,6 +81,7 @@ func (s *p2pZCTokenExchangeSuite) TestP2PZCTokenExchange() {
 		ctoken,
 		"awesome market",
 		"AM",
+		18,
 	)
 
 	assert.Nil(err)

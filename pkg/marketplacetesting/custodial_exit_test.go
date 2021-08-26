@@ -79,6 +79,7 @@ func (s *custodialExitSuite) TestCustodialExit() {
 		ctoken,
 		"awesome market",
 		"AM",
+		18,
 	)
 
 	assert.Nil(err)
@@ -158,6 +159,7 @@ func (s *custodialExitSuite) TestCustodialInitiateBurnFails() {
 		ctoken,
 		"awesome market",
 		"AM",
+		18,
 	)
 
 	assert.Nil(err)
@@ -226,6 +228,7 @@ func (s *custodialExitSuite) TestCustodialInitiateRemoveNotionalFails() {
 		ctoken,
 		"awesome market",
 		"AM",
+		18,
 	)
 
 	assert.Nil(err)
