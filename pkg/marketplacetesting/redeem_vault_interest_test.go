@@ -77,6 +77,7 @@ func (s *redeemVaultInterestSuite) TestRedeemVaultInterest() {
 		ctokenAddr,
 		"awesome market",
 		"AM",
+		18,
 	)
 
 	assert.Nil(err)
@@ -160,6 +161,7 @@ func (s *redeemVaultInterestSuite) TestRedeemVaultInterestRedeemUnderlyingFails(
 		ctokenAddr,
 		"awesome market",
 		"AM",
+		18,
 	)
 
 	assert.Nil(err)
@@ -224,6 +226,7 @@ func (s *redeemVaultInterestSuite) TestRedeemVaultInterestTransferFails() {
 		ctokenAddr,
 		"awesome market",
 		"AM",
+		18,
 	)
 
 	assert.Nil(err)

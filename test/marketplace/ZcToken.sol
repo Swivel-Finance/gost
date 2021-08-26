@@ -21,9 +21,9 @@ contract ZcToken {
   // mapping of arguments sent to transferFrom. key is passed from address.
   mapping (address => TransferFromArgs) public transferFromCalled;
 
-  // don't feel the need to setup return/returns for the strings...
-  string name;
-  string symbol;
+  string public name;
+  string public symbol;
+  uint8 public decimals;
   address private underlyingReturn;
   uint256 private maturityReturn;
   // a boolean flag which allows us to dictate the return of burn().
@@ -37,13 +37,15 @@ contract ZcToken {
   /// @param m Maturity
   /// @param n Name
   /// @param s Symbol
-  constructor(address u, uint256 m, string memory n, string memory s) {
+  /// @param d Decimals
+  constructor(address u, uint256 m, string memory n, string memory s, uint8 d) {
     // we can set the privates in the constructor as well...
     underlyingReturn = u;
     maturityReturn = m;
 
     name = n;
     symbol = s;
+    decimals = d;
   }
 
   function burnReturns(bool b) public {

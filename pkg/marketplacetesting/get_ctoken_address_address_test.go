@@ -55,6 +55,7 @@ func (s *cTokenAddrSuite) TestSetCTokenAddr() {
 		cTokenAddr,
 		"awesome market",
 		"AM",
+		18,
 	)
 
 	assert.Nil(err)

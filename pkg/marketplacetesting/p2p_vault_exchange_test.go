@@ -81,6 +81,7 @@ func (s *p2pVaultExchangeSuite) TestP2PVaultExchange() {
 		ctoken,
 		"awesome market",
 		"AM",
+		18,
 	)
 
 	assert.Nil(err)
@@ -141,6 +142,7 @@ func (s *p2pVaultExchangeSuite) TestP2PVaultExchangeTransferNotionalFromFails() 
 		ctoken,
 		"awesome market",
 		"AM",
+		18,
 	)
 
 	assert.Nil(err)

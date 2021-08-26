@@ -72,6 +72,7 @@ func (s *matureMarketSuite) TestMaturityNotReached() {
 		ctoken,
 		"awesome market",
 		"AM",
+		18,
 	)
 
 	assert.Nil(err)
@@ -117,6 +118,7 @@ func (s *matureMarketSuite) TestMaturityReached() {
 		ctoken,
 		"awesome market",
 		"AM",
+		18,
 	)
 
 	assert.Nil(err)
@@ -209,6 +211,7 @@ func (s *matureMarketSuite) TestVaultMaturityNotReachedRequireFail() {
 		ctoken,
 		"awesome market",
 		"AM",
+		18,
 	)
 
 	assert.Nil(err)

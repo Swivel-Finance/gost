@@ -132,7 +132,7 @@ compile_swivel_test: compile_solidity_swivel_test compile_go_swivel_test
 
 compile_solidity_marketplace_test:
 	@echo "compiling MarketPlace solidity source into abi and bin files"
-	solc -o ./test/marketplace --abi --bin --overwrite ./test/marketplace/MarketPlace.sol
+	solc -o ./test/marketplace --optimize --optimize-runs=100000 --abi --bin --overwrite ./test/marketplace/MarketPlace.sol
 
 compile_go_marketplace_test:
 	@echo "compiling abi and bin files to golang"
