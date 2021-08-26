@@ -24,7 +24,7 @@ contract MarketPlace {
   address public immutable admin;
   address public swivel;
 
-  event Create(address indexed underlying, uint256 indexed maturity, address cToken, address zcToken);
+  event Create(address indexed underlying, uint256 indexed maturity, address cToken, address zcToken, address vaultTracker);
   event Mature(address indexed underlying, uint256 indexed maturity, uint256 maturityRate, uint256 matured);
   event RedeemZcToken(address indexed underlying, uint256 indexed maturity, address indexed sender, uint256 amount);
   event RedeemVaultInterest(address indexed underlying, uint256 indexed maturity, address indexed sender);
@@ -64,7 +64,7 @@ contract MarketPlace {
     address vAddr = address(new VaultTracker(m, c, swivel));
     markets[u][m] = Market(c, zctAddr, vAddr);
 
-    emit Create(u, m, c, zctAddr);
+    emit Create(u, m, c, zctAddr, vAddr);
 
     return true;
   }
