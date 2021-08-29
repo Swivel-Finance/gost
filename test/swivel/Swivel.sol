@@ -406,6 +406,42 @@ contract Swivel {
 
     return true;
   }
+  
+  /// @notice Allows zcToken holders to redeem their tokens for underlying tokens after maturity has been reached.
+  /// @param u Underlying token address associated with the market
+  /// @param m Maturity timestamp of the market
+  /// @param a Amount of zcTokens being redeemed
+  function redeemZcToken(address u, uint256 m, uint256 a) public returns (bool) {
+    MarketPlace mPlace = MarketPlace(marketPlace);
+    // call marketplace to determine the amount redeemed
+    uint256 underlyingRedeemed = mPlace.redeemZcToken(u, m, msg.sender, a);
+    // redeem underlying from compound
+    require(CErc20(mPlace.cTokenAddress(u, m)).redeemUnderlying(underlyingRedeemed) == 0, 'compound redemption failed');
+    // transfer underlying back to msg.sender
+    Erc20(u).transfer(msg.sender, underlyingRedeemed);
+    
+    return (true);
+  }
+  
+  /// @notice Allows Vault owners to redeem any currently accrued interest within a given ____
+  /// @param u Underlying token address associated with the market
+  /// @param m Maturity timestamp of the market
+  function redeemVaultInterest(address u, uint256 m) public returns (bool) {
+    MarketPlace mPlace = MarketPlace(marketPlace);
+    // call marketplace to determine the amount redeemed
+    uint256 underlyingRedeemed = mPlace.redeemVaultInterest(u, m, msg.sender);
+    // redeem underlying from compound
+    require(CErc20(mPlace.cTokenAddress(u, m)).redeemUnderlying(underlyingRedeemed) == 0, 'compound redemption failed');
+    // transfer underlying back to msg.sender
+    Erc20(u).transfer(msg.sender, underlyingRedeemed);
+    
+    return (true);
+  }
+
+  modifier onlyAdmin(address a) {
+    require(msg.sender == a, 'sender must be admin');
+    _;
+  }
 
   modifier onlyAdmin(address a) {
     require(msg.sender == a, 'sender must be admin');
