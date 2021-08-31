@@ -24,9 +24,8 @@ contract VaultTracker {
 
   address public cTokenAddr;
   address public swivel;
+  address public redeemInterestCalled;
 
-  // 'bs' vars avoid compiler warnings that we don't want to surpress
-  address public bsAddr;
   uint256 private maturityReturn;
   uint256 private redeemInterestReturn;
   bool private matureVaultReturn;
@@ -52,7 +51,7 @@ contract VaultTracker {
   }
 
   function redeemInterest(address o) public returns (uint256) {
-    bsAddr = o;
+    redeemInterestCalled = o;
     return redeemInterestReturn;
   }
 

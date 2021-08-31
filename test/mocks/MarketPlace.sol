@@ -19,6 +19,8 @@ contract MarketPlace {
   mapping (address => MethodArgs) public mintZcTokenAddingNotionalCalled;
   mapping (address => MethodArgs) public burnZcTokenRemovingNotionalCalled;
   mapping (address => MethodArgs) public transferVaultNotionalFeeCalled;
+  mapping (address => MethodArgs) public redeemZcTokenCalled;
+  mapping (address => MethodArgs) public redeemVaultInterestCalled;
 
   address private cTokenAddr;
   bool private custodialInitiateReturn;
@@ -28,6 +30,8 @@ contract MarketPlace {
   bool private mintZcTokenAddingNotionalReturn;
   bool private burnZcTokenRemovingNotionalReturn;
   bool private transferVaultNotionalFeeReturn;
+  uint256 private redeemZcTokenReturn;
+  uint256 private redeemVaultInterestReturn;
 
   function cTokenAddressReturns(address a) external {
     cTokenAddr = a;
@@ -148,5 +152,32 @@ contract MarketPlace {
     transferVaultNotionalFeeCalled[u] = args;
 
     return transferVaultNotionalFeeReturn;
+  }
+
+  function redeemZcTokenReturns(uint256 a) external {
+    redeemZcTokenReturn = a;
+  }
+
+  function redeemZcToken(address u, uint256 m, address t, uint256 a) external returns (uint256) {
+    MethodArgs memory args;
+    args.maturity = m;
+    args.one = t;
+    args.amount = a;
+    redeemZcTokenCalled[u] = args;
+
+    return redeemZcTokenReturn;
+  }
+
+  function redeemVaultInterestReturns(uint256 a) external {
+    redeemVaultInterestReturn = a;
+  }
+
+  function redeemVaultInterest(address u, uint256 m, address t) external returns (uint256) {
+    MethodArgs memory args;
+    args.maturity = m;
+    args.one = t;
+    redeemVaultInterestCalled[u] = args;
+
+    return redeemVaultInterestReturn;
   }
 }
