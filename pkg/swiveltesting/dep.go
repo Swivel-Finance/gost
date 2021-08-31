@@ -1,6 +1,8 @@
 package swiveltesting
 
 import (
+	"math/big"
+
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/swivel-finance/gost/test/fakes"
 	"github.com/swivel-finance/gost/test/mocks"
@@ -19,11 +21,13 @@ type Dep struct {
 	CErc20             *mocks.CErc20 // mock erc20
 	MarketPlaceAddress common.Address
 	MarketPlace        *mocks.MarketPlace // mock marketplace
+	Maturity           *big.Int
 	SwivelAddress      common.Address
 	Swivel             *swivel.Swivel
 }
 
 func Deploy(e *Env) (*Dep, error) {
+	maturity := big.NewInt(MATURITY)
 	// deploy the fakes so we can access the libs from tests
 	sigAddress, _, sigContract, sigErr := fakes.DeploySigFake(e.Owner.Opts, e.Blockchain)
 
@@ -88,6 +92,7 @@ func Deploy(e *Env) (*Dep, error) {
 		CErc20:             cercContract,
 		MarketPlaceAddress: marketAddress,
 		MarketPlace:        marketContract,
+		Maturity:           maturity,
 		SwivelAddress:      swivelAddress,
 		Swivel:             swivelContract,
 	}, nil

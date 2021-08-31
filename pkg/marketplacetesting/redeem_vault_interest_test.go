@@ -15,8 +15,6 @@ type redeemVaultInterestSuite struct {
 	suite.Suite
 	Env         *Env
 	Dep         *Dep
-	Erc20       *mocks.Erc20Session
-	CErc20      *mocks.CErc20Session
 	MarketPlace *marketplace.MarketPlaceSession // *Session objects are created by the go bindings
 }
 
@@ -32,25 +30,6 @@ func (s *redeemVaultInterestSuite) SetupTest() {
 	assert.Nil(err)
 	s.Env.Blockchain.Commit()
 
-	s.Erc20 = &mocks.Erc20Session{
-		Contract: s.Dep.Erc20,
-		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
-		TransactOpts: bind.TransactOpts{
-			From:   s.Env.Owner.Opts.From,
-			Signer: s.Env.Owner.Opts.Signer,
-		},
-	}
-
-	s.CErc20 = &mocks.CErc20Session{
-		Contract: s.Dep.CErc20,
-		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
-		TransactOpts: bind.TransactOpts{
-			From:   s.Env.Owner.Opts.From,
-			Signer: s.Env.Owner.Opts.Signer,
-		},
-	}
-
-	// binding owner to both, kind of why it exists - but could be any of the env wallets
 	s.MarketPlace = &marketplace.MarketPlaceSession{
 		Contract: s.Dep.MarketPlace,
 		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
@@ -60,8 +39,8 @@ func (s *redeemVaultInterestSuite) SetupTest() {
 		},
 	}
 
-	// the swivel address must be set
-	_, err = s.MarketPlace.SetSwivelAddress(s.Dep.SwivelAddress)
+	// the swivel address must be set (set to owner accomodating the onlySwivel calls)
+	_, err = s.MarketPlace.SetSwivelAddress(s.Env.Owner.Opts.From)
 	assert.Nil(err)
 	s.Env.Blockchain.Commit()
 }
@@ -119,173 +98,17 @@ func (s *redeemVaultInterestSuite) TestRedeemVaultInterest() {
 
 	s.Env.Blockchain.Commit()
 
-	tx, err = s.CErc20.RedeemUnderlyingReturns(ZERO)
-	assert.NotNil(tx)
-	assert.Nil(err)
-
-	s.Env.Blockchain.Commit()
-
-	tx, err = s.Erc20.TransferReturns(true)
-	assert.NotNil(tx)
-	assert.Nil(err)
-
-	s.Env.Blockchain.Commit()
-
-	tx, err = s.MarketPlace.RedeemVaultInterest(s.Dep.Erc20Address, maturity)
+	tx, err = s.MarketPlace.RedeemVaultInterest(s.Dep.Erc20Address, maturity, s.Env.Owner.Opts.From)
 	assert.Nil(err)
 	assert.NotNil(tx)
 
 	s.Env.Blockchain.Commit()
 
-	redeemUnderlying, err := s.CErc20.RedeemUnderlyingCalled()
+	// the vaulttracker mock should now retain the address it was passed
+	address, err := vaultTracker.RedeemInterestCalled()
 	assert.Nil(err)
-	assert.Equal(vaultInterest, redeemUnderlying)
-
-	s.Env.Blockchain.Commit()
-
-	transfer, err := s.Erc20.TransferCalled(s.Env.Owner.Opts.From)
-	assert.Nil(err)
-	assert.Equal(vaultInterest, transfer)
-
-	s.Env.Blockchain.Commit()
-}
-
-func (s *redeemVaultInterestSuite) TestRedeemVaultInterestRedeemUnderlyingFails() {
-	assert := assertions.New(s.T())
-	maturity := s.Dep.Maturity
-	ctokenAddr := s.Dep.CErc20Address
-
-	tx, err := s.MarketPlace.CreateMarket(
-		s.Dep.Erc20Address,
-		maturity,
-		ctokenAddr,
-		"awesome market",
-		"AM",
-		18,
-	)
-
-	assert.Nil(err)
-	assert.NotNil(tx)
-	s.Env.Blockchain.Commit()
-
-	// we should be able to fetch the market now...
-	market, err := s.MarketPlace.Markets(s.Dep.Erc20Address, maturity)
-	assert.Nil(err)
-	assert.Equal(market.CTokenAddr, ctokenAddr)
-
-	zcTokenContract, err := mocks.NewZcToken(market.ZcTokenAddr, s.Env.Blockchain)
-	zcToken := &mocks.ZcTokenSession{
-		Contract: zcTokenContract,
-		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
-		TransactOpts: bind.TransactOpts{
-			From:   s.Env.Owner.Opts.From,
-			Signer: s.Env.Owner.Opts.Signer,
-		},
-	}
-
-	zcMaturity, err := zcToken.Maturity()
-	assert.Equal(maturity, zcMaturity)
-
-	vaultTrackerContract, err := mocks.NewVaultTracker(market.VaultAddr, s.Env.Blockchain)
-	vaultTracker := &mocks.VaultTrackerSession{
-		Contract: vaultTrackerContract,
-		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
-		TransactOpts: bind.TransactOpts{
-			From:   s.Env.Owner.Opts.From,
-			Signer: s.Env.Owner.Opts.Signer,
-		},
-	}
-
-	vaultInterest := big.NewInt(123456789)
-	tx, err = vaultTracker.RedeemInterestReturns(vaultInterest)
-	assert.Nil(err)
-	assert.NotNil(tx)
-
-	s.Env.Blockchain.Commit()
-
-	tx, err = s.CErc20.RedeemUnderlyingReturns(big.NewInt(1))
-	assert.NotNil(tx)
-	assert.Nil(err)
-
-	s.Env.Blockchain.Commit()
-
-	tx, err = s.MarketPlace.RedeemVaultInterest(s.Dep.Erc20Address, maturity)
-	assert.NotNil(err)
-	assert.Regexp("redemption from Compound failed", err.Error())
-	assert.Nil(tx)
-}
-
-func (s *redeemVaultInterestSuite) TestRedeemVaultInterestTransferFails() {
-	assert := assertions.New(s.T())
-	maturity := s.Dep.Maturity
-	ctokenAddr := s.Dep.CErc20Address
-
-	tx, err := s.MarketPlace.CreateMarket(
-		s.Dep.Erc20Address,
-		maturity,
-		ctokenAddr,
-		"awesome market",
-		"AM",
-		18,
-	)
-
-	assert.Nil(err)
-	assert.NotNil(tx)
-	s.Env.Blockchain.Commit()
-
-	// we should be able to fetch the market now...
-	market, err := s.MarketPlace.Markets(s.Dep.Erc20Address, maturity)
-	assert.Nil(err)
-	assert.Equal(market.CTokenAddr, ctokenAddr)
-
-	zcTokenContract, err := mocks.NewZcToken(market.ZcTokenAddr, s.Env.Blockchain)
-	zcToken := &mocks.ZcTokenSession{
-		Contract: zcTokenContract,
-		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
-		TransactOpts: bind.TransactOpts{
-			From:   s.Env.Owner.Opts.From,
-			Signer: s.Env.Owner.Opts.Signer,
-		},
-	}
-
-	zcMaturity, err := zcToken.Maturity()
-	assert.Equal(maturity, zcMaturity)
-
-	vaultTrackerContract, err := mocks.NewVaultTracker(market.VaultAddr, s.Env.Blockchain)
-	vaultTracker := &mocks.VaultTrackerSession{
-		Contract: vaultTrackerContract,
-		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
-		TransactOpts: bind.TransactOpts{
-			From:   s.Env.Owner.Opts.From,
-			Signer: s.Env.Owner.Opts.Signer,
-		},
-	}
-
-	vaultInterest := big.NewInt(123456789)
-	tx, err = vaultTracker.RedeemInterestReturns(vaultInterest)
-	assert.Nil(err)
-	assert.NotNil(tx)
-
-	s.Env.Blockchain.Commit()
-
-	// test should fail if cerc20 does not return 0
-	tx, err = s.CErc20.RedeemUnderlyingReturns(big.NewInt(1))
-	assert.NotNil(tx)
-	assert.Nil(err)
-
-	s.Env.Blockchain.Commit()
-
-	// this doesn't really matter as the contract ignores transfer bools atm
-	tx, err = s.Erc20.TransferReturns(false)
-	assert.NotNil(tx)
-	assert.Nil(err)
-
-	s.Env.Blockchain.Commit()
-
-	tx, err = s.MarketPlace.RedeemVaultInterest(s.Dep.Erc20Address, maturity)
-	assert.NotNil(err)
-	assert.Regexp("redemption from Compound failed", err.Error())
-	assert.Nil(tx)
+	assert.NotNil(address)
+	assert.Equal(address, s.Env.Owner.Opts.From)
 }
 
 func TestRedeemVaultInterestSuite(t *test.T) {
