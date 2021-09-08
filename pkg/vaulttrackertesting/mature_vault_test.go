@@ -91,6 +91,12 @@ func (s *matureVaultSuite) TestMatureVaultRequirePasses() {
 	assert.NotNil(tx)
 
 	s.Env.Blockchain.Commit()
+
+	// any further calls to mature the vault should fail
+	tx, err = s.VaultTracker.MatureVault()
+	assert.Nil(tx)
+	assert.NotNil(err)
+	assert.Regexp("already mature", err.Error())
 }
 
 func TestTrackerMatureVaultSuite(t *test.T) {
