@@ -129,7 +129,8 @@ contract VaultTracker {
   }
 
   /// @notice ...
-  function matureVault() public returns (bool) {
+  function matureVault() public onlyAdmin(admin) returns (bool) {
+    require(!matured, 'market has already matured');
     require(block.timestamp >= maturity, 'maturity has not been reached');
     matured = true;
     maturityRate = CErc20(cTokenAddr).exchangeRateCurrent();
