@@ -24,15 +24,15 @@ contract Swivel {
   uint16[] public fenominator;
 
   /// @notice Emitted on order cancellation
-  event Cancel (bytes32 indexed key);
+  event Cancel (bytes32 indexed key, bytes32 metaKey);
   /// @notice Emitted on any initiate*
   /// @dev filled is 'principalFilled' when (vault:false, exit:false) && (vault:true, exit:true)
   /// @dev filled is 'premiumFilled' when (vault:true, exit:false) && (vault:false, exit:true)
-  event Initiate(bytes32 indexed key, address indexed maker, bool vault, bool exit, address indexed sender, uint256 amount, uint256 filled);
+  event Initiate(bytes32 indexed key, address indexed maker, bool vault, bool exit, address indexed sender, uint256 amount, uint256 filled, bytes32 orderHash);
   /// @notice Emitted on any exit*
   /// @dev filled is 'principalFilled' when (vault:false, exit:false) && (vault:true, exit:true)
   /// @dev filled is 'premiumFilled' when (vault:true, exit:false) && (vault:false, exit:true)
-  event Exit(bytes32 indexed key, address indexed maker, bool vault, bool exit, address indexed sender, uint256 amount, uint256 filled);
+  event Exit(bytes32 indexed key, address indexed maker, bool vault, bool exit, address indexed sender, uint256 amount, uint256 filled, bytes32 orderHash);
   /// @notice Emitted on token withdrawal scheduling
   /// @dev token is the address of the token scheduled for withdrawal
   /// @dev withdrawalTime is the timestamp at which the queued withdrawal will be possible
@@ -82,7 +82,8 @@ contract Swivel {
     // Checks the side, and the amount compared to amount available
     require(a <= (o.premium - filled[o.key]), 'taker amount > available volume');
 
-    filled[o.key] += a;
+    bytes32 orderHash = Hash.order(o);  
+    filled[orderHash] += a;
     
     uint256 principalFilled = (((a * 1e18) / o.premium) * o.principal) / 1e18;
     uint256 fee = ((principalFilled * 1e18) / fenominator[2]) / 1e18;
@@ -102,7 +103,7 @@ contract Swivel {
     // transfer fee in vault notional to swivel (from msg.sender)
     require(mPlace.transferVaultNotionalFee(o.underlying, o.maturity, msg.sender, fee), "notional fee transfer failed");
 
-    emit Initiate(o.key, o.maker, o.vault, o.exit, msg.sender, a, principalFilled);
+    emit Initiate(o.key, o.maker, o.vault, o.exit, msg.sender, a, principalFilled, orderHash);
   }
 
   /// @notice Allows a user to initiate a zcToken by filling an offline vault initiate order
@@ -114,7 +115,8 @@ contract Swivel {
     // Checks the side, and the amount compared to amount available
     require((a <= o.principal - filled[o.key]), 'taker amount > available volume');
 
-    filled[o.key] += a;
+    bytes32 orderHash = Hash.order(o);  
+    filled[orderHash] += a;
 
     uint256 premiumFilled = (((a * 1e18) / o.principal) * o.premium) / 1e18;
     uint256 fee = ((premiumFilled * 1e18) / fenominator[0]) / 1e18;
@@ -132,7 +134,7 @@ contract Swivel {
     // alert MarketPlace
     require(mPlace.custodialInitiate(o.underlying, o.maturity, msg.sender, o.maker, a), 'custodial initiate failed');
 
-    emit Initiate(o.key, o.maker, o.vault, o.exit, msg.sender, a, premiumFilled);
+    emit Initiate(o.key, o.maker, o.vault, o.exit, msg.sender, a, premiumFilled, orderHash);
   }
 
   /// @notice Allows a user to initiate zcToken? by filling an offline zcToken exit order
@@ -144,7 +146,8 @@ contract Swivel {
     // Checks the side, and the amount compared to amount available
     require(a <= ((o.principal - filled[o.key])), 'taker amount > available volume');
 
-    filled[o.key] += a;
+    bytes32 orderHash = Hash.order(o);  
+    filled[orderHash] += a;
     
     // .interest is interest * ratio / 1e18 where ratio is (a * 1e18) / principal
     uint256 premiumFilled = (((a * 1e18) / o.principal) * o.premium) / 1e18;
@@ -155,7 +158,7 @@ contract Swivel {
     // notify the marketplace...
     require(MarketPlace(marketPlace).p2pZcTokenExchange(o.underlying, o.maturity, o.maker, msg.sender, a), 'zcToken exchange failed');
             
-    emit Initiate(o.key, o.maker, o.vault, o.exit, msg.sender, a, premiumFilled);
+    emit Initiate(o.key, o.maker, o.vault, o.exit, msg.sender, a, premiumFilled, orderHash);
   }
 
   /// @notice Allows a user to initiate a Vault by filling an offline vault exit order
@@ -167,7 +170,8 @@ contract Swivel {
     // Checks the side, and the amount compared to amount available
     require(a <= (o.premium - filled[o.key]), 'taker amount > available volume');
     
-    filled[o.key] += a;
+    bytes32 orderHash = Hash.order(o);  
+    filled[orderHash] += a;
 
     Erc20(o.underlying).transferFrom(msg.sender, o.maker, a);
 
@@ -180,7 +184,7 @@ contract Swivel {
     // transfer fee in vault notional to swivel (from msg.sender)
     require(mPlace.transferVaultNotionalFee(o.underlying, o.maturity, msg.sender, fee), "notional fee transfer failed");
 
-    emit Initiate(o.key, o.maker, o.vault, o.exit, msg.sender, a, principalFilled);
+    emit Initiate(o.key, o.maker, o.vault, o.exit, msg.sender, a, principalFilled, orderHash);
   }
 
   // ********* EXITING ***************
@@ -224,7 +228,8 @@ contract Swivel {
   function exitZcTokenFillingZcTokenInitiate(Hash.Order calldata o, uint256 a, Sig.Components calldata c) internal valid(o,c) {
     require(a <= (o.premium - filled[o.key]), 'taker amount > available volume');
     
-    filled[o.key] += a;       
+    bytes32 orderHash = Hash.order(o);  
+    filled[orderHash] += a;    
 
     uint256 principalFilled = (((a * 1e18) / o.premium) * o.principal) / 1e18;
     uint256 fee = ((principalFilled * 1e18) / fenominator[1]) / 1e18;
@@ -237,7 +242,7 @@ contract Swivel {
     // Transfer fee in underlying to swivel
     uToken.transferFrom(o.maker, address(this), fee);
     
-    emit Exit(o.key, o.maker, o.vault, o.exit, msg.sender, a, principalFilled);
+    emit Exit(o.key, o.maker, o.vault, o.exit, msg.sender, a, principalFilled, orderHash);
   }
   
   /// @notice Allows a user to exit their Vault by filling an offline vault initiate order
@@ -248,7 +253,8 @@ contract Swivel {
   function exitVaultFillingVaultInitiate(Hash.Order calldata o, uint256 a, Sig.Components calldata c) internal valid(o,c) {
     require(a <= (o.principal - filled[o.key]), 'taker amount > available volume');
     
-    filled[o.key] += a;
+    bytes32 orderHash = Hash.order(o);  
+    filled[orderHash] += a;
         
     uint256 premiumFilled = (((a * 1e18) / o.principal) * o.premium) / 1e18;
     uint256 fee = ((premiumFilled * 1e18) / fenominator[3]) / 1e18;
@@ -261,7 +267,7 @@ contract Swivel {
     // transfer fee in underlying to swivel from sender
     uToken.transferFrom(msg.sender, address(this), fee);
 
-    emit Exit(o.key, o.maker, o.vault, o.exit, msg.sender, a, premiumFilled);
+    emit Exit(o.key, o.maker, o.vault, o.exit, msg.sender, a, premiumFilled, orderHash);
   }
 
   /// @notice Allows a user to exit their Vault filling an offline zcToken exit order
@@ -271,8 +277,9 @@ contract Swivel {
   /// @param c Components of a valid ECDSA signature
   function exitVaultFillingZcTokenExit(Hash.Order calldata o, uint256 a, Sig.Components calldata c) internal valid(o,c) {
     require(a <= (o.principal - filled[o.key]), 'taker amount > available volume');
-    
-    filled[o.key] += a;
+
+    bytes32 orderHash = Hash.order(o);  
+    filled[orderHash] += a;
 
     uint256 premiumFilled = (((a * 1e18) / o.principal) * o.premium) / 1e18;
     uint256 fee = ((premiumFilled * 1e18) / fenominator[3]) / 1e18;
@@ -291,7 +298,7 @@ contract Swivel {
     // transfer premium-fee to floating exit party
     uToken.transfer(msg.sender, premiumFilled - fee);
 
-    emit Exit(o.key, o.maker, o.vault, o.exit, msg.sender, a, premiumFilled);
+    emit Exit(o.key, o.maker, o.vault, o.exit, msg.sender, a, premiumFilled, orderHash);
   }
 
   /// @notice Allows a user to exit their zcTokens by filling an offline vault exit order
@@ -302,7 +309,8 @@ contract Swivel {
   function exitZcTokenFillingVaultExit(Hash.Order calldata o, uint256 a, Sig.Components calldata c) internal valid(o,c) {
     require(a <= (o.premium - filled[o.key]), 'taker amount > available volume');
     
-    filled[o.key] += a;
+    bytes32 orderHash = Hash.order(o);   
+    filled[orderHash] += a;
 
     uint256 principalFilled = (((a * 1e18) / o.premium) * o.principal) / 1e18;
     uint256 fee = ((principalFilled * 1e18) / fenominator[1]) / 1e18;
@@ -321,17 +329,23 @@ contract Swivel {
     // transfer premium to floating exit party
     uToken.transfer(o.maker, a);
 
-    emit Exit(o.key, o.maker, o.vault, o.exit, msg.sender, a, principalFilled);
+    emit Exit(o.key, o.maker, o.vault, o.exit, msg.sender, a, principalFilled, orderHash);
   }
 
   /// @notice Allows a user to cancel an order, preventing it from being filled in the future
   /// @param o An offline Swivel.Order
   /// @param c Components of a valid ECDSA signature
   function cancel(Hash.Order calldata o, Sig.Components calldata c) public returns (bool) {
-    require(o.maker == Sig.recover(Hash.message(domain, Hash.order(o)), c), 'invalid signature');
-    cancelled[o.key] = true;
+    // get order hash
+    bytes32 orderHash = Hash.order(o);
+    // require valid signature/order
+    require(o.maker == Sig.recover(Hash.message(domain, orderHash), c), 'invalid signature');
+    //require msg.sender to be the order maker
+    require(msg.sender == o.maker, 'must be maker');
+    // cancel order
+    cancelled[orderHash] = true;
 
-    emit Cancel(o.key);
+    emit Cancel(o.key, orderHash);
 
     return true;
   }
