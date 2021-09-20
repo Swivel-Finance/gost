@@ -24,7 +24,7 @@ contract Swivel {
   uint16[] public fenominator;
 
   /// @notice Emitted on order cancellation
-  event Cancel (bytes32 indexed key, bytes32 metaKey);
+  event Cancel (bytes32 indexed key, bytes32 orderHash);
   /// @notice Emitted on any initiate*
   /// @dev filled is 'principalFilled' when (vault:false, exit:false) && (vault:true, exit:true)
   /// @dev filled is 'premiumFilled' when (vault:true, exit:false) && (vault:false, exit:true)
