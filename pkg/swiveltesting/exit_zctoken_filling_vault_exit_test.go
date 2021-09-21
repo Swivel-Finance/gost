@@ -188,7 +188,7 @@ func (s *EZFVESuite) TestEZFVE() {
 	s.Env.Blockchain.Commit()
 
 	// we should have a filled amount for orderKey
-	amt, err := s.Swivel.Filled(orderKey)
+	amt, err := s.Swivel.Filled(orderHash)
 	assert.Equal(amt, amount)
 
 	// first call to utoken transfer..(sender)
