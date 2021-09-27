@@ -389,6 +389,13 @@ contract Swivel {
     return true;
   }
 
+  /// @notice Allows the admin to transfer ownership
+  /// @param t
+  function transferAdmin(address t) external onlyAdmin(admin) returns (bool) {
+    admin = t;
+    return true;
+  }
+
   // ********* PROTOCOL UTILITY ***************
 
   /// @notice Allows users to deposit underlying and in the process split it into/mint 

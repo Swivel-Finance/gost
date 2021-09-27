@@ -38,6 +38,13 @@ contract MarketPlace {
     admin = msg.sender;
   }
 
+  /// @notice Allows the admin to transfer ownership
+  /// @param t
+  function transferAdmin(address t) external onlyAdmin(admin) returns (bool) {
+    admin = t;
+    return true;
+  }
+  
   /// @param s Address of the deployed swivel contract
   function setSwivelAddress(address s) external onlyAdmin(admin) returns (bool) {
     swivel = s;
