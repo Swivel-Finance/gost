@@ -223,7 +223,7 @@ contract Swivel {
            // then the user has called `exit` against a zcToken exit and msg.sender is exiting nTokens (selling nTokens, receivingPremium)
           exitVaultFillingZcTokenExit(o[i], a[i], c[i]);
         } else {
-           // then the user has called `exit` against a vault exit and msg.sender is exiting zcTokens (buying nTokens + redeeming, receivingPremium)
+           // then the user has called `exit` against a vault exit and msg.sender is exiting zcTokens (buying nTokens + redeeming, payingPremium)
           exitZcTokenFillingVaultExit(o[i], a[i], c[i]);
         }   
       }   
