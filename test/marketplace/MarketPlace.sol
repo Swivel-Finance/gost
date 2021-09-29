@@ -76,13 +76,13 @@ contract MarketPlace {
     require(!mature[u][m], 'market already matured');
     require(block.timestamp >= ZcToken(markets[u][m].zcTokenAddr).maturity(), "maturity not reached");
 
-    // Set the base maturity cToken exchange rate at maturity to the current cToken exchange rate
+    // set the base maturity cToken exchange rate at maturity to the current cToken exchange rate
     uint256 currentExchangeRate = CErc20(markets[u][m].cTokenAddr).exchangeRateCurrent();
     maturityRate[u][m] = currentExchangeRate;
-    // Set the maturity state to true (for zcb market)
+    // set the maturity state to true (for zcb market)
     mature[u][m] = true;
 
-    // Set Floating Market "matured" to true
+    // set vault "matured" to true
     require(VaultTracker(markets[u][m].vaultAddr).matureVault(), 'maturity not reached');
 
     emit Mature(u, m, block.timestamp, currentExchangeRate);
@@ -120,17 +120,14 @@ contract MarketPlace {
   /// @param t Address of the redeeming user
   /// @param a Amount of zcTokens being redeemed
   function redeemZcToken(address u, uint256 m, address t, uint256 a) external onlySwivel(swivel) returns (uint256) {
-    // If market hasn't matured, mature it and redeem exactly the amount
-
     Market memory mkt = markets[u][m];
     bool matured = mature[u][m];
 
     if (!matured) {
-      // Attempt to Mature it
       require(matureMarket(u, m), 'failed to mature the market');
     }
 
-    // Burn user's zcTokens
+    // burn user's zcTokens
     require(ZcToken(mkt.zcTokenAddr).burn(t, a), 'could not burn');
 
     emit RedeemZcToken(u, m, t, a);
@@ -148,7 +145,7 @@ contract MarketPlace {
   /// @param m Maturity timestamp of the market
   /// @param t Address of the redeeming user
   function redeemVaultInterest(address u, uint256 m, address t) external onlySwivel(swivel) returns (uint256) {
-    // Call to the floating market contract to release the position and calculate the interest generated
+    // call to the floating market contract to release the position and calculate the interest generated
     uint256 interest = VaultTracker(markets[u][m].vaultAddr).redeemInterest(t);
 
     emit RedeemVaultInterest(u, m, t);
@@ -161,11 +158,11 @@ contract MarketPlace {
   /// @param m Maturity timestamp of the market
   /// @param a Amount of zcTokens being redeemed
   function calculateReturn(address u, uint256 m, uint256 a) internal returns (uint256) {
-    // Calculate difference between the cToken exchange rate @ maturity and the current cToken exchange rate
+    // calculate difference between the cToken exchange rate @ maturity and the current cToken exchange rate
     uint256 yield = ((CErc20(markets[u][m].cTokenAddr).exchangeRateCurrent() * 1e26) / maturityRate[u][m]) - 1e26;
     uint256 interest = (yield * a) / 1e26;
 
-    // Calculate the total amount of underlying principle to return
+    // calculate the total amount of underlying principle to return
     return a + interest;
   }
 

@@ -55,7 +55,7 @@ contract Swivel {
   function initiate(Hash.Order[] calldata o, uint256[] calldata a, Sig.Components[] calldata c) external returns (bool) {
     // for each order filled, routes the order to the right interaction depending on its params
     for (uint256 i=0; i < o.length; i++) {
-      // if the order filled is NOT an exit
+      // If the order filled is NOT an exit
       if (!o[i].exit) {
         // if the order filled does NOT involve a vault (nTokens)
         if (!o[i].vault) {
@@ -81,7 +81,7 @@ contract Swivel {
 
   /// @notice Allows a user to initiate a Vault by filling an offline zcToken initiate order
   /// @dev This method should pass (underlying, maturity, maker, sender, principalFilled) to MarketPlace.custodialInitiate
-  /// @param o The order being filled
+  /// @param o Order being filled
   /// @param a Amount of volume (premium) being filled by the taker's exit
   /// @param c Components of a valid ECDSA signature
   function initiateVaultFillingZcTokenInitiate(Hash.Order calldata o, uint256 a, Sig.Components calldata c) internal {
@@ -120,7 +120,7 @@ contract Swivel {
 
   /// @notice Allows a user to initiate a zcToken by filling an offline vault initiate order
   /// @dev This method should pass (underlying, maturity, sender, maker, a) to MarketPlace.custodialInitiate
-  /// @param o The order being filled
+  /// @param o Order being filled
   /// @param o Amount of volume (principal) being filled by the taker's exit
   /// @param c Components of a valid ECDSA signature
   function initiateZcTokenFillingVaultInitiate(Hash.Order calldata o, uint256 a, Sig.Components calldata c) internal {
@@ -151,7 +151,7 @@ contract Swivel {
 
   /// @notice Allows a user to initiate zcToken? by filling an offline zcToken exit order
   /// @dev This method should pass (underlying, maturity, maker, sender, a) to MarketPlace.p2pZcTokenExchange
-  /// @param o The order being filled
+  /// @param o Order being filled
   /// @param a Amount of volume (principal) being filled by the taker's exit
   /// @param c Components of a valid ECDSA signature
   function initiateZcTokenFillingZcTokenExit(Hash.Order calldata o, uint256 a, Sig.Components calldata c) internal {
@@ -174,7 +174,7 @@ contract Swivel {
 
   /// @notice Allows a user to initiate a Vault by filling an offline vault exit order
   /// @dev This method should pass (underlying, maturity, maker, sender, principalFilled) to MarketPlace.p2pVaultExchange
-  /// @param o The order being filled
+  /// @param o Order being filled
   /// @param a Amount of volume (interest) being filled by the taker's exit
   /// @param c Components of a valid ECDSA signature
   function initiateVaultFillingVaultExit(Hash.Order calldata o, uint256 a, Sig.Components calldata c) internal {
@@ -234,7 +234,7 @@ contract Swivel {
 
   /// @notice Allows a user to exit their zcTokens by filling an offline zcToken initiate order
   /// @dev This method should pass (underlying, maturity, sender, maker, principalFilled) to MarketPlace.p2pZcTokenExchange
-  /// @param o The order being filled
+  /// @param o Order being filled
   /// @param a Amount of volume (interest) being filled by the taker's exit
   /// @param c Components of a valid ECDSA signature
   function exitZcTokenFillingZcTokenInitiate(Hash.Order calldata o, uint256 a, Sig.Components calldata c) internal {
@@ -261,7 +261,7 @@ contract Swivel {
   
   /// @notice Allows a user to exit their Vault by filling an offline vault initiate order
   /// @dev This method should pass (underlying, maturity, sender, maker, a) to MarketPlace.p2pVaultExchange
-  /// @param o The order being filled
+  /// @param o Order being filled
   /// @param a Amount of volume (principal) being filled by the taker's exit
   /// @param c Components of a valid ECDSA signature
   function exitVaultFillingVaultInitiate(Hash.Order calldata o, uint256 a, Sig.Components calldata c) internal {
@@ -286,7 +286,7 @@ contract Swivel {
 
   /// @notice Allows a user to exit their Vault filling an offline zcToken exit order
   /// @dev This method should pass (underlying, maturity, maker, sender, a) to MarketPlace.exitFillingExit
-  /// @param o The order being filled
+  /// @param o Order being filled
   /// @param a Amount of volume (principal) being filled by the taker's exit
   /// @param c Components of a valid ECDSA signature
   function exitVaultFillingZcTokenExit(Hash.Order calldata o, uint256 a, Sig.Components calldata c) internal {
@@ -319,7 +319,7 @@ contract Swivel {
 
   /// @notice Allows a user to exit their zcTokens by filling an offline vault exit order
   /// @dev This method should pass (underlying, maturity, sender, maker, principalFilled) to MarketPlace.exitFillingExit
-  /// @param o The order being filled
+  /// @param o Order being filled
   /// @param a Amount of volume (interest) being filled by the taker's exit
   /// @param c Components of a valid ECDSA signature
   function exitZcTokenFillingVaultExit(Hash.Order calldata o, uint256 a, Sig.Components calldata c) internal {
@@ -349,7 +349,7 @@ contract Swivel {
   }
 
   /// @notice Allows a user to cancel an order, preventing it from being filled in the future
-  /// @param o An offline Swivel.Order
+  /// @param o Order being cancelled
   /// @param c Components of a valid ECDSA signature
   function cancel(Hash.Order calldata o, Sig.Components calldata c) external returns (bool) {
     bytes32 hash = validOrderHash(o, c);
