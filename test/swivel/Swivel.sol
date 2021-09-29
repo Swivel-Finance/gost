@@ -279,6 +279,9 @@ contract Swivel {
     // transfer premium minus fee from maker to sender
     uToken.transferFrom(o.maker, msg.sender, premiumFilled - fee);
 
+    // transfer fee in underlying to swivel from sender
+    uToken.transferFrom(msg.sender, address(this), fee);
+
     // transfer <a> vault.notional (nTokens) from sender to maker
     require(MarketPlace(marketPlace).p2pVaultExchange(o.underlying, o.maturity, msg.sender, o.maker, a), 'vault exchange failed');
 
@@ -332,7 +335,7 @@ contract Swivel {
 
     uint256 principalFilled = (((a * 1e18) / o.premium) * o.principal) / 1e18;
     uint256 fee = ((principalFilled * 1e18) / fenominator[1]) / 1e18;
-    
+
     // redeem underlying on Compound and burn cTokens
     MarketPlace mPlace = MarketPlace(marketPlace);
     address cTokenAddr = mPlace.cTokenAddress(o.underlying, o.maturity);
