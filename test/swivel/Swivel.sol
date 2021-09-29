@@ -104,11 +104,11 @@ contract Swivel {
     uToken.transferFrom(o.maker, address(this), principalFilled);
 
     // deposit underlying to Compound and mint cTokens
+    MarketPlace mPlace = MarketPlace(marketPlace);
     address cTokenAddr = mPlace.cTokenAddress(o.underlying, o.maturity);
     uToken.approve(cTokenAddr, principalFilled); 
     require(CErc20(cTokenAddr).mint(principalFilled) == 0, 'minting CToken failed');
 
-    MarketPlace mPlace = MarketPlace(marketPlace);
     // mint <principalFilled> zcTokens + nTokens and allocate appropriately in marketplace
     require(mPlace.custodialInitiate(o.underlying, o.maturity, o.maker, msg.sender, principalFilled), 'custodial initiate failed');
 
@@ -138,11 +138,12 @@ contract Swivel {
     // transfer principal + fee in underlying to swivel (from sender)
     uToken.transferFrom(msg.sender, address(this), (a + fee));
 
+    // deposit underlying to Compound and mint cTokens
+    MarketPlace mPlace = MarketPlace(marketPlace);
     address cTokenAddr = mPlace.cTokenAddress(o.underlying, o.maturity);
     uToken.approve(cTokenAddr, a);
     require(CErc20(cTokenAddr).mint(a) == 0, 'minting CToken Failed');
     
-    MarketPlace mPlace = MarketPlace(marketPlace);
     // mint <a> zcTokens + nTokens and allocate appropriately in marketplace
     require(mPlace.custodialInitiate(o.underlying, o.maturity, msg.sender, o.maker, a), 'custodial initiate failed');
 
@@ -299,7 +300,8 @@ contract Swivel {
     uint256 premiumFilled = (((a * 1e18) / o.principal) * o.premium) / 1e18;
     uint256 fee = ((premiumFilled * 1e18) / fenominator[3]) / 1e18;
     
-    // redeem from compound
+    // redeem underlying on Compound and burn cTokens
+    MarketPlace mPlace = MarketPlace(marketPlace);
     address cTokenAddr = mPlace.cTokenAddress(o.underlying, o.maturity);
     require((CErc20(cTokenAddr).redeemUnderlying(a) == 0), "compound redemption error");
 
@@ -309,7 +311,6 @@ contract Swivel {
     // transfer premium-fee to floating exit party
     uToken.transfer(msg.sender, premiumFilled - fee);
 
-    MarketPlace mPlace = MarketPlace(marketPlace);
     // burn zcTokens + nTokens from o.maker and msg.sender respectively
     require(mPlace.custodialExit(o.underlying, o.maturity, o.maker, msg.sender, a), 'custodial exit failed');
 
@@ -331,8 +332,9 @@ contract Swivel {
 
     uint256 principalFilled = (((a * 1e18) / o.premium) * o.principal) / 1e18;
     uint256 fee = ((principalFilled * 1e18) / fenominator[1]) / 1e18;
-
-    // redeem principal from compound
+    
+    // redeem underlying on Compound and burn cTokens
+    MarketPlace mPlace = MarketPlace(marketPlace);
     address cTokenAddr = mPlace.cTokenAddress(o.underlying, o.maturity);
     require((CErc20(cTokenAddr).redeemUnderlying(principalFilled) == 0), "compound redemption error");
 
@@ -341,7 +343,6 @@ contract Swivel {
     uToken.transfer(msg.sender, principalFilled - a - fee);
     uToken.transfer(o.maker, a);
 
-    MarketPlace mPlace = MarketPlace(marketPlace);
     // burn <principalFilled> zcTokens + nTokens from msg.sender and o.maker respectively
     require(mPlace.custodialExit(o.underlying, o.maturity, msg.sender, o.maker, principalFilled), 'custodial exit failed');
 
