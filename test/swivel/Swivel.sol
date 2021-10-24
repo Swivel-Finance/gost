@@ -297,7 +297,7 @@ contract Swivel {
     require((CErc20(cTokenAddr).redeemUnderlying(a) == 0), "compound redemption error");
 
     Erc20 uToken = Erc20(o.underlying);
-    // transfer principal-premium  back to fixed exit party now that the interest coupon and zcb have been redeemed
+    // transfer principal-premium back to fixed exit party now that the interest coupon and zcb have been redeemed
     uToken.transfer(o.maker, a - premiumFilled);
     // transfer premium-fee to floating exit party
     uToken.transfer(msg.sender, premiumFilled - fee);
