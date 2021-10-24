@@ -128,12 +128,13 @@ contract VaultTracker {
     return (redeemable + interest);
   }
 
-  /// @notice ...
-  function matureVault() external onlyAdmin(admin) returns (bool) {
+  /// @notice Matures the vault
+  /// @param currentExchangeRate the current cToken exchangeRate
+  function matureVault(uint256 currentExchangeRate) external onlyAdmin(admin) returns (bool) {
     require(!matured, 'already matured');
     require(block.timestamp >= maturity, 'maturity has not been reached');
     matured = true;
-    maturityRate = CErc20(cTokenAddr).exchangeRateCurrent();
+    maturityRate = currentExchangeRate;
     return true;
   }
 

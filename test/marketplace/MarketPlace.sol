@@ -90,7 +90,7 @@ contract MarketPlace {
     mature[u][m] = true;
 
     // Set Floating Market "matured" to true
-    require(VaultTracker(markets[u][m].vaultAddr).matureVault(), 'maturity not reached');
+    require(VaultTracker(markets[u][m].vaultAddr).matureVault(currentExchangeRate), 'maturity not reached');
 
     emit Mature(u, m, block.timestamp, currentExchangeRate);
 
