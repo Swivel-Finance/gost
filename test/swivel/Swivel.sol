@@ -81,9 +81,8 @@ contract Swivel {
   /// @param c Components of a valid ECDSA signature
   function initiateVaultFillingZcTokenInitiate(Hash.Order calldata o, uint256 a, Sig.Components calldata c) internal {
     bytes32 hash = validOrderHash(o, c);
-    
     // Checks the side, and the amount compared to amount available
-    require(a <= (o.premium - filled[hash]), 'taker amount > available volume');
+    require((a + filled[hash]) <= o.premium, 'taker amount > available volume');
 
     filled[hash] += a;
 
@@ -112,9 +111,8 @@ contract Swivel {
   /// @param c Components of a valid ECDSA signature
   function initiateZcTokenFillingVaultInitiate(Hash.Order calldata o, uint256 a, Sig.Components calldata c) internal {
     bytes32 hash = validOrderHash(o, c);
-
     // Checks the side, and the amount compared to amount available
-    require((a <= o.principal - filled[hash]), 'taker amount > available volume');
+    require((a + filled[hash]) <= o.principal, 'taker amount > available volume');
 
     filled[hash] += a;
 
@@ -142,7 +140,7 @@ contract Swivel {
   function initiateZcTokenFillingZcTokenExit(Hash.Order calldata o, uint256 a, Sig.Components calldata c) internal {
     bytes32 hash = validOrderHash(o, c);
     // Checks the side, and the amount compared to amount available
-    require(a <= ((o.principal - filled[hash])), 'taker amount > available volume');
+    require((a + filled[hash]) <= o.principal, 'taker amount > available volume');
 
     filled[hash] += a;
 
@@ -166,7 +164,7 @@ contract Swivel {
   function initiateVaultFillingVaultExit(Hash.Order calldata o, uint256 a, Sig.Components calldata c) internal {
     bytes32 hash = validOrderHash(o, c);
     // Checks the side, and the amount compared to amount available
-    require(a <= (o.premium - filled[hash]), 'taker amount > available volume');
+    require((a + filled[hash]) <= o.premium, 'taker amount > available volume');
     
     filled[hash] += a;
 
@@ -224,8 +222,8 @@ contract Swivel {
   /// @param c Components of a valid ECDSA signature
   function exitZcTokenFillingZcTokenInitiate(Hash.Order calldata o, uint256 a, Sig.Components calldata c) internal {
     bytes32 hash = validOrderHash(o, c);
-
-    require(a <= (o.premium - filled[hash]), 'taker amount > available volume');
+    // Checks the side, and the amount compared to amount available
+    require((a + filled[hash]) <= o.premium, 'taker amount > available volume');
     
     filled[hash] += a;       
 
@@ -250,8 +248,8 @@ contract Swivel {
   /// @param c Components of a valid ECDSA signature
   function exitVaultFillingVaultInitiate(Hash.Order calldata o, uint256 a, Sig.Components calldata c) internal {
     bytes32 hash = validOrderHash(o, c);
-
-    require(a <= (o.principal - filled[hash]), 'taker amount > available volume');
+    // Checks the side, and the amount compared to amount available
+    require((a + filled[hash]) <= o.principal, 'taker amount > available volume');
     
     filled[hash] += a;
         
@@ -276,8 +274,8 @@ contract Swivel {
   /// @param c Components of a valid ECDSA signature
   function exitVaultFillingZcTokenExit(Hash.Order calldata o, uint256 a, Sig.Components calldata c) internal {
     bytes32 hash = validOrderHash(o, c);
-
-    require(a <= (o.principal - filled[hash]), 'taker amount > available volume');
+    // Checks the side, and the amount compared to amount available
+    require((a + filled[hash]) <= o.principal, 'taker amount > available volume');
     
     filled[hash] += a;
 
@@ -307,8 +305,8 @@ contract Swivel {
   /// @param c Components of a valid ECDSA signature
   function exitZcTokenFillingVaultExit(Hash.Order calldata o, uint256 a, Sig.Components calldata c) internal {
     bytes32 hash = validOrderHash(o, c);
-
-    require(a <= (o.premium - filled[hash]), 'taker amount > available volume');
+    // Checks the side, and the amount compared to amount available
+    require((a + filled[hash]) <= o.premium, 'taker amount > available volume');
     
     filled[hash] += a;
 
@@ -478,3 +476,4 @@ contract Swivel {
     _;
   }
 }
+
