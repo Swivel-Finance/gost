@@ -85,7 +85,8 @@ contract VaultTracker {
 
     // if market has matured, calculate marginal interest between the maturity rate and previous position exchange rate
     // otherwise, calculate marginal exchange rate between current and previous exchange rate.
-    if (maturityRate > 0) { // Calculate marginal interest
+    if (maturityRate > 0) { 
+      // calculate marginal interest
       yield = ((maturityRate * 1e26) / vlt.exchangeRate) - 1e26;
     } else {
       // calculate marginal interest
@@ -93,7 +94,7 @@ contract VaultTracker {
     }
 
     interest = (yield * vlt.notional) / 1e26;
-    // cemove amount from position, Add interest to position, reset cToken exchange rate
+    // remove amount from position, Add interest to position, reset cToken exchange rate
     vlt.redeemable += interest;
     vlt.notional -= a;
     vlt.exchangeRate = exchangeRate;
