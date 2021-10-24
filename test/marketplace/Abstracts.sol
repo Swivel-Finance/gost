@@ -14,4 +14,5 @@ abstract contract CErc20 is Erc20 {
 	function redeem(uint256) virtual external returns (uint256);
 	function redeemUnderlying(uint256) virtual external returns (uint256);
 	function exchangeRateCurrent() virtual external returns (uint256);
+	address public underlying();
 }
