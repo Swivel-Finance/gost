@@ -15,10 +15,10 @@ contract MarketPlace {
     address cTokenAddr;
     address zcTokenAddr;
     address vaultAddr;
+    uint256 maturityRate;
   }
 
   mapping (address => mapping (uint256 => Market)) public markets;
-  mapping (address => mapping (uint256 => uint256)) public maturityRate;
 
   address public admin;
   address public swivel;
@@ -68,7 +68,7 @@ contract MarketPlace {
     // TODO can we live with the factory pattern here both bytecode size wise and CREATE opcode cost wise?
     address zctAddr = address(new ZcToken(u, m, n, s, d));
     address vAddr = address(new VaultTracker(m, c, swivel));
-    markets[u][m] = Market(c, zctAddr, vAddr);
+    markets[u][m] = Market(c, zctAddr, vAddr, 0);
 
     emit Create(u, m, c, zctAddr, vAddr);
 
@@ -79,12 +79,15 @@ contract MarketPlace {
   /// @param u Underlying token address associated with the market
   /// @param m Maturity timestamp of the market
   function matureMarket(address u, uint256 m) public returns (bool) {
-    require(maturityRate[u][m] > 0, 'market already matured');
+    
+    Market memory mkt = markets[u][m];
+    
+    require(mkt.maturityRate > 0, 'market already matured');
     require(block.timestamp >= ZcToken(markets[u][m].zcTokenAddr).maturity(), "maturity not reached");
 
     // Set the base maturity cToken exchange rate at maturity to the current cToken exchange rate
-    uint256 currentExchangeRate = CErc20(markets[u][m].cTokenAddr).exchangeRateCurrent();
-    maturityRate[u][m] = currentExchangeRate;
+    uint256 currentExchangeRate = CErc20(mkt.cTokenAddr).exchangeRateCurrent();
+    markets[u][m].maturityRate = currentExchangeRate;
 
     // Set Floating Market "matured" to true
     require(VaultTracker(markets[u][m].vaultAddr).matureVault(currentExchangeRate), 'maturity not reached');
@@ -124,21 +127,21 @@ contract MarketPlace {
   /// @param t Address of the redeeming user
   /// @param a Amount of zcTokens being redeemed
   function redeemZcToken(address u, uint256 m, address t, uint256 a) external onlyAddress(swivel) returns (uint256) {
+      
     // If market hasn't matured, mature it and redeem exactly the amount
-
-    uint256 marketMaturityRate = maturityRate[u][m];
+    Market memory mkt = markets[u][m];
     
-    if (marketMaturityRate == 0) {
+    if (mkt.maturityRate == 0) {
       // Attempt to Mature it
       require(matureMarket(u, m), 'failed to mature the market');
     }
 
     // Burn user's zcTokens
-    require(ZcToken(markets[u][m].zcTokenAddr).burn(t, a), 'could not burn');
+    require(ZcToken(mkt.zcTokenAddr).burn(t, a), 'could not burn');
 
     emit RedeemZcToken(u, m, t, a);
 
-    if (marketMaturityRate == 0) {
+    if (mkt.maturityRate == 0) {
       return a;
     } else { 
       // if the market was already mature the return should include the amount + marginal floating interest generated on Compound since maturity
@@ -164,8 +167,9 @@ contract MarketPlace {
   /// @param m Maturity timestamp of the market
   /// @param a Amount of zcTokens being redeemed
   function calculateReturn(address u, uint256 m, uint256 a) internal returns (uint256) {
-    uint256 rate = CErc20(markets[u][m].cTokenAddr).exchangeRateCurrent();
-    return  a * rate / maturityRate[u][m];
+    Market memory mkt = markets[u][m];
+    uint256 rate = CErc20(mkt.cTokenAddr).exchangeRateCurrent();
+    return  a * rate / mkt.maturityRate;
   }
 
   function cTokenAddress(address a, uint256 m) external view returns (address) {
