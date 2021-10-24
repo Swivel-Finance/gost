@@ -168,12 +168,8 @@ contract MarketPlace {
   /// @param m Maturity timestamp of the market
   /// @param a Amount of zcTokens being redeemed
   function calculateReturn(address u, uint256 m, uint256 a) internal returns (uint256) {
-    // Calculate difference between the cToken exchange rate @ maturity and the current cToken exchange rate
-    uint256 yield = ((CErc20(markets[u][m].cTokenAddr).exchangeRateCurrent() * 1e26) / maturityRate[u][m]) - 1e26;
-    uint256 interest = (yield * a) / 1e26;
-
-    // Calculate the total amount of underlying principle to return
-    return a + interest;
+    uint256 rate = CErc20(markets[u][m].cTokenAddr).exchangeRateCurrent();
+    return  a * rate / maturityRate[u][m];
   }
 
   function cTokenAddress(address a, uint256 m) external view returns (address) {
