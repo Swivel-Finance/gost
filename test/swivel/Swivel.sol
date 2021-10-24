@@ -149,9 +149,10 @@ contract Swivel {
     // .interest is interest * ratio / 1e18 where ratio is (a * 1e18) / principal
     uint256 premiumFilled = a * o.premium / o.principal;
     uint256 fee = ((premiumFilled * 1e18) / fenominator[0]) / 1e18;
-
-    // transfer principal - the premium paid + fee in underliyng to swivel (from sender)
-    Erc20(o.underlying).transferFrom(msg.sender, o.maker, ((a - premiumFilled) + fee));
+    
+    // transfer underlying tokens - the premium paid in underlying to maker (from sender)
+    Erc20(o.underlying).transferFrom(msg.sender, o.maker, a - premiumFilled);
+		Erc20(o.underlying).transferFrom(msg.sender, swivel, fee);
     // notify the marketplace...
     MarketPlace(marketPlace).p2pZcTokenExchange(o.underlying, o.maturity, o.maker, msg.sender, a);
             
