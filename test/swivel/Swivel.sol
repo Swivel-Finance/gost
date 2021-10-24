@@ -21,7 +21,7 @@ contract Swivel {
   address public immutable marketPlace;
   address public admin;
   /// @dev holds the fee demoninators for [zcTokenInitiate, zcTokenExit, vaultInitiate, vaultExit]
-  uint16[] public fenominator;
+  uint16[3] public fenominator;
 
   /// @notice Emitted on order cancellation
   event Cancel (bytes32 indexed key, bytes32 hash);
