@@ -27,6 +27,13 @@ contract VaultTracker {
     maturity = m;
     cTokenAddr = c;
     swivel = s;
+
+    // instantiate swivel's vault (unblocking transferNotionalFee)
+    vault[swivel] = Vault({
+	      notional: 0,
+	      redeemable: 0,
+	      exchangeRate: exchangeRate
+	  });
   }
 
   /// @notice ...
@@ -207,21 +214,17 @@ contract VaultTracker {
     uint256 interest;
 
     // Check if exchangeRate has been stored already this block. If not, calculate marginal interest + store exchangeRate
-    if (sVault.exchangeRate != exchangeRate) {
-      // the rate will be 0 if swivel did not already have a vault
-      if (sVault.exchangeRate != 0) {
-        // If market has matured, calculate marginal interest between the maturity rate and previous position exchange rate
-        // Otherwise, calculate marginal exchange rate between current and previous exchange rate.
-        if (maturityRate > 0) { // Calculate marginal interest
-            yield = ((maturityRate * 1e26) / sVault.exchangeRate) - 1e26;
-        } else {
-            yield = ((exchangeRate * 1e26) / sVault.exchangeRate) - 1e26;
-        }
-
-        interest = (yield * sVault.notional) / 1e26;
-        // Add interest and amount, reset cToken exchange rate
-        sVault.redeemable += interest;
+    if (sVault.exchangeRate != exchangeRate) {   
+      // If market has matured, calculate marginal interest between the maturity rate and previous position exchange rate
+      // Otherwise, calculate marginal exchange rate between current and previous exchange rate.
+      if (maturityRate > 0) { // Calculate marginal interest
+          yield = ((maturityRate * 1e26) / sVault.exchangeRate) - 1e26;
+      } else {
+          yield = ((exchangeRate * 1e26) / sVault.exchangeRate) - 1e26;
       }
+      interest = (yield * sVault.notional) / 1e26;
+      // Add interest and amount, reset cToken exchange rate
+      sVault.redeemable += interest;
       sVault.exchangeRate = exchangeRate;
     }
 
