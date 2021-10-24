@@ -2,9 +2,9 @@
 
 pragma solidity 0.8.4;
 
-import './Abstracts.sol';
-import './Hash.sol';
-import './Sig.sol';
+import './Utils/Abstracts.sol';
+import './Utils/Hash.sol';
+import './Utils/Sig.sol';
 
 contract Swivel {
   /// @dev maps the key of an order to a boolean indicating if an order was cancelled
@@ -19,7 +19,7 @@ contract Swivel {
   uint256 constant public HOLD = 259200; // obvs could be a smaller uint but packing?
   bytes32 public immutable domain;
   address public immutable marketPlace;
-  address public immutable admin;
+  address public admin;
   /// @dev holds the fee demoninators for [zcTokenInitiate, zcTokenExit, vaultInitiate, vaultExit]
   uint16[] public fenominator;
 
@@ -390,7 +390,7 @@ contract Swivel {
   }
 
   /// @notice Allows the admin to transfer ownership
-  /// @param t
+  /// @param t Address of the new admin
   function transferAdmin(address t) external onlyAdmin(admin) returns (bool) {
     admin = t;
     return true;
