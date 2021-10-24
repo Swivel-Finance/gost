@@ -183,7 +183,7 @@ contract VaultTracker {
       to.redeemable += newVaultInterest;
       to.notional += a;
     } else {
-      to.notional += a;
+      to.notional = a;
     }
 
     to.exchangeRate = exchangeRate;
