@@ -92,10 +92,8 @@ contract Swivel {
     uToken.transferFrom(o.maker, address(this), principalFilled);
 
     MarketPlace mPlace = MarketPlace(marketPlace);
-    address cTokenAddr = mPlace.cTokenAddress(o.underlying, o.maturity);
     // mint cTokens
-    uToken.approve(cTokenAddr, principalFilled); 
-    require(CErc20(cTokenAddr).mint(principalFilled) == 0, 'minting CToken failed');
+    require(CErc20(mPlace.cTokenAddress(o.underlying, o.maturity)).mint(principalFilled) == 0, 'minting CToken failed');
 
     // alert MarketPlace.
     require(mPlace.custodialInitiate(o.underlying, o.maturity, o.maker, msg.sender, principalFilled), 'custodial initiate failed');
@@ -127,10 +125,8 @@ contract Swivel {
     uToken.transferFrom(msg.sender, address(this), (a + fee));
     
     MarketPlace mPlace = MarketPlace(marketPlace);
-    address cTokenAddr = mPlace.cTokenAddress(o.underlying, o.maturity);
     // mint cTokens
-    uToken.approve(cTokenAddr, a);
-    require(CErc20(cTokenAddr).mint(a) == 0, 'minting CToken Failed');
+    require(CErc20(mPlace.cTokenAddress(o.underlying, o.maturity)).mint(a) == 0, 'minting CToken Failed');
     // alert MarketPlace
     require(mPlace.custodialInitiate(o.underlying, o.maturity, msg.sender, o.maker, a), 'custodial initiate failed');
 
@@ -395,6 +391,14 @@ contract Swivel {
     return true;
   }
 
+  function approveCompound(address[] u, address[] c) external onlyAdmin(admin) returns (bool) {
+    for (uint256 i; i < o.length; i++) {
+      Erc20 uToken = Erc20(u[i]);
+      uToken.approve(c[i], 2**256 - 1);
+    }
+    return true;
+  }
+
   // ********* PROTOCOL UTILITY ***************
 
   /// @notice Allows users to deposit underlying and in the process split it into/mint 
@@ -406,9 +410,7 @@ contract Swivel {
     Erc20 uToken = Erc20(u);
     uToken.transferFrom(msg.sender, address(this), a);
     MarketPlace mPlace = MarketPlace(marketPlace);
-    address cTokenAddr = mPlace.cTokenAddress(u, m);
-    uToken.approve(cTokenAddr, a);
-    require(CErc20(cTokenAddr).mint(a) == 0, 'minting CToken Failed');
+    require(CErc20(mPlace.cTokenAddress(u, m)).mint(a) == 0, 'minting CToken Failed');
     require(mPlace.mintZcTokenAddingNotional(u, m, msg.sender, a), 'mint ZcToken adding Notional failed');
 
     return true;
