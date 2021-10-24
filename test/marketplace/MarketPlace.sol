@@ -133,7 +133,7 @@ contract MarketPlace {
     
     if (mkt.maturityRate == 0) {
       // Attempt to Mature it
-      require(matureMarket(u, m), 'failed to mature the market');
+      matureMarket(u, m);
     }
 
     // Burn user's zcTokens
