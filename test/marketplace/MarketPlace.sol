@@ -85,11 +85,11 @@ contract MarketPlace {
     require(mkt.maturityRate == 0, 'market already matured');
     require(block.timestamp >= m, "maturity not reached");
 
-    // Set the base maturity cToken exchange rate at maturity to the current cToken exchange rate
+    // set the base maturity cToken exchange rate at maturity to the current cToken exchange rate
     uint256 currentExchangeRate = CErc20(mkt.cTokenAddr).exchangeRateCurrent();
     markets[u][m].maturityRate = currentExchangeRate;
 
-    // Set Floating Market "matured" to true
+    // set Floating Market "matured" to true
     VaultTracker(mkt.vaultAddr).matureVault(currentExchangeRate);
 
     emit Mature(u, m, block.timestamp, currentExchangeRate);
@@ -130,15 +130,15 @@ contract MarketPlace {
   /// @param a Amount of zcTokens being redeemed
   function redeemZcToken(address u, uint256 m, address t, uint256 a) external onlyAddress(swivel) returns (uint256) {
       
-    // If market hasn't matured, mature it and redeem exactly the amount
+    // if market hasn't matured, mature it and redeem exactly the amount
     Market memory mkt = markets[u][m];
     
     if (mkt.maturityRate == 0) {
-      // Attempt to Mature it
+      // attempt to Mature it
       require(matureMarket(u, m), 'failed to mature the market');
     }
 
-    // Burn user's zcTokens
+    // burn user's zcTokens
     require(ZcToken(mkt.zcTokenAddr).burn(t, a), 'could not burn');
 
     emit RedeemZcToken(u, m, t, a);
@@ -156,7 +156,7 @@ contract MarketPlace {
   /// @param m Maturity timestamp of the market
   /// @param t Address of the redeeming user
   function redeemVaultInterest(address u, uint256 m, address t) external onlyAddress(swivel) returns (uint256) {
-    // Call to the floating market contract to release the position and calculate the interest generated
+    // call to the floating market contract to release the position and calculate the interest generated
     uint256 interest = VaultTracker(markets[u][m].vaultAddr).redeemInterest(t);
 
     emit RedeemVaultInterest(u, m, t);

@@ -81,7 +81,7 @@ contract Swivel {
   /// @param c Components of a valid ECDSA signature
   function initiateVaultFillingZcTokenInitiate(Hash.Order calldata o, uint256 a, Sig.Components calldata c) internal {
     bytes32 hash = validOrderHash(o, c);
-    // Checks the side, and the amount compared to amount available
+    // checks the side, and the amount compared to amount available
     require(a <= (o.premium - filled[hash]), 'taker amount > available volume');
 
     filled[hash] += a;
@@ -112,8 +112,7 @@ contract Swivel {
   /// @param c Components of a valid ECDSA signature
   function initiateZcTokenFillingVaultInitiate(Hash.Order calldata o, uint256 a, Sig.Components calldata c) internal {
     bytes32 hash = validOrderHash(o, c);
-
-    // Checks the side, and the amount compared to amount available
+    // checks the side, and the amount compared to amount available
     require((a <= o.principal - filled[hash]), 'taker amount > available volume');
 
     filled[hash] += a;
@@ -142,7 +141,7 @@ contract Swivel {
   /// @param c Components of a valid ECDSA signature
   function initiateZcTokenFillingZcTokenExit(Hash.Order calldata o, uint256 a, Sig.Components calldata c) internal {
     bytes32 hash = validOrderHash(o, c);
-    // Checks the side, and the amount compared to amount available
+    // checks the side, and the amount compared to amount available
     require(a <= ((o.principal - filled[hash])), 'taker amount > available volume');
 
     filled[hash] += a;
@@ -166,7 +165,7 @@ contract Swivel {
   /// @param c Components of a valid ECDSA signature
   function initiateVaultFillingVaultExit(Hash.Order calldata o, uint256 a, Sig.Components calldata c) internal {
     bytes32 hash = validOrderHash(o, c);
-    // Checks the side, and the amount compared to amount available
+    // checks the side, and the amount compared to amount available
     require(a <= (o.premium - filled[hash]), 'taker amount > available volume');
     
     filled[hash] += a;
@@ -195,23 +194,23 @@ contract Swivel {
     unit256 length = o.length; 
     for (uint256 i; i < length; i++)
       Hash.Order memory order = o[i];
-      // Determine whether the order being filled is an exit
+      // determine whether the order being filled is an exit
       if (!order.exit) {
-        // Determine whether the order being filled is a vault initiate or a zcToken initiate
+        // determine whether the order being filled is a vault initiate or a zcToken initiate
           if (!order.vault) {
-            // If filling a zcToken initiate with an exit, one is exiting zcTokens
+            // if filling a zcToken initiate with an exit, one is exiting zcTokens
             exitZcTokenFillingZcTokenInitiate(o[i], a[i], c[i]);
           } else {
-            // If filling a vault initiate with an exit, one is exiting vault notional
+            // if filling a vault initiate with an exit, one is exiting vault notional
             exitVaultFillingVaultInitiate(o[i], a[i], c[i]);
           }
       } else {
-        // Determine whether the order being filled is a vault exit or zcToken exit
+        // determine whether the order being filled is a vault exit or zcToken exit
         if (!order.vault) {
-          // If filling a zcToken exit with an exit, one is exiting vault
+          // if filling a zcToken exit with an exit, one is exiting vault
           exitVaultFillingZcTokenExit(o[i], a[i], c[i]);
         } else {
-          // If filling a vault exit with an exit, one is exiting zcTokens
+          // if filling a vault exit with an exit, one is exiting zcTokens
           exitZcTokenFillingVaultExit(o[i], a[i], c[i]);
         }   
       }   
@@ -240,7 +239,7 @@ contract Swivel {
     uToken.transferFrom(o.maker, msg.sender, principalFilled - a - fee);
     // notify marketplace...
     MarketPlace(marketPlace).p2pZcTokenExchange(o.underlying, o.maturity, msg.sender, o.maker, principalFilled);
-    // Transfer fee in underlying to swivel
+    // transfer fee in underlying to swivel
     uToken.transferFrom(o.maker, address(this), fee);
     
     emit Exit(o.key, hash, o.maker, o.vault, o.exit, msg.sender, a, principalFilled);
@@ -394,6 +393,7 @@ contract Swivel {
     admin = t;
     return true;
   }
+
   /// @notice Allows the admin to mass approve all compound markets, saving marginal approvals
   /// @param u The underlying token address
   /// @param c The compound cToken address
