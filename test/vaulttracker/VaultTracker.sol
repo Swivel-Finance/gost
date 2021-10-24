@@ -237,7 +237,8 @@ contract VaultTracker {
   /// @notice Returns both relevant balances for a given user's vault
   /// @param o Address that owns a vault
   function balancesOf(address o) public view returns (uint256, uint256) {
-    return (vaults[o].notional, vaults[o].redeemable);
+    Vault memory vault = vaults[o];
+    return (vault.notional, vault.redeemable);
   }
 
   modifier onlyAdmin(address a) {
