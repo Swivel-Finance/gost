@@ -16,7 +16,6 @@ contract VaultTracker {
   address public immutable admin;
   address public immutable cTokenAddr;
   address public immutable swivel;
-  bool public matured;
   uint256 public immutable maturity;
   uint256 public maturityRate;
 
@@ -44,7 +43,7 @@ contract VaultTracker {
 
       // If market has matured, calculate marginal interest between the maturity rate and previous position exchange rate
       // Otherwise, calculate marginal exchange rate between current and previous exchange rate.
-      if (matured) { // Calculate marginal interest
+      if (maturityRate > 0) { // Calculate marginal interest
         yield = ((maturityRate * 1e26) / vlt.exchangeRate) - 1e26;
       } else {
         yield = ((exchangeRate * 1e26) / vlt.exchangeRate) - 1e26;
@@ -79,7 +78,7 @@ contract VaultTracker {
 
     // If market has matured, calculate marginal interest between the maturity rate and previous position exchange rate
     // Otherwise, calculate marginal exchange rate between current and previous exchange rate.
-    if (matured) { // Calculate marginal interest
+    if (maturityRate > 0) { // Calculate marginal interest
       yield = ((maturityRate * 1e26) / vlt.exchangeRate) - 1e26;
     } else {
       // Calculate marginal interest
@@ -110,7 +109,7 @@ contract VaultTracker {
 
     // If market has matured, calculate marginal interest between the maturity rate and previous position exchange rate
     // Otherwise, calculate marginal exchange rate between current and previous exchange rate.
-    if (matured) { // Calculate marginal interest
+    if (maturityRate > 0) { // Calculate marginal interest
       yield = ((maturityRate * 1e26) / vlt.exchangeRate) - 1e26;
     } else {
       // Calculate marginal interest
@@ -131,9 +130,8 @@ contract VaultTracker {
   /// @notice Matures the vault
   /// @param currentExchangeRate the current cToken exchangeRate
   function matureVault(uint256 currentExchangeRate) external onlyAdmin(admin) returns (bool) {
-    require(!matured, 'already matured');
+    require(maturityRate > 0, 'already matured');
     require(block.timestamp >= maturity, 'maturity has not been reached');
-    matured = true;
     maturityRate = currentExchangeRate;
     return true;
   }
@@ -154,7 +152,7 @@ contract VaultTracker {
 
     // If market has matured, calculate marginal interest between the maturity rate and previous position exchange rate
     // Otherwise, calculate marginal exchange rate between current and previous exchange rate.
-    if (matured) { // Calculate marginal interest
+    if (maturityRate > 0) { // Calculate marginal interest
       yield = ((maturityRate * 1e26) / from.exchangeRate) - 1e26;
     } else {
       yield = ((exchangeRate * 1e26) / from.exchangeRate) - 1e26;
@@ -174,7 +172,7 @@ contract VaultTracker {
 
       // If market has matured, calculate marginal interest between the maturity rate and previous position exchange rate
       // Otherwise, calculate marginal exchange rate between current and previous exchange rate.
-      if (matured) { // Calculate marginal interest
+      if (maturityRate > 0) { // Calculate marginal interest
         yield = ((maturityRate * 1e26) / to.exchangeRate) - 1e26;
       } else {
         yield = ((exchangeRate * 1e26) / to.exchangeRate) - 1e26;
@@ -214,7 +212,7 @@ contract VaultTracker {
       if (sVault.exchangeRate != 0) {
         // If market has matured, calculate marginal interest between the maturity rate and previous position exchange rate
         // Otherwise, calculate marginal exchange rate between current and previous exchange rate.
-        if (matured) { // Calculate marginal interest
+        if (maturityRate > 0) { // Calculate marginal interest
             yield = ((maturityRate * 1e26) / sVault.exchangeRate) - 1e26;
         } else {
             yield = ((exchangeRate * 1e26) / sVault.exchangeRate) - 1e26;

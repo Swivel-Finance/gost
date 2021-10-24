@@ -18,10 +18,9 @@ contract MarketPlace {
   }
 
   mapping (address => mapping (uint256 => Market)) public markets;
-  mapping (address => mapping (uint256 => bool)) public mature;
   mapping (address => mapping (uint256 => uint256)) public maturityRate;
 
-  address public immutable admin;
+  address public admin;
   address public swivel;
 
   event Create(address indexed underlying, uint256 indexed maturity, address cToken, address zcToken, address vaultTracker);
@@ -39,7 +38,7 @@ contract MarketPlace {
   }
 
   /// @notice Allows the admin to transfer ownership
-  /// @param t
+  /// @param t Address admin is being transferred to 
   function transferAdmin(address t) external onlyAdmin(admin) returns (bool) {
     admin = t;
     return true;
@@ -80,14 +79,12 @@ contract MarketPlace {
   /// @param u Underlying token address associated with the market
   /// @param m Maturity timestamp of the market
   function matureMarket(address u, uint256 m) public returns (bool) {
-    require(!mature[u][m], 'market already matured');
+    require(maturityRate[u][m] > 0, 'market already matured');
     require(block.timestamp >= ZcToken(markets[u][m].zcTokenAddr).maturity(), "maturity not reached");
 
     // Set the base maturity cToken exchange rate at maturity to the current cToken exchange rate
     uint256 currentExchangeRate = CErc20(markets[u][m].cTokenAddr).exchangeRateCurrent();
     maturityRate[u][m] = currentExchangeRate;
-    // Set the maturity state to true (for zcb market)
-    mature[u][m] = true;
 
     // Set Floating Market "matured" to true
     require(VaultTracker(markets[u][m].vaultAddr).matureVault(currentExchangeRate), 'maturity not reached');
@@ -129,20 +126,19 @@ contract MarketPlace {
   function redeemZcToken(address u, uint256 m, address t, uint256 a) external onlySwivel(swivel) returns (uint256) {
     // If market hasn't matured, mature it and redeem exactly the amount
 
-    Market memory mkt = markets[u][m];
-    bool matured = mature[u][m];
-
-    if (!matured) {
+    uint256 marketMaturityRate = maturityRate[u][m];
+    
+    if (marketMaturityRate == 0) {
       // Attempt to Mature it
       require(matureMarket(u, m), 'failed to mature the market');
     }
 
     // Burn user's zcTokens
-    require(ZcToken(mkt.zcTokenAddr).burn(t, a), 'could not burn');
+    require(ZcToken(markets[u][m].zcTokenAddr).burn(t, a), 'could not burn');
 
     emit RedeemZcToken(u, m, t, a);
 
-    if (!matured) {
+    if (marketMaturityRate == 0) {
       return a;
     } else { 
       // if the market was already mature the return should include the amount + marginal floating interest generated on Compound since maturity
