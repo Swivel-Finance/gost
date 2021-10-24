@@ -5,7 +5,7 @@ pragma solidity 0.8.4;
 abstract contract Erc20 {
 	function approve(address, uint256) virtual external returns (bool);
 	function transfer(address, uint256) virtual external returns (bool);
-	function balanceOf(address) virtual external returns (uint256);
+	function balanceOf(address) virtual external view returns (uint256);
 	function transferFrom(address, address, uint256) virtual public returns (bool);
 }
 
