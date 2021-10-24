@@ -29,11 +29,11 @@ contract VaultTracker {
     swivel = s;
 
     // instantiate swivel's vault (unblocking transferNotionalFee)
-    vault[swivel] = Vault({
+    vaults[s] = Vault({
 	      notional: 0,
 	      redeemable: 0,
-	      exchangeRate: exchangeRate
-	  });
+	      exchangeRate: CErc20(c).exchangeRateCurrent()
+	      });
   }
 
   /// @notice ...
@@ -249,3 +249,4 @@ contract VaultTracker {
     _;
   }
 }
+
