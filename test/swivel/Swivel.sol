@@ -16,7 +16,7 @@ contract Swivel {
 
   string constant public NAME = 'Swivel Finance';
   string constant public VERSION = '2.0.0';
-  uint256 constant public HOLD = 259200; // obvs could be a smaller uint but packing?
+  uint256 constant public HOLD = 3 days; // obvs could be a smaller uint but packing?
   bytes32 public immutable domain;
   MarketPlace public immutable marketPlace;
   

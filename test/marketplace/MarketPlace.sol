@@ -175,10 +175,10 @@ contract MarketPlace {
   }
 
   /// @notice Return the ctoken address for a specific market
-  /// @param a Address of the underlying token
+  /// @param u Address of the underlying token
   /// @param m Maturity of the market
-  function cTokenAddress(address a, uint256 m) external view returns (address) {
-    return markets[a][m].cTokenAddr;
+  function cTokenAddress(address u, uint256 m) external view returns (address) {
+    return markets[u][m].cTokenAddr;
   }
 
   /// @notice called by swivel IVFZI && IZFVI
