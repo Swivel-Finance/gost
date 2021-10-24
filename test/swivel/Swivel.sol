@@ -290,7 +290,7 @@ contract Swivel {
     
     MarketPlace mPlace = MarketPlace(marketPlace);
     // alert MarketPlace...
-    require(mPlace.custodialExit(o.underlying, o.maturity, o.maker, msg.sender, a), 'custodial exit failed');
+    mPlace.custodialExit(o.underlying, o.maturity, o.maker, msg.sender, a);
 
     // redeem principal from compound now that coupon and zcb have been burned
     address cTokenAddr = mPlace.cTokenAddress(o.underlying, o.maturity);
@@ -322,7 +322,7 @@ contract Swivel {
 
     MarketPlace mPlace = MarketPlace(marketPlace);
     // inform MarketPlace what happened...
-    require(mPlace.custodialExit(o.underlying, o.maturity, msg.sender, o.maker, principalFilled), 'custodial exit failed');
+    mPlace.custodialExit(o.underlying, o.maturity, msg.sender, o.maker, principalFilled);
 
     // redeem principal from compound now that coupon and zcb have been burned
     address cTokenAddr = mPlace.cTokenAddress(o.underlying, o.maturity);
