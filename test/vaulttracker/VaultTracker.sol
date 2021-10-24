@@ -137,8 +137,6 @@ contract VaultTracker {
   /// @notice Matures the vault
   /// @param currentExchangeRate the current cToken exchangeRate
   function matureVault(uint256 currentExchangeRate) external onlyAdmin(admin) returns (bool) {
-    require(maturityRate > 0, 'already matured');
-    require(block.timestamp >= maturity, 'maturity has not been reached');
     maturityRate = currentExchangeRate;
     return true;
   }
