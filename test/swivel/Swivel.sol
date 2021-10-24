@@ -53,8 +53,7 @@ contract Swivel {
   /// @param a Array of order volume (principal) amounts relative to passed orders
   /// @param c Array of Components from valid ECDSA signatures
   function initiate(Hash.Order[] calldata o, uint256[] calldata a, Sig.Components[] calldata c) external returns (bool) {
-    for (uint256 i=0; i < o.length; i++) {
-      // TODO explain the scenarios
+    for (uint256 i; i < o.length; i++) {
       if (!o[i].exit) {
         if (!o[i].vault) {
           initiateVaultFillingZcTokenInitiate(o[i], a[i], c[i]);
@@ -195,7 +194,7 @@ contract Swivel {
   /// @param a Array of order volume (principal) amounts relative to passed orders
   /// @param c Components of a valid ECDSA signature
   function exit(Hash.Order[] calldata o, uint256[] calldata a, Sig.Components[] calldata c) external returns (bool) {
-    for (uint256 i=0; i < o.length; i++) {
+    for (uint256 i; i < o.length; i++) {
       // Determine whether the order being filled is an exit
       if (!o[i].exit) {
         // Determine whether the order being filled is a vault initiate or a zcToken initiate
