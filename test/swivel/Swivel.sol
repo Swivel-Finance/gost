@@ -54,14 +54,15 @@ contract Swivel {
   /// @param c Array of Components from valid ECDSA signatures
   function initiate(Hash.Order[] calldata o, uint256[] calldata a, Sig.Components[] calldata c) external returns (bool) {
     for (uint256 i; i < o.length; i++) {
-      if (!o[i].exit) {
-        if (!o[i].vault) {
+      Hash.Order memory order = o[i];
+      if (!order.exit) {
+        if (!order.vault) {
           initiateVaultFillingZcTokenInitiate(o[i], a[i], c[i]);
         } else {
           initiateZcTokenFillingVaultInitiate(o[i], a[i], c[i]);
         }
       } else {
-        if (!o[i].vault) {
+        if (!order.vault) {
           initiateZcTokenFillingZcTokenExit(o[i], a[i], c[i]);
         } else {
           initiateVaultFillingVaultExit(o[i], a[i], c[i]);
@@ -191,10 +192,11 @@ contract Swivel {
   /// @param c Components of a valid ECDSA signature
   function exit(Hash.Order[] calldata o, uint256[] calldata a, Sig.Components[] calldata c) external returns (bool) {
     for (uint256 i; i < o.length; i++) {
+      Hash.Order memory order = o[i];
       // Determine whether the order being filled is an exit
-      if (!o[i].exit) {
+      if (!order.exit) {
         // Determine whether the order being filled is a vault initiate or a zcToken initiate
-          if (!o[i].vault) {
+          if (!order.vault) {
             // If filling a zcToken initiate with an exit, one is exiting zcTokens
             exitZcTokenFillingZcTokenInitiate(o[i], a[i], c[i]);
           } else {
@@ -203,7 +205,7 @@ contract Swivel {
           }
       } else {
         // Determine whether the order being filled is a vault exit or zcToken exit
-        if (!o[i].vault) {
+        if (!order.vault) {
           // If filling a zcToken exit with an exit, one is exiting vault
           exitVaultFillingZcTokenExit(o[i], a[i], c[i]);
         } else {
