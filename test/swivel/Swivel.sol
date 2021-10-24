@@ -21,7 +21,7 @@ contract Swivel {
   address public immutable marketPlace;
   address public admin;
   /// @dev holds the fee demoninators for [zcTokenInitiate, zcTokenExit, vaultInitiate, vaultExit]
-  uint16[3] public fenominator;
+  uint16[4] public fenominator;
 
   /// @notice Emitted on order cancellation
   event Cancel (bytes32 indexed key, bytes32 hash);
@@ -390,9 +390,11 @@ contract Swivel {
     admin = t;
     return true;
   }
-
-  function approveCompound(address[] u, address[] c) external onlyAdmin(admin) returns (bool) {
-    for (uint256 i; i < o.length; i++) {
+  /// @notice Allows the admin to mass approve all compound markets, saving marginal approvals
+  /// @param u The underlying token address
+  /// @param c The compound cToken address
+  function approveCompound(address[] calldata u, address[] calldata c) external onlyAdmin(admin) returns (bool) {
+    for (uint256 i; i < u.length; i++) {
       Erc20 uToken = Erc20(u[i]);
       uToken.approve(c[i], 2**256 - 1);
     }
