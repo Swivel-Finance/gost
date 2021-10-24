@@ -39,13 +39,13 @@ contract MarketPlace {
 
   /// @notice Allows the admin to transfer ownership
   /// @param t Address admin is being transferred to 
-  function transferAdmin(address t) external onlyAdmin(admin) returns (bool) {
+  function transferAdmin(address t) external onlyAddress(admin) returns (bool) {
     admin = t;
     return true;
   }
   
   /// @param s Address of the deployed swivel contract
-  function setSwivelAddress(address s) external onlyAdmin(admin) returns (bool) {
+  function setSwivelAddress(address s) external onlyAddress(admin) returns (bool) {
     swivel = s;
     return true;
   }
@@ -63,7 +63,7 @@ contract MarketPlace {
     string memory n,
     string memory s,
     uint8 d
-  ) public onlyAdmin(admin) returns (bool) {
+  ) public onlyAddress(admin) returns (bool) {
     require(swivel != address(0), 'swivel contract address not set');
     // TODO can we live with the factory pattern here both bytecode size wise and CREATE opcode cost wise?
     address zctAddr = address(new ZcToken(u, m, n, s, d));
@@ -99,7 +99,7 @@ contract MarketPlace {
   /// @param m Maturity timestamp of the market
   /// @param t Address of the depositing user
   /// @param a Amount of notional being added
-  function mintZcTokenAddingNotional(address u, uint256 m, address t, uint256 a) external onlySwivel(swivel) returns (bool) {
+  function mintZcTokenAddingNotional(address u, uint256 m, address t, uint256 a) external onlyAddress(swivel) returns (bool) {
     require(ZcToken(markets[u][m].zcTokenAddr).mint(t, a), 'mint zcToken failed');
     require(VaultTracker(markets[u][m].vaultAddr).addNotional(t, a), 'add notional failed');
     
@@ -111,7 +111,7 @@ contract MarketPlace {
   /// @param m Maturity timestamp of the market
   /// @param t Address of the combining/redeeming user
   /// @param a Amount of zcTokens being burned
-  function burnZcTokenRemovingNotional(address u, uint256 m, address t, uint256 a) external onlySwivel(swivel) returns(bool) {
+  function burnZcTokenRemovingNotional(address u, uint256 m, address t, uint256 a) external onlyAddress(swivel) returns(bool) {
     require(ZcToken(markets[u][m].zcTokenAddr).burn(t, a), 'burn failed');
     require(VaultTracker(markets[u][m].vaultAddr).removeNotional(t, a), 'remove notional failed');
     
@@ -123,7 +123,7 @@ contract MarketPlace {
   /// @param m Maturity timestamp of the market
   /// @param t Address of the redeeming user
   /// @param a Amount of zcTokens being redeemed
-  function redeemZcToken(address u, uint256 m, address t, uint256 a) external onlySwivel(swivel) returns (uint256) {
+  function redeemZcToken(address u, uint256 m, address t, uint256 a) external onlyAddress(swivel) returns (uint256) {
     // If market hasn't matured, mature it and redeem exactly the amount
 
     uint256 marketMaturityRate = maturityRate[u][m];
@@ -150,7 +150,7 @@ contract MarketPlace {
   /// @param u Underlying token address associated with the market
   /// @param m Maturity timestamp of the market
   /// @param t Address of the redeeming user
-  function redeemVaultInterest(address u, uint256 m, address t) external onlySwivel(swivel) returns (uint256) {
+  function redeemVaultInterest(address u, uint256 m, address t) external onlyAddress(swivel) returns (uint256) {
     // Call to the floating market contract to release the position and calculate the interest generated
     uint256 interest = VaultTracker(markets[u][m].vaultAddr).redeemInterest(t);
 
@@ -179,7 +179,7 @@ contract MarketPlace {
   /// @param z Recipient of the minted zcToken
   /// @param n Recipient of the added notional
   /// @param a Amount of zcToken minted and notional added
-  function custodialInitiate(address u, uint256 m, address z, address n, uint256 a) external onlySwivel(swivel) returns (bool) {
+  function custodialInitiate(address u, uint256 m, address z, address n, uint256 a) external onlyAddress(swivel) returns (bool) {
     require(ZcToken(markets[u][m].zcTokenAddr).mint(z, a), 'mint failed');
     require(VaultTracker(markets[u][m].vaultAddr).addNotional(n, a), 'add notional failed');
     emit CustodialInitiate(u, m, z, n, a);
@@ -193,7 +193,7 @@ contract MarketPlace {
   /// @param z Owner of the zcToken to be burned
   /// @param n Target to remove notional from
   /// @param a Amount of zcToken burned and notional removed
-  function custodialExit(address u, uint256 m, address z, address n, uint256 a) external onlySwivel(swivel) returns (bool) {
+  function custodialExit(address u, uint256 m, address z, address n, uint256 a) external onlyAddress(swivel) returns (bool) {
     require(ZcToken(markets[u][m].zcTokenAddr).burn(z, a), 'burn failed');
     require(VaultTracker(markets[u][m].vaultAddr).removeNotional(n, a), 'remove notional failed');
     emit CustodialExit(u, m, z, n, a);
@@ -207,7 +207,7 @@ contract MarketPlace {
   /// @param f Owner of the zcToken to be burned
   /// @param t Target to be minted to
   /// @param a Amount of zcToken transfer
-  function p2pZcTokenExchange(address u, uint256 m, address f, address t, uint256 a) external onlySwivel(swivel) returns (bool) {
+  function p2pZcTokenExchange(address u, uint256 m, address f, address t, uint256 a) external onlyAddress(swivel) returns (bool) {
     require(ZcToken(markets[u][m].zcTokenAddr).burn(f, a), 'zcToken burn failed');
     require(ZcToken(markets[u][m].zcTokenAddr).mint(t, a), 'zcToken mint failed');
     emit P2pZcTokenExchange(u, m, f, t, a);
@@ -221,7 +221,7 @@ contract MarketPlace {
   /// @param f Owner of the notional to be transferred
   /// @param t Target to be transferred to
   /// @param a Amount of notional transfer
-  function p2pVaultExchange(address u, uint256 m, address f, address t, uint256 a) external onlySwivel(swivel) returns (bool) {
+  function p2pVaultExchange(address u, uint256 m, address f, address t, uint256 a) external onlyAddress(swivel) returns (bool) {
     require(VaultTracker(markets[u][m].vaultAddr).transferNotionalFrom(f, t, a), 'transfer notional failed');
     emit P2pVaultExchange(u, m, f, t, a);
     return true;
@@ -244,18 +244,13 @@ contract MarketPlace {
   /// @param m Maturity timestamp of the market
   /// @param f Owner of the amount
   /// @param a Amount to transfer
-  function transferVaultNotionalFee(address u, uint256 m, address f, uint256 a) public onlySwivel(swivel) returns (bool) {
+  function transferVaultNotionalFee(address u, uint256 m, address f, uint256 a) public onlyAddress(swivel) returns (bool) {
     VaultTracker(markets[u][m].vaultAddr).transferNotionalFee(f, a);
     return true;
   }
 
-  modifier onlyAdmin(address a) {
-    require(msg.sender == a, 'sender must be admin');
-    _;
-  }
-
-  modifier onlySwivel(address s) {
-    require(msg.sender == s, 'sender must be Swivel contract');
+  modifier onlyAddress(address a) {
+    require(msg.sender == a, 'sender not authorized');
     _;
   }
 }
