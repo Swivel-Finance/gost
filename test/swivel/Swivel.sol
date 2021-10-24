@@ -53,7 +53,8 @@ contract Swivel {
   /// @param a Array of order volume (principal) amounts relative to passed orders
   /// @param c Array of Components from valid ECDSA signatures
   function initiate(Hash.Order[] calldata o, uint256[] calldata a, Sig.Components[] calldata c) external returns (bool) {
-    for (uint256 i; i < o.length; i++) {
+    unit256 length = o.length; 
+    for (uint256 i; i < length; i++)
       Hash.Order memory order = o[i];
       if (!order.exit) {
         if (!order.vault) {
@@ -191,7 +192,8 @@ contract Swivel {
   /// @param a Array of order volume (principal) amounts relative to passed orders
   /// @param c Components of a valid ECDSA signature
   function exit(Hash.Order[] calldata o, uint256[] calldata a, Sig.Components[] calldata c) external returns (bool) {
-    for (uint256 i; i < o.length; i++) {
+    unit256 length = o.length; 
+    for (uint256 i; i < length; i++)
       Hash.Order memory order = o[i];
       // Determine whether the order being filled is an exit
       if (!order.exit) {
