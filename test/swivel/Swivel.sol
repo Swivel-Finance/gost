@@ -157,7 +157,7 @@ contract Swivel {
     // transfer principal - the premium paid + fee in underliyng to swivel (from sender)
     Erc20(o.underlying).transferFrom(msg.sender, o.maker, ((a - premiumFilled) + fee));
     // notify the marketplace...
-    require(MarketPlace(marketPlace).p2pZcTokenExchange(o.underlying, o.maturity, o.maker, msg.sender, a), 'zcToken exchange failed');
+    MarketPlace(marketPlace).p2pZcTokenExchange(o.underlying, o.maturity, o.maker, msg.sender, a);
             
     emit Initiate(o.key, hash, o.maker, o.vault, o.exit, msg.sender, a, premiumFilled);
   }
@@ -240,7 +240,7 @@ contract Swivel {
     // transfer underlying from initiating party to exiting party, minus the price the exit party pays for the exit (premium), and the fee.
     uToken.transferFrom(o.maker, msg.sender, principalFilled - a - fee);
     // notify marketplace...
-    require(MarketPlace(marketPlace).p2pZcTokenExchange(o.underlying, o.maturity, msg.sender, o.maker, principalFilled), 'zcToken exchange failed');
+    MarketPlace(marketPlace).p2pZcTokenExchange(o.underlying, o.maturity, msg.sender, o.maker, principalFilled);
     // Transfer fee in underlying to swivel
     uToken.transferFrom(o.maker, address(this), fee);
     
