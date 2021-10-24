@@ -174,6 +174,9 @@ contract MarketPlace {
     return  a * rate / mkt.maturityRate;
   }
 
+  /// @notice Return the ctoken address for a specific market
+  /// @param a Address of the underlying token
+  /// @param m Maturity of the market
   function cTokenAddress(address a, uint256 m) external view returns (address) {
     return markets[a][m].cTokenAddr;
   }
