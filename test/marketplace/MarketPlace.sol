@@ -246,6 +246,7 @@ contract MarketPlace {
   /// @param t Target to be transferred to
   /// @param a Amount of notional to be transferred
   function transferVaultNotional(address u, uint256 m, address t, uint256 a) public returns (bool) {
+    require(u != t, 'cannot transfer to self');
     require(VaultTracker(markets[u][m].vaultAddr).transferNotionalFrom(msg.sender, t, a), 'vault transfer failed');
     emit TransferVaultNotional(u, m, msg.sender, t, a);
     return true;
