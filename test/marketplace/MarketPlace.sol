@@ -54,21 +54,19 @@ contract MarketPlace {
   }
 
   /// @notice Allows the owner to create new markets
-  /// @param u Underlying token address associated with the new market
   /// @param m Maturity timestamp of the new market
   /// @param c cToken address associated with underlying for the new market
   /// @param n Name of the new zcToken market
   /// @param s Symbol of the new zcToken market
   function createMarket(
-    address u,
     uint256 m,
     address c,
     string memory n,
-    string memory s,
-    uint8 d
+    string memory s
   ) public onlyAddress(admin) returns (bool) {
     address swivelAddr = swivel;
     address uAddr = CErc20(c).underlying(); 
+    uint256 d = Erc20(uAddr).decimals();
     require(markets[uAddr][m].vaultAddr == address(0), 'market already exists');
     require(swivelAddr != address(0), 'swivel contract address not set');
     // TODO can we live with the factory pattern here both bytecode size wise and CREATE opcode cost wise?

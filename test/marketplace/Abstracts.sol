@@ -7,6 +7,7 @@ interface Erc20 {
 	function transfer(address, uint256) external returns (bool);
 	function balanceOf(address) external view returns (uint256);
 	function transferFrom(address, address, uint256) external returns (bool);
+	function decimals() external returns (uint8);
 }
 
 interface CErc20 is Erc20 {
