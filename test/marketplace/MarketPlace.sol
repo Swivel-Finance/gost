@@ -17,11 +17,12 @@ contract MarketPlace {
     address vaultAddr;
     uint256 maturityRate;
   }
-
+  /// @dev maps a token to a given maturity and from there to a given market in our marketplace
   mapping (address => mapping (uint256 => Market)) public markets;
 
   address public admin;
   address public swivel;
+  bool private swivelInitiated;
 
   event Create(address indexed underlying, uint256 indexed maturity, address cToken, address zcToken, address vaultTracker);
   event Mature(address indexed underlying, uint256 indexed maturity, uint256 maturityRate, uint256 matured);
@@ -46,7 +47,9 @@ contract MarketPlace {
   
   /// @param s Address of the deployed swivel contract
   function setSwivelAddress(address s) external onlyAddress(admin) returns (bool) {
+    require (!swivelInitiated, 'can only set the swivel address once`);
     swivel = s;
+    swivelInitiated = true;
     return true;
   }
   
