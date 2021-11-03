@@ -35,13 +35,16 @@ contract Swivel {
   /// @dev filled is 'premiumFilled' when (vault:true, exit:false) && (vault:false, exit:true)
   event Exit(bytes32 indexed key, bytes32 hash, address indexed maker, bool vault, bool exit, address indexed sender, uint256 amount, uint256 filled);
   /// @notice Emitted on token withdrawal scheduling
-  /// @dev token is the address of the token scheduled for withdrawal
-  /// @dev withdrawalTime is the timestamp at which the queued withdrawal will be possible
-  event WithdrawalScheduled (address indexed token, uint256 hold);
+  /// @dev e the address of the token scheduled for withdrawal
+  /// @dev hold the timestamp at which the queued withdrawal will be possible
+  event WithdrawalScheduled (address indexed e, uint256 hold);
+  /// @notice Emitted when a withdrawal is blocked
+  /// @dev e the address of the token withdrawal being blocked
+  event WithdrawalBlocked (address indexed e);
   /// @notice Emitted when the feenominator is changed 
-  /// @dev Array index of the fee being changed
-  /// @dev New uint to be used as the fee denominator
-  event feeChanged (uint256 indexed t, uint256 indexed feenominator);
+  /// @dev t the index of the fee being changed
+  /// @dev feenominator the new uint to be used as the fee denominator
+  event FeeChanged (uint256 indexed t, uint256 indexed feenominator);
 
   /// @param m deployed MarketPlace contract address
   constructor(address m) {
@@ -362,6 +365,7 @@ contract Swivel {
   /// @param e Address of token withdrawal to block
   function blockWithdrawal(address e) external onlyAdmin(admin) {
       withdrawals[e] = 0;
+      emit WithdrawalBlocked(e)
   }
 
   /// @notice Allows the admin to withdraw the given token, provided the holding period has been observed
