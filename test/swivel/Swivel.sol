@@ -60,12 +60,14 @@ contract Swivel {
         if (!order.vault) {
           initiateVaultFillingZcTokenInitiate(o[i], a[i], c[i]);
         } else {
+          // then the user has called `initiate` against a vault initiate and msg.sender is initiating a zcToken position (splitting and selling nTokens, receivingPremium)
           initiateZcTokenFillingVaultInitiate(o[i], a[i], c[i]);
         }
       } else {
         if (!order.vault) {
           initiateZcTokenFillingZcTokenExit(o[i], a[i], c[i]);
         } else {
+          // then the user has called `initiate` against a vault exit (selling nTokens) and msg.sender is initiating a vault (purchasing nTokens, payingPremium)
           initiateVaultFillingVaultExit(o[i], a[i], c[i]);
         }
       }
@@ -76,19 +78,25 @@ contract Swivel {
 
   /// @notice Allows a user to initiate a Vault by filling an offline zcToken initiate order
   /// @dev This method should pass (underlying, maturity, maker, sender, principalFilled) to MarketPlace.custodialInitiate
-  /// @param o The order being filled
+  /// @param o Order being filled
   /// @param a Amount of volume (premium) being filled by the taker's exit
   /// @param c Components of a valid ECDSA signature
   function initiateVaultFillingZcTokenInitiate(Hash.Order calldata o, uint256 a, Sig.Components calldata c) internal {
+    // checks order signature, order cancellation and order expiry
     bytes32 hash = validOrderHash(o, c);
     // Checks the side, and the amount compared to amount available
     require((a + filled[hash]) <= o.premium, 'taker amount > available volume');
 
+    // checks the taker amount passed to amount available in the order
+    require(a <= (o.premium - filled[hash]), 'taker amount > available volume');
+    
+    // adds the taker amount to the order's filled amount
     filled[hash] += a;
 
     uint256 principalFilled = a * o.principal / o.premium;
     uint256 fee = ((principalFilled * 1e18) / fenominator[2]) / 1e18;
 
+    // transfer underlying tokens
     Erc20 uToken = Erc20(o.underlying);
     uToken.transferFrom(msg.sender, o.maker, a);
     uToken.transferFrom(o.maker, address(this), principalFilled);
@@ -98,6 +106,7 @@ contract Swivel {
 
     // alert MarketPlace.
     require(marketPlace.custodialInitiate(o.underlying, o.maturity, o.maker, msg.sender, principalFilled), 'custodial initiate failed');
+
     // transfer fee in vault notional to swivel (from msg.sender)
     require(marketPlace.transferVaultNotionalFee(o.underlying, o.maturity, msg.sender, fee), "notional fee transfer failed");
 
@@ -106,7 +115,7 @@ contract Swivel {
 
   /// @notice Allows a user to initiate a zcToken by filling an offline vault initiate order
   /// @dev This method should pass (underlying, maturity, sender, maker, a) to MarketPlace.custodialInitiate
-  /// @param o The order being filled
+  /// @param o Order being filled
   /// @param o Amount of volume (principal) being filled by the taker's exit
   /// @param c Components of a valid ECDSA signature
   function initiateZcTokenFillingVaultInitiate(Hash.Order calldata o, uint256 a, Sig.Components calldata c) internal {
@@ -134,7 +143,7 @@ contract Swivel {
 
   /// @notice Allows a user to initiate zcToken? by filling an offline zcToken exit order
   /// @dev This method should pass (underlying, maturity, maker, sender, a) to MarketPlace.p2pZcTokenExchange
-  /// @param o The order being filled
+  /// @param o Order being filled
   /// @param a Amount of volume (principal) being filled by the taker's exit
   /// @param c Components of a valid ECDSA signature
   function initiateZcTokenFillingZcTokenExit(Hash.Order calldata o, uint256 a, Sig.Components calldata c) internal {
@@ -148,7 +157,7 @@ contract Swivel {
     uint256 premiumFilled = a * o.premium / o.principal;
     uint256 fee = ((premiumFilled * 1e18) / fenominator[0]) / 1e18;
 
-    // transfer principal - the premium paid + fee in underliyng to swivel (from sender)
+    // transfer underlying tokens - the premium paid + fee in underlying to swivel (from sender)
     Erc20(o.underlying).transferFrom(msg.sender, o.maker, ((a - premiumFilled) + fee));
     // notify the marketplace...
     MarketPlace(marketPlace).p2pZcTokenExchange(o.underlying, o.maturity, o.maker, msg.sender, a);
@@ -158,7 +167,7 @@ contract Swivel {
 
   /// @notice Allows a user to initiate a Vault by filling an offline vault exit order
   /// @dev This method should pass (underlying, maturity, maker, sender, principalFilled) to MarketPlace.p2pVaultExchange
-  /// @param o The order being filled
+  /// @param o Order being filled
   /// @param a Amount of volume (interest) being filled by the taker's exit
   /// @param c Components of a valid ECDSA signature
   function initiateVaultFillingVaultExit(Hash.Order calldata o, uint256 a, Sig.Components calldata c) internal {
@@ -168,7 +177,7 @@ contract Swivel {
     
     filled[hash] += a;
 
-    Erc20(o.underlying).transferFrom(msg.sender, o.maker, a);
+    filled[hash] += a;
 
     uint256 principalFilled = a * o.principal / o.premium;
     uint256 fee = ((principalFilled * 1e18) / fenominator[2]) / 1e18;
@@ -197,7 +206,7 @@ contract Swivel {
             // If filling a zcToken initiate with an exit, one is exiting zcTokens
             exitZcTokenFillingZcTokenInitiate(o[i], a[i], c[i]);
           } else {
-            // If filling a vault initiate with an exit, one is exiting vault notional
+            // then the user has called `exit` against a vault initiate and msg.sender is exiting nTokens (selling nTokens, receivingPremium)
             exitVaultFillingVaultInitiate(o[i], a[i], c[i]);
           }
       } else {
@@ -206,7 +215,7 @@ contract Swivel {
           // If filling a zcToken exit with an exit, one is exiting vault
           exitVaultFillingZcTokenExit(o[i], a[i], c[i]);
         } else {
-          // If filling a vault exit with an exit, one is exiting zcTokens
+           // then the user has called `exit` against a vault exit and msg.sender is exiting zcTokens (buying nTokens + redeeming, payingPremium)
           exitZcTokenFillingVaultExit(o[i], a[i], c[i]);
         }   
       }   
@@ -217,7 +226,7 @@ contract Swivel {
 
   /// @notice Allows a user to exit their zcTokens by filling an offline zcToken initiate order
   /// @dev This method should pass (underlying, maturity, sender, maker, principalFilled) to MarketPlace.p2pZcTokenExchange
-  /// @param o The order being filled
+  /// @param o Order being filled
   /// @param a Amount of volume (interest) being filled by the taker's exit
   /// @param c Components of a valid ECDSA signature
   function exitZcTokenFillingZcTokenInitiate(Hash.Order calldata o, uint256 a, Sig.Components calldata c) internal {
@@ -237,13 +246,16 @@ contract Swivel {
     MarketPlace(marketPlace).p2pZcTokenExchange(o.underlying, o.maturity, msg.sender, o.maker, principalFilled);
     // Transfer fee in underlying to swivel
     uToken.transferFrom(o.maker, address(this), fee);
+
+    // transfer <principalFilled> zcTokens from msg.sender to o.maker
+    require(MarketPlace(marketPlace).p2pZcTokenExchange(o.underlying, o.maturity, msg.sender, o.maker, principalFilled), 'zcToken exchange failed');
     
     emit Exit(o.key, hash, o.maker, o.vault, o.exit, msg.sender, a, principalFilled);
   }
   
   /// @notice Allows a user to exit their Vault by filling an offline vault initiate order
   /// @dev This method should pass (underlying, maturity, sender, maker, a) to MarketPlace.p2pVaultExchange
-  /// @param o The order being filled
+  /// @param o Order being filled
   /// @param a Amount of volume (principal) being filled by the taker's exit
   /// @param c Components of a valid ECDSA signature
   function exitVaultFillingVaultInitiate(Hash.Order calldata o, uint256 a, Sig.Components calldata c) internal {
@@ -264,12 +276,15 @@ contract Swivel {
     // market should transfer <a> notional from sender to maker
     require(MarketPlace(marketPlace).p2pVaultExchange(o.underlying, o.maturity, msg.sender, o.maker, a), 'vault exchange failed');
 
+    // transfer <a> vault.notional (nTokens) from sender to maker
+    require(MarketPlace(marketPlace).p2pVaultExchange(o.underlying, o.maturity, msg.sender, o.maker, a), 'vault exchange failed');
+
     emit Exit(o.key, hash, o.maker, o.vault, o.exit, msg.sender, a, premiumFilled);
   }
 
   /// @notice Allows a user to exit their Vault filling an offline zcToken exit order
   /// @dev This method should pass (underlying, maturity, maker, sender, a) to MarketPlace.exitFillingExit
-  /// @param o The order being filled
+  /// @param o Order being filled
   /// @param a Amount of volume (principal) being filled by the taker's exit
   /// @param c Components of a valid ECDSA signature
   function exitVaultFillingZcTokenExit(Hash.Order calldata o, uint256 a, Sig.Components calldata c) internal {
@@ -295,12 +310,16 @@ contract Swivel {
     // transfer premium-fee to floating exit party
     uToken.transfer(msg.sender, premiumFilled - fee);
 
+    // burn zcTokens + nTokens from o.maker and msg.sender respectively
+    require(mPlace.custodialExit(o.underlying, o.maturity, o.maker, msg.sender, a), 'custodial exit failed');
+
+
     emit Exit(o.key, hash, o.maker, o.vault, o.exit, msg.sender, a, premiumFilled);
   }
 
   /// @notice Allows a user to exit their zcTokens by filling an offline vault exit order
   /// @dev This method should pass (underlying, maturity, sender, maker, principalFilled) to MarketPlace.exitFillingExit
-  /// @param o The order being filled
+  /// @param o Order being filled
   /// @param a Amount of volume (interest) being filled by the taker's exit
   /// @param c Components of a valid ECDSA signature
   function exitZcTokenFillingVaultExit(Hash.Order calldata o, uint256 a, Sig.Components calldata c) internal {
@@ -323,14 +342,16 @@ contract Swivel {
     Erc20 uToken = Erc20(o.underlying);
     // transfer principal-premium-fee back to fixed exit party now that the interest coupon and zcb have been redeemed
     uToken.transfer(msg.sender, principalFilled - a - fee);
-    // transfer premium to floating exit party
     uToken.transfer(o.maker, a);
+
+    // burn <principalFilled> zcTokens + nTokens from msg.sender and o.maker respectively
+    require(mPlace.custodialExit(o.underlying, o.maturity, msg.sender, o.maker, principalFilled), 'custodial exit failed');
 
     emit Exit(o.key, hash, o.maker, o.vault, o.exit, msg.sender, a, principalFilled);
   }
 
   /// @notice Allows a user to cancel an order, preventing it from being filled in the future
-  /// @param o An offline Swivel.Order
+  /// @param o Order being cancelled
   /// @param c Components of a valid ECDSA signature
   function cancel(Hash.Order calldata o, Sig.Components calldata c) external returns (bool) {
     bytes32 hash = validOrderHash(o, c);
