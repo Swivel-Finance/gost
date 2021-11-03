@@ -38,6 +38,10 @@ contract Swivel {
   /// @dev token is the address of the token scheduled for withdrawal
   /// @dev withdrawalTime is the timestamp at which the queued withdrawal will be possible
   event WithdrawalScheduled (address indexed token, uint256 hold);
+  /// @notice Emitted when the feenominator is changed 
+  /// @dev Array index of the fee being changed
+  /// @dev New uint to be used as the fee denominator
+  event feeChanged (uint256 indexed t, uint256 indexed feenominator);
 
   /// @param m deployed MarketPlace contract address
   constructor(address m) {
@@ -376,8 +380,10 @@ contract Swivel {
   /// @notice Allows the admin to set a new fee denominator
   /// @param t The index of the new fee denominator
   /// @param d The new fee denominator
-  function setFee(uint16 t, uint16 d) external onlyAdmin(admin) returns (bool) {
+  function setFee(uint256 t, uint256 d) external onlyAdmin(admin) returns (bool) {
+    require(d > 33, 'new fee too high');
     fenominator[t] = d;
+    emit feeChanged(t, d);
     return true;
   }
 
