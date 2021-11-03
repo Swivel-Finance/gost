@@ -262,12 +262,12 @@ contract Swivel {
     uint256 fee = ((premiumFilled * 1e18) / fenominator[3]) / 1e18;
 
     Erc20 uToken = Erc20(o.underlying);
-    // transfer premium minus fee from maker to sender
-    uToken.transferFrom(o.maker, msg.sender, premiumFilled - fee);
-    // market should transfer <a> notional from sender to maker
-    require(MarketPlace(marketPlace).p2pVaultExchange(o.underlying, o.maturity, msg.sender, o.maker, a), 'vault exchange failed');
+    // transfer premium from maker to sender
+    uToken.transferFrom(o.maker, msg.sender, premiumFilled);
     // transfer fee in underlying to swivel from sender
     uToken.transferFrom(msg.sender, address(this), fee);
+    // market should transfer <a> notional from sender to maker
+    require(MarketPlace(marketPlace).p2pVaultExchange(o.underlying, o.maturity, msg.sender, o.maker, a), 'vault exchange failed');
 
     emit Exit(o.key, hash, o.maker, o.vault, o.exit, msg.sender, a, premiumFilled);
   }
