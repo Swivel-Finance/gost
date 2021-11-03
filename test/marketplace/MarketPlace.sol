@@ -234,7 +234,7 @@ contract MarketPlace {
   /// @param t Target to be transferred to
   /// @param a Amount of notional transfer
   function p2pVaultExchange(address u, uint256 m, address f, address t, uint256 a) external onlyAddress(swivel) returns (bool) {
-    require(VaultTracker(markets[u][m].vaultAddr).transferNotionalFrom(f, t, a), 'transfer notional failed');
+    VaultTracker(markets[u][m].vaultAddr).transferNotionalFrom(f, t, a);
     emit P2pVaultExchange(u, m, f, t, a);
     return true;
   }
@@ -246,7 +246,8 @@ contract MarketPlace {
   /// @param t Target to be transferred to
   /// @param a Amount of notional to be transferred
   function transferVaultNotional(address u, uint256 m, address t, uint256 a) public returns (bool) {
-    require(VaultTracker(markets[u][m].vaultAddr).transferNotionalFrom(msg.sender, t, a), 'vault transfer failed');
+    require(u != t, 'cannot transfer to self');
+    VaultTracker(markets[u][m].vaultAddr).transferNotionalFrom(msg.sender, t, a);
     emit TransferVaultNotional(u, m, msg.sender, t, a);
     return true;
   }
