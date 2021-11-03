@@ -52,13 +52,15 @@ contract MarketPlace {
     swivelInitiated = true;
     return true;
   }
-  
+
   /// @notice Allows the owner to create new markets
+  /// @param u Underlying token address associated with the new market
   /// @param m Maturity timestamp of the new market
   /// @param c cToken address associated with underlying for the new market
   /// @param n Name of the new zcToken market
   /// @param s Symbol of the new zcToken market
-   function createMarket(
+  function createMarket(
+    address u,
     uint256 m,
     address c,
     string memory n,
@@ -95,7 +97,7 @@ contract MarketPlace {
     // set Floating Market "matured" to true
     VaultTracker(mkt.vaultAddr).matureVault(currentExchangeRate);
 
-    emit Mature(u, m, block.timestamp, currentExchangeRate);
+    emit Mature(u, m, currentExchangeRate, block.timestamp);
 
     return true;
   }
