@@ -114,7 +114,7 @@ contract Swivel {
   /// @notice Allows a user to initiate a zcToken by filling an offline vault initiate order
   /// @dev This method should pass (underlying, maturity, sender, maker, a) to MarketPlace.custodialInitiate
   /// @param o The order being filled
-  /// @param o Amount of volume (principal) being filled by the taker's initiate
+  /// @param a Amount of volume (principal) being filled by the taker's initiate
   /// @param c Components of a valid ECDSA signature
   function initiateZcTokenFillingVaultInitiate(Hash.Order calldata o, uint256 a, Sig.Components calldata c) internal {
     bytes32 hash = validOrderHash(o, c);
