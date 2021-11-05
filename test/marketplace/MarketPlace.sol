@@ -104,7 +104,7 @@ contract MarketPlace {
     return true;
   }
 
-  /// @notice Can be called at any point by the admin to pause markets and prevent any further transactions
+  /// @notice Can be called at any point by the admin to unpause markets and resume any further transactions
   function resumeMarkets() public onlyAddress(admin) returns (bool) {
     require(isPaused == true, 'markets not paused');
     isPaused = false;
@@ -281,5 +281,4 @@ contract MarketPlace {
     require(!isPaused, 'markets are paused');
     _;
   }
-
 }
