@@ -146,10 +146,8 @@ contract Swivel {
 
     filled[hash] += a;
 
-    // .interest is interest * ratio / 1e18 where ratio is (a * 1e18) / principal
     uint256 premiumFilled = a * o.premium / o.principal;
-
-    uint256 fee = ((premiumFilled * 1e18) / fenominator[0]) / 1e18;
+    uint256 fee = premiumFilled / fenominator[0];
     
     // transfer underlying tokens - the premium paid in underlying to maker (from sender)
     Erc20(o.underlying).transferFrom(msg.sender, o.maker, a - premiumFilled);
