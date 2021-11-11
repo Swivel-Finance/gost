@@ -27,10 +27,10 @@ var (
 )
 
 // CErc20ABI is the input ABI used to generate the binding from.
-const CErc20ABI = "[{\"inputs\":[],\"name\":\"exchangeRateCurrent\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"n\",\"type\":\"uint256\"}],\"name\":\"exchangeRateCurrentReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"n\",\"type\":\"uint256\"}],\"name\":\"mint\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"mintCalled\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"n\",\"type\":\"uint256\"}],\"name\":\"mintReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"n\",\"type\":\"uint256\"}],\"name\":\"redeem\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"redeemCalled\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"n\",\"type\":\"uint256\"}],\"name\":\"redeemReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"n\",\"type\":\"uint256\"}],\"name\":\"redeemUnderlying\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"redeemUnderlyingCalled\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"n\",\"type\":\"uint256\"}],\"name\":\"redeemUnderlyingReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]"
+const CErc20ABI = "[{\"inputs\":[],\"name\":\"exchangeRateCurrent\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"n\",\"type\":\"uint256\"}],\"name\":\"exchangeRateCurrentReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"n\",\"type\":\"uint256\"}],\"name\":\"mint\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"mintCalled\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"n\",\"type\":\"uint256\"}],\"name\":\"mintReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"n\",\"type\":\"uint256\"}],\"name\":\"redeemUnderlying\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"redeemUnderlyingCalled\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"n\",\"type\":\"uint256\"}],\"name\":\"redeemUnderlyingReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"underlying\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"a\",\"type\":\"address\"}],\"name\":\"underlyingReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]"
 
 // CErc20Bin is the compiled bytecode used for deploying new contracts.
-var CErc20Bin = "0x608060405234801561001057600080fd5b50610362806100206000396000f3fe608060405234801561001057600080fd5b50600436106100a95760003560e01c8063be6babbf11610071578063be6babbf14610164578063d4e7fdd414610182578063d6bcd7aa146101a0578063db006a75146101be578063de9d2a72146101ee578063e7a7b9ce1461020a576100a9565b806329d9ce3e146100ae578063852a12e3146100ca5780639ff9f1d4146100fa578063a0712d6814610116578063bd6d894d14610146575b600080fd5b6100c860048036038101906100c391906102b8565b610226565b005b6100e460048036038101906100df91906102b8565b610230565b6040516100f191906102f0565b60405180910390f35b610114600480360381019061010f91906102b8565b610243565b005b610130600480360381019061012b91906102b8565b61024d565b60405161013d91906102f0565b60405180910390f35b61014e610260565b60405161015b91906102f0565b60405180910390f35b61016c61026a565b60405161017991906102f0565b60405180910390f35b61018a610270565b60405161019791906102f0565b60405180910390f35b6101a8610276565b6040516101b591906102f0565b60405180910390f35b6101d860048036038101906101d391906102b8565b61027c565b6040516101e591906102f0565b60405180910390f35b610208600480360381019061020391906102b8565b61028f565b005b610224600480360381019061021f91906102b8565b610299565b005b8060048190555050565b6000816005819055506004549050919050565b8060068190555050565b6000816001819055506000549050919050565b6000600654905090565b60035481565b60015481565b60055481565b6000816003819055506002549050919050565b8060028190555050565b8060008190555050565b6000813590506102b281610315565b92915050565b6000602082840312156102ca57600080fd5b60006102d8848285016102a3565b91505092915050565b6102ea8161030b565b82525050565b600060208201905061030560008301846102e1565b92915050565b6000819050919050565b61031e8161030b565b811461032957600080fd5b5056fea2646970667358221220ddfaaf48e10553118ec44cd18879e4407f44441670b2f4daa8e5cfc9340a70d464736f6c63430008040033"
+var CErc20Bin = "0x608060405234801561001057600080fd5b50610423806100206000396000f3fe608060405234801561001057600080fd5b506004361061009e5760003560e01c8063bd6d894d11610066578063bd6d894d14610159578063d4e7fdd414610177578063d6bcd7aa14610195578063e7a7b9ce146101b3578063e7ba6774146101cf5761009e565b806329d9ce3e146100a35780636f307dc3146100bf578063852a12e3146100dd5780639ff9f1d41461010d578063a0712d6814610129575b600080fd5b6100bd60048036038101906100b89190610306565b6101eb565b005b6100c76101f5565b6040516100d4919061034d565b60405180910390f35b6100f760048036038101906100f29190610306565b61021f565b6040516101049190610368565b60405180910390f35b61012760048036038101906101229190610306565b610232565b005b610143600480360381019061013e9190610306565b61023c565b6040516101509190610368565b60405180910390f35b61016161024f565b60405161016e9190610368565b60405180910390f35b61017f610259565b60405161018c9190610368565b60405180910390f35b61019d61025f565b6040516101aa9190610368565b60405180910390f35b6101cd60048036038101906101c89190610306565b610265565b005b6101e960048036038101906101e491906102dd565b61026f565b005b8060028190555050565b6000600460009054906101000a900473ffffffffffffffffffffffffffffffffffffffff16905090565b6000816003819055506002549050919050565b8060058190555050565b6000816001819055506000549050919050565b6000600554905090565b60015481565b60035481565b8060008190555050565b80600460006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555050565b6000813590506102c2816103bf565b92915050565b6000813590506102d7816103d6565b92915050565b6000602082840312156102ef57600080fd5b60006102fd848285016102b3565b91505092915050565b60006020828403121561031857600080fd5b6000610326848285016102c8565b91505092915050565b61033881610383565b82525050565b610347816103b5565b82525050565b6000602082019050610362600083018461032f565b92915050565b600060208201905061037d600083018461033e565b92915050565b600061038e82610395565b9050919050565b600073ffffffffffffffffffffffffffffffffffffffff82169050919050565b6000819050919050565b6103c881610383565b81146103d357600080fd5b50565b6103df816103b5565b81146103ea57600080fd5b5056fea2646970667358221220376396d5f3818556fa0fb639a8a07060eff04412ad95b660a0594d18285f7b4d64736f6c63430008040033"
 
 // DeployCErc20 deploys a new Ethereum contract, binding an instance of CErc20 to it.
 func DeployCErc20(auth *bind.TransactOpts, backend bind.ContractBackend) (common.Address, *types.Transaction, *CErc20, error) {
@@ -250,37 +250,6 @@ func (_CErc20 *CErc20CallerSession) MintCalled() (*big.Int, error) {
 	return _CErc20.Contract.MintCalled(&_CErc20.CallOpts)
 }
 
-// RedeemCalled is a free data retrieval call binding the contract method 0xbe6babbf.
-//
-// Solidity: function redeemCalled() view returns(uint256)
-func (_CErc20 *CErc20Caller) RedeemCalled(opts *bind.CallOpts) (*big.Int, error) {
-	var out []interface{}
-	err := _CErc20.contract.Call(opts, &out, "redeemCalled")
-
-	if err != nil {
-		return *new(*big.Int), err
-	}
-
-	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
-
-	return out0, err
-
-}
-
-// RedeemCalled is a free data retrieval call binding the contract method 0xbe6babbf.
-//
-// Solidity: function redeemCalled() view returns(uint256)
-func (_CErc20 *CErc20Session) RedeemCalled() (*big.Int, error) {
-	return _CErc20.Contract.RedeemCalled(&_CErc20.CallOpts)
-}
-
-// RedeemCalled is a free data retrieval call binding the contract method 0xbe6babbf.
-//
-// Solidity: function redeemCalled() view returns(uint256)
-func (_CErc20 *CErc20CallerSession) RedeemCalled() (*big.Int, error) {
-	return _CErc20.Contract.RedeemCalled(&_CErc20.CallOpts)
-}
-
 // RedeemUnderlyingCalled is a free data retrieval call binding the contract method 0xd6bcd7aa.
 //
 // Solidity: function redeemUnderlyingCalled() view returns(uint256)
@@ -310,6 +279,37 @@ func (_CErc20 *CErc20Session) RedeemUnderlyingCalled() (*big.Int, error) {
 // Solidity: function redeemUnderlyingCalled() view returns(uint256)
 func (_CErc20 *CErc20CallerSession) RedeemUnderlyingCalled() (*big.Int, error) {
 	return _CErc20.Contract.RedeemUnderlyingCalled(&_CErc20.CallOpts)
+}
+
+// Underlying is a free data retrieval call binding the contract method 0x6f307dc3.
+//
+// Solidity: function underlying() view returns(address)
+func (_CErc20 *CErc20Caller) Underlying(opts *bind.CallOpts) (common.Address, error) {
+	var out []interface{}
+	err := _CErc20.contract.Call(opts, &out, "underlying")
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
+}
+
+// Underlying is a free data retrieval call binding the contract method 0x6f307dc3.
+//
+// Solidity: function underlying() view returns(address)
+func (_CErc20 *CErc20Session) Underlying() (common.Address, error) {
+	return _CErc20.Contract.Underlying(&_CErc20.CallOpts)
+}
+
+// Underlying is a free data retrieval call binding the contract method 0x6f307dc3.
+//
+// Solidity: function underlying() view returns(address)
+func (_CErc20 *CErc20CallerSession) Underlying() (common.Address, error) {
+	return _CErc20.Contract.Underlying(&_CErc20.CallOpts)
 }
 
 // ExchangeRateCurrentReturns is a paid mutator transaction binding the contract method 0x9ff9f1d4.
@@ -375,48 +375,6 @@ func (_CErc20 *CErc20TransactorSession) MintReturns(n *big.Int) (*types.Transact
 	return _CErc20.Contract.MintReturns(&_CErc20.TransactOpts, n)
 }
 
-// Redeem is a paid mutator transaction binding the contract method 0xdb006a75.
-//
-// Solidity: function redeem(uint256 n) returns(uint256)
-func (_CErc20 *CErc20Transactor) Redeem(opts *bind.TransactOpts, n *big.Int) (*types.Transaction, error) {
-	return _CErc20.contract.Transact(opts, "redeem", n)
-}
-
-// Redeem is a paid mutator transaction binding the contract method 0xdb006a75.
-//
-// Solidity: function redeem(uint256 n) returns(uint256)
-func (_CErc20 *CErc20Session) Redeem(n *big.Int) (*types.Transaction, error) {
-	return _CErc20.Contract.Redeem(&_CErc20.TransactOpts, n)
-}
-
-// Redeem is a paid mutator transaction binding the contract method 0xdb006a75.
-//
-// Solidity: function redeem(uint256 n) returns(uint256)
-func (_CErc20 *CErc20TransactorSession) Redeem(n *big.Int) (*types.Transaction, error) {
-	return _CErc20.Contract.Redeem(&_CErc20.TransactOpts, n)
-}
-
-// RedeemReturns is a paid mutator transaction binding the contract method 0xde9d2a72.
-//
-// Solidity: function redeemReturns(uint256 n) returns()
-func (_CErc20 *CErc20Transactor) RedeemReturns(opts *bind.TransactOpts, n *big.Int) (*types.Transaction, error) {
-	return _CErc20.contract.Transact(opts, "redeemReturns", n)
-}
-
-// RedeemReturns is a paid mutator transaction binding the contract method 0xde9d2a72.
-//
-// Solidity: function redeemReturns(uint256 n) returns()
-func (_CErc20 *CErc20Session) RedeemReturns(n *big.Int) (*types.Transaction, error) {
-	return _CErc20.Contract.RedeemReturns(&_CErc20.TransactOpts, n)
-}
-
-// RedeemReturns is a paid mutator transaction binding the contract method 0xde9d2a72.
-//
-// Solidity: function redeemReturns(uint256 n) returns()
-func (_CErc20 *CErc20TransactorSession) RedeemReturns(n *big.Int) (*types.Transaction, error) {
-	return _CErc20.Contract.RedeemReturns(&_CErc20.TransactOpts, n)
-}
-
 // RedeemUnderlying is a paid mutator transaction binding the contract method 0x852a12e3.
 //
 // Solidity: function redeemUnderlying(uint256 n) returns(uint256)
@@ -457,4 +415,25 @@ func (_CErc20 *CErc20Session) RedeemUnderlyingReturns(n *big.Int) (*types.Transa
 // Solidity: function redeemUnderlyingReturns(uint256 n) returns()
 func (_CErc20 *CErc20TransactorSession) RedeemUnderlyingReturns(n *big.Int) (*types.Transaction, error) {
 	return _CErc20.Contract.RedeemUnderlyingReturns(&_CErc20.TransactOpts, n)
+}
+
+// UnderlyingReturns is a paid mutator transaction binding the contract method 0xe7ba6774.
+//
+// Solidity: function underlyingReturns(address a) returns()
+func (_CErc20 *CErc20Transactor) UnderlyingReturns(opts *bind.TransactOpts, a common.Address) (*types.Transaction, error) {
+	return _CErc20.contract.Transact(opts, "underlyingReturns", a)
+}
+
+// UnderlyingReturns is a paid mutator transaction binding the contract method 0xe7ba6774.
+//
+// Solidity: function underlyingReturns(address a) returns()
+func (_CErc20 *CErc20Session) UnderlyingReturns(a common.Address) (*types.Transaction, error) {
+	return _CErc20.Contract.UnderlyingReturns(&_CErc20.TransactOpts, a)
+}
+
+// UnderlyingReturns is a paid mutator transaction binding the contract method 0xe7ba6774.
+//
+// Solidity: function underlyingReturns(address a) returns()
+func (_CErc20 *CErc20TransactorSession) UnderlyingReturns(a common.Address) (*types.Transaction, error) {
+	return _CErc20.Contract.UnderlyingReturns(&_CErc20.TransactOpts, a)
 }

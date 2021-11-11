@@ -23,6 +23,7 @@ contract Erc20 {
   // balanceOf does not require a mapping.
   address public balanceOfCalled;
 
+  uint8 private decimalsReturn;
   // a boolean flag which allows us to dictate the return of approve(). 
   bool private approveReturn;
   // a uint to return for balanceOf calls
@@ -31,6 +32,14 @@ contract Erc20 {
   bool private transferReturn;
   // a boolean flag which allows us to dictate the return of transferFrom().
   bool private transferFromReturn;
+
+  function decimals() public view returns (uint8) {
+    return decimalsReturn;  
+  }
+
+  function decimalsReturns(uint8 n) public {
+    decimalsReturn = n;
+  }
 
   function approve(address s, uint256 a) public returns (bool) {
     approveCalled[s] = a;
@@ -70,5 +79,4 @@ contract Erc20 {
   function transferFromReturns(bool b) public {
     transferFromReturn = b;
   }
-
 }

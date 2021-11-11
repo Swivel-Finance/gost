@@ -75,13 +75,21 @@ func (s *p2pVaultExchangeSuite) TestP2PVaultExchange() {
 	maturity := s.Dep.Maturity
 	ctoken := s.Dep.CErc20Address
 
-	tx, err := s.MarketPlace.CreateMarket(
-		underlying,
+	tx, err := s.Erc20.DecimalsReturns(uint8(18))
+	assert.Nil(err)
+	assert.NotNil(tx)
+	s.Env.Blockchain.Commit()
+
+	tx, err = s.CErc20.UnderlyingReturns(underlying)
+	assert.Nil(err)
+	assert.NotNil(tx)
+	s.Env.Blockchain.Commit()
+
+	tx, err = s.MarketPlace.CreateMarket(
 		maturity,
 		ctoken,
 		"awesome market",
 		"AM",
-		18,
 	)
 
 	assert.Nil(err)
@@ -136,13 +144,21 @@ func (s *p2pVaultExchangeSuite) TestP2PVaultExchangeTransferNotionalFromFails() 
 	maturity := s.Dep.Maturity
 	ctoken := s.Dep.CErc20Address
 
-	tx, err := s.MarketPlace.CreateMarket(
-		underlying,
+	tx, err := s.Erc20.DecimalsReturns(uint8(18))
+	assert.Nil(err)
+	assert.NotNil(tx)
+	s.Env.Blockchain.Commit()
+
+	tx, err = s.CErc20.UnderlyingReturns(underlying)
+	assert.Nil(err)
+	assert.NotNil(tx)
+	s.Env.Blockchain.Commit()
+
+	tx, err = s.MarketPlace.CreateMarket(
 		maturity,
 		ctoken,
 		"awesome market",
 		"AM",
-		18,
 	)
 
 	assert.Nil(err)

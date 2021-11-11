@@ -5,7 +5,6 @@ import (
 	test "testing"
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
-	"github.com/ethereum/go-ethereum/common"
 	assertions "github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 	"github.com/swivel-finance/gost/test/marketplace"
@@ -16,6 +15,8 @@ type vaultTransferSuite struct {
 	suite.Suite
 	Env         *Env
 	Dep         *Dep
+	Erc20       *mocks.Erc20Session
+	CErc20      *mocks.CErc20Session
 	MarketPlace *marketplace.MarketPlaceSession // *Session objects are created by the go bindings
 }
 
@@ -26,6 +27,24 @@ func (s *vaultTransferSuite) SetupTest() {
 	s.Env = NewEnv(big.NewInt(ONE_ETH)) // each of the wallets in the env will begin with this balance
 	s.Dep, err = Deploy(s.Env)
 	assert.Nil(err)
+
+	s.Erc20 = &mocks.Erc20Session{
+		Contract: s.Dep.Erc20,
+		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
+		TransactOpts: bind.TransactOpts{
+			From:   s.Env.Owner.Opts.From,
+			Signer: s.Env.Owner.Opts.Signer,
+		},
+	}
+
+	s.CErc20 = &mocks.CErc20Session{
+		Contract: s.Dep.CErc20,
+		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
+		TransactOpts: bind.TransactOpts{
+			From:   s.Env.Owner.Opts.From,
+			Signer: s.Env.Owner.Opts.Signer,
+		},
+	}
 
 	s.MarketPlace = &marketplace.MarketPlaceSession{
 		Contract: s.Dep.MarketPlace,
@@ -49,17 +68,25 @@ func (s *vaultTransferSuite) TestVaultTransfer() {
 	user1Opts := s.Env.User1.Opts
 
 	// make a market so that a vault is deployed
-	underlying := common.HexToAddress("0x234567891")
+	underlying := s.Dep.Erc20Address
 	maturity := big.NewInt(1234567)
-	ctoken := common.HexToAddress("0x456")
+	ctoken := s.Dep.CErc20Address
 
-	tx, err := s.MarketPlace.CreateMarket(
-		underlying,
+	tx, err := s.Erc20.DecimalsReturns(uint8(18))
+	assert.Nil(err)
+	assert.NotNil(tx)
+	s.Env.Blockchain.Commit()
+
+	tx, err = s.CErc20.UnderlyingReturns(underlying)
+	assert.Nil(err)
+	assert.NotNil(tx)
+	s.Env.Blockchain.Commit()
+
+	tx, err = s.MarketPlace.CreateMarket(
 		maturity,
 		ctoken,
 		"awesome market",
 		"AM",
-		18,
 	)
 
 	assert.Nil(err)

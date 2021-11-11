@@ -69,17 +69,25 @@ func (s *custodialExitSuite) SetupTest() {
 
 func (s *custodialExitSuite) TestCustodialExit() {
 	assert := assertions.New(s.T())
-	underlying := s.Dep.Erc20Address
+
+	tx, err := s.Erc20.DecimalsReturns(uint8(18))
+	assert.Nil(err)
+	assert.NotNil(tx)
+	s.Env.Blockchain.Commit()
+
+	tx, err = s.CErc20.UnderlyingReturns(s.Dep.Erc20Address)
+	assert.Nil(err)
+	assert.NotNil(tx)
+	s.Env.Blockchain.Commit()
+
 	maturity := s.Dep.Maturity
 	ctoken := s.Dep.CErc20Address
 
-	tx, err := s.MarketPlace.CreateMarket(
-		underlying,
+	tx, err = s.MarketPlace.CreateMarket(
 		maturity,
 		ctoken,
 		"awesome market",
 		"AM",
-		18,
 	)
 
 	assert.Nil(err)
@@ -90,7 +98,7 @@ func (s *custodialExitSuite) TestCustodialExit() {
 	user1Opts := s.Env.User1.Opts
 
 	// we should be able to fetch the market now...
-	market, err := s.MarketPlace.Markets(underlying, maturity)
+	market, err := s.MarketPlace.Markets(s.Dep.Erc20Address, maturity)
 	assert.Nil(err)
 	assert.Equal(market.CTokenAddr, ctoken)
 
@@ -128,7 +136,7 @@ func (s *custodialExitSuite) TestCustodialExit() {
 	s.Env.Blockchain.Commit()
 
 	amount := big.NewInt(100)
-	tx, err = s.MarketPlace.CustodialExit(underlying, maturity, ownerOpts.From, user1Opts.From, amount)
+	tx, err = s.MarketPlace.CustodialExit(s.Dep.Erc20Address, maturity, ownerOpts.From, user1Opts.From, amount)
 	assert.Nil(err)
 	assert.NotNil(tx)
 
@@ -149,17 +157,25 @@ func (s *custodialExitSuite) TestCustodialExit() {
 
 func (s *custodialExitSuite) TestCustodialInitiateBurnFails() {
 	assert := assertions.New(s.T())
-	underlying := s.Dep.Erc20Address
+
+	tx, err := s.Erc20.DecimalsReturns(uint8(18))
+	assert.Nil(err)
+	assert.NotNil(tx)
+	s.Env.Blockchain.Commit()
+
+	tx, err = s.CErc20.UnderlyingReturns(s.Dep.Erc20Address)
+	assert.Nil(err)
+	assert.NotNil(tx)
+	s.Env.Blockchain.Commit()
+
 	maturity := s.Dep.Maturity
 	ctoken := s.Dep.CErc20Address
 
-	tx, err := s.MarketPlace.CreateMarket(
-		underlying,
+	tx, err = s.MarketPlace.CreateMarket(
 		maturity,
 		ctoken,
 		"awesome market",
 		"AM",
-		18,
 	)
 
 	assert.Nil(err)
@@ -170,7 +186,7 @@ func (s *custodialExitSuite) TestCustodialInitiateBurnFails() {
 	user1Opts := s.Env.User1.Opts
 
 	// we should be able to fetch the market now...
-	market, err := s.MarketPlace.Markets(underlying, maturity)
+	market, err := s.MarketPlace.Markets(s.Dep.Erc20Address, maturity)
 	assert.Nil(err)
 	assert.Equal(market.CTokenAddr, ctoken)
 
@@ -208,7 +224,7 @@ func (s *custodialExitSuite) TestCustodialInitiateBurnFails() {
 	s.Env.Blockchain.Commit()
 
 	amount := big.NewInt(100)
-	tx, err = s.MarketPlace.CustodialExit(underlying, maturity, ownerOpts.From, user1Opts.From, amount)
+	tx, err = s.MarketPlace.CustodialExit(s.Dep.Erc20Address, maturity, ownerOpts.From, user1Opts.From, amount)
 	assert.NotNil(err)
 	assert.Regexp("burn failed", err.Error())
 	assert.Nil(tx)
@@ -218,17 +234,25 @@ func (s *custodialExitSuite) TestCustodialInitiateBurnFails() {
 
 func (s *custodialExitSuite) TestCustodialInitiateRemoveNotionalFails() {
 	assert := assertions.New(s.T())
-	underlying := s.Dep.Erc20Address
+
+	tx, err := s.Erc20.DecimalsReturns(uint8(18))
+	assert.Nil(err)
+	assert.NotNil(tx)
+	s.Env.Blockchain.Commit()
+
+	tx, err = s.CErc20.UnderlyingReturns(s.Dep.Erc20Address)
+	assert.Nil(err)
+	assert.NotNil(tx)
+	s.Env.Blockchain.Commit()
+
 	maturity := s.Dep.Maturity
 	ctoken := s.Dep.CErc20Address
 
-	tx, err := s.MarketPlace.CreateMarket(
-		underlying,
+	tx, err = s.MarketPlace.CreateMarket(
 		maturity,
 		ctoken,
 		"awesome market",
 		"AM",
-		18,
 	)
 
 	assert.Nil(err)
@@ -239,7 +263,7 @@ func (s *custodialExitSuite) TestCustodialInitiateRemoveNotionalFails() {
 	user1Opts := s.Env.User1.Opts
 
 	// we should be able to fetch the market now...
-	market, err := s.MarketPlace.Markets(underlying, maturity)
+	market, err := s.MarketPlace.Markets(s.Dep.Erc20Address, maturity)
 	assert.Nil(err)
 	assert.Equal(market.CTokenAddr, ctoken)
 
@@ -277,7 +301,7 @@ func (s *custodialExitSuite) TestCustodialInitiateRemoveNotionalFails() {
 	s.Env.Blockchain.Commit()
 
 	amount := big.NewInt(100)
-	tx, err = s.MarketPlace.CustodialExit(underlying, maturity, ownerOpts.From, user1Opts.From, amount)
+	tx, err = s.MarketPlace.CustodialExit(s.Dep.Erc20Address, maturity, ownerOpts.From, user1Opts.From, amount)
 	assert.NotNil(err)
 	assert.Regexp("remove notional failed", err.Error())
 	assert.Nil(tx)
