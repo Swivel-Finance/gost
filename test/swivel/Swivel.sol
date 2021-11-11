@@ -2,7 +2,7 @@
 
 pragma solidity 0.8.4;
 
-import './Abstracts.sol';
+import './Interfaces.sol';
 import './Hash.sol';
 import './Sig.sol';
 

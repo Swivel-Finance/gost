@@ -6,7 +6,7 @@
 
 pragma solidity 0.8.4;
 
-import './Abstracts.sol';
+import './Interfaces.sol';
 import './ZcToken.sol';
 import './VaultTracker.sol';
 
@@ -15,6 +15,7 @@ contract MarketPlace {
     address cTokenAddr;
     address zcTokenAddr;
     address vaultAddr;
+    uint256 maturityRate;
   }
 
   mapping (address => mapping (uint256 => Market)) public markets;
@@ -45,26 +46,26 @@ contract MarketPlace {
   }
 
   /// @notice Allows the owner to create new markets
-  /// @param u Underlying token address associated with the new market
   /// @param m Maturity timestamp of the new market
   /// @param c cToken address associated with underlying for the new market
   /// @param n Name of the new zcToken market
   /// @param s Symbol of the new zcToken market
   function createMarket(
-    address u,
     uint256 m,
     address c,
     string memory n,
-    string memory s,
-    uint8 d
+    string memory s
   ) public onlyAdmin(admin) returns (bool) {
     require(swivel != address(0), 'swivel contract address not set');
-    // TODO can we live with the factory pattern here both bytecode size wise and CREATE opcode cost wise?
-    address zctAddr = address(new ZcToken(u, m, n, s, d));
-    address vAddr = address(new VaultTracker(m, c, swivel));
-    markets[u][m] = Market(c, zctAddr, vAddr);
+    address swivelAddr = swivel;
+    address underAddr = CErc20(c).underlying();
+    require(markets[underAddr][m].vaultAddr == address(0), 'market already exists');
+    uint8 decimals = Erc20(underAddr).decimals();
+    address zcTokenAddr = address(new ZcToken(underAddr, m, n, s, decimals));
+    address vaultAddr = address(new VaultTracker(m, c, swivelAddr));
+    markets[underAddr][m] = Market(c, zcTokenAddr, vaultAddr, 0);
 
-    emit Create(u, m, c, zctAddr, vAddr);
+    emit Create(underAddr, m, c, zcTokenAddr, vaultAddr);
 
     return true;
   }
@@ -85,7 +86,7 @@ contract MarketPlace {
     // set vault "matured" to true
     require(VaultTracker(markets[u][m].vaultAddr).matureVault(), 'maturity not reached');
 
-    emit Mature(u, m, block.timestamp, currentExchangeRate);
+    emit Mature(u, m, currentExchangeRate, block.timestamp);
 
     return true;
   }

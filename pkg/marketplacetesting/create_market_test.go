@@ -16,6 +16,8 @@ type createMarketSuite struct {
 	suite.Suite
 	Env         *Env
 	Dep         *Dep
+	Erc20       *mocks.Erc20Session
+	CErc20      *mocks.CErc20Session
 	MarketPlace *marketplace.MarketPlaceSession // *Session objects are created by the go bindings
 }
 
@@ -27,6 +29,25 @@ func (s *createMarketSuite) SetupSuite() {
 
 	if err != nil {
 		panic(err)
+	}
+
+	// we need to mock the decimals() and underlying() calls...
+	s.Erc20 = &mocks.Erc20Session{
+		Contract: s.Dep.Erc20,
+		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
+		TransactOpts: bind.TransactOpts{
+			From:   s.Env.Owner.Opts.From,
+			Signer: s.Env.Owner.Opts.Signer,
+		},
+	}
+
+	s.CErc20 = &mocks.CErc20Session{
+		Contract: s.Dep.CErc20,
+		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
+		TransactOpts: bind.TransactOpts{
+			From:   s.Env.Owner.Opts.From,
+			Signer: s.Env.Owner.Opts.Signer,
+		},
 	}
 
 	// binding owner to both, kind of why it exists - but could be any of the env wallets
@@ -42,22 +63,33 @@ func (s *createMarketSuite) SetupSuite() {
 
 func (s *createMarketSuite) TestCreateMarket18Decimals() {
 	assert := assert.New(s.T())
+
+	underlying := s.Dep.Erc20Address
+	ctoken := s.Dep.CErc20Address
+
+	// stub underlying (erc20) methods...
+	tx, err := s.Erc20.DecimalsReturns(uint8(18))
+	assert.Nil(err)
+	assert.NotNil(tx)
+	s.Env.Blockchain.Commit()
+
+	tx, err = s.CErc20.UnderlyingReturns(underlying)
+	assert.Nil(err)
+	assert.NotNil(tx)
+	s.Env.Blockchain.Commit()
+
 	// the swivel address must be set
-	_, err := s.MarketPlace.SetSwivelAddress(s.Dep.SwivelAddress)
+	_, err = s.MarketPlace.SetSwivelAddress(s.Dep.SwivelAddress)
 	assert.Nil(err)
 	s.Env.Blockchain.Commit()
-	// addresses can be BS in this test...
-	underlying := common.HexToAddress("0x123")
-	maturity := big.NewInt(123456789)
-	ctoken := common.HexToAddress("0x456")
 
-	tx, err := s.MarketPlace.CreateMarket(
-		underlying,
+	maturity := big.NewInt(123456789)
+
+	tx, err = s.MarketPlace.CreateMarket(
 		maturity,
 		ctoken,
 		"awesome market",
 		"AM",
-		uint8(18),
 	)
 
 	assert.Nil(err)
@@ -87,22 +119,32 @@ func (s *createMarketSuite) TestCreateMarket18Decimals() {
 
 func (s *createMarketSuite) TestCreateMarket6Decimals() {
 	assert := assert.New(s.T())
+
+	underlying := s.Dep.Erc20Address
+	ctoken := s.Dep.CErc20Address
+	// stub underlying (erc20) methods...
+	tx, err := s.Erc20.DecimalsReturns(uint8(6))
+	assert.Nil(err)
+	assert.NotNil(tx)
+	s.Env.Blockchain.Commit()
+
+	tx, err = s.CErc20.UnderlyingReturns(underlying)
+	assert.Nil(err)
+	assert.NotNil(tx)
+	s.Env.Blockchain.Commit()
+
 	// the swivel address must be set
-	_, err := s.MarketPlace.SetSwivelAddress(s.Dep.SwivelAddress)
+	_, err = s.MarketPlace.SetSwivelAddress(s.Dep.SwivelAddress)
 	assert.Nil(err)
 	s.Env.Blockchain.Commit()
 	// addresses can be BS in this test...
-	underlying := common.HexToAddress("0x234")
 	maturity := big.NewInt(123456781)
-	ctoken := common.HexToAddress("0x567")
 
-	tx, err := s.MarketPlace.CreateMarket(
-		underlying,
+	tx, err = s.MarketPlace.CreateMarket(
 		maturity,
 		ctoken,
 		"awesomer market",
 		"ARM",
-		uint8(6),
 	)
 
 	assert.Nil(err)

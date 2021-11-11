@@ -15,6 +15,8 @@ type redeemVaultInterestSuite struct {
 	suite.Suite
 	Env         *Env
 	Dep         *Dep
+	Erc20       *mocks.Erc20Session
+	CErc20      *mocks.CErc20Session
 	MarketPlace *marketplace.MarketPlaceSession // *Session objects are created by the go bindings
 }
 
@@ -29,6 +31,24 @@ func (s *redeemVaultInterestSuite) SetupTest() {
 	err = s.Env.Blockchain.AdjustTime(0) // set bc timestamp to 0
 	assert.Nil(err)
 	s.Env.Blockchain.Commit()
+
+	s.Erc20 = &mocks.Erc20Session{
+		Contract: s.Dep.Erc20,
+		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
+		TransactOpts: bind.TransactOpts{
+			From:   s.Env.Owner.Opts.From,
+			Signer: s.Env.Owner.Opts.Signer,
+		},
+	}
+
+	s.CErc20 = &mocks.CErc20Session{
+		Contract: s.Dep.CErc20,
+		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
+		TransactOpts: bind.TransactOpts{
+			From:   s.Env.Owner.Opts.From,
+			Signer: s.Env.Owner.Opts.Signer,
+		},
+	}
 
 	s.MarketPlace = &marketplace.MarketPlaceSession{
 		Contract: s.Dep.MarketPlace,
@@ -50,13 +70,21 @@ func (s *redeemVaultInterestSuite) TestRedeemVaultInterest() {
 	maturity := s.Dep.Maturity
 	ctokenAddr := s.Dep.CErc20Address
 
-	tx, err := s.MarketPlace.CreateMarket(
-		s.Dep.Erc20Address,
+	tx, err := s.Erc20.DecimalsReturns(uint8(18))
+	assert.Nil(err)
+	assert.NotNil(tx)
+	s.Env.Blockchain.Commit()
+
+	tx, err = s.CErc20.UnderlyingReturns(s.Dep.Erc20Address)
+	assert.Nil(err)
+	assert.NotNil(tx)
+	s.Env.Blockchain.Commit()
+
+	tx, err = s.MarketPlace.CreateMarket(
 		maturity,
 		ctokenAddr,
 		"awesome market",
 		"AM",
-		18,
 	)
 
 	assert.Nil(err)

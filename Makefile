@@ -202,12 +202,12 @@ copy_vaulttracker_to_build:
 
 copy_marketplace_to_build:
 	@echo "copying marketplace files to marketplace build"
-	cp test/marketplace/Abstracts.sol build/marketplace
+	cp test/marketplace/Interfaces.sol build/marketplace
 	cp test/marketplace/MarketPlace.sol build/marketplace
 
 copy_swivel_to_build:
 	@echo "copying swivel files to marketplace build"
-	cp test/swivel/Abstracts.sol build/swivel
+	cp test/swivel/Interfaces.sol build/swivel
 	cp test/swivel/Hash.sol build/swivel
 	cp test/swivel/Sig.sol build/swivel
 	cp test/swivel/Swivel.sol build/swivel

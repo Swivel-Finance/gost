@@ -18,6 +18,7 @@ type matureMarketSuite struct {
 	suite.Suite
 	Env         *Env
 	Dep         *Dep
+	Erc20       *mocks.Erc20Session
 	CErc20      *mocks.CErc20Session
 	MarketPlace *marketplace.MarketPlaceSession // *Session objects are created by the go bindings
 }
@@ -33,6 +34,15 @@ func (s *matureMarketSuite) SetupTest() {
 	err = s.Env.Blockchain.AdjustTime(0) // set bc timestamp to 0
 	assert.Nil(err)
 	s.Env.Blockchain.Commit()
+
+	s.Erc20 = &mocks.Erc20Session{
+		Contract: s.Dep.Erc20,
+		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
+		TransactOpts: bind.TransactOpts{
+			From:   s.Env.Owner.Opts.From,
+			Signer: s.Env.Owner.Opts.Signer,
+		},
+	}
 
 	s.CErc20 = &mocks.CErc20Session{
 		Contract: s.Dep.CErc20,
@@ -62,17 +72,25 @@ func (s *matureMarketSuite) SetupTest() {
 func (s *matureMarketSuite) TestMaturityNotReached() {
 	assert := assertions.New(s.T())
 	// addresses can be BS in this test as well...
-	underlying := common.HexToAddress("0x123")
+	underlying := s.Dep.Erc20Address
 	maturity := s.Dep.Maturity
 	ctoken := s.Dep.CErc20Address
 
-	tx, err := s.MarketPlace.CreateMarket(
-		underlying,
+	tx, err := s.Erc20.DecimalsReturns(uint8(18))
+	assert.Nil(err)
+	assert.NotNil(tx)
+	s.Env.Blockchain.Commit()
+
+	tx, err = s.CErc20.UnderlyingReturns(underlying)
+	assert.Nil(err)
+	assert.NotNil(tx)
+	s.Env.Blockchain.Commit()
+
+	tx, err = s.MarketPlace.CreateMarket(
 		maturity,
 		ctoken,
 		"awesome market",
 		"AM",
-		18,
 	)
 
 	assert.Nil(err)
@@ -107,18 +125,25 @@ func (s *matureMarketSuite) TestMaturityNotReached() {
 
 func (s *matureMarketSuite) TestMaturityReached() {
 	assert := assertions.New(s.T())
-	// addresses can be BS in this test as well...
-	underlying := common.HexToAddress("0x123")
+	underlying := s.Dep.Erc20Address
 	maturity := s.Dep.Maturity
 	ctoken := s.Dep.CErc20Address
 
-	tx, err := s.MarketPlace.CreateMarket(
-		underlying,
+	tx, err := s.Erc20.DecimalsReturns(uint8(18))
+	assert.Nil(err)
+	assert.NotNil(tx)
+	s.Env.Blockchain.Commit()
+
+	tx, err = s.CErc20.UnderlyingReturns(underlying)
+	assert.Nil(err)
+	assert.NotNil(tx)
+	s.Env.Blockchain.Commit()
+
+	tx, err = s.MarketPlace.CreateMarket(
 		maturity,
 		ctoken,
 		"awesome market",
 		"AM",
-		18,
 	)
 
 	assert.Nil(err)
@@ -200,18 +225,25 @@ func (s *matureMarketSuite) TestMaturityReached() {
 
 func (s *matureMarketSuite) TestVaultMaturityNotReachedRequireFail() {
 	assert := assertions.New(s.T())
-	// addresses can be BS in this test as well...
-	underlying := common.HexToAddress("0x123")
+	underlying := s.Dep.Erc20Address
 	maturity := s.Dep.Maturity
 	ctoken := s.Dep.CErc20Address
 
-	tx, err := s.MarketPlace.CreateMarket(
-		underlying,
+	tx, err := s.Erc20.DecimalsReturns(uint8(18))
+	assert.Nil(err)
+	assert.NotNil(tx)
+	s.Env.Blockchain.Commit()
+
+	tx, err = s.CErc20.UnderlyingReturns(underlying)
+	assert.Nil(err)
+	assert.NotNil(tx)
+	s.Env.Blockchain.Commit()
+
+	tx, err = s.MarketPlace.CreateMarket(
 		maturity,
 		ctoken,
 		"awesome market",
 		"AM",
-		18,
 	)
 
 	assert.Nil(err)
