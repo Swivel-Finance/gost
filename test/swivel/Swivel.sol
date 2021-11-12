@@ -19,7 +19,7 @@ contract Swivel {
   uint256 constant public HOLD = 259200; // obvs could be a smaller uint but packing?
   bytes32 public immutable domain;
   address public immutable marketPlace;
-  address public immutable admin;
+  address public admin;
   /// @dev holds the fee demoninators for [zcTokenInitiate, zcTokenExit, vaultInitiate, vaultExit]
   uint16[] public fenominator;
 
@@ -369,9 +369,15 @@ contract Swivel {
 
   // ********* ADMINISTRATIVE ***************
 
+  /// @param a Address of a new admin
+  function transferAdmin(address a) external authorized(admin) returns (bool) {
+    admin = a;
+    return true;
+  }
+
   /// @notice Allows the admin to schedule the withdrawal of tokens
   /// @param e Address of token to withdraw
-  function scheduleWithdrawal(address e) external onlyAdmin(admin) {
+  function scheduleWithdrawal(address e) external authorized(admin) {
     uint256 when = block.timestamp + HOLD;
     withdrawals[e] = when;
     emit WithdrawalScheduled(e, when);
@@ -379,13 +385,13 @@ contract Swivel {
 
   /// @notice Emergency function to block unplanned withdrawals
   /// @param e Address of token withdrawal to block
-  function blockWithdrawal(address e) external onlyAdmin(admin) {
+  function blockWithdrawal(address e) external authorized(admin) {
       withdrawals[e] = 0;
   }
 
   /// @notice Allows the admin to withdraw the given token, provided the holding period has been observed
   /// @param e Address of token to withdraw
-  function withdraw(address e) external onlyAdmin(admin) {
+  function withdraw(address e) external authorized(admin) {
     uint256 when = withdrawals[e];
     require (when != 0, 'no withdrawal scheduled');
     require (block.timestamp >= when, 'withdrawal still on hold');
@@ -399,7 +405,7 @@ contract Swivel {
   /// @notice Allows the admin to set a new fee denominator
   /// @param t The index of the new fee denominator
   /// @param d The new fee denominator
-  function setFee(uint16 t, uint16 d) external onlyAdmin(admin) returns (bool) {
+  function setFee(uint16 t, uint16 d) external authorized(admin) returns (bool) {
     fenominator[t] = d;
     return true;
   }
@@ -483,8 +489,8 @@ contract Swivel {
     return hash;
   }
 
-  modifier onlyAdmin(address a) {
-    require(msg.sender == a, 'sender must be admin');
+  modifier authorized(address a) {
+    require(msg.sender == a, 'sender must be authorized');
     _;
   }
 }

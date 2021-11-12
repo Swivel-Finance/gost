@@ -51,6 +51,16 @@ func (s *swivelAddrSuite) TestSetSwivelAddr() {
 	assert.Equal(bsAddr, addr)
 }
 
+func (s *swivelAddrSuite) TestSetSwivelAddrFails() {
+	assert := assert.New(s.T())
+	bsAddr := common.HexToAddress("0x123456789")
+	tx, err := s.MarketPlace.SetSwivelAddress(bsAddr)
+	assert.Nil(tx)
+	assert.NotNil(err)
+
+	assert.Regexp("already set", err.Error())
+}
+
 func TestSwivelAddrSuite(t *test.T) {
 	suite.Run(t, &swivelAddrSuite{})
 }
