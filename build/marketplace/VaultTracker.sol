@@ -33,7 +33,7 @@ contract VaultTracker {
   /// @notice Adds notional (nTokens) to a given user's vault
   /// @param o Address that owns a vault
   /// @param a Amount of notional added
-  function addNotional(address o, uint256 a) public onlyAdmin(admin) returns (bool) {
+  function addNotional(address o, uint256 a) external authorized(admin) returns (bool) {
     uint256 exchangeRate = CErc20(cTokenAddr).exchangeRateCurrent();
 
     Vault memory vlt = vaults[o];
@@ -67,7 +67,7 @@ contract VaultTracker {
   /// @notice Removes notional (nTokens) from a given user's vault
   /// @param o Address that owns a vault
   /// @param a Amount of notional to remove
-  function removeNotional(address o, uint256 a) public onlyAdmin(admin) returns (bool) {
+  function removeNotional(address o, uint256 a) external authorized(admin) returns (bool) {
 
     Vault memory vlt = vaults[o];
 
@@ -99,7 +99,7 @@ contract VaultTracker {
 
   /// @notice Redeem's the `redeemable` + marginal interest from a given user's vault
   /// @param o Address that owns a vault
-  function redeemInterest(address o) external onlyAdmin(admin) returns (uint256) {
+  function redeemInterest(address o) external authorized(admin) returns (uint256) {
 
     Vault memory vlt = vaults[o];
 
@@ -129,7 +129,7 @@ contract VaultTracker {
   }
 
   /// @notice Matures the vault and sets the market's maturityRate
-  function matureVault() external onlyAdmin(admin) returns (bool) {
+  function matureVault() external authorized(admin) returns (bool) {
     require(!matured, 'already matured');
     require(block.timestamp >= maturity, 'maturity has not been reached');
     matured = true;
@@ -141,7 +141,7 @@ contract VaultTracker {
   /// @param f Owner of the amount
   /// @param t Recipient of the amount
   /// @param a Amount to transfer
-  function transferNotionalFrom(address f, address t, uint256 a) external onlyAdmin(admin) returns (bool) {
+  function transferNotionalFrom(address f, address t, uint256 a) external authorized(admin) returns (bool) {
     Vault memory from = vaults[f];
     Vault memory to = vaults[t];
 
@@ -198,7 +198,7 @@ contract VaultTracker {
   /// @notice transfers, in notional, a fee payment to the Swivel contract without recalculating marginal interest for the owner
   /// @param f Owner of the amount
   /// @param a Amount to transfer
-  function transferNotionalFee(address f, uint256 a) external onlyAdmin(admin) returns(bool) {
+  function transferNotionalFee(address f, uint256 a) external authorized(admin) returns(bool) {
     Vault memory oVault = vaults[f];
     Vault memory sVault = vaults[swivel];
 
@@ -240,12 +240,12 @@ contract VaultTracker {
 
   /// @notice Returns both relevant balances for a given user's vault
   /// @param o Address that owns a vault
-  function balancesOf(address o) public view returns (uint256, uint256) {
+  function balancesOf(address o) external view returns (uint256, uint256) {
     return (vaults[o].notional, vaults[o].redeemable);
   }
 
-  modifier onlyAdmin(address a) {
-    require(msg.sender == a, 'sender must be admin');
+  modifier authorized(address a) {
+    require(msg.sender == a, 'sender must be authorized');
     _;
   }
 }

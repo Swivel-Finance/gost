@@ -81,7 +81,7 @@ func (s *withdrawalSuite) TestScheduleWithdrawalFails() {
 
 	assert.NotNil(err)
 	assert.Nil(tx)
-	assert.True(strings.Contains(err.Error(), "sender must be admin"))
+	assert.True(strings.Contains(err.Error(), "sender must be authorized"))
 	s.Env.Blockchain.Commit()
 
 	hold, _ := s.Swivel.Withdrawals(tokenAddress)

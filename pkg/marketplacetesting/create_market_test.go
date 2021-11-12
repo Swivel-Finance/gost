@@ -59,6 +59,10 @@ func (s *createMarketSuite) SetupSuite() {
 			Signer: s.Env.Owner.Opts.Signer,
 		},
 	}
+
+	// the swivel address must be set
+	s.MarketPlace.SetSwivelAddress(s.Dep.SwivelAddress)
+	s.Env.Blockchain.Commit()
 }
 
 func (s *createMarketSuite) TestCreateMarket18Decimals() {
@@ -76,11 +80,6 @@ func (s *createMarketSuite) TestCreateMarket18Decimals() {
 	tx, err = s.CErc20.UnderlyingReturns(underlying)
 	assert.Nil(err)
 	assert.NotNil(tx)
-	s.Env.Blockchain.Commit()
-
-	// the swivel address must be set
-	_, err = s.MarketPlace.SetSwivelAddress(s.Dep.SwivelAddress)
-	assert.Nil(err)
 	s.Env.Blockchain.Commit()
 
 	maturity := big.NewInt(123456789)
@@ -133,11 +132,6 @@ func (s *createMarketSuite) TestCreateMarket6Decimals() {
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
 
-	// the swivel address must be set
-	_, err = s.MarketPlace.SetSwivelAddress(s.Dep.SwivelAddress)
-	assert.Nil(err)
-	s.Env.Blockchain.Commit()
-	// addresses can be BS in this test...
 	maturity := big.NewInt(123456781)
 
 	tx, err = s.MarketPlace.CreateMarket(
