@@ -67,6 +67,29 @@ func (s *custodialExitSuite) SetupTest() {
 	s.Env.Blockchain.Commit()
 }
 
+func (s *custodialExitSuite) TestExitFailsWhenPaused() {
+	assert := assertions.New(s.T())
+
+	maturity := big.NewInt(123456789)
+
+	tx, err := s.MarketPlace.Pause(true)
+	assert.Nil(err)
+	assert.NotNil(tx)
+	s.Env.Blockchain.Commit()
+
+	amount := big.NewInt(100)
+	tx, err = s.MarketPlace.CustodialExit(s.Dep.Erc20Address, maturity, s.Env.Owner.Opts.From, s.Env.User1.Opts.From, amount)
+	assert.Nil(tx)
+	assert.NotNil(err)
+	assert.Regexp("markets are paused", err.Error())
+
+	// unpause so the other tests don't fail
+	tx, err = s.MarketPlace.Pause(false)
+	assert.Nil(err)
+	assert.NotNil(tx)
+	s.Env.Blockchain.Commit()
+}
+
 func (s *custodialExitSuite) TestCustodialExit() {
 	assert := assertions.New(s.T())
 

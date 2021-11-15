@@ -65,6 +65,29 @@ func (s *redeemVaultInterestSuite) SetupTest() {
 	s.Env.Blockchain.Commit()
 }
 
+func (s *redeemVaultInterestSuite) TestRedeemFailsWhenPaused() {
+	assert := assertions.New(s.T())
+
+	tx, err := s.MarketPlace.Pause(true)
+	assert.Nil(err)
+	assert.NotNil(tx)
+	s.Env.Blockchain.Commit()
+
+	maturity := big.NewInt(123456789)
+
+	tx, err = s.MarketPlace.RedeemVaultInterest(s.Dep.Erc20Address, maturity, s.Env.Owner.Opts.From)
+
+	assert.Nil(tx)
+	assert.NotNil(err)
+	assert.Regexp("markets are paused", err.Error())
+
+	// unpause so the other tests don't fail
+	tx, err = s.MarketPlace.Pause(false)
+	assert.Nil(err)
+	assert.NotNil(tx)
+	s.Env.Blockchain.Commit()
+}
+
 func (s *redeemVaultInterestSuite) TestRedeemVaultInterest() {
 	assert := assertions.New(s.T())
 	maturity := s.Dep.Maturity

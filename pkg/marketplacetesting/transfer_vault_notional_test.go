@@ -61,6 +61,30 @@ func (s *vaultTransferSuite) SetupTest() {
 	s.Env.Blockchain.Commit()
 }
 
+func (s *vaultTransferSuite) TestTransferFailsWhenPaused() {
+	assert := assertions.New(s.T())
+
+	underlying := s.Dep.Erc20Address
+	maturity := big.NewInt(123456789)
+
+	tx, err := s.MarketPlace.Pause(true)
+	assert.Nil(err)
+	assert.NotNil(tx)
+	s.Env.Blockchain.Commit()
+
+	amount := big.NewInt(100)
+	tx, err = s.MarketPlace.TransferVaultNotional(underlying, maturity, s.Env.User1.Opts.From, amount)
+	assert.Nil(tx)
+	assert.NotNil(err)
+	assert.Regexp("markets are paused", err.Error())
+
+	// unpause so the other tests don't fail
+	tx, err = s.MarketPlace.Pause(false)
+	assert.Nil(err)
+	assert.NotNil(tx)
+	s.Env.Blockchain.Commit()
+}
+
 func (s *vaultTransferSuite) TestVaultTransfer() {
 	assert := assertions.New(s.T())
 

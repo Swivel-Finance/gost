@@ -142,6 +142,8 @@ contract VaultTracker {
   /// @param t Recipient of the amount
   /// @param a Amount to transfer
   function transferNotionalFrom(address f, address t, uint256 a) external authorized(admin) returns (bool) {
+    require(f != t, 'cannot transfer notional to self');
+
     Vault memory from = vaults[f];
     Vault memory to = vaults[t];
 

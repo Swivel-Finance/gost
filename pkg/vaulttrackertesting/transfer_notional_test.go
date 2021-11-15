@@ -58,6 +58,17 @@ func (s *transferSuite) SetupTest() {
 	}
 }
 
+func (s *transferSuite) TestTransferToSelfFails() {
+	assert := assertions.New(s.T())
+
+	owner := s.Env.Owner.Opts.From
+
+	tx, err := s.VaultTracker.TransferNotionalFrom(owner, owner, big.NewInt(100))
+	assert.Nil(tx)
+	assert.NotNil(err)
+	assert.Regexp("cannot transfer notional to self", err.Error())
+}
+
 func (s *transferSuite) TestTransferFailRequireAmount() {
 	assert := assertions.New(s.T())
 
