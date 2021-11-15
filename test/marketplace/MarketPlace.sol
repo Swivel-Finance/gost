@@ -1,13 +1,5 @@
 // SPDX-License-Identifier: UNLICENSED
 
-// TODO update to 0.8.4 (or whatever latest is...)
-
-// NOTE the pattern [underlying, maturity*, cToken, ...]
-
-// pausable: createMarket, matureMarket, mintZcTokenAddingNotional, burnZcTokenRemovingNotional,
-// redeemZcToken, redeemVaultInterest, custodialInitiate, custodialExit, p2pZcTokenExchange, p2pVaultExchange,
-// transferVaultNotional
-
 pragma solidity 0.8.4;
 
 import './Interfaces.sol';
