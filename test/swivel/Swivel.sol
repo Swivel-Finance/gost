@@ -34,14 +34,11 @@ contract Swivel {
   /// @dev filled is 'premiumFilled' when (vault:true, exit:false) && (vault:false, exit:true)
   event Exit(bytes32 indexed key, bytes32 hash, address indexed maker, bool vault, bool exit, address indexed sender, uint256 amount, uint256 filled);
   /// @notice Emitted on token withdrawal scheduling
-  /// @dev token is the address of the token scheduled for withdrawal
-  /// @dev withdrawalTime is the timestamp at which the queued withdrawal will be possible
   event ScheduleWithdrawal(address indexed token, uint256 hold);
-  /// @dev token is the address of the token scheduled for withdrawal
+  /// @notice Emitted on token withdrawal blocking
   event BlockWithdrawal(address indexed token);
-  /// @dev index indicates which value was changed
-  /// @dev feenominator is the new fee denominator at the above index
-  event SetFee(uint256 indexed index, uint256 indexed feenominator)
+  /// @notice Emitted on a change to the feenominators array
+  event SetFee(uint256 indexed index, uint256 indexed feenominator);
 
   /// @param m deployed MarketPlace contract address
   constructor(address m) {
@@ -175,7 +172,7 @@ contract Swivel {
     uToken.transferFrom(msg.sender, o.maker, a - premiumFilled);
 
     uint256 fee = ((premiumFilled * 1e18) / feenominators[0]) / 1e18;
-    uToken.transferFrom(msg.sender, swivel, fee);
+    uToken.transferFrom(msg.sender, address(this), fee);
 
     // transfer <a> zcTokens between users in marketplace
     require(MarketPlace(marketPlace).p2pZcTokenExchange(o.underlying, o.maturity, o.maker, msg.sender, a), 'zcToken exchange failed');
@@ -381,46 +378,56 @@ contract Swivel {
   /// @param a Address of a new admin
   function transferAdmin(address a) external authorized(admin) returns (bool) {
     admin = a;
+
     return true;
   }
 
   /// @notice Allows the admin to schedule the withdrawal of tokens
   /// @param e Address of (erc20) token to withdraw
-  function scheduleWithdrawal(address e) external authorized(admin) {
+  function scheduleWithdrawal(address e) external authorized(admin) returns (bool) {
     uint256 when = block.timestamp + HOLD;
     withdrawals[e] = when;
+
     emit ScheduleWithdrawal(e, when);
+
+    return true;
   }
 
   /// @notice Emergency function to block unplanned withdrawals
   /// @param e Address of token withdrawal to block
-  function blockWithdrawal(address e) external authorized(admin) {
+  function blockWithdrawal(address e) external authorized(admin) returns (bool) {
       withdrawals[e] = 0;
 
-      emit BlockWithdrawal(e)
+      emit BlockWithdrawal(e);
+
+      return true;
   }
 
   /// @notice Allows the admin to withdraw the given token, provided the holding period has been observed
   /// @param e Address of token to withdraw
-  function withdraw(address e) external authorized(admin) {
+  function withdraw(address e) external authorized(admin) returns (bool) {
     uint256 when = withdrawals[e];
     require (when != 0, 'no withdrawal scheduled');
+
     require (block.timestamp >= when, 'withdrawal still on hold');
 
     withdrawals[e] = 0;
 
     Erc20 token = Erc20(e);
     token.transfer(admin, token.balanceOf(address(this)));
+
+    return true;
   }
 
   /// @notice Allows the admin to set a new fee denominator
-  /// @param t The index of the new fee denominator
+  /// @param i The index of the new fee denominator
   /// @param d The new fee denominator
   function setFee(uint16 i, uint16 d) external authorized(admin) returns (bool) {
     feenominators[i] = d;
-    return true;
 
-    emit SetFee(i, d)
+    emit SetFee(i, d);
+
+    return true;
   }
 
   // ********* PROTOCOL UTILITY ***************
