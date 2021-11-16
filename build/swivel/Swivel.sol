@@ -94,25 +94,25 @@ contract Swivel {
     // adds the taker amount to the order's filled amount
     filled[hash] += a;
 
-    // calculate principal filled and fee
-    uint256 principalFilled = (((a * 1e18) / o.premium) * o.principal) / 1e18;
-    uint256 fee = ((principalFilled * 1e18) / fenominator[2]) / 1e18;
-
     // transfer underlying tokens
     Erc20 uToken = Erc20(o.underlying);
     uToken.transferFrom(msg.sender, o.maker, a);
+
+    uint256 principalFilled = (((a * 1e18) / o.premium) * o.principal) / 1e18;
     uToken.transferFrom(o.maker, address(this), principalFilled);
 
     // deposit underlying to Compound and mint cTokens
     MarketPlace mPlace = MarketPlace(marketPlace);
     address cTokenAddr = mPlace.cTokenAddress(o.underlying, o.maturity);
     uToken.approve(cTokenAddr, principalFilled); 
+
     require(CErc20(cTokenAddr).mint(principalFilled) == 0, 'minting CToken failed');
 
     // mint <principalFilled> zcTokens + nTokens and allocate appropriately in marketplace
     require(mPlace.custodialInitiate(o.underlying, o.maturity, o.maker, msg.sender, principalFilled), 'custodial initiate failed');
 
     // transfer fee in vault notional to swivel (from msg.sender)
+    uint256 fee = ((principalFilled * 1e18) / fenominator[2]) / 1e18;
     require(mPlace.transferVaultNotionalFee(o.underlying, o.maturity, msg.sender, fee), "notional fee transfer failed");
 
     emit Initiate(o.key, hash, o.maker, o.vault, o.exit, msg.sender, a, principalFilled);
@@ -130,18 +130,20 @@ contract Swivel {
 
     filled[hash] += a;
 
-    uint256 premiumFilled = (((a * 1e18) / o.principal) * o.premium) / 1e18;
-    uint256 fee = ((premiumFilled * 1e18) / fenominator[0]) / 1e18;
-
     Erc20 uToken = Erc20(o.underlying);
+
+    uint256 premiumFilled = (((a * 1e18) / o.principal) * o.premium) / 1e18;
     uToken.transferFrom(o.maker, msg.sender, premiumFilled);
+
     // transfer principal + fee in underlying to swivel (from sender)
+    uint256 fee = ((premiumFilled * 1e18) / fenominator[0]) / 1e18;
     uToken.transferFrom(msg.sender, address(this), (a + fee));
 
     // deposit underlying to Compound and mint cTokens
     MarketPlace mPlace = MarketPlace(marketPlace);
     address cTokenAddr = mPlace.cTokenAddress(o.underlying, o.maturity);
     uToken.approve(cTokenAddr, a);
+
     require(CErc20(cTokenAddr).mint(a) == 0, 'minting CToken Failed');
     
     // mint <a> zcTokens + nTokens and allocate appropriately in marketplace
@@ -185,16 +187,15 @@ contract Swivel {
 
     filled[hash] += a;
 
-    uint256 principalFilled = (((a * 1e18) / o.premium) * o.principal) / 1e18;
-    uint256 fee = ((principalFilled * 1e18) / fenominator[2]) / 1e18;
-
     Erc20(o.underlying).transferFrom(msg.sender, o.maker, a);
 
     MarketPlace mPlace = MarketPlace(marketPlace);
     // transfer <principalFilled> vault.notional (nTokens) between users in marketplace
+    uint256 principalFilled = (((a * 1e18) / o.premium) * o.principal) / 1e18;
     require(mPlace.p2pVaultExchange(o.underlying, o.maturity, o.maker, msg.sender, principalFilled), 'vault exchange failed');
 
     // transfer fee (in nTokens) to swivel
+    uint256 fee = ((principalFilled * 1e18) / fenominator[2]) / 1e18;
     require(mPlace.transferVaultNotionalFee(o.underlying, o.maturity, msg.sender, fee), "notional fee transfer failed");
 
     emit Initiate(o.key, hash, o.maker, o.vault, o.exit, msg.sender, a, principalFilled);
@@ -245,10 +246,10 @@ contract Swivel {
 
     filled[hash] += a;       
 
+    Erc20 uToken = Erc20(o.underlying);
+
     uint256 principalFilled = (((a * 1e18) / o.premium) * o.principal) / 1e18;
     uint256 fee = ((principalFilled * 1e18) / fenominator[1]) / 1e18;
-
-    Erc20 uToken = Erc20(o.underlying);
     // transfer underlying from initiating party to exiting party, minus the price the exit party pays for the exit (premium), and the fee.
     uToken.transferFrom(o.maker, msg.sender, principalFilled - a - fee);
     // transfer fee in underlying to swivel
@@ -272,17 +273,17 @@ contract Swivel {
     
     filled[hash] += a;
         
-    uint256 premiumFilled = (((a * 1e18) / o.principal) * o.premium) / 1e18;
-    uint256 fee = ((premiumFilled * 1e18) / fenominator[3]) / 1e18;
-
     Erc20 uToken = Erc20(o.underlying);
-    // transfer premium minus fee from maker to sender
-    uToken.transferFrom(o.maker, msg.sender, premiumFilled - fee);
 
+    // transfer premium from maker to sender
+    uint256 premiumFilled = (a * o.premium) / o.principal;
+    uToken.transferFrom(o.maker, msg.sender, premiumFilled);
+
+    uint256 fee = ((premiumFilled * 1e18) / fenominator[3]) / 1e18;
     // transfer fee in underlying to swivel from sender
     uToken.transferFrom(msg.sender, address(this), fee);
 
-    // transfer <a> vault.notional (nTokens) from sender to maker
+    // transfer <a> notional from sender to maker
     require(MarketPlace(marketPlace).p2pVaultExchange(o.underlying, o.maturity, msg.sender, o.maker, a), 'vault exchange failed');
 
     emit Exit(o.key, hash, o.maker, o.vault, o.exit, msg.sender, a, premiumFilled);
@@ -300,9 +301,6 @@ contract Swivel {
     
     filled[hash] += a;
 
-    uint256 premiumFilled = (((a * 1e18) / o.principal) * o.premium) / 1e18;
-    uint256 fee = ((premiumFilled * 1e18) / fenominator[3]) / 1e18;
-    
     // redeem underlying on Compound and burn cTokens
     MarketPlace mPlace = MarketPlace(marketPlace);
     address cTokenAddr = mPlace.cTokenAddress(o.underlying, o.maturity);
@@ -310,8 +308,11 @@ contract Swivel {
 
     Erc20 uToken = Erc20(o.underlying);
     // transfer principal-premium  back to fixed exit party now that the interest coupon and zcb have been redeemed
+    uint256 premiumFilled = (((a * 1e18) / o.principal) * o.premium) / 1e18;
     uToken.transfer(o.maker, a - premiumFilled);
+
     // transfer premium-fee to floating exit party
+    uint256 fee = ((premiumFilled * 1e18) / fenominator[3]) / 1e18;
     uToken.transfer(msg.sender, premiumFilled - fee);
 
     // burn zcTokens + nTokens from o.maker and msg.sender respectively
@@ -333,16 +334,16 @@ contract Swivel {
     
     filled[hash] += a;
 
-    uint256 principalFilled = (((a * 1e18) / o.premium) * o.principal) / 1e18;
-    uint256 fee = ((principalFilled * 1e18) / fenominator[1]) / 1e18;
-
     // redeem underlying on Compound and burn cTokens
     MarketPlace mPlace = MarketPlace(marketPlace);
+
     address cTokenAddr = mPlace.cTokenAddress(o.underlying, o.maturity);
+    uint256 principalFilled = (((a * 1e18) / o.premium) * o.principal) / 1e18;
     require((CErc20(cTokenAddr).redeemUnderlying(principalFilled) == 0), "compound redemption error");
 
     Erc20 uToken = Erc20(o.underlying);
     // transfer principal-premium-fee back to fixed exit party now that the interest coupon and zcb have been redeemed
+    uint256 fee = ((principalFilled * 1e18) / fenominator[1]) / 1e18;
     uToken.transfer(msg.sender, principalFilled - a - fee);
     uToken.transfer(o.maker, a);
 

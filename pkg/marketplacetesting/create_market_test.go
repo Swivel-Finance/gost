@@ -65,6 +65,35 @@ func (s *createMarketSuite) SetupSuite() {
 	s.Env.Blockchain.Commit()
 }
 
+func (s *createMarketSuite) TestCreateFailsWhenPaused() {
+	assert := assert.New(s.T())
+
+	maturity := big.NewInt(123456789)
+	ctoken := s.Dep.CErc20Address
+
+	tx, err := s.MarketPlace.Pause(true)
+	assert.Nil(err)
+	assert.NotNil(tx)
+	s.Env.Blockchain.Commit()
+
+	tx, err = s.MarketPlace.CreateMarket(
+		maturity,
+		ctoken,
+		"nope",
+		"NM",
+	)
+
+	assert.Nil(tx)
+	assert.NotNil(err)
+	assert.Regexp("markets are paused", err.Error())
+
+	// unpause so the other tests don't fail
+	tx, err = s.MarketPlace.Pause(false)
+	assert.Nil(err)
+	assert.NotNil(tx)
+	s.Env.Blockchain.Commit()
+}
+
 func (s *createMarketSuite) TestCreateMarket18Decimals() {
 	assert := assert.New(s.T())
 

@@ -69,6 +69,30 @@ func (s *matureMarketSuite) SetupTest() {
 	s.Env.Blockchain.Commit()
 }
 
+func (s *matureMarketSuite) TestMatureFailsWhenPaused() {
+	assert := assertions.New(s.T())
+
+	underlying := s.Dep.Erc20Address
+	maturity := big.NewInt(123456789)
+
+	tx, err := s.MarketPlace.Pause(true)
+	assert.Nil(err)
+	assert.NotNil(tx)
+	s.Env.Blockchain.Commit()
+
+	tx, err = s.MarketPlace.MatureMarket(underlying, maturity)
+
+	assert.Nil(tx)
+	assert.NotNil(err)
+	assert.Regexp("markets are paused", err.Error())
+
+	// unpause so the other tests don't fail
+	tx, err = s.MarketPlace.Pause(false)
+	assert.Nil(err)
+	assert.NotNil(tx)
+	s.Env.Blockchain.Commit()
+}
+
 func (s *matureMarketSuite) TestMaturityNotReached() {
 	assert := assertions.New(s.T())
 	// addresses can be BS in this test as well...

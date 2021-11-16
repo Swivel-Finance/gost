@@ -68,6 +68,31 @@ func (s *redeemZcTokenSuite) SetupTest() {
 	s.Env.Blockchain.Commit()
 }
 
+func (s *redeemZcTokenSuite) TestRedeemFailsWhenPaused() {
+	assert := assertions.New(s.T())
+
+	tx, err := s.MarketPlace.Pause(true)
+	assert.Nil(err)
+	assert.NotNil(tx)
+	s.Env.Blockchain.Commit()
+
+	underlying := s.Dep.Erc20Address
+	maturity := big.NewInt(123456789)
+	amount := big.NewInt(123456789)
+
+	tx, err = s.MarketPlace.RedeemZcToken(underlying, maturity, s.Env.Owner.Opts.From, amount)
+
+	assert.Nil(tx)
+	assert.NotNil(err)
+	assert.Regexp("markets are paused", err.Error())
+
+	// unpause so the other tests don't fail
+	tx, err = s.MarketPlace.Pause(false)
+	assert.Nil(err)
+	assert.NotNil(tx)
+	s.Env.Blockchain.Commit()
+}
+
 func (s *redeemZcTokenSuite) TestRedeemZcTokenMaturedRequirementFails() {
 	assert := assertions.New(s.T())
 	underlying := s.Dep.Erc20Address
