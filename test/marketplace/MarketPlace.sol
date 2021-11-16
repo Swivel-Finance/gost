@@ -62,12 +62,13 @@ contract MarketPlace {
     string memory s
   ) external authorized(admin) unpaused() returns (bool) {
     require(swivel != address(0), 'swivel contract address not set');
-    address swivelAddr = swivel;
+
     address underAddr = CErc20(c).underlying();
     require(markets[underAddr][m].vaultAddr == address(0), 'market already exists');
+
     uint8 decimals = Erc20(underAddr).decimals();
     address zcTokenAddr = address(new ZcToken(underAddr, m, n, s, decimals));
-    address vaultAddr = address(new VaultTracker(m, c, swivelAddr));
+    address vaultAddr = address(new VaultTracker(m, c, swivel));
     markets[underAddr][m] = Market(c, zcTokenAddr, vaultAddr, 0);
 
     emit Create(underAddr, m, c, zcTokenAddr, vaultAddr);
