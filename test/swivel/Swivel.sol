@@ -21,7 +21,7 @@ contract Swivel {
   address public immutable marketPlace;
   address public admin;
   /// @dev holds the fee demoninators for [zcTokenInitiate, zcTokenExit, vaultInitiate, vaultExit]
-  uint16[] public fenominator;
+  uint16[] public feenominators;
 
   /// @notice Emitted on order cancellation
   event Cancel (bytes32 indexed key, bytes32 hash);
@@ -36,14 +36,19 @@ contract Swivel {
   /// @notice Emitted on token withdrawal scheduling
   /// @dev token is the address of the token scheduled for withdrawal
   /// @dev withdrawalTime is the timestamp at which the queued withdrawal will be possible
-  event WithdrawalScheduled (address indexed token, uint256 hold);
+  event ScheduleWithdrawal(address indexed token, uint256 hold);
+  /// @dev token is the address of the token scheduled for withdrawal
+  event BlockWithdrawal(address indexed token);
+  /// @dev index indicates which value was changed
+  /// @dev feenominator is the new fee denominator at the above index
+  event SetFee(uint256 indexed index, uint256 indexed feenominator)
 
   /// @param m deployed MarketPlace contract address
   constructor(address m) {
     admin = msg.sender;
     domain = Hash.domain(NAME, VERSION, block.chainid, address(this));
     marketPlace = m;
-    fenominator = [200, 600, 400, 200];
+    feenominators = [200, 600, 400, 200];
   }
 
   // ********* INITIATING *************
@@ -82,7 +87,7 @@ contract Swivel {
   /// @notice Allows a user to initiate a Vault by filling an offline zcToken initiate order
   /// @dev This method should pass (underlying, maturity, maker, sender, principalFilled) to MarketPlace.custodialInitiate
   /// @param o Order being filled
-  /// @param a Amount of volume (premium) being filled by the taker's exit
+  /// @param a Amount of volume (premium) being filled by the taker's initiate
   /// @param c Components of a valid ECDSA signature
   function initiateVaultFillingZcTokenInitiate(Hash.Order calldata o, uint256 a, Sig.Components calldata c) internal {
     // checks order signature, order cancellation and order expiry
@@ -112,7 +117,7 @@ contract Swivel {
     require(mPlace.custodialInitiate(o.underlying, o.maturity, o.maker, msg.sender, principalFilled), 'custodial initiate failed');
 
     // transfer fee in vault notional to swivel (from msg.sender)
-    uint256 fee = ((principalFilled * 1e18) / fenominator[2]) / 1e18;
+    uint256 fee = ((principalFilled * 1e18) / feenominators[2]) / 1e18;
     require(mPlace.transferVaultNotionalFee(o.underlying, o.maturity, msg.sender, fee), "notional fee transfer failed");
 
     emit Initiate(o.key, hash, o.maker, o.vault, o.exit, msg.sender, a, principalFilled);
@@ -121,7 +126,7 @@ contract Swivel {
   /// @notice Allows a user to initiate a zcToken by filling an offline vault initiate order
   /// @dev This method should pass (underlying, maturity, sender, maker, a) to MarketPlace.custodialInitiate
   /// @param o Order being filled
-  /// @param o Amount of volume (principal) being filled by the taker's exit
+  /// @param a Amount of volume (principal) being filled by the taker's initiate
   /// @param c Components of a valid ECDSA signature
   function initiateZcTokenFillingVaultInitiate(Hash.Order calldata o, uint256 a, Sig.Components calldata c) internal {
     bytes32 hash = validOrderHash(o, c);
@@ -136,7 +141,7 @@ contract Swivel {
     uToken.transferFrom(o.maker, msg.sender, premiumFilled);
 
     // transfer principal + fee in underlying to swivel (from sender)
-    uint256 fee = ((premiumFilled * 1e18) / fenominator[0]) / 1e18;
+    uint256 fee = ((premiumFilled * 1e18) / feenominators[0]) / 1e18;
     uToken.transferFrom(msg.sender, address(this), (a + fee));
 
     // deposit underlying to Compound and mint cTokens
@@ -155,7 +160,7 @@ contract Swivel {
   /// @notice Allows a user to initiate zcToken? by filling an offline zcToken exit order
   /// @dev This method should pass (underlying, maturity, maker, sender, a) to MarketPlace.p2pZcTokenExchange
   /// @param o Order being filled
-  /// @param a Amount of volume (principal) being filled by the taker's exit
+  /// @param a Amount of volume (principal) being filled by the taker's initiate 
   /// @param c Components of a valid ECDSA signature
   function initiateZcTokenFillingZcTokenExit(Hash.Order calldata o, uint256 a, Sig.Components calldata c) internal {
     bytes32 hash = validOrderHash(o, c);
@@ -164,11 +169,14 @@ contract Swivel {
 
     filled[hash] += a;
 
-    uint256 premiumFilled = (((a * 1e18) / o.principal) * o.premium) / 1e18;
-    uint256 fee = ((premiumFilled * 1e18) / fenominator[0]) / 1e18;
+    Erc20 uToken = Erc20(o.underlying);
 
-    // transfer underlying tokens - the premium paid + fee in underlying to swivel (from sender)
-    Erc20(o.underlying).transferFrom(msg.sender, o.maker, ((a - premiumFilled) + fee));
+    uint256 premiumFilled = (((a * 1e18) / o.principal) * o.premium) / 1e18;
+    uToken.transferFrom(msg.sender, o.maker, a - premiumFilled);
+
+    uint256 fee = ((premiumFilled * 1e18) / feenominators[0]) / 1e18;
+    uToken.transferFrom(msg.sender, swivel, fee);
+
     // transfer <a> zcTokens between users in marketplace
     require(MarketPlace(marketPlace).p2pZcTokenExchange(o.underlying, o.maturity, o.maker, msg.sender, a), 'zcToken exchange failed');
             
@@ -195,7 +203,7 @@ contract Swivel {
     require(mPlace.p2pVaultExchange(o.underlying, o.maturity, o.maker, msg.sender, principalFilled), 'vault exchange failed');
 
     // transfer fee (in nTokens) to swivel
-    uint256 fee = ((principalFilled * 1e18) / fenominator[2]) / 1e18;
+    uint256 fee = ((principalFilled * 1e18) / feenominators[2]) / 1e18;
     require(mPlace.transferVaultNotionalFee(o.underlying, o.maturity, msg.sender, fee), "notional fee transfer failed");
 
     emit Initiate(o.key, hash, o.maker, o.vault, o.exit, msg.sender, a, principalFilled);
@@ -249,7 +257,7 @@ contract Swivel {
     Erc20 uToken = Erc20(o.underlying);
 
     uint256 principalFilled = (((a * 1e18) / o.premium) * o.principal) / 1e18;
-    uint256 fee = ((principalFilled * 1e18) / fenominator[1]) / 1e18;
+    uint256 fee = ((principalFilled * 1e18) / feenominators[1]) / 1e18;
     // transfer underlying from initiating party to exiting party, minus the price the exit party pays for the exit (premium), and the fee.
     uToken.transferFrom(o.maker, msg.sender, principalFilled - a - fee);
     // transfer fee in underlying to swivel
@@ -279,7 +287,7 @@ contract Swivel {
     uint256 premiumFilled = (a * o.premium) / o.principal;
     uToken.transferFrom(o.maker, msg.sender, premiumFilled);
 
-    uint256 fee = ((premiumFilled * 1e18) / fenominator[3]) / 1e18;
+    uint256 fee = ((premiumFilled * 1e18) / feenominators[3]) / 1e18;
     // transfer fee in underlying to swivel from sender
     uToken.transferFrom(msg.sender, address(this), fee);
 
@@ -312,7 +320,7 @@ contract Swivel {
     uToken.transfer(o.maker, a - premiumFilled);
 
     // transfer premium-fee to floating exit party
-    uint256 fee = ((premiumFilled * 1e18) / fenominator[3]) / 1e18;
+    uint256 fee = ((premiumFilled * 1e18) / feenominators[3]) / 1e18;
     uToken.transfer(msg.sender, premiumFilled - fee);
 
     // burn zcTokens + nTokens from o.maker and msg.sender respectively
@@ -343,7 +351,7 @@ contract Swivel {
 
     Erc20 uToken = Erc20(o.underlying);
     // transfer principal-premium-fee back to fixed exit party now that the interest coupon and zcb have been redeemed
-    uint256 fee = ((principalFilled * 1e18) / fenominator[1]) / 1e18;
+    uint256 fee = ((principalFilled * 1e18) / feenominators[1]) / 1e18;
     uToken.transfer(msg.sender, principalFilled - a - fee);
     uToken.transfer(o.maker, a);
 
@@ -377,17 +385,19 @@ contract Swivel {
   }
 
   /// @notice Allows the admin to schedule the withdrawal of tokens
-  /// @param e Address of token to withdraw
+  /// @param e Address of (erc20) token to withdraw
   function scheduleWithdrawal(address e) external authorized(admin) {
     uint256 when = block.timestamp + HOLD;
     withdrawals[e] = when;
-    emit WithdrawalScheduled(e, when);
+    emit ScheduleWithdrawal(e, when);
   }
 
   /// @notice Emergency function to block unplanned withdrawals
   /// @param e Address of token withdrawal to block
   function blockWithdrawal(address e) external authorized(admin) {
       withdrawals[e] = 0;
+
+      emit BlockWithdrawal(e)
   }
 
   /// @notice Allows the admin to withdraw the given token, provided the holding period has been observed
@@ -406,9 +416,11 @@ contract Swivel {
   /// @notice Allows the admin to set a new fee denominator
   /// @param t The index of the new fee denominator
   /// @param d The new fee denominator
-  function setFee(uint16 t, uint16 d) external authorized(admin) returns (bool) {
-    fenominator[t] = d;
+  function setFee(uint16 i, uint16 d) external authorized(admin) returns (bool) {
+    feenominators[i] = d;
     return true;
+
+    emit SetFee(i, d)
   }
 
   // ********* PROTOCOL UTILITY ***************
