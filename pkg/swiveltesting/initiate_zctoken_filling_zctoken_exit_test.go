@@ -172,12 +172,12 @@ func (s *IZFZESuite) TestIZFZE() {
 	amt, err := s.Swivel.Filled(orderHash)
 	assert.Equal(amt, amount)
 
-	// first call to utoken transferfrom 'from' should be sender here...
+	// the recorded call now will be sender, swivel, fee...
 	args, err := s.Erc20.TransferFromCalled(s.Env.Owner.Opts.From)
 	assert.Nil(err)
 	assert.NotNil(args)
-	assert.Equal(args.To, order.Maker)
-	assert.Equal(amt.Cmp(args.Amount), 1) // amount should be (a - pFilled, so less than passed amt)
+	assert.Equal(args.To, s.Dep.SwivelAddress)
+	assert.Equal(amt.Cmp(args.Amount), 1) // amount should be the fee (so less than passed amt)
 
 	// market zctoken transfer from call...
 	marketTransferArgs, err := s.MarketPlace.P2pZcTokenExchangeCalled(order.Underlying)
