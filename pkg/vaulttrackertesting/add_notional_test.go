@@ -70,7 +70,7 @@ func (s *addNotionalSuite) TestAddNotionalCreateVault() {
 	assert.NotNil(vault)
 	assert.Equal(vault.Redeemable.Cmp(ZERO), 0)
 	assert.Equal(vault.Notional.Cmp(ZERO), 0)
-	assert.Equal(vault.ExchangeRate.Cmp(ZERO),0)
+	assert.Equal(vault.ExchangeRate.Cmp(ZERO), 0)
 
 	// call AddNotional for Owner with no vault
 	caller := s.Env.Owner.Opts.From
@@ -106,7 +106,7 @@ func (s *addNotionalSuite) TestAddNotionalNotMatured() {
 	assert.NotNil(vault)
 	assert.Equal(vault.Redeemable.Cmp(ZERO), 0)
 	assert.Equal(vault.Notional.Cmp(ZERO), 0)
-	assert.Equal(vault.ExchangeRate.Cmp(ZERO),0)
+	assert.Equal(vault.ExchangeRate.Cmp(ZERO), 0)
 
 	// call AddNotional for Owner with no vault
 	caller := s.Env.Owner.Opts.From
@@ -165,7 +165,7 @@ func (s *addNotionalSuite) TestAddNotionalMatured() {
 	assert.NotNil(vault)
 	assert.Equal(vault.Redeemable.Cmp(ZERO), 0)
 	assert.Equal(vault.Notional.Cmp(ZERO), 0)
-	assert.Equal(vault.ExchangeRate.Cmp(ZERO),0)
+	assert.Equal(vault.ExchangeRate.Cmp(ZERO), 0)
 
 	// call AddNotional for Owner with no vault
 	caller := s.Env.Owner.Opts.From
@@ -220,7 +220,7 @@ func (s *addNotionalSuite) TestAddNotionalMatured() {
 	s.Env.Blockchain.Commit()
 
 	// call mature
-	tx, err = s.VaultTracker.MatureVault()
+	tx, err = s.VaultTracker.MatureVault(rate3)
 	assert.Nil(err)
 	assert.NotNil(tx)
 

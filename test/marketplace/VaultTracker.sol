@@ -25,6 +25,7 @@ contract VaultTracker {
   address public cTokenAddr;
   address public swivel;
   address public redeemInterestCalled;
+  uint256 public matureVaultCalled;
 
   uint256 private maturityReturn;
   uint256 private redeemInterestReturn;
@@ -64,7 +65,8 @@ contract VaultTracker {
     return maturityReturn;
   }
 
-  function matureVault() public view returns (bool) {
+  function matureVault(uint256 c) public returns (bool) {
+    matureVaultCalled = c;
     return matureVaultReturn;
   }
 

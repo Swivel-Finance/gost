@@ -226,13 +226,14 @@ func (s *matureMarketSuite) TestMaturityReached() {
 
 	s.Env.Blockchain.Commit()
 
-	maturityRate, err := s.MarketPlace.MaturityRate(underlying, maturity)
+	// re-fetch the market so the change is reflected...
+	market, err = s.MarketPlace.Markets(underlying, maturity)
 	assert.Nil(err)
-	assert.Equal(rate, maturityRate)
+	assert.Equal(rate, market.MaturityRate)
 
-	mature, err := s.MarketPlace.Mature(underlying, maturity)
-	assert.Nil(err)
-	assert.Equal(true, mature)
+	// mature, err := s.MarketPlace.Mature(underlying, maturity)
+	// assert.Nil(err)
+	// assert.Equal(true, mature)
 
 	receipt, err := s.Env.Blockchain.TransactionReceipt(context.Background(), tx.Hash())
 	assert.Nil(err)
@@ -322,7 +323,7 @@ func (s *matureMarketSuite) TestVaultMaturityNotReachedRequireFail() {
 
 	tx, err = s.MarketPlace.MatureMarket(underlying, maturity)
 	assert.NotNil(err)
-	assert.Regexp("maturity not reached", err.Error())
+	assert.Regexp("mature vault failed", err.Error())
 	assert.Nil(tx)
 
 	s.Env.Blockchain.Commit()

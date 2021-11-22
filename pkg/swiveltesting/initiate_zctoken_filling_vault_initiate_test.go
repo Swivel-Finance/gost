@@ -208,11 +208,11 @@ func (s *IZFVISuite) TestIZFVI() {
 	assert.Equal(1, args.Amount.Cmp(amt))
 
 	// call to utoken approve...
-	arg, err := s.Erc20.ApproveCalled(s.Dep.CErc20Address)
-	assert.Nil(err)
-	assert.NotNil(arg)
+	// arg, err := s.Erc20.ApproveCalled(s.Dep.CErc20Address)
+	// assert.Nil(err)
+	// assert.NotNil(arg)
 	// the arg here should be the passed "a"
-	assert.Equal(arg, amt)
+	// assert.Equal(arg, amt)
 
 	// the call to ctoken mint, don't reuse arg as they should actually both be "a"
 	mintArg, err := s.CErc20.MintCalled()
