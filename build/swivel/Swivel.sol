@@ -418,7 +418,10 @@ contract Swivel {
     return true;
   }
 
-  function approveCompound(address[] calldata u, address[] calldata c) external authorized(admin) returns (bool) {
+  /// @notice Allows the admin to bulk approve given compound addresses at the underlying token, saving marginal approvals
+  /// @param u array of underlying token addresses
+  /// @param c array of compound token addresses
+  function approveUnderlying(address[] calldata u, address[] calldata c) external authorized(admin) returns (bool) {
     uint256 len = u.length;
     require (len == c.length, 'array length mismatch');
 
