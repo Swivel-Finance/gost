@@ -154,11 +154,12 @@ contract Swivel {
     filled[hash] += a;
 
     uint256 premiumFilled = (a * o.premium) / o.principal;
-    uint256 fee = premiumFilled / feenominators[0];
 
     Erc20 uToken = Erc20(o.underlying);
     // transfer underlying tokens, then take fee
     uToken.transferFrom(msg.sender, o.maker, a - premiumFilled);
+
+    uint256 fee = premiumFilled / feenominators[0];
     uToken.transferFrom(msg.sender, address(this), fee);
 
     // alert marketplace
@@ -244,11 +245,13 @@ contract Swivel {
     Erc20 uToken = Erc20(o.underlying);
 
     uint256 principalFilled = (a * o.principal) / o.premium;
-    uint256 fee = principalFilled / feenominators[1];
     // transfer underlying from initiating party to exiting party, minus the price the exit party pays for the exit (premium), and the fee.
-    uToken.transferFrom(o.maker, msg.sender, principalFilled - a - fee);
+    uToken.transferFrom(o.maker, msg.sender, principalFilled - a);
+
     // transfer fee in underlying to swivel
+    uint256 fee = principalFilled / feenominators[1];
     uToken.transferFrom(o.maker, address(this), fee);
+
     // alert marketplace
     require(MarketPlace(marketPlace).p2pZcTokenExchange(o.underlying, o.maturity, msg.sender, o.maker, principalFilled), 'zcToken exchange failed');
 
