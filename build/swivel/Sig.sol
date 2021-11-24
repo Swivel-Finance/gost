@@ -38,7 +38,7 @@ library Sig {
   /// @return r First 32 bytes
   /// @return s Next 32 bytes
   function split(bytes memory sig) internal pure returns (uint8, bytes32, bytes32) {
-    require(sig.length == 65, 'invalid signature length'); // TODO standardize error messages
+    require(sig.length == 65, 'invalid signature length');
 
     bytes32 r;
     bytes32 s;

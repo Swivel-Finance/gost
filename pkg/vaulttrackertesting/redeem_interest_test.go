@@ -216,7 +216,7 @@ func (s *redeemInterestSuite) TestRedeemInterestMatured() {
 	s.Env.Blockchain.Commit()
 
 	// call mature
-	tx, err = s.VaultTracker.MatureVault()
+	tx, err = s.VaultTracker.MatureVault(rate3)
 	assert.Nil(err)
 	assert.NotNil(tx)
 

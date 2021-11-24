@@ -221,11 +221,11 @@ func (s *IVFZISuite) TestIVFZI() {
 	assert.Equal(pFilled.Cmp(big.NewInt(0)), 1) // should be > 0 regardless
 
 	// call to utoken approve...
-	arg, err := s.Erc20.ApproveCalled(s.Dep.CErc20Address)
-	assert.Nil(err)
-	assert.NotNil(arg)
+	// arg, err := s.Erc20.ApproveCalled(s.Dep.CErc20Address)
+	// assert.Nil(err)
+	// assert.NotNil(arg)
 	// the arg here should be the pFilled
-	assert.Equal(arg, pFilled)
+	// assert.Equal(arg, pFilled)
 
 	// the call to ctoken mint, don't reuse arg as they should actually both be pFilled
 	mintArg, err := s.CErc20.MintCalled()

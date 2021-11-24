@@ -70,7 +70,7 @@ func (s *removeNotionalSuite) TestRemoveNotionalFailRequireAmount() {
 	assert.NotNil(vault)
 	assert.Equal(vault.Redeemable.Cmp(ZERO), 0)
 	assert.Equal(vault.Notional.Cmp(ZERO), 0)
-	assert.Equal(vault.ExchangeRate.Cmp(ZERO),0)
+	assert.Equal(vault.ExchangeRate.Cmp(ZERO), 0)
 
 	// call AddNotional for Owner with no vault and add "small" amount
 	caller := s.Env.Owner.Opts.From
@@ -107,7 +107,7 @@ func (s *removeNotionalSuite) TestRemoveNotionalNotMatured() {
 	assert.NotNil(vault)
 	assert.Equal(vault.Redeemable.Cmp(ZERO), 0)
 	assert.Equal(vault.Notional.Cmp(ZERO), 0)
-	assert.Equal(vault.ExchangeRate.Cmp(ZERO),0)
+	assert.Equal(vault.ExchangeRate.Cmp(ZERO), 0)
 
 	// call AddNotional for Owner with no vault
 	caller := s.Env.Owner.Opts.From
@@ -156,7 +156,7 @@ func (s *removeNotionalSuite) TestRemoveNotionalMatured() {
 	assert.NotNil(vault)
 	assert.Equal(vault.Redeemable.Cmp(ZERO), 0)
 	assert.Equal(vault.Notional.Cmp(ZERO), 0)
-	assert.Equal(vault.ExchangeRate.Cmp(ZERO),0)
+	assert.Equal(vault.ExchangeRate.Cmp(ZERO), 0)
 
 	// call AddNotional for Owner with no vault and add "small" amount
 	caller := s.Env.Owner.Opts.From
@@ -185,7 +185,7 @@ func (s *removeNotionalSuite) TestRemoveNotionalMatured() {
 	s.Env.Blockchain.Commit()
 
 	// call mature
-	tx, err = s.VaultTracker.MatureVault()
+	tx, err = s.VaultTracker.MatureVault(rate3)
 	assert.Nil(err)
 	assert.NotNil(tx)
 
@@ -207,7 +207,7 @@ func (s *removeNotionalSuite) TestRemoveNotionalMatured() {
 	vault, err = s.VaultTracker.Vaults(s.Env.Owner.Opts.From)
 	assert.Nil(err)
 	assert.NotNil(vault)
-	assert.Equal(vault.Notional.Cmp(ZERO),0)
+	assert.Equal(vault.Notional.Cmp(ZERO), 0)
 	assert.Equal(rate4, vault.ExchangeRate)
 	assert.Equal(big.NewInt(56700000), vault.Redeemable)
 }

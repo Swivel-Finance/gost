@@ -374,7 +374,7 @@ func (s *transferSuite) TestTransferMaturedNotExistingVault() {
 	s.Env.Blockchain.Commit()
 
 	// call mature
-	tx, err = s.VaultTracker.MatureVault()
+	tx, err = s.VaultTracker.MatureVault(rate3)
 	assert.Nil(err)
 	assert.NotNil(tx)
 
@@ -498,7 +498,7 @@ func (s *transferSuite) TestTransferMaturedExistingVault() {
 	s.Env.Blockchain.Commit()
 
 	// call mature
-	tx, err = s.VaultTracker.MatureVault()
+	tx, err = s.VaultTracker.MatureVault(rate4)
 	assert.Nil(err)
 	assert.NotNil(tx)
 
