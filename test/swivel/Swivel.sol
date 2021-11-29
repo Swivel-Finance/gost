@@ -414,6 +414,7 @@ contract Swivel {
   /// @param i The index of the new fee denominator
   /// @param d The new fee denominator
   function setFee(uint16 i, uint16 d) external authorized(admin) returns (bool) {
+    require(d >= 33, 'fee is too high');
     feenominators[i] = d;
 
     emit SetFee(i, d);
