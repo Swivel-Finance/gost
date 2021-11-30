@@ -433,7 +433,7 @@ contract Swivel {
 
     for (uint256 i; i < len; i++) {
       Erc20 uToken = Erc20(u[i]);
-      uToken.approve(c[i], max);
+      Safe.approve(uToken, c[i], max);
     }
 
     return true;
