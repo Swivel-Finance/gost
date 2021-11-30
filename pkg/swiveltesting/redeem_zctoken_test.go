@@ -73,7 +73,12 @@ func (s *redeemZcTokenSuite) TestRedeemZcToken() {
 	underlying := s.Dep.Erc20Address
 	maturity := s.Dep.Maturity
 
-	tx, err := s.CErc20.RedeemUnderlyingReturns(big.NewInt(0))
+	// stub the underlying to return true or the Safe lib will revert
+	tx, err := s.Erc20.TransferReturns(true)
+	assert.NotNil(tx)
+	assert.Nil(err)
+
+	tx, err = s.CErc20.RedeemUnderlyingReturns(big.NewInt(0))
 	assert.NotNil(tx)
 	assert.Nil(err)
 

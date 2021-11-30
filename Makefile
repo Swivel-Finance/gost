@@ -210,6 +210,7 @@ copy_swivel_to_build:
 	cp test/swivel/Interfaces.sol build/swivel
 	cp test/swivel/Hash.sol build/swivel
 	cp test/swivel/Sig.sol build/swivel
+	cp test/swivel/Safe.sol build/swivel
 	cp test/swivel/Swivel.sol build/swivel
 
 copy_to_build: copy_zctoken_to_build copy_vaulttracker_to_build copy_marketplace_to_build copy_swivel_to_build
