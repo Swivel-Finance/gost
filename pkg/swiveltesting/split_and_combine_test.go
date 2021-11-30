@@ -76,8 +76,13 @@ func (s *splitCombineSuite) SetupTest() {
 func (s *splitCombineSuite) TestSplit() {
 	assert := assert.New(s.T())
 
+	// stub the underlying to return true or the Safe lib will revert
+	tx, err := s.Erc20.TransferFromReturns(true)
+	assert.NotNil(tx)
+	assert.Nil(err)
+
 	// stub (Cerc20) to return 0
-	tx, err := s.CErc20.MintReturns(big.NewInt(0))
+	tx, err = s.CErc20.MintReturns(big.NewInt(0))
 	assert.NotNil(tx)
 	assert.Nil(err)
 	s.Env.Blockchain.Commit()
@@ -115,8 +120,13 @@ func (s *splitCombineSuite) TestSplit() {
 func (s *splitCombineSuite) TestCombine() {
 	assert := assert.New(s.T())
 
+	// stub the underlying to return true or the Safe lib will revert
+	tx, err := s.Erc20.TransferReturns(true)
+	assert.NotNil(tx)
+	assert.Nil(err)
+
 	// stub (Cerc20) to return 0
-	tx, err := s.CErc20.RedeemUnderlyingReturns(big.NewInt(0))
+	tx, err = s.CErc20.RedeemUnderlyingReturns(big.NewInt(0))
 	assert.NotNil(tx)
 	assert.Nil(err)
 	s.Env.Blockchain.Commit()

@@ -121,20 +121,24 @@ func (s *withdrawalSuite) TestWithdrawalFailsOnHold() {
 func (s *withdrawalSuite) TestWithdrawal() {
 	assert := assert.New(s.T())
 
-	// reset time to 0
-	err := s.Env.Blockchain.AdjustTime(0)
-	if err != nil {
-		panic(err)
-	}
+	// stub the underlying to return true or the Safe lib will revert
+	tx, err := s.Erc20.TransferReturns(true)
+	assert.NotNil(tx)
+	assert.Nil(err)
+
+	// stub the balanceOf return
+	oneBill := big.NewInt(1000000000)
+	tx, err = s.Erc20.BalanceOfReturns(oneBill)
+	assert.NotNil(tx)
+	assert.Nil(err)
 
 	s.Env.Blockchain.Commit()
 
-	oneBill := big.NewInt(1000000000)
-
-	// stub the balanceOf return
-	tx, err := s.Erc20.BalanceOfReturns(oneBill)
-	assert.NotNil(tx)
-	assert.Nil(err)
+	// reset time to 0
+	err = s.Env.Blockchain.AdjustTime(0)
+	if err != nil {
+		panic(err)
+	}
 
 	s.Env.Blockchain.Commit()
 

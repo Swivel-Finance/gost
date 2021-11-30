@@ -52,10 +52,16 @@ func (s *approveUnderlyingSuite) SetupTest() {
 func (s *approveUnderlyingSuite) TestApprove() {
 	assert := assert.New(s.T())
 
+	// stub the underlying to return true or the Safe lib will revert
+	tx, err := s.Erc20.ApproveReturns(true)
+	assert.NotNil(tx)
+	assert.Nil(err)
+	s.Env.Blockchain.Commit()
+
 	uTokens := []common.Address{s.Dep.Erc20Address}
 	cTokens := []common.Address{s.Dep.CErc20Address}
 
-	tx, err := s.Swivel.ApproveUnderlying(uTokens, cTokens)
+	tx, err = s.Swivel.ApproveUnderlying(uTokens, cTokens)
 
 	assert.Nil(err)
 	assert.NotNil(tx)
