@@ -22,6 +22,7 @@ contract Swivel {
   address public immutable marketPlace;
   address public admin;
   /// @dev holds the fee demoninators for [zcTokenInitiate, zcTokenExit, vaultInitiate, vaultExit]
+  uint16 constant public MIN_FEENOMINATOR = 33;
   uint16[4] public feenominators;
 
   /// @notice Emitted on order cancellation
@@ -415,6 +416,8 @@ contract Swivel {
   /// @param i The index of the new fee denominator
   /// @param d The new fee denominator
   function setFee(uint16 i, uint16 d) external authorized(admin) returns (bool) {
+    require(d >= MIN_FEENOMINATOR, 'fee too high');
+
     feenominators[i] = d;
 
     emit SetFee(i, d);
