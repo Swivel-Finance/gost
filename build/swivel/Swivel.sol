@@ -21,8 +21,8 @@ contract Swivel {
   bytes32 public immutable domain;
   address public immutable marketPlace;
   address public admin;
-  /// @dev holds the fee demoninators for [zcTokenInitiate, zcTokenExit, vaultInitiate, vaultExit]
   uint16 constant public MIN_FEENOMINATOR = 33;
+  /// @dev holds the fee demoninators for [zcTokenInitiate, zcTokenExit, vaultInitiate, vaultExit]
   uint16[4] public feenominators;
 
   /// @notice Emitted on order cancellation
