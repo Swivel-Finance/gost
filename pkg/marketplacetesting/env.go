@@ -32,9 +32,9 @@ type Env struct {
 // Given a balance argument, it assigns this as the wallet balance for
 // each authorization object in the Ctx
 func NewEnv(b *big.Int) *Env {
-	pk, owner := helpers.NewAuth()
-	pk1, u1 := helpers.NewAuth()
-	pk2, u2 := helpers.NewAuth()
+	pk, owner := helpers.NewAuth(CHAIN_ID)
+	pk1, u1 := helpers.NewAuth(CHAIN_ID)
+	pk2, u2 := helpers.NewAuth(CHAIN_ID)
 	alloc := make(core.GenesisAlloc)
 	alloc[owner.From] = core.GenesisAccount{Balance: b}
 	alloc[u1.From] = core.GenesisAccount{Balance: b}

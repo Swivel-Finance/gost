@@ -11,3 +11,5 @@ const MATURITY = 86400
 
 // REDEEM_INTEREST_EVENT_SIG = crypto.Keccak256Hash([]byte("RedeemInterest(address,uint256))").Hex()
 const REDEEM_INTEREST_EVENT_SIG = "0x83a945bd12c713615b59a6e48a3467c05d1a7442350600d6f7fce6af9f7190e9"
+
+var CHAIN_ID = big.NewInt(1337)
