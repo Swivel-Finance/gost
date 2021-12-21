@@ -13,9 +13,10 @@ import (
 	"github.com/swivel-finance/gost/test/fakes"
 )
 
-func NewAuth() (*ecdsa.PrivateKey, *bind.TransactOpts) {
+func NewAuth(c *big.Int) (*ecdsa.PrivateKey, *bind.TransactOpts) {
 	pk, _ := crypto.GenerateKey()
-	return pk, bind.NewKeyedTransactor(pk)
+	opts, _ := bind.NewKeyedTransactorWithChainID(pk, c)
+	return pk, opts
 }
 
 // GenBytes32 is a convenience function for some tests where a "GetHash" method is not available.
