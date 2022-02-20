@@ -18,20 +18,34 @@ contract Erc20 {
   mapping (address => uint256) public approveCalled;
   // mapping of arguments sent to transfer. key is the passed in address.
   mapping (address => uint256) public transferCalled;
+  mapping (address => address) public allowanceCalled;
   // mapping of arguments sent to transferFrom. key is passed from address.
   mapping (address => TransferFromArgs) public transferFromCalled;
-  // balanceOf does not require a mapping.
-  address public balanceOfCalled;
 
+  // balanceOf does not require a mapping.
+  address private balanceOfCalled;
+
+  string private nameReturn; 
+  string private symbolReturn;
   uint8 private decimalsReturn;
   // a boolean flag which allows us to dictate the return of approve(). 
   bool private approveReturn;
   // a uint to return for balanceOf calls
   uint256 private balanceOfReturn;
+  // what a call to allowance will return
+  uint256 private allowanceReturn;
   // a boolean flag which allows us to dictate the return of transfer().
   bool private transferReturn;
   // a boolean flag which allows us to dictate the return of transferFrom().
   bool private transferFromReturn;
+
+  function name() public view returns (string) {
+    return nameReturn;
+  }
+
+  function nameReturns(string s) public {
+    nameReturn = s;
+  }
 
   function decimals() public view returns (uint8) {
     return decimalsReturn;  
@@ -41,6 +55,14 @@ contract Erc20 {
     decimalsReturn = n;
   }
 
+  function symbol() public view returns (string) {
+    return symbolReturn;  
+  }
+
+  function symbolReturns(string s) public {
+    symbolReturn = s;
+  }
+
   function approve(address s, uint256 a) public returns (bool) {
     approveCalled[s] = a;
     return approveReturn;
@@ -48,6 +70,15 @@ contract Erc20 {
 
   function approveReturns(bool b) public {
     approveReturn = b;
+  }
+
+  function allowance(address o, address s) public returns (bool) {
+    allowanceCalled[o] = s;
+    return allowanceReturn;
+  }
+
+  function allowanceReturns(uint256 n) public {
+    allowanceReturn = n;
   }
 
   function balanceOfReturns(uint256 b) public {
