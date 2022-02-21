@@ -39,11 +39,11 @@ contract Erc20 {
   // a boolean flag which allows us to dictate the return of transferFrom().
   bool private transferFromReturn;
 
-  function name() public view returns (string) {
+  function name() public view returns (string memory) {
     return nameReturn;
   }
 
-  function nameReturns(string s) public {
+  function nameReturns(string memory s) public {
     nameReturn = s;
   }
 
@@ -55,11 +55,11 @@ contract Erc20 {
     decimalsReturn = n;
   }
 
-  function symbol() public view returns (string) {
+  function symbol() public view returns (string memory) {
     return symbolReturn;  
   }
 
-  function symbolReturns(string s) public {
+  function symbolReturns(string memory s) public {
     symbolReturn = s;
   }
 
@@ -72,7 +72,7 @@ contract Erc20 {
     approveReturn = b;
   }
 
-  function allowance(address o, address s) public returns (bool) {
+  function allowance(address o, address s) public returns (uint256) {
     allowanceCalled[o] = s;
     return allowanceReturn;
   }

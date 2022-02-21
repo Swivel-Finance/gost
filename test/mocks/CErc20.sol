@@ -20,6 +20,7 @@ contract CErc20 {
   address private underlyingReturn;
   /// @dev allows us to dictate return from exchangeRateCurrent().
   uint256 private exchangeRateCurrentReturn;
+  uint256 private supplyRatePerBlockReturn;
 
   function mint(uint256 n) public returns (uint256) {
     mintCalled = n;
@@ -55,4 +56,11 @@ contract CErc20 {
     exchangeRateCurrentReturn = n;
   }
 
+  function supplyRatePerBlock() public view returns (uint256) {
+    return supplyRatePerBlockReturn;
+  }
+
+  function supplyRatePerBlockReturns(uint256 n) public {
+    supplyRatePerBlockReturn = n;
+  }
 }

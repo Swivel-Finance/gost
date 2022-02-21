@@ -4,6 +4,7 @@
 package tokens
 
 import (
+	"errors"
 	"math/big"
 	"strings"
 
@@ -17,6 +18,7 @@ import (
 
 // Reference imports to suppress errors if they are not otherwise used.
 var (
+	_ = errors.New
 	_ = big.NewInt
 	_ = strings.NewReader
 	_ = ethereum.NotFound
@@ -26,20 +28,31 @@ var (
 	_ = event.NewSubscription
 )
 
+// UnderlyingMetaData contains all meta data concerning the Underlying contract.
+var UnderlyingMetaData = &bind.MetaData{
+	ABI: "[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"o\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"s\",\"type\":\"address\"}],\"name\":\"allowance\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"allowances\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"o\",\"type\":\"address\"}],\"name\":\"balanceOf\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"balances\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"}]",
+	Bin: "0x608060405234801561001057600080fd5b5061034a806100206000396000f3fe608060405234801561001057600080fd5b506004361061004c5760003560e01c806327e235e31461005157806355b6ed5c1461008157806370a08231146100b1578063dd62ed3e146100e1575b600080fd5b61006b60048036038101906100669190610232565b610111565b60405161007891906102a6565b60405180910390f35b61009b6004803603810190610096919061025b565b610129565b6040516100a891906102a6565b60405180910390f35b6100cb60048036038101906100c69190610232565b61014e565b6040516100d891906102a6565b60405180910390f35b6100fb60048036038101906100f6919061025b565b610196565b60405161010891906102a6565b60405180910390f35b60006020528060005260406000206000915090505481565b6001602052816000526040600020602052806000526040600020600091509150505481565b60008060008373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020549050919050565b6000600160008473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060008373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002054905092915050565b60008135905061022c816102fd565b92915050565b60006020828403121561024457600080fd5b60006102528482850161021d565b91505092915050565b6000806040838503121561026e57600080fd5b600061027c8582860161021d565b925050602061028d8582860161021d565b9150509250929050565b6102a0816102f3565b82525050565b60006020820190506102bb6000830184610297565b92915050565b60006102cc826102d3565b9050919050565b600073ffffffffffffffffffffffffffffffffffffffff82169050919050565b6000819050919050565b610306816102c1565b811461031157600080fd5b5056fea264697066735822122013bedab1aeabfd659c4f1c7247eb6c02865d69420a68a6241a39c63e09a9829964736f6c63430008040033",
+}
+
 // UnderlyingABI is the input ABI used to generate the binding from.
-const UnderlyingABI = "[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"o\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"s\",\"type\":\"address\"}],\"name\":\"allowance\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"allowances\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"o\",\"type\":\"address\"}],\"name\":\"balanceOf\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"balances\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"}]"
+// Deprecated: Use UnderlyingMetaData.ABI instead.
+var UnderlyingABI = UnderlyingMetaData.ABI
 
 // UnderlyingBin is the compiled bytecode used for deploying new contracts.
-var UnderlyingBin = "0x608060405234801561001057600080fd5b5061034a806100206000396000f3fe608060405234801561001057600080fd5b506004361061004c5760003560e01c806327e235e31461005157806355b6ed5c1461008157806370a08231146100b1578063dd62ed3e146100e1575b600080fd5b61006b60048036038101906100669190610232565b610111565b60405161007891906102a6565b60405180910390f35b61009b6004803603810190610096919061025b565b610129565b6040516100a891906102a6565b60405180910390f35b6100cb60048036038101906100c69190610232565b61014e565b6040516100d891906102a6565b60405180910390f35b6100fb60048036038101906100f6919061025b565b610196565b60405161010891906102a6565b60405180910390f35b60006020528060005260406000206000915090505481565b6001602052816000526040600020602052806000526040600020600091509150505481565b60008060008373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020549050919050565b6000600160008473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060008373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002054905092915050565b60008135905061022c816102fd565b92915050565b60006020828403121561024457600080fd5b60006102528482850161021d565b91505092915050565b6000806040838503121561026e57600080fd5b600061027c8582860161021d565b925050602061028d8582860161021d565b9150509250929050565b6102a0816102f3565b82525050565b60006020820190506102bb6000830184610297565b92915050565b60006102cc826102d3565b9050919050565b600073ffffffffffffffffffffffffffffffffffffffff82169050919050565b6000819050919050565b610306816102c1565b811461031157600080fd5b5056fea264697066735822122013bedab1aeabfd659c4f1c7247eb6c02865d69420a68a6241a39c63e09a9829964736f6c63430008040033"
+// Deprecated: Use UnderlyingMetaData.Bin instead.
+var UnderlyingBin = UnderlyingMetaData.Bin
 
 // DeployUnderlying deploys a new Ethereum contract, binding an instance of Underlying to it.
 func DeployUnderlying(auth *bind.TransactOpts, backend bind.ContractBackend) (common.Address, *types.Transaction, *Underlying, error) {
-	parsed, err := abi.JSON(strings.NewReader(UnderlyingABI))
+	parsed, err := UnderlyingMetaData.GetAbi()
 	if err != nil {
 		return common.Address{}, nil, nil, err
 	}
+	if parsed == nil {
+		return common.Address{}, nil, nil, errors.New("GetABI returned nil")
+	}
 
-	address, tx, contract, err := bind.DeployContract(auth, parsed, common.FromHex(UnderlyingBin), backend)
+	address, tx, contract, err := bind.DeployContract(auth, *parsed, common.FromHex(UnderlyingBin), backend)
 	if err != nil {
 		return common.Address{}, nil, nil, err
 	}
