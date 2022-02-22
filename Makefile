@@ -1,5 +1,6 @@
 .PHONY: compile_solidity_mock_erc compile_go_mock_erc compile_mock_erc
 .PHONY: compile_solidity_mock_cerc compile_go_mock_cerc compile_mock_cerc
+.PHONY: compile_solidity_mock_ferc compile_go_mock_ferc compile_mock_ferc
 .PHONY: compile_solidity_mock_marketplace compile_go_mock_marketplace
 .PHONY: compile_go_mock_vaulttracker compile_go_mock_zctoken
 .PHONY: compile_mocks
@@ -51,6 +52,16 @@ compile_go_mock_cerc:
 
 compile_mock_cerc: compile_solidity_mock_cerc compile_go_mock_cerc
 
+compile_solidity_mock_ferc:
+	@echo "compiling Mock FERC20 solidity source into abi and bin files"
+	solc -o ./test/mocks --abi --bin --overwrite ./test/mocks/FErc20.sol
+
+compile_go_mock_ferc:
+	@echo "compiling abi and bin files to golang"
+	abigen --abi ./test/mocks/FErc20.abi --bin ./test/mocks/FErc20.bin -pkg mocks -type FErc20 -out ./test/mocks/ferc20.go 
+
+compile_mock_ferc: compile_solidity_mock_ferc compile_go_mock_ferc
+
 compile_solidity_mock_marketplace:
 	@echo "compiling Mock MarketPlace solidity source into abi and bin files"
 	solc -o ./test/mocks --abi --bin --overwrite ./test/mocks/MarketPlace.sol
@@ -70,7 +81,7 @@ compile_go_mock_zctoken:
 	@echo "compiling abi and bin files to golang"
 	abigen --abi ./test/marketplace/ZcToken.abi --bin ./test/marketplace/ZcToken.bin -pkg mocks -type ZcToken -out ./test/mocks/zctoken.go
 
-compile_mocks: compile_mock_erc compile_mock_cerc compile_mock_marketplace compile_go_mock_vaulttracker compile_go_mock_zctoken
+compile_mocks: compile_mock_erc compile_mock_cerc compile_mock_ferc compile_mock_marketplace compile_go_mock_vaulttracker compile_go_mock_zctoken
 
 # Real Tokens
 compile_solidity_zct:

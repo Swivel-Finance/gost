@@ -15,6 +15,8 @@ type Dep struct {
 	Erc20           *mocks.Erc20
 	CErc20Address   common.Address
 	CErc20          *mocks.CErc20
+	FErc20Address   common.Address
+	FErc20          *mocks.FErc20
 }
 
 func Deploy(e *Env) (*Dep, error) {
@@ -54,6 +56,14 @@ func Deploy(e *Env) (*Dep, error) {
 
 	e.Blockchain.Commit()
 
+	fercAddress, _, fercContract, fercErr := mocks.DeployFErc20(e.Owner.Opts, e.Blockchain)
+
+	if fercErr != nil {
+		return nil, fercErr
+	}
+
+	e.Blockchain.Commit()
+
 	// deploy marketplace contract... TODO we likely give the marketplace address to swivel...
 	// marketAddress, _, marketContract, marketErr := swivel.DeployMarketPlace(e.Owner.Opts, e.Blockchain)
 
@@ -81,5 +91,7 @@ func Deploy(e *Env) (*Dep, error) {
 		Erc20:           ercContract,
 		CErc20Address:   cercAddress,
 		CErc20:          cercContract,
+		FErc20Address:   fercAddress,
+		FErc20:          fercContract,
 	}, nil
 }
