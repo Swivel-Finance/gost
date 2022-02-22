@@ -59,6 +59,42 @@ func (s *tokenTestSuite) SetupSuite() {
 	}
 }
 
+func (s *tokenTestSuite) TestName() {
+	assert := assert.New(s.T())
+	tx, err := s.Erc20.NameReturns("awesomeToken")
+	assert.NotNil(tx)
+	assert.Nil(err)
+	s.Env.Blockchain.Commit()
+
+	stored, err := s.Erc20.Name()
+	assert.Nil(err)
+	assert.Equal("awesomeToken", stored)
+}
+
+func (s *tokenTestSuite) TestSymbol() {
+	assert := assert.New(s.T())
+	tx, err := s.Erc20.SymbolReturns("AT")
+	assert.NotNil(tx)
+	assert.Nil(err)
+	s.Env.Blockchain.Commit()
+
+	stored, err := s.Erc20.Symbol()
+	assert.Nil(err)
+	assert.Equal("AT", stored)
+}
+
+func (s *tokenTestSuite) TestDecimals() {
+	assert := assert.New(s.T())
+	tx, err := s.Erc20.DecimalsReturns(uint8(18))
+	assert.NotNil(tx)
+	assert.Nil(err)
+	s.Env.Blockchain.Commit()
+
+	stored, err := s.Erc20.Decimals()
+	assert.Nil(err)
+	assert.Equal(uint8(18), stored)
+}
+
 func (s *tokenTestSuite) TestApprove() {
 	assert := assert.New(s.T())
 	// set approve to return true
@@ -189,6 +225,19 @@ func (s *tokenTestSuite) TestRedeemUnderlying() {
 	stored, err := s.CErc20.RedeemUnderlyingCalled()
 	assert.Nil(err)
 	assert.Equal(redeemed, stored)
+}
+
+func (s *tokenTestSuite) TestSupplyRatePerBlock() {
+	assert := assert.New(s.T())
+	rate := big.NewInt(1000000000)
+	tx, err := s.CErc20.SupplyRatePerBlockReturns(rate)
+	assert.NotNil(tx)
+	assert.Nil(err)
+	s.Env.Blockchain.Commit()
+
+	stored, err := s.CErc20.SupplyRatePerBlock()
+	assert.Nil(err)
+	assert.Equal(rate, stored)
 }
 
 func (s *tokenTestSuite) TestAllocateTo() {
