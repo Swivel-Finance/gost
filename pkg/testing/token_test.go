@@ -17,6 +17,7 @@ type tokenTestSuite struct {
 	Dep    *Dep
 	Erc20  *mocks.Erc20Session // *Session objects are created by the go bindings
 	CErc20 *mocks.CErc20Session
+	FErc20 *mocks.FErc20Session
 }
 
 func (s *tokenTestSuite) SetupSuite() {
@@ -41,6 +42,15 @@ func (s *tokenTestSuite) SetupSuite() {
 
 	s.CErc20 = &mocks.CErc20Session{
 		Contract: s.Dep.CErc20,
+		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
+		TransactOpts: bind.TransactOpts{
+			From:   s.Env.Owner.Opts.From,
+			Signer: s.Env.Owner.Opts.Signer,
+		},
+	}
+
+	s.FErc20 = &mocks.FErc20Session{
+		Contract: s.Dep.FErc20,
 		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
 		TransactOpts: bind.TransactOpts{
 			From:   s.Env.Owner.Opts.From,
@@ -179,6 +189,27 @@ func (s *tokenTestSuite) TestRedeemUnderlying() {
 	stored, err := s.CErc20.RedeemUnderlyingCalled()
 	assert.Nil(err)
 	assert.Equal(redeemed, stored)
+}
+
+func (s *tokenTestSuite) TestAllocateTo() {
+	assert := assert.New(s.T())
+
+	tx, err := s.FErc20.AllocateToReturns(true)
+	assert.NotNil(tx)
+	assert.Nil(err)
+	s.Env.Blockchain.Commit()
+
+	address := common.HexToAddress("0xaBC123")
+	amount := big.NewInt(ONE_ETH)
+
+	tx, err = s.FErc20.AllocateTo(address, amount)
+	assert.NotNil(tx)
+	assert.Nil(err)
+	s.Env.Blockchain.Commit()
+
+	stored, err := s.FErc20.AllocateToCalled(address)
+	assert.Nil(err)
+	assert.Equal(amount, stored)
 }
 
 func TestTokenSuite(t *test.T) {
