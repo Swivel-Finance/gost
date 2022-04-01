@@ -10,7 +10,6 @@ import (
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
-	"github.com/swivel-finance/gost/test/fakes"
 )
 
 func NewAuth(c *big.Int) (*ecdsa.PrivateKey, *bind.TransactOpts) {
@@ -62,30 +61,5 @@ func Commafy(n *big.Int) string {
 			j, k = j-1, 0
 			out[j] = ','
 		}
-	}
-}
-
-// NewHashOrder will take args to hydrate a Hash.Order and return it
-func NewHashOrder(
-	k [32]byte,
-	maker common.Address,
-	u common.Address,
-	v bool,
-	exit bool,
-	principal int64,
-	premium int64,
-	maturity int64,
-	expiry int64,
-) fakes.HashOrder {
-	return fakes.HashOrder{
-		Key:        k,
-		Maker:      maker,
-		Underlying: u,
-		Vault:      v,
-		Exit:       exit,
-		Principal:  big.NewInt(principal),
-		Premium:    big.NewInt(premium),
-		Maturity:   big.NewInt(maturity),
-		Expiry:     big.NewInt(expiry),
 	}
 }
