@@ -34,7 +34,7 @@ contract VaultTracker {
     vaults[s] = Vault({
       notional: 0,
       redeemable: 0,
-      exchangeRate: adapter.exchangeRateCurrent(c)
+      exchangeRate: a.exchangeRateCurrent(c)
     });
   }
 
