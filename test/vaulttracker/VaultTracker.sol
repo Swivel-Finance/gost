@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: UNLICENSED
 
-pragma solidity 0.8.4;
+pragma solidity >=0.8.4;
 
-import "./Interfaces.sol";
+import "./IAdapter.sol";
 
 contract VaultTracker {
   struct Vault {
@@ -14,25 +14,27 @@ contract VaultTracker {
   mapping(address => Vault) public vaults;
 
   address public immutable admin;
-  address public immutable cTokenAddr;
+  address public immutable cToken;
   address public immutable swivel;
+  Adapter public immutable adapter;
   uint256 public immutable maturity;
   uint256 public maturityRate;
 
   /// @param m Maturity timestamp of the new market
   /// @param c cToken address associated with underlying for the new market
   /// @param s address of the deployed swivel contract
-  constructor(uint256 m, address c, address s) {
+  constructor(uint256 m, address c, Adapter a, address s) {
     admin = msg.sender;
     maturity = m;
-    cTokenAddr = c;
+    cToken = c;
     swivel = s;
+    adapter = a;
 
     // instantiate swivel's vault (unblocking transferNotionalFee)
     vaults[s] = Vault({
       notional: 0,
       redeemable: 0,
-      exchangeRate: CErc20(c).exchangeRateCurrent()
+      exchangeRate: adapter.exchangeRateCurrent(c)
     });
   }
 
@@ -40,7 +42,7 @@ contract VaultTracker {
   /// @param o Address that owns a vault
   /// @param a Amount of notional added
   function addNotional(address o, uint256 a) external authorized(admin) returns (bool) {
-    uint256 exchangeRate = CErc20(cTokenAddr).exchangeRateCurrent();
+    uint256 exchangeRate = adapter.exchangeRateCurrent(cToken);
 
     Vault memory vlt = vaults[o];
 
@@ -79,7 +81,7 @@ contract VaultTracker {
     require(vlt.notional >= a, "amount exceeds vault balance");
 
     uint256 yield;
-    uint256 exchangeRate = CErc20(cTokenAddr).exchangeRateCurrent();
+    uint256 exchangeRate = adapter.exchangeRateCurrent(cToken);
 
     // if market has matured, calculate marginal interest between the maturity rate and previous position exchange rate
     // otherwise, calculate marginal exchange rate between current and previous exchange rate.
@@ -109,7 +111,7 @@ contract VaultTracker {
 
     uint256 redeemable = vlt.redeemable;
     uint256 yield;
-    uint256 exchangeRate = CErc20(cTokenAddr).exchangeRateCurrent();
+    uint256 exchangeRate = adapter.exchangeRateCurrent(cToken);
 
     // if market has matured, calculate marginal interest between the maturity rate and previous position exchange rate
     // otherwise, calculate marginal exchange rate between current and previous exchange rate.
@@ -151,7 +153,7 @@ contract VaultTracker {
     require(from.notional >= a, "amount exceeds available balance");
 
     uint256 yield;
-    uint256 exchangeRate = CErc20(cTokenAddr).exchangeRateCurrent();
+    uint256 exchangeRate = adapter.exchangeRateCurrent(cToken);
 
     // if market has matured, calculate marginal interest between the maturity rate and previous position exchange rate
     // otherwise, calculate marginal exchange rate between current and previous exchange rate.
@@ -205,7 +207,7 @@ contract VaultTracker {
     // remove notional from its owner
     oVault.notional -= a;
 
-    uint256 exchangeRate = CErc20(cTokenAddr).exchangeRateCurrent();
+    uint256 exchangeRate = adapter.exchangeRateCurrent(cToken);
     uint256 yield;
 
     // check if exchangeRate has been stored already this block. If not, calculate marginal interest + store exchangeRate
