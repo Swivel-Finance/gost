@@ -6,6 +6,6 @@ import "./IEToken.sol";
 contract EulerAdapter {
 
     function exchangeRateCurrent(address a) external view returns (uint256){
-        return(IEToken(a).convertBalanceToUnderlying(1e18));
+        return(IEToken(a).convertBalanceToUnderlying(1e27));
     }
 }
