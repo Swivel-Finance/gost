@@ -168,7 +168,7 @@ contract MarketPlace {
   /// @param u Underlying token address associated with the market
   /// @param m Maturity timestamp of the market
   /// @param a Amount of zcTokens being redeemed
-  function calculateReturn(address u, uint256 m, uint256 a) internal returns (uint256) {
+  function calculateReturn(address u, uint256 m, uint256 a) internal view returns (uint256) {
     Market memory mkt = markets[u][m];
     uint256 rate = IAdapter(mkt.adapter).exchangeRateCurrent(mkt.cToken);
 
