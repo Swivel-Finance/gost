@@ -23,12 +23,12 @@ contract VaultTracker {
   /// @param m Maturity timestamp of the new market
   /// @param c cToken address associated with underlying for the new market
   /// @param s address of the deployed swivel contract
-  constructor(uint256 m, address c, Adapter a, address s) {
+  constructor(uint256 m, address c, address a, address s) {
     admin = msg.sender;
     maturity = m;
     cToken = c;
+    adapter = Adapter(a);
     swivel = s;
-    adapter = a;
 
     // instantiate swivel's vault (unblocking transferNotionalFee)
     vaults[s] = Vault({
