@@ -3,7 +3,7 @@ pragma solidity >=0.8.4;
 
 import "./IEToken.sol";
 
-contract RariAdapter {
+contract EulerAdapter {
 
     function exchangeRateCurrent(address a) external view returns (uint256){
         return(IEToken(a).convertBalanceToUnderlying(1e18));
