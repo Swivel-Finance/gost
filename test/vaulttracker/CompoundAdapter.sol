@@ -5,7 +5,7 @@ import "./LibCompound.sol";
 
 contract CompoundAdapter {
 
-    function exchangeRateCurrent(CERC20 cToken) external view returns (uint256){
-        return(LibCompound.viewExchangeRate(cToken));
+    function exchangeRateCurrent(address a) external view returns (uint256){
+        return(LibCompound.viewExchangeRate(CERC20(a)));
     }
 }

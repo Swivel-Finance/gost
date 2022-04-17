@@ -3,9 +3,9 @@ pragma solidity >=0.8.4;
 
 import "./IYearnVault.sol";
 
-contract CompoundAdapter {
+contract YearnAdapter {
 
-    function exchangeRateCurrent(address yToken) external view returns (uint256){
-        return(IYearnVault(yToken).pricePerShare());
+    function exchangeRateCurrent(address a) external view returns (uint256){
+        return(IYearnVault(a).pricePerShare());
     }
 }
