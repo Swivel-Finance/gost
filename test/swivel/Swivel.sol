@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: UNLICENSED
 
-pragma solidity 0.8.4;
+pragma solidity >=0.8.4;
 
 import './Interfaces.sol';
 import './Hash.sol';
@@ -16,7 +16,7 @@ contract Swivel {
   mapping (address => uint256) public withdrawals;
   /// @dev maps a uint as an unbounded enum to a given adapter address
   mapping (uint8 => address) public adapters;
-  
+
   string constant public NAME = 'Swivel Finance';
   string constant public VERSION = '2.0.0';
   uint256 constant public HOLD = 3 days;
