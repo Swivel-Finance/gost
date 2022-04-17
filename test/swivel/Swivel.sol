@@ -14,7 +14,9 @@ contract Swivel {
   mapping (bytes32 => uint256) public filled;
   /// @dev maps a token address to a point in time, a hold, after which a withdrawal can be made
   mapping (address => uint256) public withdrawals;
-
+  /// @dev maps a uint as an unbounded enum to a given adapter address
+  mapping (uint8 => address) public adapters;
+  
   string constant public NAME = 'Swivel Finance';
   string constant public VERSION = '2.0.0';
   uint256 constant public HOLD = 3 days;
@@ -437,6 +439,19 @@ contract Swivel {
     for (uint256 i; i < len; i++) {
       Erc20 uToken = Erc20(u[i]);
       Safe.approve(uToken, c[i], max);
+    }
+
+    return true;
+  }
+
+  /// @notice Allows the admin to set the address for new integration adapters
+  /// @param mm Number associated with a given money market (Compound:0, Rari:1, Yearn:2, Aave:3, Euler:4, Lido:5)
+  /// @param a Address of the money markets associated adapter contract
+  function setAdapter(uint8[] calldata mm, address[] calldata a) external authorized(admin) returns (bool) {
+    uint256 len = mm.length;
+    require (len == a.length, 'array length mismatch');
+    for (uint256 i; i < len; i++) {
+      adapters[mm[i]] = a[i];
     }
 
     return true;
