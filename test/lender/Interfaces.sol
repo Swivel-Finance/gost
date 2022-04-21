@@ -12,7 +12,7 @@ interface ISwivel {
 }
 
 // we'll use ...Token for interfaces that are Erc20s
-interface IYieldToken is IPErc20 {
+interface IYieldToken is IPErc20 { // TODO is the _is_ needed here?
   function base() external returns (IPErc20); // TODO can we use the wide Interface here?
   function maturity() external returns (uint32);
   function sellBase(address, uint128) external returns (uint128);
@@ -30,4 +30,5 @@ interface IElementToken {
 }
 
 interface ISense {
-  function swapUnderlyingForPTs(address, uint256, uint128
+  function swapUnderlyingForPTs() external returns (uint256);
+}
