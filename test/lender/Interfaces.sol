@@ -13,12 +13,21 @@ interface ISwivel {
 
 // we'll use ...Token for interfaces that are Erc20s
 interface IYieldToken is IPErc20 {
-  function base() external returns (IPErc20);
+  function base() external returns (IPErc20); // TODO can we use the wide Interface here?
   function maturity() external returns (uint32);
   function sellBase(address, uint128) external returns (uint128);
   function sellBasePreview(uint128) external returns (uint128);
 }
 
 interface IElement {
-  function swap() external returns (uint256);
+  // TODO man those structs names are verbose... can it be ELement.Swap, Element.Fund etc... ?
+  function swap(Element.SingleSwap, Element.FundManagement, uint256, uint256) external returns (uint256);
 }
+
+interface IElementToken {
+  function unlockTimestamp() external returns (uint256);
+  function underlying() external returns (address);
+}
+
+interface ISense {
+  function swapUnderlyingForPTs(address, uint256, uint128

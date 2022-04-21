@@ -4,7 +4,7 @@ pragma solidity 0.8.13;
 
 contract Lender {
   import './Interfaces.sol';
-  import './Swivel.sol'; // library of swivel specific structs
+  import './Swivel.sol'; // library of swivel specific constructs
 
   // TODO any reason to allow an admin to change these? (not use constant or immutable)
   address constant SWIVEL = '0xswivel'; // TODO the actual deployed addr (also pass to ctor and be immutable? why over just constant?)
@@ -34,7 +34,7 @@ contract Lender {
 
     uint256 returned = 0;
 
-    emit Lend(p, u, m, returned)
+    emit Lend(p, u, m, returned);
     return returned;
   }
 
@@ -58,23 +58,60 @@ contract Lender {
 
     uint256 returned = 0;
 
-    emit Lend(p, u, m, returned)
+    emit Lend(p, u, m, returned);
     return returned;
   }
 
-  /// @dev lend method signature for element and sense
+  /// @dev lend method signature for element
   /// @notice can be called before maturity to lend to Element / Sense ?
   /// @param p value of a specific principal according to the MarketPlace Principals Enum
   /// @param u underlying token being ?
   /// @param m maturity of the market being ?
-  /// @param e element / sense pool ?
-  /// @param i element / sense pool id ?
+  /// @param e element pool ?
+  /// @param i element pool id ?
   /// @param a amount ?
   /// @param r minimum amount to return ?
   /// @param d deadline ?
-  function lend(uint8 p, address u, uint256 m, address e, bytes32 i, uint128 a, uint256 r, uint256 d) public returns (uint256) {
-    // ... TODO use the principal given to differentiate. could be done in line or sent to specefied sub-methods
-    uint256 returned = 0;
+  function lend(uint8 p, address u, uint256 m, address t, bytes32 i, uint256 a, uint256 r, uint256 d) public returns (uint256) {
+    address self = address(this);
+
+    // get the market...
+    // uint8[8] market = MarketPlace(marketPlace).markets(u, m) etc...
+
+    // the underlying...
+    // Erc20 uToken = ...
+
+    // safe transfer from uToken is uniform
+    Safe.transferFrom(uToken, msg.Sender, self, a);
+
+    address principal = market[market.Principals.Element];
+
+    IElementToken eToken = IElementToken(principal);
+
+    // the Element pool given must match the market pair given (why on element and not sense?)
+    require(eToken.unlockTimestamp() == m, ''); // TODO err msgs
+    require(address(eToken.underlying()) == u, '');
+
+    // safe transfer... self...
+    IElement.SingleSwap memory swap = IElement.SingleSwap({
+      userData: '0x00000000000000000000000000000000000000000000000000000000000000',
+      poolId: i, 
+      amount: a,
+      kind: IElement.SwapKind.In, // TODO OG cantract has foo.Enum(0) ?
+      assetIn: IElement.Any(u),
+      assetOut: IElement.Any(principal)
+    });
+
+    IElement.FundManagement memory fund = IElement.FundManagement({
+      sender: self,
+      recipient: payable(self),
+      fromInternalBalance: false,
+      toInternalBalance: false
+    });
+
+    uint256 returned = IElement(e).swap(swap, fund, r, d);
+
+
 
     emit Lend(p, u, m, returned);
     return returned;
