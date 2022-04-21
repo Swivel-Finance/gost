@@ -27,6 +27,7 @@
 
 .PHONY: copy_zctoken_to_build copy_vaulttracker_to_build copy_marketplace_to_build copy_swivel_to_build
 .PHONY: copy_to_build
+.PHONY: compile_perc_build
 .PHONY: compile_marketplace_build compile_swivel_build compile_build
 
 .PHONY: all
@@ -225,6 +226,10 @@ copy_swivel_to_build:
 	cp test/swivel/Swivel.sol build/swivel
 
 copy_to_build: copy_zctoken_to_build copy_vaulttracker_to_build copy_marketplace_to_build copy_swivel_to_build
+
+compile_perc_build:
+	@echo "compiling perc20 solidity build source into deploy ready files"
+	abigen --abi ./build/marketplace/PErc20.abi --bin ./build/marketplace/PErc20.bin -pkg tokens -type PErc20 -out ./build/marketplace/PErc20.go 
 
 compile_marketplace_build:
 	@echo "compiling MarketPlace solidity build source into deploy ready files"
