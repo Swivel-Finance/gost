@@ -28,8 +28,8 @@ contract Lender {
   function lend(uint8 p, address u, uint256 m, address y, uint128 a) public returns (uint256) {
     address self = address(this);
 
-    // Erc20 uToken ...
-    // ZcToken iToken ...
+    // Erc20 uToken ..
+    // ZcToken iToken ... TODO this can likely be inlined
 
     // uses iyield token interface...
     IYieldToken yToken = IYieldToken(y);
@@ -48,8 +48,11 @@ contract Lender {
     // 'sell base' meaning purchase the zero coupons from yield
     yToken.sellBase(self, returned);
 
-    // mint illuminate zct TODO returned must be cast?
-    iToken.mint(msg.sender, returned);
+    // this step is only needed when the lend is for yield
+    if (p == MarketPlace(marketPlace).Principals.Yield) {
+      // mint illuminate zct TODO returned must be cast? TODO its only used once so inline the instantiation and invocation
+      iToken.mint(msg.sender, returned);
+    }
 
     emit Lend(p, u, m, returned);
 
@@ -73,7 +76,7 @@ contract Lender {
     ISwivel(SWIVEL).initiate(o, a, s);
     
     // calls lend method for yield?
-    // ... = lend(market.Principals.Yield, u, m, y, ...)
+    // ... = lend(MarketPlace(marketPlace).Principals.Yield, u, m, y, ...)
 
     uint256 returned = 0;
 
