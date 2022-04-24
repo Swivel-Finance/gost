@@ -50,7 +50,7 @@ contract Swivel {
   error Cancelled();
   error Maker();
   error Fill_Amount();
-  error Authorized();
+  error Unauthorized();
   error Length();
   error Withdrawal();
   error Fee_Size();
@@ -621,7 +621,7 @@ contract Swivel {
     // redeem underlying
     // Compound and Rari
     if (p == 1 || p == 2) {
-      (CErc20(mPlace.cTokenAddress(u, m)).redeemUnderlying(a) == 0);
+      CErc20(mPlace.cTokenAddress(u, m)).redeemUnderlying(a);
     }
     // Yearn
     else if (p == 3) {
@@ -656,7 +656,7 @@ contract Swivel {
     // redeem underlying
     // Compound and Rari
     if (p == 1 || p == 2) {
-      require((CErc20(mPlace.cTokenAddress(u, m)).redeemUnderlying(a) == 0), "compound redemption error");
+      CErc20(mPlace.cTokenAddress(u, m)).redeemUnderlying(a);
     }
     // Yearn
     else if (p == 3) {
@@ -734,7 +734,7 @@ contract Swivel {
 
   modifier authorized(address a) {
      if (msg.sender != a) {
-       revert Authorized();
+       revert Unauthorized();
      }
     _;
   }

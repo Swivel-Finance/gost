@@ -35,7 +35,7 @@ contract MarketPlace {
   error Initialize();
   error Maturity();
   error Paused();
-  error Authorized();
+  error Unauthorized();
   error Market_Exists();
 
   constructor() {
@@ -284,7 +284,7 @@ contract MarketPlace {
 
   modifier authorized(address a) {
      if (msg.sender != a) {
-       revert Authorized();
+       revert Unauthorized();
      }
     _;
   }

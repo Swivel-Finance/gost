@@ -22,7 +22,7 @@ contract VaultTracker {
 
   error Balance();
   error Self();
-  error Authorized();
+  error Unauthorized();
 
   /// @param m Maturity timestamp of the new market
   /// @param c cToken address associated with underlying for the new market
@@ -252,7 +252,7 @@ contract VaultTracker {
 
   modifier authorized(address a) {
      if (msg.sender != a) {
-       revert Authorized();
+       revert Unauthorized();
      }
     _;
   }
