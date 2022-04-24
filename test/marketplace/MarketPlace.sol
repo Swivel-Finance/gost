@@ -32,6 +32,12 @@ contract MarketPlace {
   event P2pVaultExchange(address indexed underlying, uint256 indexed maturity, address from, address to, uint256 amount);
   event TransferVaultNotional(address indexed underlying, uint256 indexed maturity, address from, address to, uint256 amount);
 
+  error Initialize();
+  error Maturity();
+  error Paused();
+  error Authorized();
+  error Market_Exists();
+
   constructor() {
     admin = msg.sender;
   }
@@ -39,7 +45,10 @@ contract MarketPlace {
   /// @param s Address of the deployed swivel contract
   /// @notice We only allow this to be set once
   function setSwivelAddress(address s) external authorized(admin) returns (bool) {
-    require(swivel == address(0), 'swivel contract address already set');
+    if (swivel != address(0)) {
+      revert Initialize();
+    }
+
     swivel = s;
     return true;
   }
@@ -64,11 +73,14 @@ contract MarketPlace {
     string memory s
   ) external authorized(admin) unpaused() returns (bool) {
     address swivelAddr = swivel;
-    require(swivelAddr != address(0), 'swivel contract address not set');
+    if (swivelAddr == address(0)) {
+      revert Initialize();
+    }
 
     address under = CErc20(c).underlying();
-    require(markets[under][m].vault == address(0), 'market already exists');
-
+    if (markets[under][m].vault != address(0)) {
+      revert Market_Exists();
+    }
     uint8 decimals = Erc20(under).decimals();
     address zcToken = address(new ZcToken(under, m, n, s, decimals));
     address vault = address(new VaultTracker(m, c, a, swivelAddr));
@@ -85,8 +97,9 @@ contract MarketPlace {
   function matureMarket(address u, uint256 m) public unpaused() returns (bool) {
     Market memory mkt = markets[u][m];
 
-    require(mkt.maturityRate == 0, 'market already matured');
-    require(block.timestamp >= m, "maturity not reached");
+    if (mkt.maturityRate != 0 || block.timestamp < m) {
+      revert Maturity();
+    }
 
     // set the base maturity cToken exchange rate at maturity to the current cToken exchange rate
     uint256 currentExchangeRate = IAdapter(mkt.adapter).exchangeRateCurrent(mkt.cToken);
@@ -270,12 +283,16 @@ contract MarketPlace {
   }
 
   modifier authorized(address a) {
-    require(msg.sender == a, 'sender must be authorized');
+     if (msg.sender != a) {
+       revert Authorized();
+     }
     _;
   }
 
   modifier unpaused() {
-    require(!paused, 'markets are paused');
+    if (paused) {
+       revert Paused();
+    }
     _;
   }
 }
