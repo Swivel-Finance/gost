@@ -36,3 +36,39 @@ interface MarketPlace {
   // IVFZI && IVFVE call this which then transfers notional from msg.sender (taker) to swivel
   function transferVaultNotionalFee(address, uint256, address, uint256) external returns (bool);
 }
+
+interface IYearnVault {
+    function token() external view returns (address);
+
+    function underlying() external view returns (address);
+
+    function pricePerShare() external view returns (uint256);
+
+    function deposit(uint256) external;
+
+    function withdraw(uint256) external;
+}
+
+interface IAavePool {
+  /**
+   * @notice Returns the normalized income normalized income of the reserve
+   * @param asset The address of the underlying asset of the reserve
+   * @return The reserve's normalized income
+   */
+  function getReserveNormalizedIncome(address asset) external view returns (uint256);
+  /**
+   * @dev Emitted on deposit()
+   * @param asset The address of the underlying asset of the reserve
+   * @param amount The amount deposited
+   * @param onBehalfOf The beneficiary of the deposit, receiving the aTokens
+   * @param referralCode The referral code used
+   **/
+  function deposit(address asset, uint256 amount, address onBehalfOf, uint16 referralCode) external;
+
+  function withdraw(address asset, uint256 amount, address to) external;
+}
+
+interface IEulerToken {    
+    function deposit(uint subAccountId, uint amount) external;
+    function withdraw(uint subAccountId, uint amount) external;
+}
