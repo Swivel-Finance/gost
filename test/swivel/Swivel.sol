@@ -1,11 +1,13 @@
-// SPDX-License-Identifier: UNLICENSED
 
-pragma solidity >=0.8.4;
+pragma solidity 0.8.4;
 
-import './Interfaces.sol';
-import './Hash.sol';
-import './Sig.sol';
-import './Safe.sol';
+import './Utils/Abstracts.sol';
+import './Utils/Hash.sol';
+import './Utils/Sig.sol';
+import './Utils/Safe.sol';
+import './Interfaces/IYearnVault.sol';
+import './Interfaces/IAavePool.sol';
+import './Interfaces/IEulerToken.sol';
 
 contract Swivel {
   /// @dev maps the key of an order to a boolean indicating if an order was cancelled
@@ -22,8 +24,10 @@ contract Swivel {
   uint256 constant public HOLD = 3 days;
   bytes32 public immutable domain;
   address public immutable marketPlace;
+  IAavePool public immutable aaveRouter;
   address public admin;
   uint16 constant public MIN_FEENOMINATOR = 33;
+
   /// @dev holds the fee demoninators for [zcTokenInitiate, zcTokenExit, vaultInitiate, vaultExit]
   uint16[4] public feenominators;
 
@@ -44,12 +48,14 @@ contract Swivel {
   /// @notice Emitted on a change to the feenominators array
   event SetFee(uint256 indexed index, uint256 indexed feenominator);
 
+
   /// @param m deployed MarketPlace contract address
-  constructor(address m) {
+  constructor(address m, address a) {
     admin = msg.sender;
     domain = Hash.domain(NAME, VERSION, block.chainid, address(this));
     marketPlace = m;
     feenominators = [200, 600, 400, 200];
+    aaveRouter = IAavePool(a);
   }
 
   // ********* INITIATING *************
@@ -92,7 +98,6 @@ contract Swivel {
 
     // checks the side, and the amount compared to available
     require((a + filled[hash]) <= o.premium, 'taker amount > available volume');
-    
     filled[hash] += a;
 
     // transfer underlying tokens
@@ -103,8 +108,28 @@ contract Swivel {
     Safe.transferFrom(uToken, o.maker, address(this), principalFilled);
 
     MarketPlace mPlace = MarketPlace(marketPlace);
+    
     // mint tokens
-    require(CErc20(mPlace.cTokenAddress(o.underlying, o.maturity)).mint(principalFilled) == 0, 'minting CToken failed');
+    // Compound and Rari
+    if (o.protocol == 1 || o.protocol == 2) {
+      require(CErc20(mPlace.cTokenAddress(o.underlying, o.maturity)).mint(principalFilled) == 0, 'minting CToken failed');
+    }
+    // Yearn
+    else if (o.protocol == 3) {
+      IYearnVault(mPlace.cTokenAddress(o.underlying, o.maturity)).deposit(principalFilled);
+    }
+    // Aave
+    else if (o.protocol == 4) {
+      aaveRouter.deposit(o.underlying, principalFilled, address(this), 0);
+    }
+    // Euler
+    else if (o.protocol == 5) {
+      IEulerToken(mPlace.cTokenAddress(o.underlying, o.maturity)).deposit(0, principalFilled);
+    }
+    // Potential Lido integration
+    // else if (o.protocol == 6) {
+    // }
+    
     // alert marketplace
     require(mPlace.custodialInitiate(o.underlying, o.maturity, o.maker, msg.sender, principalFilled), 'custodial initiate failed');
 
@@ -137,8 +162,26 @@ contract Swivel {
     Safe.transferFrom(uToken, msg.sender, address(this), (a + fee));
 
     MarketPlace mPlace = MarketPlace(marketPlace);
-    // mint tokens
-    require(CErc20(mPlace.cTokenAddress(o.underlying, o.maturity)).mint(a) == 0, 'minting CToken Failed');
+    // mint tokens 
+    // Compound and Rari
+    if (o.protocol == 1 || o.protocol == 2) {
+      require(CErc20(mPlace.cTokenAddress(o.underlying, o.maturity)).mint(a) == 0, 'minting CToken failed');
+    }
+    // Yearn
+    else if (o.protocol == 3) {
+      IYearnVault(mPlace.cTokenAddress(o.underlying, o.maturity)).deposit(a);
+    }
+    // Aave
+    else if (o.protocol == 4) {
+      aaveRouter.deposit(o.underlying, a, address(this), 0);
+    }
+    // Euler
+    else if (o.protocol == 5) {
+      IEulerToken(mPlace.cTokenAddress(o.underlying, o.maturity)).deposit(0, a);
+    }
+    // Potential Lido integration
+    // else if (o.protocol == 6) {
+    // }
     // alert marketplace 
     require(mPlace.custodialInitiate(o.underlying, o.maturity, msg.sender, o.maker, a), 'custodial initiate failed');
 
@@ -154,6 +197,7 @@ contract Swivel {
     bytes32 hash = validOrderHash(o, c);
 
     require((a + filled[hash]) <= o.principal, 'taker amount > available volume');
+
 
     filled[hash] += a;
 
@@ -304,8 +348,26 @@ contract Swivel {
 
     // redeem underlying on Compound and burn cTokens
     MarketPlace mPlace = MarketPlace(marketPlace);
-    address cTokenAddr = mPlace.cTokenAddress(o.underlying, o.maturity);
-    require((CErc20(cTokenAddr).redeemUnderlying(a) == 0), "compound redemption error");
+    // mint tokens
+    // Compound and Rari
+    if (o.protocol == 1 || o.protocol == 2) {
+      require((CErc20(mPlace.cTokenAddress(o.underlying, o.maturity)).redeemUnderlying(a) == 0), "compound redemption error");
+    }
+    // Yearn
+    else if (o.protocol == 3) {
+      IYearnVault(mPlace.cTokenAddress(o.underlying, o.maturity)).withdraw(a);
+    }
+    // Aave
+    else if (o.protocol == 4) {
+      aaveRouter.withdraw(o.underlying, a, address(this));
+    }
+    // Euler
+    else if (o.protocol == 5) {
+      IEulerToken(mPlace.cTokenAddress(o.underlying, o.maturity)).withdraw(0, a);
+    }
+    // Potential Lido integration
+    // else if (o.protocol == 6) {
+    // }
 
     Erc20 uToken = Erc20(o.underlying);
     // transfer principal-premium  back to fixed exit party now that the interest coupon and zcb have been redeemed
@@ -337,9 +399,26 @@ contract Swivel {
     // redeem underlying on Compound and burn cTokens
     MarketPlace mPlace = MarketPlace(marketPlace);
 
-    address cTokenAddr = mPlace.cTokenAddress(o.underlying, o.maturity);
     uint256 principalFilled = (a * o.principal) / o.premium;
-    require((CErc20(cTokenAddr).redeemUnderlying(principalFilled) == 0), "compound redemption error");
+    // Compound and Rari
+    if (o.protocol == 1 || o.protocol == 2) {
+      require((CErc20(mPlace.cTokenAddress(o.underlying, o.maturity)).redeemUnderlying(principalFilled) == 0), "compound redemption error");
+    }
+    // Yearn
+    else if (o.protocol == 3) {
+      IYearnVault(mPlace.cTokenAddress(o.underlying, o.maturity)).withdraw(principalFilled);
+    }
+    // Aave
+    else if (o.protocol == 4) {
+      aaveRouter.withdraw(o.underlying, principalFilled, address(this));
+    }
+    // Euler
+    else if (o.protocol == 5) {
+      IEulerToken(mPlace.cTokenAddress(o.underlying, o.maturity)).withdraw(0, principalFilled);
+    }
+    // Potential Lido integration
+    // else if (o.protocol == 6) {
+    // }
 
     Erc20 uToken = Erc20(o.underlying);
     // transfer principal-premium-fee back to fixed exit party now that the interest coupon and zcb have been redeemed
@@ -463,12 +542,33 @@ contract Swivel {
   /// zcTokens and vault notional. Calls mPlace.mintZcTokenAddingNotional
   /// @param u Underlying token address associated with the market
   /// @param m Maturity timestamp of the market
+  /// @param p Protocol funds are deposited into
   /// @param a Amount of underlying being deposited
-  function splitUnderlying(address u, uint256 m, uint256 a) external returns (bool) {
+  function splitUnderlying(address u, uint256 m, uint8 p, uint256 a) external returns (bool) {
     Erc20 uToken = Erc20(u);
     Safe.transferFrom(uToken, msg.sender, address(this), a);
     MarketPlace mPlace = MarketPlace(marketPlace);
-    require(CErc20(mPlace.cTokenAddress(u, m)).mint(a) == 0, 'minting CToken Failed');
+    // mint tokens
+    // Compound and Rari
+    if (p == 1 || p == 2) {
+      require(CErc20(mPlace.cTokenAddress(u, m)).mint(a) == 0, 'minting CToken failed');
+    }
+    // Yearn
+    else if (p == 3) {
+      IYearnVault(mPlace.cTokenAddress(u, m)).deposit(a);
+    }
+    // Aave
+    else if (p == 4) {
+      aaveRouter.deposit(u, a, address(this), 0);
+    }
+    // Euler
+    else if (p == 5) {
+      IEulerToken(mPlace.cTokenAddress(u, m)).deposit(0, a);
+    }
+    // Potential Lido integration
+    // else if (o.protocol == 6) {
+    // }
+
     require(mPlace.mintZcTokenAddingNotional(u, m, msg.sender, a), 'mint ZcToken adding Notional failed');
 
     return true;
@@ -478,13 +578,33 @@ contract Swivel {
   /// in the process "combining" the two, and redeeming underlying. Calls mPlace.burnZcTokenRemovingNotional.
   /// @param u Underlying token address associated with the market
   /// @param m Maturity timestamp of the market
+  /// @param p Protocol being withdrawn from 
   /// @param a Amount of zcTokens being redeemed
-  function combineTokens(address u, uint256 m, uint256 a) external returns (bool) {
+  function combineTokens(address u, uint256 m, uint8 p, uint256 a) external returns (bool) {
     MarketPlace mPlace = MarketPlace(marketPlace);
     require(mPlace.burnZcTokenRemovingNotional(u, m, msg.sender, a), 'burn ZcToken removing Notional failed');
-    address cTokenAddr = mPlace.cTokenAddress(u, m);
-    require((CErc20(cTokenAddr).redeemUnderlying(a) == 0), "compound redemption error");
-    Safe.transfer(Erc20(u), msg.sender, a);
+
+    // redeem underlying
+    // Compound and Rari
+    if (p == 1 || p == 2) {
+      require((CErc20(mPlace.cTokenAddress(u, m)).redeemUnderlying(a) == 0), "compound redemption error");
+    }
+    // Yearn
+    else if (p == 3) {
+      IYearnVault(mPlace.cTokenAddress(u, m)).withdraw(a);
+    }
+    // Aave
+    else if (p == 4) {
+      aaveRouter.withdraw(u, a, address(this));
+    }
+    // Euler
+    else if (p == 5) {
+      IEulerToken(mPlace.cTokenAddress(u, m)).withdraw(0, a);
+    }
+    // Potential Lido integration
+    // else if (o.protocol == 6) {
+    // }
+    Safe.transfer(ERC20(u), msg.sender, a);
 
     return true;
   }
@@ -492,15 +612,36 @@ contract Swivel {
   /// @notice Allows zcToken holders to redeem their tokens for underlying tokens after maturity has been reached (via MarketPlace).
   /// @param u Underlying token address associated with the market
   /// @param m Maturity timestamp of the market
+  /// @param p Protocol which is being redeemed from
   /// @param a Amount of zcTokens being redeemed
-  function redeemZcToken(address u, uint256 m, uint256 a) external returns (bool) {
+  function redeemZcToken(address u, uint256 m, uint8 p, uint256 a) external returns (bool) {
     MarketPlace mPlace = MarketPlace(marketPlace);
     // call marketplace to determine the amount redeemed
     uint256 redeemed = mPlace.redeemZcToken(u, m, msg.sender, a);
-    // redeem underlying from compound
-    require(CErc20(mPlace.cTokenAddress(u, m)).redeemUnderlying(redeemed) == 0, 'compound redemption failed');
+
+    // redeem underlying
+    // Compound and Rari
+    if (p == 1 || p == 2) {
+      require((CErc20(mPlace.cTokenAddress(u, m)).redeemUnderlying(a) == 0), "compound redemption error");
+    }
+    // Yearn
+    else if (p == 3) {
+      IYearnVault(mPlace.cTokenAddress(u, m)).withdraw(a);
+    }
+    // Aave
+    else if (p == 4) {
+      aaveRouter.withdraw(u, a, address(this));
+    }
+    // Euler
+    else if (p == 5) {
+      IEulerToken(mPlace.cTokenAddress(u, m)).withdraw(0, a);
+    }
+    // Potential Lido integration
+    // else if (o.protocol == 6) {
+    // }
+
     // transfer underlying back to msg.sender
-    Safe.transfer(Erc20(u), msg.sender, redeemed);
+    Safe.transfer(ERC20(u), msg.sender, redeemed);
 
     return true;
   }
@@ -508,14 +649,31 @@ contract Swivel {
   /// @notice Allows Vault owners to redeem any currently accrued interest (via MarketPlace)
   /// @param u Underlying token address associated with the market
   /// @param m Maturity timestamp of the market
-  function redeemVaultInterest(address u, uint256 m) external returns (bool) {
+  /// @param p Protocol which is being redeemed from
+  function redeemVaultInterest(address u, uint256 m, uint8 p) external returns (bool) {
     MarketPlace mPlace = MarketPlace(marketPlace);
     // call marketplace to determine the amount redeemed
     uint256 redeemed = mPlace.redeemVaultInterest(u, m, msg.sender);
-    // redeem underlying from compound
-    require(CErc20(mPlace.cTokenAddress(u, m)).redeemUnderlying(redeemed) == 0, 'compound redemption failed');
+
+    // redeem underlying
+    // Compound and Rari
+    if (p == 1 || p == 2) {
+      require((CErc20(mPlace.cTokenAddress(u, m)).redeemUnderlying(redeemed) == 0), "compound redemption error");
+    }
+    // Yearn
+    else if (p == 3) {
+      IYearnVault(mPlace.cTokenAddress(u, m)).withdraw(redeemed);
+    }
+    // Aave
+    else if (p == 4) {
+      aaveRouter.withdraw(u, redeemed, address(this));
+    }
+    // Euler
+    else if (p == 5) {
+      IEulerToken(mPlace.cTokenAddress(u, m)).withdraw(0, redeemed);
+    }
     // transfer underlying back to msg.sender
-    Safe.transfer(Erc20(u), msg.sender, redeemed);
+    Safe.transfer(ERC20(u), msg.sender, redeemed);
 
     return true;
   }
