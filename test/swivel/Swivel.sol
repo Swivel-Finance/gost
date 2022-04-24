@@ -45,6 +45,15 @@ contract Swivel {
   /// @notice Emitted on a change to the feenominators array
   event SetFee(uint256 indexed index, uint256 indexed feenominator);
 
+  error Invalid(); 
+  error Expired();
+  error Cancelled();
+  error Maker();
+  error Fill_Amount();
+  error Authorized();
+  error Length();
+  error Withdrawal();
+  error Fee_Size();
 
   /// @param m deployed MarketPlace contract address
   constructor(address m, address a) {
@@ -94,7 +103,9 @@ contract Swivel {
     bytes32 hash = validOrderHash(o, c);
 
     // checks the side, and the amount compared to available
-    require((a + filled[hash]) <= o.premium, 'taker amount > available volume');
+    if ((a + filled[hash]) > o.premium) {
+      revert Fill_Amount();
+    }
     filled[hash] += a;
 
     // transfer underlying tokens
@@ -105,11 +116,11 @@ contract Swivel {
     Safe.transferFrom(uToken, o.maker, address(this), principalFilled);
 
     MarketPlace mPlace = MarketPlace(marketPlace);
-    
+
     // mint tokens
     // Compound and Rari
     if (o.protocol == 1 || o.protocol == 2) {
-      require(CErc20(mPlace.cTokenAddress(o.underlying, o.maturity)).mint(principalFilled) == 0, 'minting CToken failed');
+      CErc20(mPlace.cTokenAddress(o.underlying, o.maturity)).mint(principalFilled);
     }
     // Yearn
     else if (o.protocol == 3) {
@@ -145,7 +156,9 @@ contract Swivel {
   function initiateZcTokenFillingVaultInitiate(Hash.Order calldata o, uint256 a, Sig.Components calldata c) internal {
     bytes32 hash = validOrderHash(o, c);
 
-    require((a + filled[hash]) <= o.principal, 'taker amount > available volume');
+    if ((a + filled[hash]) > o.principal) {
+      revert Fill_Amount();
+    }
 
     filled[hash] += a;
 
@@ -162,7 +175,7 @@ contract Swivel {
     // mint tokens 
     // Compound and Rari
     if (o.protocol == 1 || o.protocol == 2) {
-      require(CErc20(mPlace.cTokenAddress(o.underlying, o.maturity)).mint(a) == 0, 'minting CToken failed');
+      CErc20(mPlace.cTokenAddress(o.underlying, o.maturity)).mint(a);
     }
     // Yearn
     else if (o.protocol == 3) {
@@ -193,7 +206,9 @@ contract Swivel {
   function initiateZcTokenFillingZcTokenExit(Hash.Order calldata o, uint256 a, Sig.Components calldata c) internal {
     bytes32 hash = validOrderHash(o, c);
 
-    require((a + filled[hash]) <= o.principal, 'taker amount > available volume');
+    if ((a + filled[hash]) > o.principal) {
+      revert Fill_Amount();
+    }
 
 
     filled[hash] += a;
@@ -221,7 +236,9 @@ contract Swivel {
   function initiateVaultFillingVaultExit(Hash.Order calldata o, uint256 a, Sig.Components calldata c) internal {
     bytes32 hash = validOrderHash(o, c);
 
-    require((a + filled[hash]) <= o.premium, 'taker amount > available volume');
+    if ((a + filled[hash]) > o.premium) {
+      revert Fill_Amount();
+    }
 
     filled[hash] += a;
 
@@ -283,7 +300,9 @@ contract Swivel {
   function exitZcTokenFillingZcTokenInitiate(Hash.Order calldata o, uint256 a, Sig.Components calldata c) internal {
     bytes32 hash = validOrderHash(o, c);
 
-    require((a + filled[hash]) <= o.premium, 'taker amount > available volume');
+    if ((a + filled[hash]) > o.premium) {
+      revert Fill_Amount();
+    }
 
     filled[hash] += a;       
 
@@ -311,7 +330,9 @@ contract Swivel {
   function exitVaultFillingVaultInitiate(Hash.Order calldata o, uint256 a, Sig.Components calldata c) internal {
     bytes32 hash = validOrderHash(o, c);
 
-    require((a + filled[hash]) <= o.principal, 'taker amount > available volume');
+    if ((a + filled[hash]) > o.principal) {
+      revert Fill_Amount();
+    }
     
     filled[hash] += a;
         
@@ -339,7 +360,9 @@ contract Swivel {
   function exitVaultFillingZcTokenExit(Hash.Order calldata o, uint256 a, Sig.Components calldata c) internal {
     bytes32 hash = validOrderHash(o, c);
 
-    require((a + filled[hash]) <= o.principal, 'taker amount > available volume');
+    if ((a + filled[hash]) > o.principal) {
+      revert Fill_Amount();
+    }
 
     filled[hash] += a;
 
@@ -348,7 +371,7 @@ contract Swivel {
     // mint tokens
     // Compound and Rari
     if (o.protocol == 1 || o.protocol == 2) {
-      require((CErc20(mPlace.cTokenAddress(o.underlying, o.maturity)).redeemUnderlying(a) == 0), "compound redemption error");
+      CErc20(mPlace.cTokenAddress(o.underlying, o.maturity)).redeemUnderlying(a);
     }
     // Yearn
     else if (o.protocol == 3) {
@@ -389,7 +412,9 @@ contract Swivel {
   function exitZcTokenFillingVaultExit(Hash.Order calldata o, uint256 a, Sig.Components calldata c) internal {
     bytes32 hash = validOrderHash(o, c);
 
-    require((a + filled[hash]) <= o.premium, 'taker amount > available volume');
+    if ((a + filled[hash]) > o.premium) {
+      revert Fill_Amount();
+    }
     
     filled[hash] += a;
 
@@ -399,7 +424,7 @@ contract Swivel {
     uint256 principalFilled = (a * o.principal) / o.premium;
     // Compound and Rari
     if (o.protocol == 1 || o.protocol == 2) {
-      require((CErc20(mPlace.cTokenAddress(o.underlying, o.maturity)).redeemUnderlying(principalFilled) == 0), "compound redemption error");
+      CErc20(mPlace.cTokenAddress(o.underlying, o.maturity)).redeemUnderlying(principalFilled);
     }
     // Yearn
     else if (o.protocol == 3) {
@@ -435,7 +460,9 @@ contract Swivel {
   function cancel(Hash.Order calldata o, Sig.Components calldata c) external returns (bool) {
     bytes32 hash = validOrderHash(o, c);
 
-    require(msg.sender == o.maker, 'sender must be maker');
+    if (msg.sender != o.maker) {
+      revert Maker(); 
+    }
 
     cancelled[hash] = true;
 
@@ -478,9 +505,10 @@ contract Swivel {
   /// @param e Address of token to withdraw
   function withdraw(address e) external authorized(admin) returns (bool) {
     uint256 when = withdrawals[e];
-    require (when != 0, 'no withdrawal scheduled');
 
-    require (block.timestamp >= when, 'withdrawal still on hold');
+    if (when == 0 || block.timestamp < when) {
+      revert Withdrawal();
+    }
 
     withdrawals[e] = 0;
 
@@ -494,7 +522,9 @@ contract Swivel {
   /// @param i The index of the new fee denominator
   /// @param d The new fee denominator
   function setFee(uint16 i, uint16 d) external authorized(admin) returns (bool) {
-    require(d >= MIN_FEENOMINATOR, 'fee too high');
+    if (d < MIN_FEENOMINATOR) {
+      revert Fee_Size();
+    }
 
     feenominators[i] = d;
 
@@ -508,7 +538,10 @@ contract Swivel {
   /// @param c array of compound token addresses
   function approveUnderlying(address[] calldata u, address[] calldata c) external authorized(admin) returns (bool) {
     uint256 len = u.length;
-    require (len == c.length, 'array length mismatch');
+
+    if (len != c.length) {
+      revert Length();
+    }
 
     uint256 max = 2**256 - 1;
 
@@ -525,7 +558,11 @@ contract Swivel {
   /// @param a Address of the money markets associated adapter contract
   function setAdapter(uint8[] calldata mm, address[] calldata a) external authorized(admin) returns (bool) {
     uint256 len = mm.length;
-    require (len == a.length, 'array length mismatch');
+
+    if (len != a.length) {
+      revert Length();
+    }
+
     for (uint256 i; i < len; i++) {
       adapters[mm[i]] = a[i];
     }
@@ -548,7 +585,7 @@ contract Swivel {
     // mint tokens
     // Compound and Rari
     if (p == 1 || p == 2) {
-      require(CErc20(mPlace.cTokenAddress(u, m)).mint(a) == 0, 'minting CToken failed');
+      CErc20(mPlace.cTokenAddress(u, m)).mint(a);
     }
     // Yearn
     else if (p == 3) {
@@ -584,7 +621,7 @@ contract Swivel {
     // redeem underlying
     // Compound and Rari
     if (p == 1 || p == 2) {
-      require((CErc20(mPlace.cTokenAddress(u, m)).redeemUnderlying(a) == 0), "compound redemption error");
+      (CErc20(mPlace.cTokenAddress(u, m)).redeemUnderlying(a) == 0);
     }
     // Yearn
     else if (p == 3) {
@@ -655,7 +692,7 @@ contract Swivel {
     // redeem underlying
     // Compound and Rari
     if (p == 1 || p == 2) {
-      require((CErc20(mPlace.cTokenAddress(u, m)).redeemUnderlying(redeemed) == 0), "compound redemption error");
+      CErc20(mPlace.cTokenAddress(u, m)).redeemUnderlying(redeemed);
     }
     // Yearn
     else if (p == 3) {
@@ -682,15 +719,23 @@ contract Swivel {
   function validOrderHash(Hash.Order calldata o, Sig.Components calldata c) internal view returns (bytes32) {
     bytes32 hash = Hash.order(o);
 
-    require(!cancelled[hash], 'order cancelled');
-    require(o.expiry >= block.timestamp, 'order expired');
-    require(o.maker == Sig.recover(Hash.message(domain, hash), c), 'invalid signature');
+    if (cancelled[hash] == true) {
+      revert Cancelled();
+    }
+    if (o.expiry >= block.timestamp) {
+      revert Expired();
+    }
+    if (o.maker != Sig.recover(Hash.message(domain, hash), c)) {
+      revert Invalid();
+    }
 
     return hash;
   }
 
   modifier authorized(address a) {
-    require(msg.sender == a, 'sender must be authorized');
+     if (msg.sender != a) {
+       revert Authorized();
+     }
     _;
   }
 }
