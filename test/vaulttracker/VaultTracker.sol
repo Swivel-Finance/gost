@@ -20,6 +20,10 @@ contract VaultTracker {
   uint256 public immutable maturity;
   uint256 public maturityRate;
 
+  error Balance();
+  error Self();
+  error Authorized();
+
   /// @param m Maturity timestamp of the new market
   /// @param c cToken address associated with underlying for the new market
   /// @param s address of the deployed swivel contract
@@ -78,7 +82,9 @@ contract VaultTracker {
 
     Vault memory vlt = vaults[o];
 
-    require(vlt.notional >= a, "amount exceeds vault balance");
+    if (vlt.notional < a) {
+     revert Balance();
+    }
 
     uint256 yield;
     uint256 exchangeRate = adapter.exchangeRateCurrent(cToken);
@@ -145,12 +151,16 @@ contract VaultTracker {
   /// @param t Recipient of the amount
   /// @param a Amount to transfer
   function transferNotionalFrom(address f, address t, uint256 a) external authorized(admin) returns (bool) {
-    require(f != t, 'cannot transfer notional to self');
+    if (f == t){
+      revert Self();
+    }
 
     Vault memory from = vaults[f];
     Vault memory to = vaults[t];
 
-    require(from.notional >= a, "amount exceeds available balance");
+    if (from.notional < a) {
+      revert Balance();
+    }
 
     uint256 yield;
     uint256 exchangeRate = adapter.exchangeRateCurrent(cToken);
@@ -241,7 +251,9 @@ contract VaultTracker {
   }
 
   modifier authorized(address a) {
-    require(msg.sender == a, 'sender must be authorized');
+     if (msg.sender != a) {
+       revert Authorized();
+     }
     _;
   }
 }
