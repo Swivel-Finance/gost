@@ -33,11 +33,11 @@ contract Swivel {
   /// @notice Emitted on any initiate*
   /// @dev filled is 'principalFilled' when (vault:false, exit:false) && (vault:true, exit:true)
   /// @dev filled is 'premiumFilled' when (vault:true, exit:false) && (vault:false, exit:true)
-  event Initiate(bytes32 indexed key, bytes32 hash, address indexed maker, bool vault, bool exit, address indexed sender, uint256 amount, uint256 filled);
+  event Initiate(bytes32 indexed key, bytes32 hash, uint8 protocol, address indexed maker, bool vault, bool exit, address indexed sender, uint256 amount, uint256 filled);
   /// @notice Emitted on any exit*
   /// @dev filled is 'principalFilled' when (vault:false, exit:false) && (vault:true, exit:true)
   /// @dev filled is 'premiumFilled' when (vault:true, exit:false) && (vault:false, exit:true)
-  event Exit(bytes32 indexed key, bytes32 hash, address indexed maker, bool vault, bool exit, address indexed sender, uint256 amount, uint256 filled);
+  event Exit(bytes32 indexed key, bytes32 hash, uint8 protocol, address indexed maker, bool vault, bool exit, address indexed sender, uint256 amount, uint256 filled);
   /// @notice Emitted on token withdrawal scheduling
   event ScheduleWithdrawal(address indexed token, uint256 hold);
   /// @notice Emitted on token withdrawal blocking
@@ -145,7 +145,7 @@ contract Swivel {
     uint256 fee = principalFilled / feenominators[2];
     require(mPlace.transferVaultNotionalFee(o.underlying, o.maturity, msg.sender, fee), 'notional fee transfer failed');
 
-    emit Initiate(o.key, hash, o.maker, o.vault, o.exit, msg.sender, a, principalFilled);
+    emit Initiate(o.key, hash, o.protocol, o.maker, o.vault, o.exit, msg.sender, a, principalFilled);
   }
 
   /// @notice Allows a user to initiate a zcToken by filling an offline vault initiate order
@@ -195,7 +195,7 @@ contract Swivel {
     // alert marketplace 
     require(mPlace.custodialInitiate(o.underlying, o.maturity, msg.sender, o.maker, a), 'custodial initiate failed');
 
-    emit Initiate(o.key, hash, o.maker, o.vault, o.exit, msg.sender, a, premiumFilled);
+    emit Initiate(o.key, hash, o.protocol, o.maker, o.vault, o.exit, msg.sender, a, premiumFilled);
   }
 
   /// @notice Allows a user to initiate zcToken? by filling an offline zcToken exit order
@@ -225,7 +225,7 @@ contract Swivel {
     // alert marketplace
     require(MarketPlace(marketPlace).p2pZcTokenExchange(o.underlying, o.maturity, o.maker, msg.sender, a), 'zcToken exchange failed');
             
-    emit Initiate(o.key, hash, o.maker, o.vault, o.exit, msg.sender, a, premiumFilled);
+    emit Initiate(o.key, hash, o.protocol, o.maker, o.vault, o.exit, msg.sender, a, premiumFilled);
   }
 
   /// @notice Allows a user to initiate a Vault by filling an offline vault exit order
@@ -253,7 +253,7 @@ contract Swivel {
     uint256 fee = principalFilled / feenominators[2];
     require(mPlace.transferVaultNotionalFee(o.underlying, o.maturity, msg.sender, fee), "notional fee transfer failed");
 
-    emit Initiate(o.key, hash, o.maker, o.vault, o.exit, msg.sender, a, principalFilled);
+    emit Initiate(o.key, hash, o.protocol, o.maker, o.vault, o.exit, msg.sender, a, principalFilled);
   }
 
   // ********* EXITING ***************
@@ -319,7 +319,7 @@ contract Swivel {
     // alert marketplace
     require(MarketPlace(marketPlace).p2pZcTokenExchange(o.underlying, o.maturity, msg.sender, o.maker, principalFilled), 'zcToken exchange failed');
 
-    emit Exit(o.key, hash, o.maker, o.vault, o.exit, msg.sender, a, principalFilled);
+    emit Exit(o.key, hash, o.protocol, o.maker, o.vault, o.exit, msg.sender, a, principalFilled);
   }
   
   /// @notice Allows a user to exit their Vault by filling an offline vault initiate order
@@ -349,7 +349,7 @@ contract Swivel {
     // transfer <a> notional from sender to maker
     require(MarketPlace(marketPlace).p2pVaultExchange(o.underlying, o.maturity, msg.sender, o.maker, a), 'vault exchange failed');
 
-    emit Exit(o.key, hash, o.maker, o.vault, o.exit, msg.sender, a, premiumFilled);
+    emit Exit(o.key, hash, o.protocol, o.maker, o.vault, o.exit, msg.sender, a, premiumFilled);
   }
 
   /// @notice Allows a user to exit their Vault filling an offline zcToken exit order
@@ -401,7 +401,7 @@ contract Swivel {
     // burn zcTokens + nTokens from o.maker and msg.sender respectively
     require(mPlace.custodialExit(o.underlying, o.maturity, o.maker, msg.sender, a), 'custodial exit failed');
 
-    emit Exit(o.key, hash, o.maker, o.vault, o.exit, msg.sender, a, premiumFilled);
+    emit Exit(o.key, hash, o.protocol, o.maker, o.vault, o.exit, msg.sender, a, premiumFilled);
   }
 
   /// @notice Allows a user to exit their zcTokens by filling an offline vault exit order
@@ -451,7 +451,7 @@ contract Swivel {
     // burn <principalFilled> zcTokens + nTokens from msg.sender and o.maker respectively
     require(mPlace.custodialExit(o.underlying, o.maturity, msg.sender, o.maker, principalFilled), 'custodial exit failed');
 
-    emit Exit(o.key, hash, o.maker, o.vault, o.exit, msg.sender, a, principalFilled);
+    emit Exit(o.key, hash, o.protocol, o.maker, o.vault, o.exit, msg.sender, a, principalFilled);
   }
 
   /// @notice Allows a user to cancel an order, preventing it from being filled in the future
