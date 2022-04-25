@@ -13,8 +13,6 @@ contract Swivel {
   mapping (bytes32 => uint256) public filled;
   /// @dev maps a token address to a point in time, a hold, after which a withdrawal can be made
   mapping (address => uint256) public withdrawals;
-  /// @dev maps a uint as an unbounded enum to a given adapter address
-  mapping (uint8 => address) public adapters;
 
   string constant public NAME = 'Swivel Finance';
   string constant public VERSION = '2.0.0';
