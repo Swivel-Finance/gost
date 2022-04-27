@@ -4,7 +4,7 @@
   FErc20 is a mock rari token with stubs of the methods we need for testing.
 */
 
-pragma solidity 0.8.4;
+pragma solidity 0.8.13;
 
 import './Erc20.sol';
 import './CErc20.sol';
