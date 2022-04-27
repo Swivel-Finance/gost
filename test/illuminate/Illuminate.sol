@@ -2,6 +2,8 @@
 
 pragma solidity 0.8.13;
 
+import "../tokens/ZcToken.sol";
+
 contract Illuminate {
   address public admin;
   // a marketplace contracts has many markets
@@ -32,7 +34,7 @@ contract Illuminate {
   /// @param m maturity (timestamp) of the market
   /// @param a amount being minted
   function mint(uint8 p, address u, uint256 m, uint256 a) public returns (bool) {
-    mPlace = MarketPlace(marketPlace);
+    address mPlace = marketPlace(marketPlace);
     // use market interface to fetch the market for the given market pair
     address[8] market = mPlace.markets(u, m);
     // use safe transfer lib and ERC interface...
