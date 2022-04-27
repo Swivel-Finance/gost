@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-3.0-or-later
+// SPDX-License-Identifier: UNLICENSED
 // Adapted from OpenZeppelin ERC2612 (ERC20Permit)
 
 pragma solidity 0.8.13;

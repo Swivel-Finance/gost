@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: UNLICENSED
 
 // NOTE: whomever decided methods which are the implementation of a stated interface
 //       need to be labeled 'override' should to be publicly flogged.
