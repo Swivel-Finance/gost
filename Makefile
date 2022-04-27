@@ -1,6 +1,5 @@
 .PHONY: compile_solidity_mock_erc compile_go_mock_erc compile_mock_erc
-.PHONY: compile_solidity_mock_cerc compile_go_mock_cerc compile_mock_cerc
-.PHONY: compile_solidity_mock_ferc compile_go_mock_ferc compile_mock_ferc
+.PHONY: compile_solidity_mock_yield_token compile_go_mock_yield_token compile_mock_yield_token
 .PHONY: compile_mocks
 
 # TODO under? api-specific sol?
@@ -29,54 +28,47 @@ compile_go_mock_erc:
 
 compile_mock_erc: compile_solidity_mock_erc compile_go_mock_erc
 
-compile_solidity_mock_cerc:
-	@echo "compiling Mock CERC20 solidity source into abi and bin files"
-	solc -o ./test/mocks --abi --bin --overwrite ./test/mocks/CErc20.sol
+compile_solidity_mock_yield_token:
+	@echo "compiling Mock YToken solidity source into abi and bin files"
+	solc -o ./test/mocks --abi --bin --overwrite ./test/mocks/YieldToken.sol
 
-compile_go_mock_cerc:
+compile_go_mock_yield_token:
 	@echo "compiling abi and bin files to golang"
-	abigen --abi ./test/mocks/CErc20.abi --bin ./test/mocks/CErc20.bin -pkg mocks -type CErc20 -out ./test/mocks/cerc20.go 
+	abigen --abi ./test/mocks/YieldToken.abi --bin ./test/mocks/YieldToken.bin -pkg mocks -type YieldToken -out ./test/mocks/yieldtoken.go 
 
-compile_mock_cerc: compile_solidity_mock_cerc compile_go_mock_cerc
+compile_mock_yield_token: compile_solidity_mock_yield_token compile_go_mock_yield_token
 
-compile_solidity_mock_ferc:
-	@echo "compiling Mock FERC20 solidity source into abi and bin files"
-	solc -o ./test/mocks --abi --bin --overwrite ./test/mocks/FErc20.sol
-
-compile_go_mock_ferc:
-	@echo "compiling abi and bin files to golang"
-	abigen --abi ./test/mocks/FErc20.abi --bin ./test/mocks/FErc20.bin -pkg mocks -type FErc20 -out ./test/mocks/ferc20.go 
-
-compile_mock_ferc: compile_solidity_mock_ferc compile_go_mock_ferc
-
-compile_mocks: compile_mock_erc compile_mock_cerc compile_mock_ferc
+compile_mocks: compile_mock_erc compile_mock_yield_token
 
 # Real Tokens
-compile_solidity_zct:
-	@echo "compiling ZCT solidity source into abi and bin files"
-	solc -o ./test/tokens --abi --bin --overwrite ./test/tokens/ZcToken.sol
+# compile_solidity_zct:
+	# @echo "compiling ZCT solidity source into abi and bin files"
+	# solc -o ./test/tokens --abi --bin --overwrite ./test/tokens/ZcToken.sol
 
-compile_go_zct:
-	@echo "compiling abi and bin files to golang"
-	abigen --abi ./test/tokens/ZcToken.abi --bin ./test/tokens/ZcToken.bin -pkg tokens -type ZcToken -out ./test/tokens/zctoken.go 
+# compile_go_zct:
+	# @echo "compiling abi and bin files to golang"
+	# abigen --abi ./test/tokens/ZcToken.abi --bin ./test/tokens/ZcToken.bin -pkg tokens -type ZcToken -out ./test/tokens/zctoken.go 
 
-compile_zct: compile_solidity_zct compile_go_zct
+# compile_zct: compile_solidity_zct compile_go_zct
 
-compile_solidity_underlying:
-	@echo "compiling Underlying solidity source into abi and bin files"
-	solc -o ./test/tokens --abi --bin --overwrite ./test/tokens/Underlying.sol
+# compile_solidity_underlying:
+	# @echo "compiling Underlying solidity source into abi and bin files"
+	# solc -o ./test/tokens --abi --bin --overwrite ./test/tokens/Underlying.sol
 
-compile_go_underlying:
-	@echo "compiling abi and bin files to golang"
-	abigen --abi ./test/tokens/Underlying.abi --bin ./test/tokens/Underlying.bin -pkg tokens -type Underlying -out ./test/tokens/underlying.go
+# compile_go_underlying:
+	# @echo "compiling abi and bin files to golang"
+	# abigen --abi ./test/tokens/Underlying.abi --bin ./test/tokens/Underlying.bin -pkg tokens -type Underlying -out ./test/tokens/underlying.go
 
-compile_underlying: compile_solidity_underlying compile_go_underlying
+# compile_underlying: compile_solidity_underlying compile_go_underlying
 
-compile_tokens: compile_zct compile_underlying
+# compile_tokens: compile_zct compile_underlying
 
 # Fakes
 
 # Contracts
+compile_solidity_lender_test:
+	@echo "compiling Lender solidity source into abi and bin files"
+	solc -o ./test/lender --optimize --optimize-runs=15000 --abi --bin --overwrite ./test/lender/Lender.sol
 
 # Cleaning
 clean_test_abi:
