@@ -2,7 +2,7 @@
 // Adapted from: https://github.com/Rari-Capital/solmate/blob/main/src/utils/SafeTransferLib.sol
 pragma solidity 0.8.13;
 
-import {Erc20} from "./Interfaces.sol";
+import {IErc20} from "./Interfaces.sol";
 /**
   @notice Safe ETH and ERC20 transfer library that gracefully handles missing return values.
   @author Modified from Gnosis (https://github.com/gnosis/gp-v2-contracts/blob/main/src/contracts/libraries/GPv2SafeERC20.sol)
@@ -13,7 +13,7 @@ library Safe {
   /// @param e Erc20 token to execute the call with
   /// @param t To address
   /// @param a Amount being transferred
-  function approve(Erc20 e, address t, uint256 a) internal {
+  function approve(IErc20 e, address t, uint256 a) internal {
     bool result;
 
     assembly {
@@ -36,7 +36,7 @@ library Safe {
   /// @param e Erc20 token to execute the call with
   /// @param t To address
   /// @param a Amount being transferred
-  function transfer(Erc20 e, address t, uint256 a) internal {
+  function transfer(IErc20 e, address t, uint256 a) internal {
     bool result;
 
     assembly {
@@ -60,7 +60,7 @@ library Safe {
   /// @param f From address
   /// @param t To address
   /// @param a Amount being transferred
-  function transferFrom(Erc20 e, address f, address t, uint256 a) internal {
+  function transferFrom(IErc20 e, address f, address t, uint256 a) internal {
     bool result;
 
     assembly {
