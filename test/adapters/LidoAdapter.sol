@@ -5,7 +5,9 @@ import "./ILidoETH.sol";
 
 contract LidoAdapter {
 
+    uint8 public protocol = 7;
+
     function exchangeRateCurrent(address a) external view returns (uint256){
-        return(ILidoETH(a).getPooledEthByShares(1e26));
+        return(ILidoETH(a).getPooledEthByShares(1e18));
     }
 }

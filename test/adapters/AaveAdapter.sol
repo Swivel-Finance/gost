@@ -1,10 +1,12 @@
-// SPDX-License-Identifier: BUSL-1.1
+// SPDX-License-Identifier: AGPL-3.0-only
 pragma solidity >=0.8.4;
 
 import "./IAToken.sol";
 import "./IAavePool.sol";
 
 contract AaveAdapter {
+
+    uint8 public protocol = 4;
 
     function exchangeRateCurrent(address a) external view returns (uint256){
         IAToken aToken = IAToken(a);

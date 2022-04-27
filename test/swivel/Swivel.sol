@@ -1,10 +1,14 @@
-
-pragma solidity 0.8.4;
+// SPDX-License-Identifier: BUSL-1.1
+pragma solidity >= 0.8.4;
 
 import './Interfaces.sol';
 import './Hash.sol';
 import './Sig.sol';
 import './Safe.sol';
+import './IYearnVault.sol';
+import './IAavePool.sol';
+import './IEToken.sol';
+import './IERC4626.sol';
 
 contract Swivel {
   /// @dev maps the key of an order to a boolean indicating if an order was cancelled
@@ -13,6 +17,8 @@ contract Swivel {
   mapping (bytes32 => uint256) public filled;
   /// @dev maps a token address to a point in time, a hold, after which a withdrawal can be made
   mapping (address => uint256) public withdrawals;
+  /// @dev maps a uint as an unbounded enum to a given adapter address
+  mapping (uint8 => address) public adapters;
 
   string constant public NAME = 'Swivel Finance';
   string constant public VERSION = '2.0.0';
@@ -31,11 +37,11 @@ contract Swivel {
   /// @notice Emitted on any initiate*
   /// @dev filled is 'principalFilled' when (vault:false, exit:false) && (vault:true, exit:true)
   /// @dev filled is 'premiumFilled' when (vault:true, exit:false) && (vault:false, exit:true)
-  event Initiate(bytes32 indexed key, bytes32 hash, uint8 protocol, address indexed maker, bool vault, bool exit, address indexed sender, uint256 amount, uint256 filled);
+  event Initiate(bytes32 indexed key, bytes32 hash, address indexed maker, bool vault, bool exit, address indexed sender, uint256 amount, uint256 filled);
   /// @notice Emitted on any exit*
   /// @dev filled is 'principalFilled' when (vault:false, exit:false) && (vault:true, exit:true)
   /// @dev filled is 'premiumFilled' when (vault:true, exit:false) && (vault:false, exit:true)
-  event Exit(bytes32 indexed key, bytes32 hash, uint8 protocol, address indexed maker, bool vault, bool exit, address indexed sender, uint256 amount, uint256 filled);
+  event Exit(bytes32 indexed key, bytes32 hash, address indexed maker, bool vault, bool exit, address indexed sender, uint256 amount, uint256 filled);
   /// @notice Emitted on token withdrawal scheduling
   event ScheduleWithdrawal(address indexed token, uint256 hold);
   /// @notice Emitted on token withdrawal blocking
@@ -48,7 +54,7 @@ contract Swivel {
   error Cancelled();
   error Maker();
   error Fill_Amount();
-  error Unauthorized();
+  error Authorized();
   error Length();
   error Withdrawal();
   error Fee_Size();
@@ -107,7 +113,7 @@ contract Swivel {
     filled[hash] += a;
 
     // transfer underlying tokens
-    Erc20 uToken = Erc20(o.underlying);
+    ERC20 uToken = ERC20(o.underlying);
     Safe.transferFrom(uToken, msg.sender, o.maker, a);
 
     uint256 principalFilled = (a * o.principal) / o.premium;
@@ -130,10 +136,13 @@ contract Swivel {
     }
     // Euler
     else if (o.protocol == 5) {
-      IEulerToken(mPlace.cTokenAddress(o.underlying, o.maturity)).deposit(0, principalFilled);
+      IEToken(mPlace.cTokenAddress(o.underlying, o.maturity)).deposit(0, principalFilled);
+    }
+    else if (o.protocol == 6) {
+      IERC4626(mPlace.cTokenAddress(o.underlying, o.maturity)).deposit(a, address(this));
     }
     // Potential Lido integration
-    // else if (o.protocol == 6) {
+    // else if (o.protocol == 7) {
     // }
     
     // alert marketplace
@@ -143,7 +152,7 @@ contract Swivel {
     uint256 fee = principalFilled / feenominators[2];
     require(mPlace.transferVaultNotionalFee(o.underlying, o.maturity, msg.sender, fee), 'notional fee transfer failed');
 
-    emit Initiate(o.key, hash, o.protocol, o.maker, o.vault, o.exit, msg.sender, a, principalFilled);
+    emit Initiate(o.key, hash, o.maker, o.vault, o.exit, msg.sender, a, principalFilled);
   }
 
   /// @notice Allows a user to initiate a zcToken by filling an offline vault initiate order
@@ -160,7 +169,7 @@ contract Swivel {
 
     filled[hash] += a;
 
-    Erc20 uToken = Erc20(o.underlying);
+    ERC20 uToken = ERC20(o.underlying);
 
     uint256 premiumFilled = (a * o.premium) / o.principal;
     Safe.transferFrom(uToken, o.maker, msg.sender, premiumFilled);
@@ -185,15 +194,18 @@ contract Swivel {
     }
     // Euler
     else if (o.protocol == 5) {
-      IEulerToken(mPlace.cTokenAddress(o.underlying, o.maturity)).deposit(0, a);
+      IEToken(mPlace.cTokenAddress(o.underlying, o.maturity)).deposit(0, a);
+    }
+    else if (o.protocol == 6) {
+      IERC4626(mPlace.cTokenAddress(o.underlying, o.maturity)).deposit(a, address(this));
     }
     // Potential Lido integration
-    // else if (o.protocol == 6) {
+    // else if (o.protocol == 7) {
     // }
     // alert marketplace 
     require(mPlace.custodialInitiate(o.underlying, o.maturity, msg.sender, o.maker, a), 'custodial initiate failed');
 
-    emit Initiate(o.key, hash, o.protocol, o.maker, o.vault, o.exit, msg.sender, a, premiumFilled);
+    emit Initiate(o.key, hash, o.maker, o.vault, o.exit, msg.sender, a, premiumFilled);
   }
 
   /// @notice Allows a user to initiate zcToken? by filling an offline zcToken exit order
@@ -213,7 +225,7 @@ contract Swivel {
 
     uint256 premiumFilled = (a * o.premium) / o.principal;
 
-    Erc20 uToken = Erc20(o.underlying);
+    ERC20 uToken = ERC20(o.underlying);
     // transfer underlying tokens, then take fee
     Safe.transferFrom(uToken, msg.sender, o.maker, a - premiumFilled);
 
@@ -223,7 +235,7 @@ contract Swivel {
     // alert marketplace
     require(MarketPlace(marketPlace).p2pZcTokenExchange(o.underlying, o.maturity, o.maker, msg.sender, a), 'zcToken exchange failed');
             
-    emit Initiate(o.key, hash, o.protocol, o.maker, o.vault, o.exit, msg.sender, a, premiumFilled);
+    emit Initiate(o.key, hash, o.maker, o.vault, o.exit, msg.sender, a, premiumFilled);
   }
 
   /// @notice Allows a user to initiate a Vault by filling an offline vault exit order
@@ -240,7 +252,7 @@ contract Swivel {
 
     filled[hash] += a;
 
-    Safe.transferFrom(Erc20(o.underlying), msg.sender, o.maker, a);
+    Safe.transferFrom(ERC20(o.underlying), msg.sender, o.maker, a);
 
     MarketPlace mPlace = MarketPlace(marketPlace);
     uint256 principalFilled = (a * o.principal) / o.premium;
@@ -251,7 +263,7 @@ contract Swivel {
     uint256 fee = principalFilled / feenominators[2];
     require(mPlace.transferVaultNotionalFee(o.underlying, o.maturity, msg.sender, fee), "notional fee transfer failed");
 
-    emit Initiate(o.key, hash, o.protocol, o.maker, o.vault, o.exit, msg.sender, a, principalFilled);
+    emit Initiate(o.key, hash, o.maker, o.vault, o.exit, msg.sender, a, principalFilled);
   }
 
   // ********* EXITING ***************
@@ -304,7 +316,7 @@ contract Swivel {
 
     filled[hash] += a;       
 
-    Erc20 uToken = Erc20(o.underlying);
+    ERC20 uToken = ERC20(o.underlying);
 
     uint256 principalFilled = (a * o.principal) / o.premium;
     // transfer underlying from initiating party to exiting party, minus the price the exit party pays for the exit (premium), and the fee.
@@ -317,7 +329,7 @@ contract Swivel {
     // alert marketplace
     require(MarketPlace(marketPlace).p2pZcTokenExchange(o.underlying, o.maturity, msg.sender, o.maker, principalFilled), 'zcToken exchange failed');
 
-    emit Exit(o.key, hash, o.protocol, o.maker, o.vault, o.exit, msg.sender, a, principalFilled);
+    emit Exit(o.key, hash, o.maker, o.vault, o.exit, msg.sender, a, principalFilled);
   }
   
   /// @notice Allows a user to exit their Vault by filling an offline vault initiate order
@@ -334,7 +346,7 @@ contract Swivel {
     
     filled[hash] += a;
         
-    Erc20 uToken = Erc20(o.underlying);
+    ERC20 uToken = ERC20(o.underlying);
 
     // transfer premium from maker to sender
     uint256 premiumFilled = (a * o.premium) / o.principal;
@@ -347,7 +359,7 @@ contract Swivel {
     // transfer <a> notional from sender to maker
     require(MarketPlace(marketPlace).p2pVaultExchange(o.underlying, o.maturity, msg.sender, o.maker, a), 'vault exchange failed');
 
-    emit Exit(o.key, hash, o.protocol, o.maker, o.vault, o.exit, msg.sender, a, premiumFilled);
+    emit Exit(o.key, hash, o.maker, o.vault, o.exit, msg.sender, a, premiumFilled);
   }
 
   /// @notice Allows a user to exit their Vault filling an offline zcToken exit order
@@ -381,13 +393,16 @@ contract Swivel {
     }
     // Euler
     else if (o.protocol == 5) {
-      IEulerToken(mPlace.cTokenAddress(o.underlying, o.maturity)).withdraw(0, a);
+      IEToken(mPlace.cTokenAddress(o.underlying, o.maturity)).withdraw(0, a);
+    }
+    else if (o.protocol == 6) {
+      IERC4626(mPlace.cTokenAddress(o.underlying, o.maturity)).withdraw(a, address(this), address(this));
     }
     // Potential Lido integration
-    // else if (o.protocol == 6) {
+    // else if (o.protocol == 7) {
     // }
 
-    Erc20 uToken = Erc20(o.underlying);
+    ERC20 uToken = ERC20(o.underlying);
     // transfer principal-premium  back to fixed exit party now that the interest coupon and zcb have been redeemed
     uint256 premiumFilled = (a * o.premium) / o.principal;
     Safe.transfer(uToken, o.maker, a - premiumFilled);
@@ -399,7 +414,7 @@ contract Swivel {
     // burn zcTokens + nTokens from o.maker and msg.sender respectively
     require(mPlace.custodialExit(o.underlying, o.maturity, o.maker, msg.sender, a), 'custodial exit failed');
 
-    emit Exit(o.key, hash, o.protocol, o.maker, o.vault, o.exit, msg.sender, a, premiumFilled);
+    emit Exit(o.key, hash, o.maker, o.vault, o.exit, msg.sender, a, premiumFilled);
   }
 
   /// @notice Allows a user to exit their zcTokens by filling an offline vault exit order
@@ -434,13 +449,16 @@ contract Swivel {
     }
     // Euler
     else if (o.protocol == 5) {
-      IEulerToken(mPlace.cTokenAddress(o.underlying, o.maturity)).withdraw(0, principalFilled);
+      IEToken(mPlace.cTokenAddress(o.underlying, o.maturity)).withdraw(0, principalFilled);
+    }
+    else if (o.protocol == 6) {
+      IERC4626(mPlace.cTokenAddress(o.underlying, o.maturity)).withdraw(principalFilled, address(this), address(this));
     }
     // Potential Lido integration
-    // else if (o.protocol == 6) {
+    // else if (o.protocol == 7) {
     // }
 
-    Erc20 uToken = Erc20(o.underlying);
+    ERC20 uToken = ERC20(o.underlying);
     // transfer principal-premium-fee back to fixed exit party now that the interest coupon and zcb have been redeemed
     uint256 fee = principalFilled / feenominators[1];
     Safe.transfer(uToken, msg.sender, principalFilled - a - fee);
@@ -449,7 +467,7 @@ contract Swivel {
     // burn <principalFilled> zcTokens + nTokens from msg.sender and o.maker respectively
     require(mPlace.custodialExit(o.underlying, o.maturity, msg.sender, o.maker, principalFilled), 'custodial exit failed');
 
-    emit Exit(o.key, hash, o.protocol, o.maker, o.vault, o.exit, msg.sender, a, principalFilled);
+    emit Exit(o.key, hash, o.maker, o.vault, o.exit, msg.sender, a, principalFilled);
   }
 
   /// @notice Allows a user to cancel an order, preventing it from being filled in the future
@@ -510,7 +528,7 @@ contract Swivel {
 
     withdrawals[e] = 0;
 
-    Erc20 token = Erc20(e);
+    ERC20 token = ERC20(e);
     Safe.transfer(token, admin, token.balanceOf(address(this)));
 
     return true;
@@ -544,8 +562,8 @@ contract Swivel {
     uint256 max = 2**256 - 1;
 
     for (uint256 i; i < len; i++) {
-      Erc20 uToken = Erc20(u[i]);
-      Safe.approve(uToken, c[i], max);
+      ERC20 uToken = ERC20(u[i]);
+      SafeTransferLib.approve(uToken, c[i], max);
     }
 
     return true;
@@ -574,33 +592,14 @@ contract Swivel {
   /// zcTokens and vault notional. Calls mPlace.mintZcTokenAddingNotional
   /// @param u Underlying token address associated with the market
   /// @param m Maturity timestamp of the market
-  /// @param p Protocol funds are deposited into
   /// @param a Amount of underlying being deposited
-  function splitUnderlying(address u, uint256 m, uint8 p, uint256 a) external returns (bool) {
-    Erc20 uToken = Erc20(u);
+  function splitUnderlying(address u, uint256 m,uint256 a) external returns (bool) {
+    ERC20 uToken = ERC20(u);
     Safe.transferFrom(uToken, msg.sender, address(this), a);
     MarketPlace mPlace = MarketPlace(marketPlace);
-    // mint tokens
-    // Compound and Rari
-    if (p == 1 || p == 2) {
-      CErc20(mPlace.cTokenAddress(u, m)).mint(a);
-    }
-    // Yearn
-    else if (p == 3) {
-      IYearnVault(mPlace.cTokenAddress(u, m)).deposit(a);
-    }
-    // Aave
-    else if (p == 4) {
-      aaveRouter.deposit(u, a, address(this), 0);
-    }
-    // Euler
-    else if (p == 5) {
-      IEulerToken(mPlace.cTokenAddress(u, m)).deposit(0, a);
-    }
-    // Potential Lido integration
-    // else if (o.protocol == 6) {
-    // }
-
+    
+    CErc20(mPlace.cTokenAddress(u, m)).mint(a);
+ 
     require(mPlace.mintZcTokenAddingNotional(u, m, msg.sender, a), 'mint ZcToken adding Notional failed');
 
     return true;
@@ -619,7 +618,7 @@ contract Swivel {
     // redeem underlying
     // Compound and Rari
     if (p == 1 || p == 2) {
-      CErc20(mPlace.cTokenAddress(u, m)).redeemUnderlying(a);
+      (CErc20(mPlace.cTokenAddress(u, m)).redeemUnderlying(a) == 0);
     }
     // Yearn
     else if (p == 3) {
@@ -631,10 +630,13 @@ contract Swivel {
     }
     // Euler
     else if (p == 5) {
-      IEulerToken(mPlace.cTokenAddress(u, m)).withdraw(0, a);
+      IEToken(mPlace.cTokenAddress(u, m)).withdraw(0, a);
+    }
+    else if (p == 6) {
+      IERC4626(mPlace.cTokenAddress(u, m)).withdraw(a, address(this), address(this));
     }
     // Potential Lido integration
-    // else if (o.protocol == 6) {
+    // else if (o.protocol == 7) {
     // }
     Safe.transfer(ERC20(u), msg.sender, a);
 
@@ -654,22 +656,25 @@ contract Swivel {
     // redeem underlying
     // Compound and Rari
     if (p == 1 || p == 2) {
-      CErc20(mPlace.cTokenAddress(u, m)).redeemUnderlying(a);
+      require((CErc20(mPlace.cTokenAddress(u, m)).redeemUnderlying(redeemed) == 0), "compound redemption error");
     }
     // Yearn
     else if (p == 3) {
-      IYearnVault(mPlace.cTokenAddress(u, m)).withdraw(a);
+      IYearnVault(mPlace.cTokenAddress(u, m)).withdraw(redeemed);
     }
     // Aave
     else if (p == 4) {
-      aaveRouter.withdraw(u, a, address(this));
+      aaveRouter.withdraw(u, redeemed, address(this));
     }
     // Euler
     else if (p == 5) {
-      IEulerToken(mPlace.cTokenAddress(u, m)).withdraw(0, a);
+      IEToken(mPlace.cTokenAddress(u, m)).withdraw(0, redeemed);
+    }
+    else if (p == 6) {
+      IERC4626(mPlace.cTokenAddress(u, m)).withdraw(redeemed, address(this), address(this));
     }
     // Potential Lido integration
-    // else if (o.protocol == 6) {
+    // else if (o.protocol == 7) {
     // }
 
     // transfer underlying back to msg.sender
@@ -702,8 +707,12 @@ contract Swivel {
     }
     // Euler
     else if (p == 5) {
-      IEulerToken(mPlace.cTokenAddress(u, m)).withdraw(0, redeemed);
+      IEToken(mPlace.cTokenAddress(u, m)).withdraw(0, redeemed);
     }
+    else if (p == 6) {
+      IERC4626(mPlace.cTokenAddress(u, m)).withdraw(redeemed, address(this), address(this));
+    }
+
     // transfer underlying back to msg.sender
     Safe.transfer(ERC20(u), msg.sender, redeemed);
 
@@ -732,7 +741,7 @@ contract Swivel {
 
   modifier authorized(address a) {
      if (msg.sender != a) {
-       revert Unauthorized();
+       revert Authorized();
      }
     _;
   }
