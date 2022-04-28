@@ -1,12 +1,16 @@
 // SPDX-License-Identifier: UNLICENSED
 
-pragma solidity 0.8.4;
+pragma solidity >= 0.8.4;
 
 interface Erc20 {
 	function approve(address, uint256) external returns (bool);
 	function transfer(address, uint256) external returns (bool);
 	function balanceOf(address) external returns (uint256);
 	function transferFrom(address, address, uint256) external returns (bool);
+}
+
+interface IERC20 is Erc20 {
+  function totalSupply() external view returns (uint256);
 }
 
 interface CErc20 {
@@ -46,7 +50,6 @@ interface MarketPlace {
   function p2pVaultExchange(uint8, address, uint256, address, address, uint256) external returns (bool);
   // IVFZI && IVFVE call this which then transfers notional from msg.sender (taker) to swivel
   function transferVaultNotionalFee(uint8, address, uint256, address, uint256) external returns (bool);
-
 }
 
 interface IYearnVault {
@@ -83,4 +86,37 @@ interface IAavePool {
 interface IEulerToken {    
     function deposit(uint subAccountId, uint amount) external;
     function withdraw(uint subAccountId, uint amount) external;
+}
+
+interface IERC4626 is IERC20 {
+
+    /// @notice Mints `shares` IN ASSETS Vault shares to `receiver` by
+    /// depositing exactly `assets` of underlying tokens.
+    function deposit(uint256 assets, address receiver) external returns (uint256 shares);
+
+    /// @notice Mints exactly `shares` IN SHARES Vault shares to `receiver`
+    /// by depositing `assets` of underlying tokens.
+    function mint(uint256 shares, address receiver) external returns (uint256 assets);
+
+    /// @notice Redeems `shares` IN ASSETS from `owner` and sends `assets`
+    /// of underlying tokens to `receiver`.
+    function withdraw(uint256 assets, address receiver, address owner) external returns (uint256 shares);
+
+    /// @notice Redeems `shares` IN SHARES from `owner` and sends `assets`
+    /// of underlying tokens to `receiver`.
+    function redeem(uint256 shares, address receiver, address owner) external returns (uint256 assets);
+
+    /*////////////////////////////////////////////////////////
+                      Vault Accounting Logic
+    ////////////////////////////////////////////////////////*/
+
+    /// @notice The amount of shares that the vault would
+    /// exchange for the amount of assets provided, in an
+    /// ideal scenario where all the conditions are met.
+    function convertToShares(uint256 assets) external view returns (uint256 shares);
+
+    /// @notice The amount of assets that the vault would
+    /// exchange for the amount of shares provided, in an
+    /// ideal scenario where all the conditions are met.
+    function convertToAssets(uint256 shares) external view returns (uint256 assets);
 }

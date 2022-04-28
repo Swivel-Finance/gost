@@ -17,8 +17,6 @@ contract Swivel {
   mapping (bytes32 => uint256) public filled;
   /// @dev maps a token address to a point in time, a hold, after which a withdrawal can be made
   mapping (address => uint256) public withdrawals;
-  /// @dev maps a uint as an unbounded enum to a given adapter address
-  mapping (uint8 => address) public adapters;
 
   string constant public NAME = 'Swivel Finance';
   string constant public VERSION = '2.0.0';
@@ -124,11 +122,11 @@ contract Swivel {
     // mint tokens
     // Compound and Rari
     if (o.protocol == 1 || o.protocol == 2) {
-      CErc20(mPlace.cTokenAddress(o.underlying, o.maturity)).mint(principalFilled);
+      CErc20(mPlace.cTokenAddress(o.protocol, o.underlying, o.maturity)).mint(principalFilled);
     }
     // Yearn
     else if (o.protocol == 3) {
-      IYearnVault(mPlace.cTokenAddress(o.underlying, o.maturity)).deposit(principalFilled);
+      IYearnVault(mPlace.cTokenAddress(o.protocol, o.underlying, o.maturity)).deposit(principalFilled);
     }
     // Aave
     else if (o.protocol == 4) {
@@ -136,21 +134,21 @@ contract Swivel {
     }
     // Euler
     else if (o.protocol == 5) {
-      IEToken(mPlace.cTokenAddress(o.underlying, o.maturity)).deposit(0, principalFilled);
+      IEToken(mPlace.cTokenAddress(o.protocol, o.underlying, o.maturity)).deposit(0, principalFilled);
     }
     else if (o.protocol == 6) {
-      IERC4626(mPlace.cTokenAddress(o.underlying, o.maturity)).deposit(a, address(this));
+      IERC4626(mPlace.cTokenAddress(o.protocol, o.underlying, o.maturity)).deposit(a, address(this));
     }
     // Potential Lido integration
     // else if (o.protocol == 7) {
     // }
     
     // alert marketplace
-    require(mPlace.custodialInitiate(o.underlying, o.maturity, o.maker, msg.sender, principalFilled), 'custodial initiate failed');
+    require(mPlace.custodialInitiate(o.protocol, o.underlying, o.maturity, o.maker, msg.sender, principalFilled), 'custodial initiate failed');
 
     // transfer fee in vault notional to swivel (from msg.sender)
     uint256 fee = principalFilled / feenominators[2];
-    require(mPlace.transferVaultNotionalFee(o.underlying, o.maturity, msg.sender, fee), 'notional fee transfer failed');
+    require(mPlace.transferVaultNotionalFee(o.protocol, o.underlying, o.maturity, msg.sender, fee), 'notional fee transfer failed');
 
     emit Initiate(o.key, hash, o.maker, o.vault, o.exit, msg.sender, a, principalFilled);
   }
@@ -182,11 +180,11 @@ contract Swivel {
     // mint tokens 
     // Compound and Rari
     if (o.protocol == 1 || o.protocol == 2) {
-      CErc20(mPlace.cTokenAddress(o.underlying, o.maturity)).mint(a);
+      CErc20(mPlace.cTokenAddress(o.protocol, o.underlying, o.maturity)).mint(a);
     }
     // Yearn
     else if (o.protocol == 3) {
-      IYearnVault(mPlace.cTokenAddress(o.underlying, o.maturity)).deposit(a);
+      IYearnVault(mPlace.cTokenAddress(o.protocol, o.underlying, o.maturity)).deposit(a);
     }
     // Aave
     else if (o.protocol == 4) {
@@ -194,16 +192,16 @@ contract Swivel {
     }
     // Euler
     else if (o.protocol == 5) {
-      IEToken(mPlace.cTokenAddress(o.underlying, o.maturity)).deposit(0, a);
+      IEToken(mPlace.cTokenAddress(o.protocol, o.underlying, o.maturity)).deposit(0, a);
     }
     else if (o.protocol == 6) {
-      IERC4626(mPlace.cTokenAddress(o.underlying, o.maturity)).deposit(a, address(this));
+      IERC4626(mPlace.cTokenAddress(o.protocol, o.underlying, o.maturity)).deposit(a, address(this));
     }
     // Potential Lido integration
     // else if (o.protocol == 7) {
     // }
     // alert marketplace 
-    require(mPlace.custodialInitiate(o.underlying, o.maturity, msg.sender, o.maker, a), 'custodial initiate failed');
+    require(mPlace.custodialInitiate(o.protocol, o.underlying, o.maturity, msg.sender, o.maker, a), 'custodial initiate failed');
 
     emit Initiate(o.key, hash, o.maker, o.vault, o.exit, msg.sender, a, premiumFilled);
   }
@@ -233,7 +231,7 @@ contract Swivel {
     Safe.transferFrom(uToken, msg.sender, address(this), fee);
 
     // alert marketplace
-    require(MarketPlace(marketPlace).p2pZcTokenExchange(o.underlying, o.maturity, o.maker, msg.sender, a), 'zcToken exchange failed');
+    require(MarketPlace(marketPlace).p2pZcTokenExchange(o.protocol, o.underlying, o.maturity, o.maker, msg.sender, a), 'zcToken exchange failed');
             
     emit Initiate(o.key, hash, o.maker, o.vault, o.exit, msg.sender, a, premiumFilled);
   }
@@ -257,11 +255,11 @@ contract Swivel {
     MarketPlace mPlace = MarketPlace(marketPlace);
     uint256 principalFilled = (a * o.principal) / o.premium;
     // alert marketplace
-    require(mPlace.p2pVaultExchange(o.underlying, o.maturity, o.maker, msg.sender, principalFilled), 'vault exchange failed');
+    require(mPlace.p2pVaultExchange(o.protocol, o.underlying, o.maturity, o.maker, msg.sender, principalFilled), 'vault exchange failed');
 
     // transfer fee (in vault notional) to swivel
     uint256 fee = principalFilled / feenominators[2];
-    require(mPlace.transferVaultNotionalFee(o.underlying, o.maturity, msg.sender, fee), "notional fee transfer failed");
+    require(mPlace.transferVaultNotionalFee(o.protocol, o.underlying, o.maturity, msg.sender, fee), "notional fee transfer failed");
 
     emit Initiate(o.key, hash, o.maker, o.vault, o.exit, msg.sender, a, principalFilled);
   }
@@ -327,7 +325,7 @@ contract Swivel {
     Safe.transferFrom(uToken, o.maker, address(this), fee);
 
     // alert marketplace
-    require(MarketPlace(marketPlace).p2pZcTokenExchange(o.underlying, o.maturity, msg.sender, o.maker, principalFilled), 'zcToken exchange failed');
+    require(MarketPlace(marketPlace).p2pZcTokenExchange(o.protocol, o.underlying, o.maturity, msg.sender, o.maker, principalFilled), 'zcToken exchange failed');
 
     emit Exit(o.key, hash, o.maker, o.vault, o.exit, msg.sender, a, principalFilled);
   }
@@ -357,7 +355,7 @@ contract Swivel {
     Safe.transferFrom(uToken, msg.sender, address(this), fee);
 
     // transfer <a> notional from sender to maker
-    require(MarketPlace(marketPlace).p2pVaultExchange(o.underlying, o.maturity, msg.sender, o.maker, a), 'vault exchange failed');
+    require(MarketPlace(marketPlace).p2pVaultExchange(o.protocol, o.underlying, o.maturity, msg.sender, o.maker, a), 'vault exchange failed');
 
     emit Exit(o.key, hash, o.maker, o.vault, o.exit, msg.sender, a, premiumFilled);
   }
@@ -381,11 +379,11 @@ contract Swivel {
     // mint tokens
     // Compound and Rari
     if (o.protocol == 1 || o.protocol == 2) {
-      CErc20(mPlace.cTokenAddress(o.underlying, o.maturity)).redeemUnderlying(a);
+      CErc20(mPlace.cTokenAddress(o.protocol, o.underlying, o.maturity)).redeemUnderlying(a);
     }
     // Yearn
     else if (o.protocol == 3) {
-      IYearnVault(mPlace.cTokenAddress(o.underlying, o.maturity)).withdraw(a);
+      IYearnVault(mPlace.cTokenAddress(o.protocol, o.underlying, o.maturity)).withdraw(a);
     }
     // Aave
     else if (o.protocol == 4) {
@@ -393,10 +391,10 @@ contract Swivel {
     }
     // Euler
     else if (o.protocol == 5) {
-      IEToken(mPlace.cTokenAddress(o.underlying, o.maturity)).withdraw(0, a);
+      IEToken(mPlace.cTokenAddress(o.protocol, o.underlying, o.maturity)).withdraw(0, a);
     }
     else if (o.protocol == 6) {
-      IERC4626(mPlace.cTokenAddress(o.underlying, o.maturity)).withdraw(a, address(this), address(this));
+      IERC4626(mPlace.cTokenAddress(o.protocol, o.underlying, o.maturity)).withdraw(a, address(this), address(this));
     }
     // Potential Lido integration
     // else if (o.protocol == 7) {
@@ -412,7 +410,7 @@ contract Swivel {
     Safe.transfer(uToken, msg.sender, premiumFilled - fee);
 
     // burn zcTokens + nTokens from o.maker and msg.sender respectively
-    require(mPlace.custodialExit(o.underlying, o.maturity, o.maker, msg.sender, a), 'custodial exit failed');
+    require(mPlace.custodialExit(o.protocol, o.underlying, o.maturity, o.maker, msg.sender, a), 'custodial exit failed');
 
     emit Exit(o.key, hash, o.maker, o.vault, o.exit, msg.sender, a, premiumFilled);
   }
@@ -437,11 +435,11 @@ contract Swivel {
     uint256 principalFilled = (a * o.principal) / o.premium;
     // Compound and Rari
     if (o.protocol == 1 || o.protocol == 2) {
-      CErc20(mPlace.cTokenAddress(o.underlying, o.maturity)).redeemUnderlying(principalFilled);
+      CErc20(mPlace.cTokenAddress(o.protocol, o.underlying, o.maturity)).redeemUnderlying(principalFilled);
     }
     // Yearn
     else if (o.protocol == 3) {
-      IYearnVault(mPlace.cTokenAddress(o.underlying, o.maturity)).withdraw(principalFilled);
+      IYearnVault(mPlace.cTokenAddress(o.protocol, o.underlying, o.maturity)).withdraw(principalFilled);
     }
     // Aave
     else if (o.protocol == 4) {
@@ -449,10 +447,10 @@ contract Swivel {
     }
     // Euler
     else if (o.protocol == 5) {
-      IEToken(mPlace.cTokenAddress(o.underlying, o.maturity)).withdraw(0, principalFilled);
+      IEToken(mPlace.cTokenAddress(o.protocol, o.underlying, o.maturity)).withdraw(0, principalFilled);
     }
     else if (o.protocol == 6) {
-      IERC4626(mPlace.cTokenAddress(o.underlying, o.maturity)).withdraw(principalFilled, address(this), address(this));
+      IERC4626(mPlace.cTokenAddress(o.protocol, o.underlying, o.maturity)).withdraw(principalFilled, address(this), address(this));
     }
     // Potential Lido integration
     // else if (o.protocol == 7) {
@@ -465,7 +463,7 @@ contract Swivel {
     Safe.transfer(uToken, o.maker, a);
 
     // burn <principalFilled> zcTokens + nTokens from msg.sender and o.maker respectively
-    require(mPlace.custodialExit(o.underlying, o.maturity, msg.sender, o.maker, principalFilled), 'custodial exit failed');
+    require(mPlace.custodialExit(o.protocol, o.underlying, o.maturity, msg.sender, o.maker, principalFilled), 'custodial exit failed');
 
     emit Exit(o.key, hash, o.maker, o.vault, o.exit, msg.sender, a, principalFilled);
   }
@@ -569,23 +567,6 @@ contract Swivel {
     return true;
   }
 
-  /// @notice Allows the admin to set the address for new integration adapters
-  /// @param mm Number associated with a given money market (Compound:0, Rari:1, Yearn:2, Aave:3, Euler:4, Lido:5)
-  /// @param a Address of the money markets associated adapter contract
-  function setAdapter(uint8[] calldata mm, address[] calldata a) external authorized(admin) returns (bool) {
-    uint256 len = mm.length;
-
-    if (len != a.length) {
-      revert Length();
-    }
-
-    for (uint256 i; i < len; i++) {
-      adapters[mm[i]] = a[i];
-    }
-
-    return true;
-  }
-
   // ********* PROTOCOL UTILITY ***************
 
   /// @notice Allows users to deposit underlying and in the process split it into/mint 
@@ -593,36 +574,36 @@ contract Swivel {
   /// @param u Underlying token address associated with the market
   /// @param m Maturity timestamp of the market
   /// @param a Amount of underlying being deposited
-  function splitUnderlying(address u, uint256 m,uint256 a) external returns (bool) {
+  function splitUnderlying(uint8 p, address u, uint256 m,uint256 a) external returns (bool) {
     ERC20 uToken = ERC20(u);
     Safe.transferFrom(uToken, msg.sender, address(this), a);
     MarketPlace mPlace = MarketPlace(marketPlace);
     
-    CErc20(mPlace.cTokenAddress(u, m)).mint(a);
+    CErc20(mPlace.cTokenAddress(p, u, m)).mint(a);
  
-    require(mPlace.mintZcTokenAddingNotional(u, m, msg.sender, a), 'mint ZcToken adding Notional failed');
+    require(mPlace.mintZcTokenAddingNotional(p, u, m, msg.sender, a), 'mint ZcToken adding Notional failed');
 
     return true;
   }
 
   /// @notice Allows users deposit/burn 1-1 amounts of both zcTokens and vault notional,
   /// in the process "combining" the two, and redeeming underlying. Calls mPlace.burnZcTokenRemovingNotional.
+  /// @param p Protocol being withdrawn from 
   /// @param u Underlying token address associated with the market
   /// @param m Maturity timestamp of the market
-  /// @param p Protocol being withdrawn from 
   /// @param a Amount of zcTokens being redeemed
-  function combineTokens(address u, uint256 m, uint8 p, uint256 a) external returns (bool) {
+  function combineTokens(uint8 p, address u, uint256 m, uint256 a) external returns (bool) {
     MarketPlace mPlace = MarketPlace(marketPlace);
-    require(mPlace.burnZcTokenRemovingNotional(u, m, msg.sender, a), 'burn ZcToken removing Notional failed');
+    require(mPlace.burnZcTokenRemovingNotional(p, u, m, msg.sender, a), 'burn ZcToken removing Notional failed');
 
     // redeem underlying
     // Compound and Rari
     if (p == 1 || p == 2) {
-      (CErc20(mPlace.cTokenAddress(u, m)).redeemUnderlying(a) == 0);
+      (CErc20(mPlace.cTokenAddress(p, u, m)).redeemUnderlying(a) == 0);
     }
     // Yearn
     else if (p == 3) {
-      IYearnVault(mPlace.cTokenAddress(u, m)).withdraw(a);
+      IYearnVault(mPlace.cTokenAddress(p, u, m)).withdraw(a);
     }
     // Aave
     else if (p == 4) {
@@ -630,10 +611,10 @@ contract Swivel {
     }
     // Euler
     else if (p == 5) {
-      IEToken(mPlace.cTokenAddress(u, m)).withdraw(0, a);
+      IEToken(mPlace.cTokenAddress(p, u, m)).withdraw(0, a);
     }
     else if (p == 6) {
-      IERC4626(mPlace.cTokenAddress(u, m)).withdraw(a, address(this), address(this));
+      IERC4626(mPlace.cTokenAddress(p, u, m)).withdraw(a, address(this), address(this));
     }
     // Potential Lido integration
     // else if (o.protocol == 7) {
@@ -644,23 +625,23 @@ contract Swivel {
   }
 
   /// @notice Allows zcToken holders to redeem their tokens for underlying tokens after maturity has been reached (via MarketPlace).
+  /// @param p Protocol which is being redeemed from
   /// @param u Underlying token address associated with the market
   /// @param m Maturity timestamp of the market
-  /// @param p Protocol which is being redeemed from
   /// @param a Amount of zcTokens being redeemed
-  function redeemZcToken(address u, uint256 m, uint8 p, uint256 a) external returns (bool) {
+  function redeemZcToken(uint8 p, address u, uint256 m, uint256 a) external returns (bool) {
     MarketPlace mPlace = MarketPlace(marketPlace);
     // call marketplace to determine the amount redeemed
-    uint256 redeemed = mPlace.redeemZcToken(u, m, msg.sender, a);
+    uint256 redeemed = mPlace.redeemZcToken(p, u, m, msg.sender, a);
 
     // redeem underlying
     // Compound and Rari
     if (p == 1 || p == 2) {
-      require((CErc20(mPlace.cTokenAddress(u, m)).redeemUnderlying(redeemed) == 0), "compound redemption error");
+      require((CErc20(mPlace.cTokenAddress(p, u, m)).redeemUnderlying(redeemed) == 0), "compound redemption error");
     }
     // Yearn
     else if (p == 3) {
-      IYearnVault(mPlace.cTokenAddress(u, m)).withdraw(redeemed);
+      IYearnVault(mPlace.cTokenAddress(p, u, m)).withdraw(redeemed);
     }
     // Aave
     else if (p == 4) {
@@ -668,10 +649,10 @@ contract Swivel {
     }
     // Euler
     else if (p == 5) {
-      IEToken(mPlace.cTokenAddress(u, m)).withdraw(0, redeemed);
+      IEToken(mPlace.cTokenAddress(p, u, m)).withdraw(0, redeemed);
     }
     else if (p == 6) {
-      IERC4626(mPlace.cTokenAddress(u, m)).withdraw(redeemed, address(this), address(this));
+      IERC4626(mPlace.cTokenAddress(p, u, m)).withdraw(redeemed, address(this), address(this));
     }
     // Potential Lido integration
     // else if (o.protocol == 7) {
@@ -684,22 +665,22 @@ contract Swivel {
   }
 
   /// @notice Allows Vault owners to redeem any currently accrued interest (via MarketPlace)
+  /// @param p Protocol which is being redeemed from
   /// @param u Underlying token address associated with the market
   /// @param m Maturity timestamp of the market
-  /// @param p Protocol which is being redeemed from
-  function redeemVaultInterest(address u, uint256 m, uint8 p) external returns (bool) {
+  function redeemVaultInterest(uint8 p, address u, uint256 m) external returns (bool) {
     MarketPlace mPlace = MarketPlace(marketPlace);
     // call marketplace to determine the amount redeemed
-    uint256 redeemed = mPlace.redeemVaultInterest(u, m, msg.sender);
+    uint256 redeemed = mPlace.redeemVaultInterest(p, u, m, msg.sender);
 
     // redeem underlying
     // Compound and Rari
     if (p == 1 || p == 2) {
-      CErc20(mPlace.cTokenAddress(u, m)).redeemUnderlying(redeemed);
+      CErc20(mPlace.cTokenAddress(p, u, m)).redeemUnderlying(redeemed);
     }
     // Yearn
     else if (p == 3) {
-      IYearnVault(mPlace.cTokenAddress(u, m)).withdraw(redeemed);
+      IYearnVault(mPlace.cTokenAddress(p, u, m)).withdraw(redeemed);
     }
     // Aave
     else if (p == 4) {
@@ -707,10 +688,10 @@ contract Swivel {
     }
     // Euler
     else if (p == 5) {
-      IEToken(mPlace.cTokenAddress(u, m)).withdraw(0, redeemed);
+      IEToken(mPlace.cTokenAddress(p, u, m)).withdraw(0, redeemed);
     }
     else if (p == 6) {
-      IERC4626(mPlace.cTokenAddress(u, m)).withdraw(redeemed, address(this), address(this));
+      IERC4626(mPlace.cTokenAddress(p, u, m)).withdraw(redeemed, address(this), address(this));
     }
 
     // transfer underlying back to msg.sender
