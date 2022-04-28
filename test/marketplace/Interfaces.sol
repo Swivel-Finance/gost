@@ -2,7 +2,7 @@
 
 pragma solidity >=0.8.4;
 
-interface ERC20 {
+interface Erc20 {
   function decimals() external returns (uint8);
 }
 
