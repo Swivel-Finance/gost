@@ -51,17 +51,7 @@ compile_mocks: compile_mock_erc compile_mock_yield_token
 
 # compile_zct: compile_solidity_zct compile_go_zct
 
-# compile_solidity_underlying:
-	# @echo "compiling Underlying solidity source into abi and bin files"
-	# solc -o ./test/tokens --abi --bin --overwrite ./test/tokens/Underlying.sol
-
-# compile_go_underlying:
-	# @echo "compiling abi and bin files to golang"
-	# abigen --abi ./test/tokens/Underlying.abi --bin ./test/tokens/Underlying.bin -pkg tokens -type Underlying -out ./test/tokens/underlying.go
-
-# compile_underlying: compile_solidity_underlying compile_go_underlying
-
-# compile_tokens: compile_zct compile_underlying
+# compile_tokens: compile_zct
 
 # Fakes
 

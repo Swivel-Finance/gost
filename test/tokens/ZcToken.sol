@@ -28,20 +28,20 @@ contract ZcToken is Erc2612, IZcToken {
   
   /// @param f Address to burn from
   /// @param a Amount to burn
-  function burn(address f, uint256 a) external onlyAdmin(admin) override returns(bool) {
+  function burn(address f, uint256 a) external authorized(admin) override returns(bool) {
       _burn(f, a);
       return true;
   }
 
   /// @param t Address recieving the minted amount
   /// @param a The amount to mint
-  function mint(address t, uint256 a) external onlyAdmin(admin) override returns(bool) {
+  function mint(address t, uint256 a) external authorized(admin) override returns(bool) {
       _mint(t, a);
       return true;
   }
 
   /// @param a Admin address
-  modifier onlyAdmin(address a) {
+  modifier authorized(address a) {
     require(msg.sender == a, 'sender must be admin');
     _;
   }

@@ -13,11 +13,9 @@ import (
 
 type tokenTestSuite struct {
 	suite.Suite
-	Env    *Env
-	Dep    *Dep
-	Erc20  *mocks.Erc20Session // *Session objects are created by the go bindings
-	CErc20 *mocks.CErc20Session
-	FErc20 *mocks.FErc20Session
+	Env   *Env
+	Dep   *Dep
+	Erc20 *mocks.Erc20Session // *Session objects are created by the go bindings
 }
 
 func (s *tokenTestSuite) SetupSuite() {
@@ -33,24 +31,6 @@ func (s *tokenTestSuite) SetupSuite() {
 	// binding owner to both, kind of why it exists - but could be any of the env wallets
 	s.Erc20 = &mocks.Erc20Session{
 		Contract: s.Dep.Erc20,
-		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
-		TransactOpts: bind.TransactOpts{
-			From:   s.Env.Owner.Opts.From,
-			Signer: s.Env.Owner.Opts.Signer,
-		},
-	}
-
-	s.CErc20 = &mocks.CErc20Session{
-		Contract: s.Dep.CErc20,
-		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
-		TransactOpts: bind.TransactOpts{
-			From:   s.Env.Owner.Opts.From,
-			Signer: s.Env.Owner.Opts.Signer,
-		},
-	}
-
-	s.FErc20 = &mocks.FErc20Session{
-		Contract: s.Dep.FErc20,
 		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
 		TransactOpts: bind.TransactOpts{
 			From:   s.Env.Owner.Opts.From,
@@ -162,103 +142,6 @@ func (s *tokenTestSuite) TestTransferFrom() {
 	assert.Nil(err)
 	assert.Equal(stored.To, s.Env.Owner.Opts.From)
 	assert.Equal(stored.Amount, amount)
-}
-
-func (s *tokenTestSuite) TestExchangeRateCurrent() {
-	assert := assert.New(s.T())
-	// set the amount we want the stub to return
-	// NOTE: an actual current exchange rate is bigger than int64 will hold
-	// while we could use any number in this test, shown here for posterity
-	amount := big.NewInt(205906566771510710)
-	amount = amount.Mul(amount, big.NewInt(1000000000))
-
-	tx, err := s.CErc20.ExchangeRateCurrentReturns(amount)
-	assert.NotNil(tx)
-	assert.Nil(err)
-	s.Env.Blockchain.Commit()
-
-	// should return the stubbed amt
-	curr, err := s.CErc20.ExchangeRateCurrent()
-	assert.Nil(err)
-	assert.Equal(amount, curr)
-}
-
-func (s *tokenTestSuite) TestMint() {
-	assert := assert.New(s.T())
-	// arbitrary amount
-	minted := big.NewInt(ONE_GWEI)
-
-	// not necessary for the result, but test it anyway
-	tx, err := s.CErc20.MintReturns(minted)
-	assert.NotNil(tx)
-	assert.Nil(err)
-	s.Env.Blockchain.Commit()
-
-	// call mint() so that the args are stored
-	tx, err = s.CErc20.Mint(minted)
-	assert.NotNil(tx)
-	assert.Nil(err)
-	s.Env.Blockchain.Commit()
-
-	stored, err := s.CErc20.MintCalled()
-	assert.Nil(err)
-	assert.Equal(minted, stored)
-}
-
-func (s *tokenTestSuite) TestRedeemUnderlying() {
-	assert := assert.New(s.T())
-	// arbitrary amount
-	redeemed := big.NewInt(ONE_GWEI)
-
-	// compound uses 0 as 'success'. see https://compound.finance/docs/ctokens#redeem-underlying
-	tx, err := s.CErc20.RedeemUnderlyingReturns(big.NewInt(0))
-	assert.NotNil(tx)
-	assert.Nil(err)
-	s.Env.Blockchain.Commit()
-
-	// call redeem...() so that the args are stored
-	tx, err = s.CErc20.RedeemUnderlying(redeemed)
-	assert.NotNil(tx)
-	assert.Nil(err)
-	s.Env.Blockchain.Commit()
-
-	stored, err := s.CErc20.RedeemUnderlyingCalled()
-	assert.Nil(err)
-	assert.Equal(redeemed, stored)
-}
-
-func (s *tokenTestSuite) TestSupplyRatePerBlock() {
-	assert := assert.New(s.T())
-	rate := big.NewInt(1000000000)
-	tx, err := s.CErc20.SupplyRatePerBlockReturns(rate)
-	assert.NotNil(tx)
-	assert.Nil(err)
-	s.Env.Blockchain.Commit()
-
-	stored, err := s.CErc20.SupplyRatePerBlock()
-	assert.Nil(err)
-	assert.Equal(rate, stored)
-}
-
-func (s *tokenTestSuite) TestAllocateTo() {
-	assert := assert.New(s.T())
-
-	tx, err := s.FErc20.AllocateToReturns(true)
-	assert.NotNil(tx)
-	assert.Nil(err)
-	s.Env.Blockchain.Commit()
-
-	address := common.HexToAddress("0xaBC123")
-	amount := big.NewInt(ONE_ETH)
-
-	tx, err = s.FErc20.AllocateTo(address, amount)
-	assert.NotNil(tx)
-	assert.Nil(err)
-	s.Env.Blockchain.Commit()
-
-	stored, err := s.FErc20.AllocateToCalled(address)
-	assert.Nil(err)
-	assert.Equal(amount, stored)
 }
 
 func TestTokenSuite(t *test.T) {
