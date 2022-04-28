@@ -16,21 +16,21 @@ contract MarketPlace {
     uint256 maturityRate;
   }
 
-  mapping (address => mapping (uint256 => Market)) public markets;
+  mapping (uint8 => mapping (address => mapping (uint256 => Market))) public markets;
 
   address public admin;
   address public swivel;
   bool public paused;
 
-  event Create(address indexed underlying, uint256 indexed maturity, address cToken, address zcToken, address vaultTracker, address adapter);
-  event Mature(address indexed underlying, uint256 indexed maturity, uint256 maturityRate, uint256 matured);
-  event RedeemZcToken(address indexed underlying, uint256 indexed maturity, address indexed sender, uint256 amount);
-  event RedeemVaultInterest(address indexed underlying, uint256 indexed maturity, address indexed sender);
-  event CustodialInitiate(address indexed underlying, uint256 indexed maturity, address zcTarget, address nTarget, uint256 amount);
-  event CustodialExit(address indexed underlying, uint256 indexed maturity, address zcTarget, address nTarget, uint256 amount);
-  event P2pZcTokenExchange(address indexed underlying, uint256 indexed maturity, address from, address to, uint256 amount);
-  event P2pVaultExchange(address indexed underlying, uint256 indexed maturity, address from, address to, uint256 amount);
-  event TransferVaultNotional(address indexed underlying, uint256 indexed maturity, address from, address to, uint256 amount);
+  event Create(uint8 indexed protocol, address indexed underlying, uint256 indexed maturity, address cToken, address zcToken, address vaultTracker, address adapter);
+  event Mature(uint8 indexed protocol, address indexed underlying, uint256 indexed maturity, uint256 maturityRate, uint256 matured);
+  event RedeemZcToken(uint8 indexed protocol, address indexed underlying, uint256 indexed maturity, address sender, uint256 amount);
+  event RedeemVaultInterest(uint8 indexed protocol, address indexed underlying, uint256 indexed maturity, address sender);
+  event CustodialInitiate(uint8 indexed protocol, address indexed underlying, uint256 indexed maturity, address zcTarget, address nTarget, uint256 amount);
+  event CustodialExit(uint8 indexed protocol, address indexed underlying, uint256 indexed maturity, address zcTarget, address nTarget, uint256 amount);
+  event P2pZcTokenExchange(uint8 indexed protocol, address indexed underlying, uint256 indexed maturity, address from, address to, uint256 amount);
+  event P2pVaultExchange(uint8 indexed protocol, address indexed underlying, uint256 indexed maturity, address from, address to, uint256 amount);
+  event TransferVaultNotional(uint8 indexed protocol, address indexed underlying, uint256 indexed maturity, address from, address to, uint256 amount);
 
   error Initialize();
   error Maturity();
@@ -72,21 +72,21 @@ contract MarketPlace {
     string memory n,
     string memory s
   ) external authorized(admin) unpaused() returns (bool) {
-    address swivelAddr = swivel;
-    if (swivelAddr == address(0)) {
+    if (swivel == address(0)) {
       revert Initialize();
     }
-
+    uint8 protocol = IAdapter(a).protocol();
     address under = CErc20(c).underlying();
-    if (markets[under][m].vault != address(0)) {
+    
+    if (markets[protocol][under][m].vault != address(0)) {
       revert Market_Exists();
     }
-    uint8 decimals = Erc20(under).decimals();
-    address zcToken = address(new ZcToken(under, m, n, s, decimals));
-    address vault = address(new VaultTracker(m, c, a, swivelAddr));
-    markets[under][m] = Market(c, zcToken, vault, a, 0);
+    
+    address zcToken = address(new ZcToken(under, m, n, s, Erc20(under).decimals()));
+    address vault = address(new VaultTracker(m, c, a, swivel));
+    markets[protocol][under][m] = Market(c, zcToken, vault, a, 0);
 
-    emit Create(under, m, c, zcToken, vault, a);
+    emit Create(protocol, under, m, c, zcToken, vault, a);
 
     return true;
   }
@@ -94,8 +94,8 @@ contract MarketPlace {
   /// @notice Can be called after maturity, allowing all of the zcTokens to earn floating interest on Compound until they release their funds
   /// @param u Underlying token address associated with the market
   /// @param m Maturity timestamp of the market
-  function matureMarket(address u, uint256 m) public unpaused() returns (bool) {
-    Market memory mkt = markets[u][m];
+  function matureMarket(uint8 p, address u, uint256 m) public unpaused() returns (bool) {
+    Market memory mkt = markets[p][u][m];
 
     if (mkt.maturityRate != 0 || block.timestamp < m) {
       revert Maturity();
@@ -103,11 +103,11 @@ contract MarketPlace {
 
     // set the base maturity cToken exchange rate at maturity to the current cToken exchange rate
     uint256 currentExchangeRate = IAdapter(mkt.adapter).exchangeRateCurrent(mkt.cToken);
-    markets[u][m].maturityRate = currentExchangeRate;
+    markets[p][u][m].maturityRate = currentExchangeRate;
 
     VaultTracker(mkt.vault).matureVault(currentExchangeRate);
 
-    emit Mature(u, m, currentExchangeRate, block.timestamp);
+    emit Mature(p, u, m, currentExchangeRate, block.timestamp);
 
     return true;
   }
@@ -117,8 +117,8 @@ contract MarketPlace {
   /// @param m Maturity timestamp of the market
   /// @param t Address of the depositing user
   /// @param a Amount of notional being added
-  function mintZcTokenAddingNotional(address u, uint256 m, address t, uint256 a) external authorized(swivel) unpaused() returns (bool) {
-    Market memory mkt = markets[u][m];
+  function mintZcTokenAddingNotional(uint8 p, address u, uint256 m, address t, uint256 a) external authorized(swivel) unpaused() returns (bool) {
+    Market memory mkt = markets[p][u][m];
     ZcToken(mkt.zcToken).mint(t, a);
     VaultTracker(mkt.vault).addNotional(t, a);
     
@@ -130,8 +130,8 @@ contract MarketPlace {
   /// @param m Maturity timestamp of the market
   /// @param t Address of the combining/redeeming user
   /// @param a Amount of zcTokens being burned
-  function burnZcTokenRemovingNotional(address u, uint256 m, address t, uint256 a) external authorized(swivel) unpaused() returns(bool) {
-    Market memory mkt = markets[u][m];
+  function burnZcTokenRemovingNotional(uint8 p, address u, uint256 m, address t, uint256 a) external authorized(swivel) unpaused() returns(bool) {
+    Market memory mkt = markets[p][u][m];
     ZcToken(mkt.zcToken).burn(t, a);
     VaultTracker(mkt.vault).removeNotional(t, a);
     
@@ -143,24 +143,24 @@ contract MarketPlace {
   /// @param m Maturity timestamp of the market
   /// @param t Address of the redeeming user
   /// @param a Amount of zcTokens being redeemed
-  function redeemZcToken(address u, uint256 m, address t, uint256 a) external authorized(swivel) unpaused() returns (uint256) {
-    Market memory mkt = markets[u][m];
+  function redeemZcToken(uint8 p, address u, uint256 m, address t, uint256 a) external authorized(swivel) unpaused() returns (uint256) {
+    Market memory mkt = markets[p][u][m];
 
     // if the market has not matured, mature it and redeem exactly the amount
     if (mkt.maturityRate == 0) {
-      matureMarket(u, m);
+      matureMarket(p, u, m);
     }
 
     // burn user's zcTokens
     ZcToken(mkt.zcToken).burn(t, a);
 
-    emit RedeemZcToken(u, m, t, a);
+    emit RedeemZcToken(p, u, m, t, a);
 
     if (mkt.maturityRate == 0) {
       return a;
     } else { 
       // if the market was already mature the return should include the amount + marginal floating interest generated on Compound since maturity
-      return calculateReturn(u, m, a);
+      return calculateReturn(p, u, m, a);
     }
   }
 
@@ -168,11 +168,11 @@ contract MarketPlace {
   /// @param u Underlying token address associated with the market
   /// @param m Maturity timestamp of the market
   /// @param t Address of the redeeming user
-  function redeemVaultInterest(address u, uint256 m, address t) external authorized(swivel) unpaused() returns (uint256) {
+  function redeemVaultInterest(uint8 p, address u, uint256 m, address t) external authorized(swivel) unpaused() returns (uint256) {
     // call to the floating market contract to release the position and calculate the interest generated
-    uint256 interest = VaultTracker(markets[u][m].vault).redeemInterest(t);
+    uint256 interest = VaultTracker(markets[p][u][m].vault).redeemInterest(t);
 
-    emit RedeemVaultInterest(u, m, t);
+    emit RedeemVaultInterest(p, u, m, t);
 
     return interest;
   }
@@ -181,8 +181,8 @@ contract MarketPlace {
   /// @param u Underlying token address associated with the market
   /// @param m Maturity timestamp of the market
   /// @param a Amount of zcTokens being redeemed
-  function calculateReturn(address u, uint256 m, uint256 a) internal view returns (uint256) {
-    Market memory mkt = markets[u][m];
+  function calculateReturn(uint8 p, address u, uint256 m, uint256 a) internal view returns (uint256) {
+    Market memory mkt = markets[p][u][m];
     uint256 rate = IAdapter(mkt.adapter).exchangeRateCurrent(mkt.cToken);
 
     return (a * rate) / mkt.maturityRate;
@@ -191,8 +191,8 @@ contract MarketPlace {
   /// @notice Return the ctoken address for a given market
   /// @param u Underlying token address associated with the market
   /// @param m Maturity timestamp of the market
-  function cTokenAddress(address u, uint256 m) external view returns (address) {
-    return markets[u][m].cToken;
+  function cTokenAddress(uint8 p, address u, uint256 m) external view returns (address) {
+    return markets[p][u][m].cToken;
   }
 
   /// @notice Called by swivel IVFZI && IZFVI
@@ -202,11 +202,11 @@ contract MarketPlace {
   /// @param z Recipient of the minted zcToken
   /// @param n Recipient of the added notional
   /// @param a Amount of zcToken minted and notional added
-  function custodialInitiate(address u, uint256 m, address z, address n, uint256 a) external authorized(swivel) unpaused() returns (bool) {
-    Market memory mkt = markets[u][m];
+  function custodialInitiate(uint8 p, address u, uint256 m, address z, address n, uint256 a) external authorized(swivel) unpaused() returns (bool) {
+    Market memory mkt = markets[p][u][m];
     ZcToken(mkt.zcToken).mint(z, a);
     VaultTracker(mkt.vault).addNotional(n, a);
-    emit CustodialInitiate(u, m, z, n, a);
+    emit CustodialInitiate(p, u, m, z, n, a);
     return true;
   }
 
@@ -217,11 +217,11 @@ contract MarketPlace {
   /// @param z Owner of the zcToken to be burned
   /// @param n Target to remove notional from
   /// @param a Amount of zcToken burned and notional removed
-  function custodialExit(address u, uint256 m, address z, address n, uint256 a) external authorized(swivel) unpaused() returns (bool) {
-    Market memory mkt = markets[u][m];
+  function custodialExit(uint8 p, address u, uint256 m, address z, address n, uint256 a) external authorized(swivel) unpaused() returns (bool) {
+    Market memory mkt = markets[p][u][m];
     ZcToken(mkt.zcToken).burn(z, a);
     VaultTracker(mkt.vault).removeNotional(n, a);
-    emit CustodialExit(u, m, z, n, a);
+    emit CustodialExit(p, u, m, z, n, a);
     return true;
   }
 
@@ -232,11 +232,11 @@ contract MarketPlace {
   /// @param f Owner of the zcToken to be burned
   /// @param t Target to be minted to
   /// @param a Amount of zcToken transfer
-  function p2pZcTokenExchange(address u, uint256 m, address f, address t, uint256 a) external authorized(swivel) unpaused() returns (bool) {
-    Market memory mkt = markets[u][m];
+  function p2pZcTokenExchange(uint8 p, address u, uint256 m, address f, address t, uint256 a) external authorized(swivel) unpaused() returns (bool) {
+    Market memory mkt = markets[p][u][m];
     ZcToken(mkt.zcToken).burn(f, a);
     ZcToken(mkt.zcToken).mint(t, a);
-    emit P2pZcTokenExchange(u, m, f, t, a);
+    emit P2pZcTokenExchange(p, u, m, f, t, a);
     return true;
   }
 
@@ -247,9 +247,9 @@ contract MarketPlace {
   /// @param f Owner of the notional to be transferred
   /// @param t Target to be transferred to
   /// @param a Amount of notional transfer
-  function p2pVaultExchange(address u, uint256 m, address f, address t, uint256 a) external authorized(swivel) unpaused() returns (bool) {
-    VaultTracker(markets[u][m].vault).transferNotionalFrom(f, t, a);
-    emit P2pVaultExchange(u, m, f, t, a);
+  function p2pVaultExchange(uint8 p, address u, uint256 m, address f, address t, uint256 a) external authorized(swivel) unpaused() returns (bool) {
+    VaultTracker(markets[p][u][m].vault).transferNotionalFrom(f, t, a);
+    emit P2pVaultExchange(p, u, m, f, t, a);
     return true;
   }
 
@@ -259,9 +259,9 @@ contract MarketPlace {
   /// @param m Maturity timestamp of the market
   /// @param t Target to be transferred to
   /// @param a Amount of notional to be transferred
-  function transferVaultNotional(address u, uint256 m, address t, uint256 a) external unpaused() returns (bool) {
-    VaultTracker(markets[u][m].vault).transferNotionalFrom(msg.sender, t, a);
-    emit TransferVaultNotional(u, m, msg.sender, t, a);
+  function transferVaultNotional(uint8 p, address u, uint256 m, address t, uint256 a) external unpaused() returns (bool) {
+    VaultTracker(markets[p][u][m].vault).transferNotionalFrom(msg.sender, t, a);
+    emit TransferVaultNotional(p, u, m, msg.sender, t, a);
     return true;
   }
 
@@ -270,8 +270,8 @@ contract MarketPlace {
   /// @param m Maturity timestamp of the market
   /// @param f Owner of the amount
   /// @param a Amount to transfer
-  function transferVaultNotionalFee(address u, uint256 m, address f, uint256 a) external authorized(swivel) returns (bool) {
-    VaultTracker(markets[u][m].vault).transferNotionalFee(f, a);
+  function transferVaultNotionalFee(uint8 p, address u, uint256 m, address f, uint256 a) external authorized(swivel) returns (bool) {
+    VaultTracker(markets[p][u][m].vault).transferNotionalFee(f, a);
     return true;
   }
 
