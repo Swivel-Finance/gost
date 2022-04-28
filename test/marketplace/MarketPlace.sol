@@ -15,7 +15,7 @@ contract MarketPlace {
     address adapter;
     uint256 maturityRate;
   }
-
+  // Protocol enum => Underlying address => Maturity uint256 => Market
   mapping (uint8 => mapping (address => mapping (uint256 => Market))) public markets;
 
   address public admin;
@@ -92,6 +92,7 @@ contract MarketPlace {
   }
 
   /// @notice Can be called after maturity, allowing all of the zcTokens to earn floating interest on Compound until they release their funds
+  /// @param p Protocol of the given market (Enum)
   /// @param u Underlying token address associated with the market
   /// @param m Maturity timestamp of the market
   function matureMarket(uint8 p, address u, uint256 m) public unpaused() returns (bool) {
@@ -113,6 +114,7 @@ contract MarketPlace {
   }
 
   /// @notice Allows Swivel caller to deposit their underlying, in the process splitting it - minting both zcTokens and vault notional.
+  /// @param p Protocol of the given market (Enum)
   /// @param u Underlying token address associated with the market
   /// @param m Maturity timestamp of the market
   /// @param t Address of the depositing user
@@ -126,6 +128,7 @@ contract MarketPlace {
   }
 
   /// @notice Allows Swivel caller to deposit/burn both zcTokens + vault notional. This process is "combining" the two and redeeming underlying.
+  /// @param p Protocol of the given market (Enum)
   /// @param u Underlying token address associated with the market
   /// @param m Maturity timestamp of the market
   /// @param t Address of the combining/redeeming user
@@ -139,6 +142,7 @@ contract MarketPlace {
   }
 
   /// @notice Allows (via swivel) zcToken holders to redeem their tokens for underlying tokens after maturity has been reached.
+  /// @param p Protocol of the given market (Enum)
   /// @param u Underlying token address associated with the market
   /// @param m Maturity timestamp of the market
   /// @param t Address of the redeeming user
@@ -165,6 +169,7 @@ contract MarketPlace {
   }
 
   /// @notice Allows Vault owners (via Swivel) to redeem any currently accrued interest
+  /// @param p Protocol of the given market (Enum)
   /// @param u Underlying token address associated with the market
   /// @param m Maturity timestamp of the market
   /// @param t Address of the redeeming user
@@ -178,6 +183,7 @@ contract MarketPlace {
   }
 
   /// @notice Calculates the total amount of underlying returned including interest generated since the `matureMarket` function has been called
+  /// @param p Protocol of the given market (Enum)
   /// @param u Underlying token address associated with the market
   /// @param m Maturity timestamp of the market
   /// @param a Amount of zcTokens being redeemed
@@ -189,6 +195,7 @@ contract MarketPlace {
   }
 
   /// @notice Return the ctoken address for a given market
+  /// @param p Protocol of the given market (Enum)
   /// @param u Underlying token address associated with the market
   /// @param m Maturity timestamp of the market
   function cTokenAddress(uint8 p, address u, uint256 m) external view returns (address) {
@@ -197,6 +204,7 @@ contract MarketPlace {
 
   /// @notice Called by swivel IVFZI && IZFVI
   /// @dev Call with underlying, maturity, mint-target, add-notional-target and an amount
+  /// @param p Protocol of the given market (Enum)
   /// @param u Underlying token address associated with the market
   /// @param m Maturity timestamp of the market
   /// @param z Recipient of the minted zcToken
@@ -212,6 +220,7 @@ contract MarketPlace {
 
   /// @notice Called by swivel EVFZE FF EZFVE
   /// @dev Call with underlying, maturity, burn-target, remove-notional-target and an amount
+  /// @param p Protocol of the given market (Enum)
   /// @param u Underlying token address associated with the market
   /// @param m Maturity timestamp of the market
   /// @param z Owner of the zcToken to be burned
@@ -227,6 +236,7 @@ contract MarketPlace {
 
   /// @notice Called by swivel IZFZE, EZFZI
   /// @dev Call with underlying, maturity, transfer-from, transfer-to, amount
+  /// @param p Protocol of the given market (Enum)
   /// @param u Underlying token address associated with the market
   /// @param m Maturity timestamp of the market
   /// @param f Owner of the zcToken to be burned
@@ -242,6 +252,7 @@ contract MarketPlace {
 
   /// @notice Called by swivel IVFVE, EVFVI
   /// @dev Call with underlying, maturity, remove-from, add-to, amount
+  /// @param p Protocol of the given market (Enum)
   /// @param u Underlying token address associated with the market
   /// @param m Maturity timestamp of the market
   /// @param f Owner of the notional to be transferred
@@ -255,6 +266,7 @@ contract MarketPlace {
 
   /// @notice External method giving access to this functionality within a given vault
   /// @dev Note that this method calculates yield and interest as well
+  /// @param p Protocol of the given market (Enum)
   /// @param u Underlying token address associated with the market
   /// @param m Maturity timestamp of the market
   /// @param t Target to be transferred to
@@ -266,6 +278,7 @@ contract MarketPlace {
   }
 
   /// @notice Transfers notional fee to the Swivel contract without recalculating marginal interest for from
+  /// @param p Protocol of the given market (Enum)
   /// @param u Underlying token address associated with the market
   /// @param m Maturity timestamp of the market
   /// @param f Owner of the amount
