@@ -124,9 +124,18 @@ func (s *lendTestSuite) TestLendIlluminate() {
 	assert.Nil(err)
 	assert.Equal(uint32(maturity.Uint64()), yieldTokenMaturity)
 
+	transferFromRes, err := s.Erc20.TransferFromCalled(s.Env.Owner.Opts.From)
+	assert.Nil(err)
+	assert.Equal(amountLent, transferFromRes.Amount)
+	assert.Equal(s.Dep.LenderAddress, transferFromRes.To)
+
 	yieldTokenSellBasePreview, err := s.YieldToken.SellBasePreviewCalled()
 	assert.Nil(err)
 	assert.Equal(amountLent, yieldTokenSellBasePreview)
+
+	transferRes, err := s.Erc20.TransferCalled(s.Dep.YieldTokenAddress)
+	assert.Nil(err)
+	assert.Equal(amountLent, transferRes)
 
 	yieldTokenSellBase, err := s.YieldToken.SellBaseCalled(s.Dep.LenderAddress)
 	assert.Nil(err)
