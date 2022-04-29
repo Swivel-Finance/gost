@@ -58,17 +58,15 @@ contract Lender {
     IMarketPlace mPlace = IMarketPlace(marketPlace);
     address[8] memory market = mPlace.markets(u, m); 
 
-    uint256 returned256 = Cast.u128(returned);
-
     // this step is only needed when the lend is for yield
     if (p == uint8(MarketPlace.Principals.Yield)) {
       // TODO should we require on this?
-      IZcToken(market[uint256(MarketPlace.Principals.Illuminate)]).mint(msg.sender, returned256);
+      IZcToken(market[uint256(MarketPlace.Principals.Illuminate)]).mint(msg.sender, returned);
     }
 
-    emit Lend(p, u, m, returned256);
+    emit Lend(p, u, m, returned);
 
-    return returned256;
+    return returned;
   }
 
   /// @dev lend method signature for swivel
