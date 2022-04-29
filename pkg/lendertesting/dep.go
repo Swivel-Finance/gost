@@ -14,7 +14,7 @@ type Dep struct {
 	MarketPlaceAddress common.Address
 	MarketPlace        *mocks.MarketPlace
 	LenderAddress      common.Address
-	LenderContract     *lender.Lender
+	Lender             *lender.Lender
 	ZcTokenAddress     common.Address
 	ZcToken            *mocks.ZcToken
 }
@@ -45,7 +45,7 @@ func Deploy(e *Env) (*Dep, error) {
 
 	e.Blockchain.Commit()
 
-	lenderAddress, _, lenderContract, lenderErr := lender.DeployLender(e.Owner.Opts, e.Blockchain, mpAddress)
+	lenderAddress, _, lender, lenderErr := lender.DeployLender(e.Owner.Opts, e.Blockchain, mpAddress)
 	if lenderErr != nil {
 		return nil, lenderErr
 	}
@@ -68,7 +68,7 @@ func Deploy(e *Env) (*Dep, error) {
 		MarketPlaceAddress: mpAddress,
 		MarketPlace:        mpContract,
 		LenderAddress:      lenderAddress,
-		LenderContract:     lenderContract,
+		Lender:             lender,
 		ZcTokenAddress:     zcAddress,
 		ZcToken:            zcContract,
 	}, nil
