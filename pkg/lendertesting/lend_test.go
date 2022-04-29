@@ -107,10 +107,10 @@ func (s *lendTestSuite) TestLendIlluminate() {
 	s.YieldToken.MaturityReturns(uint32(maturity.Uint64()))
 	s.Env.Blockchain.Commit()
 
-	s.YieldToken.SellBasePreviewReturns(sellBasePreview)
+	s.YieldToken.SellBasePreviewReturns(amountLent)
 	s.Env.Blockchain.Commit()
 
-	s.YieldToken.SellBaseReturns(amountLent)
+	s.YieldToken.SellBaseReturns(sellBasePreview)
 	s.Env.Blockchain.Commit()
 
 	tx, err := s.Lender.Lend(0, s.Dep.Erc20Address, maturity, s.Dep.YieldTokenAddress, amountLent)
@@ -126,7 +126,7 @@ func (s *lendTestSuite) TestLendIlluminate() {
 
 	yieldTokenSellBasePreview, err := s.YieldToken.SellBasePreviewCalled()
 	assert.Nil(err)
-	assert.Equal(sellBasePreview, yieldTokenSellBasePreview)
+	assert.Equal(amountLent, yieldTokenSellBasePreview)
 
 	yieldTokenSellBase, err := s.YieldToken.SellBaseCalled(s.Dep.LenderAddress)
 	assert.Nil(err)
