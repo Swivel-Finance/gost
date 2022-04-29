@@ -1,4 +1,4 @@
-package lendertesting
+package testing
 
 import (
 	"math/big"

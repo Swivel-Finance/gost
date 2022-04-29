@@ -49,16 +49,26 @@ compile_go_mock_market_place:
 
 compile_mock_market_place: compile_solidity_mock_market_place compile_go_mock_market_place
 
-compile_mocks: compile_mock_erc compile_mock_yield_token compile_mock_market_place
+compile_solidity_mock_zc_token:
+	@echo "compiling Mock ZcToken solidity source into abi and bin files"
+	solc -o ./test/mocks --abi --bin --overwrite ./test/mocks/ZcToken.sol
+
+compile_go_mock_zc_token:
+	@echo "compiling abi and bin files to golang"
+	abigen --abi ./test/mocks/ZcToken.abi --bin ./test/mocks/ZcToken.bin -pkg mocks -type ZcToken -out ./test/mocks/zctoken.go 
+
+compile_mock_zc_token: compile_solidity_mock_zc_token compile_go_mock_zc_token
+
+compile_mocks: compile_mock_erc compile_mock_yield_token compile_mock_market_place compile_mock_zc_token
 
 # Real Tokens
 # compile_solidity_zct:
-	# @echo "compiling ZCT solidity source into abi and bin files"
-	# solc -o ./test/tokens --abi --bin --overwrite ./test/tokens/ZcToken.sol
+# 	@echo "compiling ZCT solidity source into abi and bin files"
+# 	solc -o ./test/tokens --abi --bin --overwrite ./test/tokens/ZcToken.sol
 
 # compile_go_zct:
-	# @echo "compiling abi and bin files to golang"
-	# abigen --abi ./test/tokens/ZcToken.abi --bin ./test/tokens/ZcToken.bin -pkg tokens -type ZcToken -out ./test/tokens/zctoken.go 
+# 	@echo "compiling abi and bin files to golang"
+# 	abigen --abi ./test/tokens/ZcToken.abi --bin ./test/tokens/ZcToken.bin -pkg tokens -type ZcToken -out ./test/tokens/zctoken.go 
 
 # compile_zct: compile_solidity_zct compile_go_zct
 
