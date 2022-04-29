@@ -87,6 +87,18 @@ func (s *lendTestSuite) TestLendIlluminate() {
 	amountLent := big.NewInt(5000)
 	returnValue := big.NewInt(4000)
 
+	tx, err := s.Erc20.TransferFromReturns(true)
+	assert.Nil(err)
+	assert.NotNil(tx)
+
+	s.Env.Blockchain.Commit()
+
+	tx, err = s.Erc20.TransferReturns(true)
+	assert.Nil(err)
+	assert.NotNil(tx)
+
+	s.Env.Blockchain.Commit()
+
 	s.MarketPlace.MarketsReturns([8]common.Address{
 		common.HexToAddress("0x0"),
 		common.HexToAddress("0x1"),
@@ -104,7 +116,7 @@ func (s *lendTestSuite) TestLendIlluminate() {
 	s.YieldToken.SellBasePreviewReturns(returnValue)
 	s.Env.Blockchain.Commit()
 
-	tx, err := s.Lender.Lend(0, s.Dep.Erc20Address, maturity, s.Dep.YieldTokenAddress, amountLent)
+	tx, err = s.Lender.Lend(0, s.Dep.Erc20Address, maturity, s.Dep.YieldTokenAddress, amountLent)
 	assert.Nil(err)
 	assert.NotNil(tx)
 }
