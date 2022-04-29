@@ -143,6 +143,73 @@ func (s *lendTestSuite) TestLendIlluminate() {
 }
 
 func (s *lendTestSuite) TestLendYield() {
+	assert := assert.New(s.T())
+
+	maturity := big.NewInt(100000)
+	amountLent := big.NewInt(5000)
+	sellBasePreview := big.NewInt(4000)
+
+	s.Erc20.TransferFromReturns(true)
+	s.Env.Blockchain.Commit()
+
+	s.Erc20.TransferReturns(true)
+	s.Env.Blockchain.Commit()
+
+	markets := [8]common.Address{
+		s.Dep.ZcTokenAddress,
+		common.HexToAddress("0x1"),
+		common.HexToAddress("0x2"),
+		common.HexToAddress("0x3"),
+		common.HexToAddress("0x4"),
+		common.HexToAddress("0x5"),
+		common.HexToAddress("0x6"),
+		common.HexToAddress("0x7"),
+	}
+	s.MarketPlace.MarketsReturns(markets)
+	s.Env.Blockchain.Commit()
+
+	s.YieldToken.MaturityReturns(uint32(maturity.Uint64()))
+	s.Env.Blockchain.Commit()
+
+	s.YieldToken.SellBasePreviewReturns(amountLent)
+	s.Env.Blockchain.Commit()
+
+	s.YieldToken.SellBaseReturns(sellBasePreview)
+	s.Env.Blockchain.Commit()
+
+	s.ZcToken.MintReturns(true)
+	s.Env.Blockchain.Commit()
+
+	tx, err := s.Lender.Lend(2, s.Dep.Erc20Address, maturity, s.Dep.YieldTokenAddress, amountLent)
+	assert.Nil(err)
+	assert.NotNil(tx)
+	s.Env.Blockchain.Commit()
+
+	// verify that mocks were called as expected
+	yieldTokenMaturity, err := s.YieldToken.Maturity()
+	assert.Nil(err)
+	assert.Equal(uint32(maturity.Uint64()), yieldTokenMaturity)
+
+	transferFromRes, err := s.Erc20.TransferFromCalled(s.Env.Owner.Opts.From)
+	assert.Nil(err)
+	assert.Equal(amountLent, transferFromRes.Amount)
+	assert.Equal(s.Dep.LenderAddress, transferFromRes.To)
+
+	yieldTokenSellBasePreview, err := s.YieldToken.SellBasePreviewCalled()
+	assert.Nil(err)
+	assert.Equal(amountLent, yieldTokenSellBasePreview)
+
+	transferRes, err := s.Erc20.TransferCalled(s.Dep.YieldTokenAddress)
+	assert.Nil(err)
+	assert.Equal(amountLent, transferRes)
+
+	yieldTokenSellBase, err := s.YieldToken.SellBaseCalled(s.Dep.LenderAddress)
+	assert.Nil(err)
+	assert.Equal(amountLent, yieldTokenSellBase)
+
+	mint, err := s.ZcToken.MintCalled(s.Env.Owner.Opts.From)
+	assert.Nil(err)
+	assert.Equal(amountLent, mint)
 }
 
 func TestLendSuite(t *test.T) {
