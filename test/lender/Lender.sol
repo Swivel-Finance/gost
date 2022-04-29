@@ -3,7 +3,7 @@
 pragma solidity 0.8.13;
 
 import './Interfaces.sol';
-import './MarketPlace.sol'; // library of swivel specific constructs
+import './MarketPlace.sol'; // library of market place specific constructs
 import './Swivel.sol'; // library of swivel specific constructs
 import './Safe.sol';
 import './Cast.sol';
@@ -17,10 +17,10 @@ contract Lender {
 
   event Lend(uint8 principal, address indexed underlying, uint256 indexed maturity, uint256 returned);
 
-  constructor() {
+  /// @param m the deployed MarketPlace contract
+  constructor(address m) {
     admin = msg.sender;
-    // TODO likely pass in addrs so we can test...
-    // swivel etc...
+    marketPlace = m; // TODO add an authorized setter for this?
   }
 
   // TODO since we are heavily using overriding here do we need any extra fallback function security?

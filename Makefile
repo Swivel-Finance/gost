@@ -1,5 +1,6 @@
 .PHONY: compile_solidity_mock_erc compile_go_mock_erc compile_mock_erc
 .PHONY: compile_solidity_mock_yield_token compile_go_mock_yield_token compile_mock_yield_token
+.PHONY: compile_solidity_mock_market_place compile_go_mock_market_place compile_mock_market_place
 .PHONY: compile_mocks
 
 # TODO under? api-specific sol?
@@ -38,7 +39,17 @@ compile_go_mock_yield_token:
 
 compile_mock_yield_token: compile_solidity_mock_yield_token compile_go_mock_yield_token
 
-compile_mocks: compile_mock_erc compile_mock_yield_token
+compile_solidity_mock_market_place:
+	@echo "compiling Mock MarketPlace solidity source into abi and bin files"
+	solc -o ./test/mocks --abi --bin --overwrite ./test/mocks/MarketPlace.sol
+
+compile_go_mock_market_place:
+	@echo "compiling abi and bin files to golang"
+	abigen --abi ./test/mocks/MarketPlace.abi --bin ./test/mocks/MarketPlace.bin -pkg mocks -type MarketPlace -out ./test/mocks/marketplace.go 
+
+compile_mock_market_place: compile_solidity_mock_market_place compile_go_mock_market_place
+
+compile_mocks: compile_mock_erc compile_mock_yield_token compile_mock_market_place
 
 # Real Tokens
 # compile_solidity_zct:

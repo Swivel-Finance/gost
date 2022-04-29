@@ -6,10 +6,12 @@ import (
 )
 
 type Dep struct {
-	Erc20Address      common.Address
-	Erc20             *mocks.Erc20
-	YieldTokenAddress common.Address
-	YieldToken        *mocks.YieldToken
+	Erc20Address       common.Address
+	Erc20              *mocks.Erc20
+	YieldTokenAddress  common.Address
+	YieldToken         *mocks.YieldToken
+	MarketPlaceAddress common.Address
+	MarketPlace        *mocks.MarketPlace
 }
 
 func Deploy(e *Env) (*Dep, error) {
@@ -30,10 +32,20 @@ func Deploy(e *Env) (*Dep, error) {
 
 	e.Blockchain.Commit()
 
+	mpAddress, _, mpContract, mpErr := mocks.DeployMarketPlace(e.Owner.Opts, e.Blockchain)
+
+	if mpErr != nil {
+		return nil, mpErr
+	}
+
+	e.Blockchain.Commit()
+
 	return &Dep{
-		Erc20Address:      ercAddress,
-		Erc20:             ercContract,
-		YieldTokenAddress: ytAddress,
-		YieldToken:        ytContract,
+		Erc20Address:       ercAddress,
+		Erc20:              ercContract,
+		YieldTokenAddress:  ytAddress,
+		YieldToken:         ytContract,
+		MarketPlaceAddress: mpAddress,
+		MarketPlace:        mpContract,
 	}, nil
 }
