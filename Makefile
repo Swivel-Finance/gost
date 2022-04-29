@@ -81,6 +81,10 @@ compile_solidity_lender_test:
 	@echo "compiling Lender solidity source into abi and bin files"
 	solc -o ./test/lender --optimize --optimize-runs=15000 --abi --bin --overwrite ./test/lender/Lender.sol
 
+compile_go_lender_test:
+	@echo "compiling Lender abi and bin files to golang"
+	abigen --abi ./test/lender/Lender.abi --bin ./test/lender/Lender.bin -pkg lender -type Lender -out ./test/lender/lender.go
+
 # Cleaning
 clean_test_abi:
 	@echo "removing abi files from test/ dirs"
