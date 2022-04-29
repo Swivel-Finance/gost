@@ -3,7 +3,7 @@
 pragma solidity 0.8.13;
 
 import './Interfaces.sol';
-import './MarketPlace.sol'; // library of swivel specific constructs
+import './MarketPlace.sol'; // library of market place specific constructs
 import './Swivel.sol'; // library of swivel specific constructs
 import './Safe.sol';
 import './Cast.sol';
@@ -17,10 +17,10 @@ contract Lender {
 
   event Lend(uint8 principal, address indexed underlying, uint256 indexed maturity, uint256 returned);
 
-  constructor() {
+  /// @param m the deployed MarketPlace contract
+  constructor(address m) {
     admin = msg.sender;
-    // TODO likely pass in addrs so we can test...
-    // swivel etc...
+    marketPlace = m; // TODO add an authorized setter for this?
   }
 
   // TODO since we are heavily using overriding here do we need any extra fallback function security?
@@ -39,8 +39,9 @@ contract Lender {
 
     // the yield token must match the market pair
     // TODO this needs to be cast? the inteface says yToken.maturity() returns uint32
-    require(address(yToken.base()) == u, ''); // TODO err msgs
-    require(yToken.maturity() == m, '');
+    // TODO Use the base to get the address and compare that to the underlying
+    // require(address(yToken.base()) == u, '');
+    require(yToken.maturity() == m, 'maturity does not match'); //
 
     IErc20 uToken = IErc20(u);
     address self = address(this);
@@ -54,20 +55,16 @@ contract Lender {
     // 'sell base' meaning purchase the zero coupons from yield
     yToken.sellBase(self, returned);
 
-    IMarketPlace mPlace = IMarketPlace(marketPlace);
-    address[8] memory market = mPlace.markets(u, m); 
-
-    uint256 returned256 = Cast.u128(returned);
-
     // this step is only needed when the lend is for yield
     if (p == uint8(MarketPlace.Principals.Yield)) {
+      address[8] memory market = IMarketPlace(marketPlace).markets(u, m); 
       // TODO should we require on this?
-      IZcToken(market[uint256(MarketPlace.Principals.Illuminate)]).mint(msg.sender, returned256);
+      IZcToken(market[uint256(MarketPlace.Principals.Illuminate)]).mint(msg.sender, returned);
     }
 
-    emit Lend(p, u, m, returned256);
+    emit Lend(p, u, m, returned);
 
-    return returned256;
+    return returned;
   }
 
   /// @dev lend method signature for swivel

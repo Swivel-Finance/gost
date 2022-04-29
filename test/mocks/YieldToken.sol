@@ -23,9 +23,17 @@ contract YieldToken {
         return baseReturn;
     }
 
+    function baseReturns(IErc20 i) external {
+        baseReturn = i;
+    }
+
     function maturity() external view returns (uint32) {
         return maturityReturn;
     }
+
+    function maturityReturns(uint32 m) external {
+        maturityReturn = m;
+    } 
 
     function sellBaseReturns(uint128 r) external {
         sellBaseReturn = r;

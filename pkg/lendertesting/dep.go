@@ -2,14 +2,21 @@ package lendertesting
 
 import (
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/swivel-finance/gost/test/lender"
 	"github.com/swivel-finance/gost/test/mocks"
 )
 
 type Dep struct {
-	Erc20Address      common.Address
-	Erc20             *mocks.Erc20
-	YieldTokenAddress common.Address
-	YieldToken        *mocks.YieldToken
+	Erc20Address       common.Address
+	Erc20              *mocks.Erc20
+	YieldTokenAddress  common.Address
+	YieldToken         *mocks.YieldToken
+	MarketPlaceAddress common.Address
+	MarketPlace        *mocks.MarketPlace
+	LenderAddress      common.Address
+	Lender             *lender.Lender
+	ZcTokenAddress     common.Address
+	ZcToken            *mocks.ZcToken
 }
 
 func Deploy(e *Env) (*Dep, error) {
@@ -30,10 +37,39 @@ func Deploy(e *Env) (*Dep, error) {
 
 	e.Blockchain.Commit()
 
+	mpAddress, _, mpContract, mpErr := mocks.DeployMarketPlace(e.Owner.Opts, e.Blockchain)
+
+	if mpErr != nil {
+		return nil, mpErr
+	}
+
+	e.Blockchain.Commit()
+
+	lenderAddress, _, lender, lenderErr := lender.DeployLender(e.Owner.Opts, e.Blockchain, mpAddress)
+	if lenderErr != nil {
+		return nil, lenderErr
+	}
+
+	e.Blockchain.Commit()
+
+	zcAddress, _, zcContract, zcErr := mocks.DeployZcToken(e.Owner.Opts, e.Blockchain)
+
+	if zcErr != nil {
+		return nil, zcErr
+	}
+
+	e.Blockchain.Commit()
+
 	return &Dep{
-		Erc20Address:      ercAddress,
-		Erc20:             ercContract,
-		YieldTokenAddress: ytAddress,
-		YieldToken:        ytContract,
+		Erc20Address:       ercAddress,
+		Erc20:              ercContract,
+		YieldTokenAddress:  ytAddress,
+		YieldToken:         ytContract,
+		MarketPlaceAddress: mpAddress,
+		MarketPlace:        mpContract,
+		LenderAddress:      lenderAddress,
+		Lender:             lender,
+		ZcTokenAddress:     zcAddress,
+		ZcToken:            zcContract,
 	}, nil
 }
