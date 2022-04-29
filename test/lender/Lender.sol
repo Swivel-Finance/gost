@@ -57,8 +57,7 @@ contract Lender {
 
     // this step is only needed when the lend is for yield
     if (p == uint8(MarketPlace.Principals.Yield)) {
-      IMarketPlace mPlace = IMarketPlace(marketPlace);
-      address[8] memory market = mPlace.markets(u, m); 
+      address[8] memory market = IMarketPlace(marketPlace).markets(u, m); 
       // TODO should we require on this?
       IZcToken(market[uint256(MarketPlace.Principals.Illuminate)]).mint(msg.sender, returned);
     }

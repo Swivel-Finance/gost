@@ -7,7 +7,7 @@ library Cast {
     /// @dev Safely cast an uint256 to an uint128
     /// @param n the u256 to cast to u128
     function u128(uint256 n) internal pure returns (uint128) {
-        require (n <= type(uint128).max, 'failed to cast');
+        require (n <= type(uint128).max, ''); // TODO err msgs
         return uint128(n);
     }
 }
