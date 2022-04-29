@@ -55,11 +55,10 @@ contract Lender {
     // 'sell base' meaning purchase the zero coupons from yield
     yToken.sellBase(self, returned);
 
-    IMarketPlace mPlace = IMarketPlace(marketPlace);
-    address[8] memory market = mPlace.markets(u, m); 
-
     // this step is only needed when the lend is for yield
     if (p == uint8(MarketPlace.Principals.Yield)) {
+      IMarketPlace mPlace = IMarketPlace(marketPlace);
+      address[8] memory market = mPlace.markets(u, m); 
       // TODO should we require on this?
       IZcToken(market[uint256(MarketPlace.Principals.Illuminate)]).mint(msg.sender, returned);
     }
