@@ -2,6 +2,7 @@ package lendertesting
 
 import (
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/swivel-finance/gost/test/lender"
 	"github.com/swivel-finance/gost/test/mocks"
 )
 
@@ -12,6 +13,8 @@ type Dep struct {
 	YieldToken         *mocks.YieldToken
 	MarketPlaceAddress common.Address
 	MarketPlace        *mocks.MarketPlace
+	LenderAddress      common.Address
+	LenderContract     *lender.Lender
 	ZcTokenAddress     common.Address
 	ZcToken            *mocks.ZcToken
 }
@@ -42,6 +45,13 @@ func Deploy(e *Env) (*Dep, error) {
 
 	e.Blockchain.Commit()
 
+	lenderAddress, _, lenderContract, lenderErr := lender.DeployLender(e.Owner.Opts, e.Blockchain, mpAddress)
+	if lenderErr != nil {
+		return nil, lenderErr
+	}
+
+	e.Blockchain.Commit()
+
 	zcAddress, _, zcContract, zcErr := mocks.DeployZcToken(e.Owner.Opts, e.Blockchain)
 
 	if zcErr != nil {
@@ -57,6 +67,8 @@ func Deploy(e *Env) (*Dep, error) {
 		YieldToken:         ytContract,
 		MarketPlaceAddress: mpAddress,
 		MarketPlace:        mpContract,
+		LenderAddress:      lenderAddress,
+		LenderContract:     lenderContract,
 		ZcTokenAddress:     zcAddress,
 		ZcToken:            zcContract,
 	}, nil
