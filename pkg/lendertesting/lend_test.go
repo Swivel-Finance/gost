@@ -117,6 +117,8 @@ func (s *lendTestSuite) TestLendIlluminate() {
 	assert.Nil(err)
 	assert.NotNil(tx)
 
+	s.Env.Blockchain.Commit()
+
 	// verify that mocks were called as expected
 	yieldTokenMaturity, err := s.YieldToken.Maturity()
 	assert.Nil(err)
