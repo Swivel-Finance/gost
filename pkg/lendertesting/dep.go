@@ -12,6 +12,8 @@ type Dep struct {
 	YieldToken         *mocks.YieldToken
 	MarketPlaceAddress common.Address
 	MarketPlace        *mocks.MarketPlace
+	ZcTokenAddress     common.Address
+	ZcToken            *mocks.ZcToken
 }
 
 func Deploy(e *Env) (*Dep, error) {
@@ -40,6 +42,14 @@ func Deploy(e *Env) (*Dep, error) {
 
 	e.Blockchain.Commit()
 
+	zcAddress, _, zcContract, zcErr := mocks.DeployZcToken(e.Owner.Opts, e.Blockchain)
+
+	if zcErr != nil {
+		return nil, zcErr
+	}
+
+	e.Blockchain.Commit()
+
 	return &Dep{
 		Erc20Address:       ercAddress,
 		Erc20:              ercContract,
@@ -47,5 +57,7 @@ func Deploy(e *Env) (*Dep, error) {
 		YieldToken:         ytContract,
 		MarketPlaceAddress: mpAddress,
 		MarketPlace:        mpContract,
+		ZcTokenAddress:     zcAddress,
+		ZcToken:            zcContract,
 	}, nil
 }
