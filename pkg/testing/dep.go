@@ -10,6 +10,8 @@ type Dep struct {
 	Erc20             *mocks.Erc20
 	YieldTokenAddress common.Address
 	YieldToken        *mocks.YieldToken
+	ZcTokenAddress    common.Address
+	ZcToken           *mocks.ZcToken
 }
 
 func Deploy(e *Env) (*Dep, error) {
@@ -30,10 +32,20 @@ func Deploy(e *Env) (*Dep, error) {
 
 	e.Blockchain.Commit()
 
+	zcAddress, _, zcContract, zcErr := mocks.DeployZcToken(e.Owner.Opts, e.Blockchain)
+
+	if zcErr != nil {
+		return nil, zcErr
+	}
+
+	e.Blockchain.Commit()
+
 	return &Dep{
 		Erc20Address:      ercAddress,
 		Erc20:             ercContract,
 		YieldTokenAddress: ytAddress,
 		YieldToken:        ytContract,
+		ZcTokenAddress:    zcAddress,
+		ZcToken:           zcContract,
 	}, nil
 }
