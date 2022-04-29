@@ -85,18 +85,12 @@ func (s *lendTestSuite) TestLendIlluminate() {
 
 	maturity := big.NewInt(100000)
 	amountLent := big.NewInt(5000)
-	returnValue := big.NewInt(4000)
+	sellBasePreview := big.NewInt(4000)
 
-	tx, err := s.Erc20.TransferFromReturns(true)
-	assert.Nil(err)
-	assert.NotNil(tx)
-
+	s.Erc20.TransferFromReturns(true)
 	s.Env.Blockchain.Commit()
 
-	tx, err = s.Erc20.TransferReturns(true)
-	assert.Nil(err)
-	assert.NotNil(tx)
-
+	s.Erc20.TransferReturns(true)
 	s.Env.Blockchain.Commit()
 
 	s.MarketPlace.MarketsReturns([8]common.Address{
@@ -113,12 +107,28 @@ func (s *lendTestSuite) TestLendIlluminate() {
 	s.YieldToken.MaturityReturns(uint32(maturity.Uint64()))
 	s.Env.Blockchain.Commit()
 
-	s.YieldToken.SellBasePreviewReturns(returnValue)
+	s.YieldToken.SellBasePreviewReturns(sellBasePreview)
 	s.Env.Blockchain.Commit()
 
-	tx, err = s.Lender.Lend(0, s.Dep.Erc20Address, maturity, s.Dep.YieldTokenAddress, amountLent)
+	s.YieldToken.SellBaseReturns(amountLent)
+	s.Env.Blockchain.Commit()
+
+	tx, err := s.Lender.Lend(0, s.Dep.Erc20Address, maturity, s.Dep.YieldTokenAddress, amountLent)
 	assert.Nil(err)
 	assert.NotNil(tx)
+
+	// verify that mocks were called as expected
+	yieldTokenMaturity, err := s.YieldToken.Maturity()
+	assert.Nil(err)
+	assert.Equal(uint32(maturity.Uint64()), yieldTokenMaturity)
+
+	yieldTokenSellBasePreview, err := s.YieldToken.SellBasePreviewCalled()
+	assert.Nil(err)
+	assert.Equal(sellBasePreview, yieldTokenSellBasePreview)
+
+	yieldTokenSellBase, err := s.YieldToken.SellBaseCalled(s.Dep.LenderAddress)
+	assert.Nil(err)
+	assert.Equal(amountLent, yieldTokenSellBase)
 }
 
 func (s *lendTestSuite) TestLendYield() {
