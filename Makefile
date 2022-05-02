@@ -69,7 +69,7 @@ compile_go_mock_zc_token:
 
 compile_mock_zc_token: compile_solidity_mock_zc_token compile_go_mock_zc_token
 
-compile_mocks: compile_mock_erc compile_mock_yield_token compile_mock_market_place compile_mock_zc_token
+compile_mocks: compile_mock_erc compile_mock_yield_token compile_mock_market_place compile_mock_zc_token compile_mock_swivel_token
 
 # Real Tokens
 # compile_solidity_zct:
