@@ -76,33 +76,34 @@ contract Lender {
   /// @param o array of swivel orders being filled
   /// @param a array of amounts of underlying tokens lent to each order in the orders array
   /// @param s array of signatures for each order in the orders array
-  // function lend(uint8 p, address u, uint256 m, address y, Swivel.Order[] calldata o, uint256[] calldata a, Swivel.Components[] calldata s) public returns (uint256) {
-  //   uint256 lent;
-  //   uint256 returned;
+  function lend(uint8 p, address u, uint256 m, address y, Swivel.Order[] calldata o, uint256[] calldata a, Swivel.Components[] calldata s) public returns (uint256) {
+    uint256 lent;
+    uint256 returned;
 
-  //   for (uint256 i=0; i < orders.length; i++) {
-  //     Swivel.Order memory order = orders[i];
-  //     // Require the Swivel order provided matches the underlying and maturity market provided    
-  //     require(order.maturity == m, '');
-  //     require(order.underlying == u, '');
-  //     // Sum the total amount lent to Swivel (amount of zcb to mint)
-  //     lent += a[i];
-  //     // Sum the total amount of premium paid from Swivel (amount of underlying to lend to yield)
-  //     returned += a[i] * order.premium / order.principal; // TODO guard order of operation?
-  //   }
-  // 
-  //   Erc20 uToken = Erc20(u);
-  //   // transfer from user to illuminate
-  //   Safe.TransferFrom(uToken, msg.sender, address(this), lent);
+    for (uint256 i = 0; i < o.length; i++) {
+      Swivel.Order memory order = o[i];
+      // Require the Swivel order provided matches the underlying and maturity market provided    
+      require(order.maturity == m, '');
+      require(order.underlying == u, '');
+      // Sum the total amount lent to Swivel (amount of zcb to mint)
+      lent += a[i];
+      // Sum the total amount of premium paid from Swivel (amount of underlying to lend to yield)
+      returned += a[i] * order.premium / order.principal; // TODO guard order of operation?
+    }
+  
+    IErc20 uToken = IErc20(u);
 
-  //   // fill the orders on swivel protocol
-  //   Swivel(swivelAddr).initiate(o, a, s); // TODO require response?
+    // transfer from user to illuminate
+    Safe.transferFrom(uToken, msg.sender, address(this), lent);
 
-  //   // lend the remaining amount to yield?
+    // fill the orders on swivel protocol
+    ISwivel(swivelAddr).initiate(o, a, s); // TODO require response?
 
-  //   emit Lend(p, u, m, returned);
-  //   return returned;
-  // }
+    // TODO: lend the remaining amount to yield?
+
+    emit Lend(p, u, m, returned);
+    return returned;
+  }
 
   /// @dev lend method signature for element
   /// @notice can be called before maturity to lend to Element / Sense ?
