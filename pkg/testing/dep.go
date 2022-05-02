@@ -6,12 +6,14 @@ import (
 )
 
 type Dep struct {
-	Erc20Address      common.Address
-	Erc20             *mocks.Erc20
-	YieldTokenAddress common.Address
-	YieldToken        *mocks.YieldToken
-	ZcTokenAddress    common.Address
-	ZcToken           *mocks.ZcToken
+	Erc20Address       common.Address
+	Erc20              *mocks.Erc20
+	YieldTokenAddress  common.Address
+	YieldToken         *mocks.YieldToken
+	ZcTokenAddress     common.Address
+	ZcToken            *mocks.ZcToken
+	SwivelTokenAddress common.Address
+	SwivelToken        *mocks.SwivelToken
 }
 
 func Deploy(e *Env) (*Dep, error) {
@@ -40,12 +42,22 @@ func Deploy(e *Env) (*Dep, error) {
 
 	e.Blockchain.Commit()
 
+	swivelAddress, _, swivelContract, swivelErr := mocks.DeploySwivelToken(e.Owner.Opts, e.Blockchain)
+
+	if swivelErr != nil {
+		return nil, swivelErr
+	}
+
+	e.Blockchain.Commit()
+
 	return &Dep{
-		Erc20Address:      ercAddress,
-		Erc20:             ercContract,
-		YieldTokenAddress: ytAddress,
-		YieldToken:        ytContract,
-		ZcTokenAddress:    zcAddress,
-		ZcToken:           zcContract,
+		Erc20Address:       ercAddress,
+		Erc20:              ercContract,
+		YieldTokenAddress:  ytAddress,
+		YieldToken:         ytContract,
+		ZcTokenAddress:     zcAddress,
+		ZcToken:            zcContract,
+		SwivelTokenAddress: swivelAddress,
+		SwivelToken:        swivelContract,
 	}, nil
 }
