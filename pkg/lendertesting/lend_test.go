@@ -87,6 +87,9 @@ func (s *lendTestSuite) TestLendIlluminate() {
 	amountLent := big.NewInt(5000)
 	sellBasePreview := big.NewInt(4000)
 
+	// it seems that we can allow GETH to use this implicit-to-address conversion...
+	s.YieldToken.BaseReturns(s.Dep.Erc20Address)
+
 	s.Erc20.TransferFromReturns(true)
 	s.Env.Blockchain.Commit()
 
@@ -148,6 +151,8 @@ func (s *lendTestSuite) TestLendYield() {
 	maturity := big.NewInt(100000)
 	amountLent := big.NewInt(5000)
 	sellBasePreview := big.NewInt(4000)
+
+	s.YieldToken.BaseReturns(s.Dep.Erc20Address)
 
 	s.Erc20.TransferFromReturns(true)
 	s.Env.Blockchain.Commit()
