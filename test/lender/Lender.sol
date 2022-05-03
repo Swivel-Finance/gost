@@ -129,6 +129,7 @@ contract Lender {
 
     // safe transfer... self...
     
+    // TODO: userData should be set to address(0) in bytes form
     Element.SingleSwap memory swap = Element.SingleSwap({
       userData: "",
       poolId: i, 
