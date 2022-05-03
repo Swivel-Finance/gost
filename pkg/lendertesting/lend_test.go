@@ -256,6 +256,7 @@ func (s *lendTestSuite) TestLendSwivel() {
 	signatureResult, err = s.SwivelToken.InitiateCalledSignature(ORDERS[1].Maker)
 	assert.Nil(err)
 	assert.Equal(COMPONENTS[1].V, signatureResult)
+
 }
 
 func TestLendSuite(t *test.T) {

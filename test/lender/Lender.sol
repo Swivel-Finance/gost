@@ -41,8 +41,8 @@ contract Lender {
     // the yield token must match the market pair
     // TODO this needs to be cast? the inteface says yToken.maturity() returns uint32
     // TODO Use the base to get the address and compare that to the underlying
-    // require(address(yToken.base()) == u, '');
-    require(yToken.maturity() == m, 'maturity does not match'); //
+    require(address(yToken.base()) == u, '');
+    require(yToken.maturity() == m, ''); //
 
     IErc20 uToken = IErc20(u);
     address self = address(this);

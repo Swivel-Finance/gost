@@ -17,8 +17,11 @@ type Dep struct {
 	Lender             *lender.Lender
 	ZcTokenAddress     common.Address
 	ZcToken            *mocks.ZcToken
+<<<<<<< HEAD
 	SwivelTokenAddress common.Address
 	SwivelToken        *mocks.SwivelToken
+=======
+>>>>>>> 85f4eb3d1741965abee2064ff7b959bc24f0cf17
 }
 
 func Deploy(e *Env) (*Dep, error) {
@@ -47,6 +50,7 @@ func Deploy(e *Env) (*Dep, error) {
 
 	e.Blockchain.Commit()
 
+<<<<<<< HEAD
 	swAddress, _, swContract, swErr := mocks.DeploySwivelToken(e.Owner.Opts, e.Blockchain)
 
 	if swErr != nil {
@@ -56,6 +60,9 @@ func Deploy(e *Env) (*Dep, error) {
 	e.Blockchain.Commit()
 
 	lenderAddress, _, lender, lenderErr := lender.DeployLender(e.Owner.Opts, e.Blockchain, mpAddress, swAddress)
+=======
+	lenderAddress, _, lender, lenderErr := lender.DeployLender(e.Owner.Opts, e.Blockchain, mpAddress)
+>>>>>>> 85f4eb3d1741965abee2064ff7b959bc24f0cf17
 	if lenderErr != nil {
 		return nil, lenderErr
 	}
@@ -81,7 +88,10 @@ func Deploy(e *Env) (*Dep, error) {
 		Lender:             lender,
 		ZcTokenAddress:     zcAddress,
 		ZcToken:            zcContract,
+<<<<<<< HEAD
 		SwivelTokenAddress: swAddress,
 		SwivelToken:        swContract,
+=======
+>>>>>>> 85f4eb3d1741965abee2064ff7b959bc24f0cf17
 	}, nil
 }
