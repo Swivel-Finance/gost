@@ -120,12 +120,12 @@ contract Lender {
     // safe transfer from uToken is uniform
     Safe.transferFrom(IErc20(u), msg.sender, address(this), a);
 
-    address principal = IMarketPlace(marketPlace).markets(u, m)[uint256(MarketPlace.Principals.Element)];
-    IElementToken eToken = IElementToken(principal);
+    IElementToken eToken = IElementToken(e);
 
     // the element token must match the market pair
-    require(address(eToken.underlying()) == u, '');
+    require(eToken.underlying() == u, '');
     require(eToken.unlockTimestamp() == m, '');
+
 
     // safe transfer... self...
     
@@ -136,7 +136,7 @@ contract Lender {
       amount: a,
       kind: Element.SwapKind.In, // TODO OG cantract has foo.Enum(0) ?
       assetIn: Any(u),
-      assetOut: Any(principal)
+      assetOut: Any(e)
     });
 
     Element.FundManagement memory fund = Element.FundManagement({

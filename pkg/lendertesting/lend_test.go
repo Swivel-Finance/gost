@@ -1,6 +1,7 @@
 package lendertesting
 
 import (
+	"log"
 	"math/big"
 	test "testing"
 
@@ -277,7 +278,33 @@ func (s *lendTestSuite) TestLendSwivel() {
 func (s *lendTestSuite) TestLendElement() {
 	assert := assert.New(s.T())
 
-	assert.Equal(1, 2)
+	maturity := big.NewInt(100000)
+	elementPoolId := [32]byte{1}
+	amount := big.NewInt(10000)
+	returnAmount := big.NewInt(100)
+	deadline := big.NewInt(9999)
+
+	tx, err := s.ElementToken.UnderlyingReturns(s.Dep.Erc20Address)
+	assert.Nil(err)
+	assert.NotNil(tx)
+	s.Env.Blockchain.Commit()
+
+	tx, err = s.ElementToken.UnlockTimestampReturns(maturity)
+	assert.Nil(err)
+	assert.NotNil(tx)
+	s.Env.Blockchain.Commit()
+
+	tx, err = s.Erc20.TransferFromReturns(true)
+	s.Env.Blockchain.Commit()
+
+	elementUnderlying, _ := s.ElementToken.Underlying()
+	log.Printf("current underlying: %s", s.Dep.Erc20Address)
+	log.Printf("element underlying: %s", elementUnderlying)
+
+	tx, err = s.Lender.Lend0(3, s.Dep.Erc20Address, maturity, s.Dep.ElementTokenAddress, elementPoolId, amount, returnAmount, deadline)
+	assert.Nil(err)
+	assert.NotNil(tx)
+	s.Env.Blockchain.Commit()
 }
 
 func TestLendSuite(t *test.T) {
