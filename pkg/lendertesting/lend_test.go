@@ -23,6 +23,7 @@ type lendTestSuite struct {
 	ZcToken      *mocks.ZcTokenSession
 	Swivel       *mocks.SwivelSession
 	ElementToken *mocks.ElementTokenSession
+	Element      *mocks.ElementSession
 	Lender       *lender.LenderSession
 }
 
