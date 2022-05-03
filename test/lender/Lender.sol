@@ -41,8 +41,8 @@ contract Lender {
     // the yield token must match the market pair
     // TODO this needs to be cast? the inteface says yToken.maturity() returns uint32
     // TODO Use the base to get the address and compare that to the underlying
-    require(address(yToken.base()) == u, 'base does not match underlying');
-    require(yToken.maturity() == m, 'maturity does not match'); //
+    require(address(yToken.base()) == u, 'yield base != underlying');
+    require(yToken.maturity() == m, 'yield maturity != maturity');
 
     IErc20 uToken = IErc20(u);
     address self = address(this);
@@ -81,14 +81,11 @@ contract Lender {
     uint256 lent;
     uint256 returned;
 
-    require(o.length == a.length, "orders length must match amounts length");
-    require(o.length == s.length, "orders length must match signatures length");
-
     for (uint256 i = 0; i < o.length; i++) {
       Swivel.Order memory order = o[i];
       // Require the Swivel order provided matches the underlying and maturity market provided    
-      require(order.maturity == m, 'order maturity did mot match m');
-      require(order.underlying == u, 'underlying token did not match u');
+      require(order.maturity == m, 'swivel maturity != maturity');
+      require(order.underlying == u, 'swivel underlying != underlying');
       // Sum the total amount lent to Swivel (amount of zcb to mint)
       lent += a[i];
       // Sum the total amount of premium paid from Swivel (amount of underlying to lend to yield)
@@ -99,10 +96,9 @@ contract Lender {
     Safe.transferFrom(IErc20(u), msg.sender, address(this), lent);
 
     // fill the orders on swivel protocol, TODO: require response?
-    require(ISwivel(swivelAddr).initiate(o, a, s), "failed to initiate");
+    ISwivel(swivelAddr).initiate(o, a, s);
 
     // TODO: lend the remaining amount to yield? (this is prob wrong)
-    require(returned > lent, "returned amount must be greater than lent amount");
     Safe.transfer(IErc20(u), y, returned - lent);
 
     emit Lend(p, u, m, returned);
