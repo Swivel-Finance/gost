@@ -22,19 +22,12 @@ struct Order {
 
 contract Swivel {
     bool initateReturn;
-    bool redeemZcTokenReturn;
 
     mapping (address => uint256) public initiateCalledAmount;
     mapping (address => uint8) public initiateCalledSignature;
-    mapping (address => uint256) public redeemZcTokenCalledAmount;
-    mapping (address => uint256) public redeemZcTokenCalledToken;
 
     function initiateReturns(bool i) external {
         initateReturn = i;
-    }
-
-    function redeemZcTokenReturns(bool r) external {
-        redeemZcTokenReturn = r;
     }
 
     function initiate(
@@ -47,11 +40,5 @@ contract Swivel {
             initiateCalledSignature[o[i].maker] = s[i].v;
         }
         return initateReturn;
-    }
-
-    function redeemZcToken(address a, uint256 u, uint256 t) external returns (bool) {
-        redeemZcTokenCalledAmount[a] = u;
-        redeemZcTokenCalledToken[a] = t;
-        return redeemZcTokenReturn;
     }
 }

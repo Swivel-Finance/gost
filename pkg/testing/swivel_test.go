@@ -100,20 +100,6 @@ func (s *swivelTestSuite) TestInitiate() {
 	assert.Equal(AMOUNTS[1], initiateAmount)
 }
 
-func (s *swivelTestSuite) TestRedeemZcToken() {
-	addr := common.BigToAddress(big.NewInt(1))
-	amount := big.NewInt(2)
-
-	assert := assert.New(s.T())
-	tx, err := s.Swivel.RedeemZcToken(addr, amount, big.NewInt(3))
-	assert.Nil(err)
-	assert.NotNil(tx)
-	s.Env.Blockchain.Commit()
-
-	redeemAmount, err := s.Swivel.RedeemZcTokenCalledAmount(addr)
-	assert.Equal(amount, redeemAmount)
-}
-
 func TestSwivelSuite(t *test.T) {
 	suite.Run(t, &swivelTestSuite{})
 }
