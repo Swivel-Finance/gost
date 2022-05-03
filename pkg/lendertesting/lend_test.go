@@ -20,6 +20,7 @@ type lendTestSuite struct {
 	MarketPlace *mocks.MarketPlaceSession
 	YieldToken  *mocks.YieldTokenSession
 	ZcToken     *mocks.ZcTokenSession
+	Swivel      *mocks.SwivelSession
 	Lender      *lender.LenderSession
 }
 
@@ -70,6 +71,15 @@ func (s *lendTestSuite) SetupSuite() {
 		},
 	}
 
+	s.Swivel = &mocks.SwivelSession{
+		Contract: s.Dep.Swivel,
+		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
+		TransactOpts: bind.TransactOpts{
+			From:   s.Env.Owner.Opts.From,
+			Signer: s.Env.Owner.Opts.Signer,
+		},
+	}
+
 	s.Lender = &lender.LenderSession{
 		Contract: s.Dep.Lender,
 		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
@@ -78,6 +88,11 @@ func (s *lendTestSuite) SetupSuite() {
 			Signer: s.Env.Owner.Opts.Signer,
 		},
 	}
+
+	ORDERS[0].Maker = s.Env.User1.Opts.From
+	ORDERS[1].Maker = s.Env.User2.Opts.From
+	ORDERS[0].Underlying = s.Dep.Erc20Address
+	ORDERS[1].Underlying = s.Dep.Erc20Address
 }
 
 func (s *lendTestSuite) TestLendIlluminate() {
@@ -87,13 +102,13 @@ func (s *lendTestSuite) TestLendIlluminate() {
 	amountLent := big.NewInt(5000)
 	sellBasePreview := big.NewInt(4000)
 
-	// it seems that we can allow GETH to use this implicit-to-address conversion...
-	s.YieldToken.BaseReturns(s.Dep.Erc20Address)
-
 	s.Erc20.TransferFromReturns(true)
 	s.Env.Blockchain.Commit()
 
 	s.Erc20.TransferReturns(true)
+	s.Env.Blockchain.Commit()
+
+	s.YieldToken.BaseReturns(s.Dep.Erc20Address)
 	s.Env.Blockchain.Commit()
 
 	s.MarketPlace.MarketsReturns([8]common.Address{
@@ -116,7 +131,7 @@ func (s *lendTestSuite) TestLendIlluminate() {
 	s.YieldToken.SellBaseReturns(sellBasePreview)
 	s.Env.Blockchain.Commit()
 
-	tx, err := s.Lender.Lend(0, s.Dep.Erc20Address, maturity, s.Dep.YieldTokenAddress, amountLent)
+	tx, err := s.Lender.Lend0(0, s.Dep.Erc20Address, maturity, s.Dep.YieldTokenAddress, amountLent)
 	assert.Nil(err)
 	assert.NotNil(tx)
 
@@ -152,12 +167,13 @@ func (s *lendTestSuite) TestLendYield() {
 	amountLent := big.NewInt(5000)
 	sellBasePreview := big.NewInt(4000)
 
-	s.YieldToken.BaseReturns(s.Dep.Erc20Address)
-
 	s.Erc20.TransferFromReturns(true)
 	s.Env.Blockchain.Commit()
 
 	s.Erc20.TransferReturns(true)
+	s.Env.Blockchain.Commit()
+
+	s.YieldToken.BaseReturns(s.Dep.Erc20Address)
 	s.Env.Blockchain.Commit()
 
 	markets := [8]common.Address{
@@ -185,7 +201,7 @@ func (s *lendTestSuite) TestLendYield() {
 	s.ZcToken.MintReturns(true)
 	s.Env.Blockchain.Commit()
 
-	tx, err := s.Lender.Lend(2, s.Dep.Erc20Address, maturity, s.Dep.YieldTokenAddress, amountLent)
+	tx, err := s.Lender.Lend0(2, s.Dep.Erc20Address, maturity, s.Dep.YieldTokenAddress, amountLent)
 	assert.Nil(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
@@ -215,6 +231,38 @@ func (s *lendTestSuite) TestLendYield() {
 	mint, err := s.ZcToken.MintCalled(s.Env.Owner.Opts.From)
 	assert.Nil(err)
 	assert.Equal(amountLent, mint)
+}
+
+func (s *lendTestSuite) TestLendSwivel() {
+	assert := assert.New(s.T())
+
+	tx, err := s.Swivel.InitiateReturns(true)
+	assert.Nil(err)
+	assert.NotNil(tx)
+	s.Env.Blockchain.Commit()
+
+	tx, err = s.Lender.Lend(3, s.Dep.Erc20Address, TEST_MATURITY, s.Dep.YieldTokenAddress, ORDERS, AMOUNTS, COMPONENTS)
+	assert.Nil(err)
+	assert.NotNil(tx)
+	s.Env.Blockchain.Commit()
+
+	// verify that mocks were called as expected
+	amountResult, err := s.Swivel.InitiateCalledAmount(ORDERS[0].Maker)
+	assert.Nil(err)
+	assert.Equal(AMOUNTS[0], amountResult)
+
+	amountResult, err = s.Swivel.InitiateCalledAmount(ORDERS[1].Maker)
+	assert.Nil(err)
+	assert.Equal(AMOUNTS[1], amountResult)
+
+	signatureResult, err := s.Swivel.InitiateCalledSignature(ORDERS[0].Maker)
+	assert.Nil(err)
+	assert.Equal(COMPONENTS[0].V, signatureResult)
+
+	signatureResult, err = s.Swivel.InitiateCalledSignature(ORDERS[1].Maker)
+	assert.Nil(err)
+	assert.Equal(COMPONENTS[1].V, signatureResult)
+
 }
 
 func TestLendSuite(t *test.T) {

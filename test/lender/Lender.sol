@@ -18,9 +18,10 @@ contract Lender {
   event Lend(uint8 principal, address indexed underlying, uint256 indexed maturity, uint256 returned);
 
   /// @param m the deployed MarketPlace contract
-  constructor(address m) {
+  constructor(address m, address s) {
     admin = msg.sender;
     marketPlace = m; // TODO add an authorized setter for this?
+    swivelAddr = s;
   }
 
   // TODO since we are heavily using overriding here do we need any extra fallback function security?
@@ -40,8 +41,8 @@ contract Lender {
     // the yield token must match the market pair
     // TODO this needs to be cast? the inteface says yToken.maturity() returns uint32
     // TODO Use the base to get the address and compare that to the underlying
-    require(address(yToken.base()) == u, '');
-    require(yToken.maturity() == m, ''); //
+    require(address(yToken.base()) == u, 'yield base != underlying');
+    require(yToken.maturity() == m, 'yield maturity != maturity');
 
     IErc20 uToken = IErc20(u);
     address self = address(this);
@@ -76,33 +77,33 @@ contract Lender {
   /// @param o array of swivel orders being filled
   /// @param a array of amounts of underlying tokens lent to each order in the orders array
   /// @param s array of signatures for each order in the orders array
-  // function lend(uint8 p, address u, uint256 m, address y, Swivel.Order[] calldata o, uint256[] calldata a, Swivel.Components[] calldata s) public returns (uint256) {
-  //   uint256 lent;
-  //   uint256 returned;
+  function lend(uint8 p, address u, uint256 m, address y, Swivel.Order[] calldata o, uint256[] calldata a, Swivel.Components[] calldata s) public returns (uint256) {
+    uint256 lent;
+    uint256 returned;
 
-  //   for (uint256 i=0; i < orders.length; i++) {
-  //     Swivel.Order memory order = orders[i];
-  //     // Require the Swivel order provided matches the underlying and maturity market provided    
-  //     require(order.maturity == m, '');
-  //     require(order.underlying == u, '');
-  //     // Sum the total amount lent to Swivel (amount of zcb to mint)
-  //     lent += a[i];
-  //     // Sum the total amount of premium paid from Swivel (amount of underlying to lend to yield)
-  //     returned += a[i] * order.premium / order.principal; // TODO guard order of operation?
-  //   }
-  // 
-  //   Erc20 uToken = Erc20(u);
-  //   // transfer from user to illuminate
-  //   Safe.TransferFrom(uToken, msg.sender, address(this), lent);
+    for (uint256 i = 0; i < o.length; i++) {
+      Swivel.Order memory order = o[i];
+      // Require the Swivel order provided matches the underlying and maturity market provided    
+      require(order.maturity == m, 'swivel maturity != maturity');
+      require(order.underlying == u, 'swivel underlying != underlying');
+      // Sum the total amount lent to Swivel (amount of zcb to mint)
+      lent += a[i];
+      // Sum the total amount of premium paid from Swivel (amount of underlying to lend to yield)
+      returned += a[i] * order.premium / order.principal; // TODO guard order of operation?
+    }
 
-  //   // fill the orders on swivel protocol
-  //   Swivel(swivelAddr).initiate(o, a, s); // TODO require response?
+    // transfer from user to illuminate
+    Safe.transferFrom(IErc20(u), msg.sender, address(this), lent);
 
-  //   // lend the remaining amount to yield?
+    // fill the orders on swivel protocol, TODO: require response?
+    ISwivel(swivelAddr).initiate(o, a, s);
 
-  //   emit Lend(p, u, m, returned);
-  //   return returned;
-  // }
+    // TODO: lend the remaining amount to yield? (this is prob wrong)
+    Safe.transfer(IErc20(u), y, returned - lent);
+
+    emit Lend(p, u, m, returned);
+    return returned;
+  }
 
   /// @dev lend method signature for element
   /// @notice can be called before maturity to lend to Element / Sense ?

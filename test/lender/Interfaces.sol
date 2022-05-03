@@ -19,7 +19,6 @@ interface IMarketPlace {
 
 interface ISwivel {
   function initiate(Swivel.Order[] calldata, uint256[] calldata, Swivel.Components[] calldata) external returns (bool);
-  function redeemZcToken(address, uint256, uint256) external returns (bool);
 }
 
 // we'll use ...Token for interfaces that are Erc20s

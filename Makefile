@@ -39,6 +39,16 @@ compile_go_mock_yield_token:
 
 compile_mock_yield_token: compile_solidity_mock_yield_token compile_go_mock_yield_token
 
+compile_solidity_mock_swivel:
+	@echo "compiling Mock Swivel solidity source into abi and bin files"
+	solc -o ./test/mocks --abi --bin --overwrite ./test/mocks/Swivel.sol
+
+compile_go_mock_swivel:
+	@echo "compiling abi and bin files to golang"
+	abigen --abi ./test/mocks/Swivel.abi --bin ./test/mocks/Swivel.bin -pkg mocks -type Swivel -out ./test/mocks/swivel.go 
+
+compile_mock_swivel: compile_solidity_mock_swivel compile_go_mock_swivel
+
 compile_solidity_mock_market_place:
 	@echo "compiling Mock MarketPlace solidity source into abi and bin files"
 	solc -o ./test/mocks --abi --bin --overwrite ./test/mocks/MarketPlace.sol
@@ -59,7 +69,7 @@ compile_go_mock_zc_token:
 
 compile_mock_zc_token: compile_solidity_mock_zc_token compile_go_mock_zc_token
 
-compile_mocks: compile_mock_erc compile_mock_yield_token compile_mock_market_place compile_mock_zc_token
+compile_mocks: compile_mock_erc compile_mock_yield_token compile_mock_market_place compile_mock_zc_token compile_mock_swivel
 
 # Real Tokens
 # compile_solidity_zct:
