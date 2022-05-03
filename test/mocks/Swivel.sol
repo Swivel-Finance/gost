@@ -20,7 +20,7 @@ struct Order {
     uint256 expiry;
 }
 
-contract SwivelToken {
+contract Swivel {
     bool initateReturn;
     bool redeemZcTokenReturn;
 

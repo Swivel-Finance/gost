@@ -15,14 +15,14 @@ var ORDERS = []mocks.Order{}
 var AMOUNTS = []*big.Int{}
 var COMPONENTS = []mocks.Components{}
 
-type swivelTokenTestSuite struct {
+type swivelTestSuite struct {
 	suite.Suite
-	Env         *Env
-	Dep         *Dep
-	SwivelToken *mocks.SwivelTokenSession
+	Env    *Env
+	Dep    *Dep
+	Swivel *mocks.SwivelSession
 }
 
-func (s *swivelTokenTestSuite) SetupSuite() {
+func (s *swivelTestSuite) SetupSuite() {
 	var err error
 
 	s.Env = NewEnv(big.NewInt(ONE_ETH)) // each of the wallets in the env will begin with this balance
@@ -33,8 +33,8 @@ func (s *swivelTokenTestSuite) SetupSuite() {
 	}
 
 	// binding owner to both, kind of why it exists - but could be any of the env wallets
-	s.SwivelToken = &mocks.SwivelTokenSession{
-		Contract: s.Dep.SwivelToken,
+	s.Swivel = &mocks.SwivelSession{
+		Contract: s.Dep.Swivel,
 		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
 		TransactOpts: bind.TransactOpts{
 			From:   s.Env.Owner.Opts.From,
@@ -84,36 +84,36 @@ func (s *swivelTokenTestSuite) SetupSuite() {
 	}
 }
 
-func (s *swivelTokenTestSuite) TestInitiate() {
+func (s *swivelTestSuite) TestInitiate() {
 	assert := assert.New(s.T())
-	tx, err := s.SwivelToken.Initiate(ORDERS, AMOUNTS, COMPONENTS)
+	tx, err := s.Swivel.Initiate(ORDERS, AMOUNTS, COMPONENTS)
 	assert.NotNil(tx)
 	assert.Nil(err)
 	s.Env.Blockchain.Commit()
 
-	initiateAmount, err := s.SwivelToken.InitiateCalledAmount(s.Env.User1.Opts.From)
+	initiateAmount, err := s.Swivel.InitiateCalledAmount(s.Env.User1.Opts.From)
 	assert.Nil(err)
 	assert.Equal(AMOUNTS[0], initiateAmount)
 
-	initiateAmount, err = s.SwivelToken.InitiateCalledAmount(s.Env.User2.Opts.From)
+	initiateAmount, err = s.Swivel.InitiateCalledAmount(s.Env.User2.Opts.From)
 	assert.Nil(err)
 	assert.Equal(AMOUNTS[1], initiateAmount)
 }
 
-func (s *swivelTokenTestSuite) TestRedeemZcToken() {
+func (s *swivelTestSuite) TestRedeemZcToken() {
 	addr := common.BigToAddress(big.NewInt(1))
 	amount := big.NewInt(2)
 
 	assert := assert.New(s.T())
-	tx, err := s.SwivelToken.RedeemZcToken(addr, amount, big.NewInt(3))
+	tx, err := s.Swivel.RedeemZcToken(addr, amount, big.NewInt(3))
 	assert.Nil(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
 
-	redeemAmount, err := s.SwivelToken.RedeemZcTokenCalledAmount(addr)
+	redeemAmount, err := s.Swivel.RedeemZcTokenCalledAmount(addr)
 	assert.Equal(amount, redeemAmount)
 }
 
-func TestSwivelTokenSuite(t *test.T) {
-	suite.Run(t, &swivelTokenTestSuite{})
+func TestSwivelSuite(t *test.T) {
+	suite.Run(t, &swivelTestSuite{})
 }

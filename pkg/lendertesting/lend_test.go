@@ -20,7 +20,7 @@ type lendTestSuite struct {
 	MarketPlace *mocks.MarketPlaceSession
 	YieldToken  *mocks.YieldTokenSession
 	ZcToken     *mocks.ZcTokenSession
-	SwivelToken *mocks.SwivelTokenSession
+	Swivel      *mocks.SwivelSession
 	Lender      *lender.LenderSession
 }
 
@@ -71,8 +71,8 @@ func (s *lendTestSuite) SetupSuite() {
 		},
 	}
 
-	s.SwivelToken = &mocks.SwivelTokenSession{
-		Contract: s.Dep.SwivelToken,
+	s.Swivel = &mocks.SwivelSession{
+		Contract: s.Dep.Swivel,
 		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
 		TransactOpts: bind.TransactOpts{
 			From:   s.Env.Owner.Opts.From,
@@ -236,7 +236,7 @@ func (s *lendTestSuite) TestLendYield() {
 func (s *lendTestSuite) TestLendSwivel() {
 	assert := assert.New(s.T())
 
-	tx, err := s.SwivelToken.InitiateReturns(true)
+	tx, err := s.Swivel.InitiateReturns(true)
 	assert.Nil(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
@@ -247,19 +247,19 @@ func (s *lendTestSuite) TestLendSwivel() {
 	s.Env.Blockchain.Commit()
 
 	// verify that mocks were called as expected
-	amountResult, err := s.SwivelToken.InitiateCalledAmount(ORDERS[0].Maker)
+	amountResult, err := s.Swivel.InitiateCalledAmount(ORDERS[0].Maker)
 	assert.Nil(err)
 	assert.Equal(AMOUNTS[0], amountResult)
 
-	amountResult, err = s.SwivelToken.InitiateCalledAmount(ORDERS[1].Maker)
+	amountResult, err = s.Swivel.InitiateCalledAmount(ORDERS[1].Maker)
 	assert.Nil(err)
 	assert.Equal(AMOUNTS[1], amountResult)
 
-	signatureResult, err := s.SwivelToken.InitiateCalledSignature(ORDERS[0].Maker)
+	signatureResult, err := s.Swivel.InitiateCalledSignature(ORDERS[0].Maker)
 	assert.Nil(err)
 	assert.Equal(COMPONENTS[0].V, signatureResult)
 
-	signatureResult, err = s.SwivelToken.InitiateCalledSignature(ORDERS[1].Maker)
+	signatureResult, err = s.Swivel.InitiateCalledSignature(ORDERS[1].Maker)
 	assert.Nil(err)
 	assert.Equal(COMPONENTS[1].V, signatureResult)
 
