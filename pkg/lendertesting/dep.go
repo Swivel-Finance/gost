@@ -47,7 +47,15 @@ func Deploy(e *Env) (*Dep, error) {
 
 	e.Blockchain.Commit()
 
-	lenderAddress, _, lender, lenderErr := lender.DeployLender(e.Owner.Opts, e.Blockchain, mpAddress)
+	swAddress, _, swContract, swErr := mocks.DeploySwivelToken(e.Owner.Opts, e.Blockchain)
+
+	if swErr != nil {
+		return nil, swErr
+	}
+
+	e.Blockchain.Commit()
+
+	lenderAddress, _, lender, lenderErr := lender.DeployLender(e.Owner.Opts, e.Blockchain, mpAddress, swAddress)
 	if lenderErr != nil {
 		return nil, lenderErr
 	}
@@ -58,14 +66,6 @@ func Deploy(e *Env) (*Dep, error) {
 
 	if zcErr != nil {
 		return nil, zcErr
-	}
-
-	e.Blockchain.Commit()
-
-	swivelAddress, _, swivelContract, swivelErr := mocks.DeploySwivelToken(e.Owner.Opts, e.Blockchain)
-
-	if swivelErr != nil {
-		return nil, swivelErr
 	}
 
 	e.Blockchain.Commit()
@@ -81,7 +81,7 @@ func Deploy(e *Env) (*Dep, error) {
 		Lender:             lender,
 		ZcTokenAddress:     zcAddress,
 		ZcToken:            zcContract,
-		SwivelTokenAddress: swivelAddress,
-		SwivelToken:        swivelContract,
+		SwivelTokenAddress: swAddress,
+		SwivelToken:        swContract,
 	}, nil
 }

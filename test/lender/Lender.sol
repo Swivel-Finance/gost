@@ -18,9 +18,10 @@ contract Lender {
   event Lend(uint8 principal, address indexed underlying, uint256 indexed maturity, uint256 returned);
 
   /// @param m the deployed MarketPlace contract
-  constructor(address m) {
+  constructor(address m, address s) {
     admin = msg.sender;
     marketPlace = m; // TODO add an authorized setter for this?
+    swivelAddr = s;
   }
 
   // TODO since we are heavily using overriding here do we need any extra fallback function security?
@@ -80,26 +81,29 @@ contract Lender {
     uint256 lent;
     uint256 returned;
 
+    require(o.length == a.length, "orders length must match amounts length");
+    require(o.length == s.length, "orders length must match signatures length");
+
     for (uint256 i = 0; i < o.length; i++) {
       Swivel.Order memory order = o[i];
       // Require the Swivel order provided matches the underlying and maturity market provided    
-      require(order.maturity == m, '');
-      require(order.underlying == u, '');
+      require(order.maturity == m, 'order maturity did mot match m');
+      require(order.underlying == u, 'underlying token did not match u');
       // Sum the total amount lent to Swivel (amount of zcb to mint)
       lent += a[i];
       // Sum the total amount of premium paid from Swivel (amount of underlying to lend to yield)
       returned += a[i] * order.premium / order.principal; // TODO guard order of operation?
     }
-  
-    IErc20 uToken = IErc20(u);
 
     // transfer from user to illuminate
-    Safe.transferFrom(uToken, msg.sender, address(this), lent);
+    Safe.transferFrom(IErc20(u), msg.sender, address(this), lent);
 
-    // fill the orders on swivel protocol
-    ISwivel(swivelAddr).initiate(o, a, s); // TODO require response?
+    // fill the orders on swivel protocol, TODO: require response?
+    require(ISwivel(swivelAddr).initiate(o, a, s), "failed to initiate");
 
-    // TODO: lend the remaining amount to yield?
+    // TODO: lend the remaining amount to yield? (this is prob wrong)
+    require(returned > lent, "returned amount must be greater than lent amount");
+    Safe.transfer(IErc20(u), y, returned - lent);
 
     emit Lend(p, u, m, returned);
     return returned;

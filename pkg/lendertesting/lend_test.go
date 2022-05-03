@@ -91,6 +91,8 @@ func (s *lendTestSuite) SetupSuite() {
 
 	ORDERS[0].Maker = s.Env.User1.Opts.From
 	ORDERS[1].Maker = s.Env.User2.Opts.From
+	ORDERS[0].Underlying = s.Dep.Erc20Address
+	ORDERS[1].Underlying = s.Dep.Erc20Address
 }
 
 func (s *lendTestSuite) TestLendIlluminate() {
@@ -227,14 +229,13 @@ func (s *lendTestSuite) TestLendYield() {
 
 func (s *lendTestSuite) TestLendSwivel() {
 	assert := assert.New(s.T())
-	maturity := big.NewInt(100000)
 
 	tx, err := s.SwivelToken.InitiateReturns(true)
 	assert.Nil(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
 
-	tx, err = s.Lender.Lend(3, s.Dep.Erc20Address, maturity, s.Dep.YieldTokenAddress, ORDERS, AMOUNTS, COMPONENTS)
+	tx, err = s.Lender.Lend(3, s.Dep.Erc20Address, TEST_MATURITY, s.Dep.YieldTokenAddress, ORDERS, AMOUNTS, COMPONENTS)
 	assert.Nil(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()

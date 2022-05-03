@@ -3,28 +3,27 @@ package lendertesting
 import (
 	"math/big"
 
-	"github.com/ethereum/go-ethereum/common"
 	"github.com/swivel-finance/gost/test/lender"
 )
 
+var TEST_MATURITY = big.NewInt(119240)
+
 var ORDERS = []lender.SwivelOrder{
 	{
-		Underlying: common.BigToAddress(big.NewInt(1)),
-		Vault:      true,
-		Exit:       false,
-		Principal:  big.NewInt(11111),
-		Premium:    big.NewInt(22222),
-		Maturity:   big.NewInt(33333),
-		Expiry:     big.NewInt(44444),
+		Vault:     true,
+		Exit:      false,
+		Principal: big.NewInt(11111),
+		Premium:   big.NewInt(22222),
+		Maturity:  TEST_MATURITY,
+		Expiry:    big.NewInt(44444),
 	},
 	{
-		Underlying: common.BigToAddress(big.NewInt(2)),
-		Vault:      false,
-		Exit:       true,
-		Principal:  big.NewInt(99999),
-		Premium:    big.NewInt(88888),
-		Maturity:   big.NewInt(77777),
-		Expiry:     big.NewInt(66666),
+		Vault:     false,
+		Exit:      true,
+		Principal: big.NewInt(99999),
+		Premium:   big.NewInt(88888),
+		Maturity:  TEST_MATURITY,
+		Expiry:    big.NewInt(66666),
 	},
 }
 
