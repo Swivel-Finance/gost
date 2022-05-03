@@ -108,6 +108,9 @@ func (s *lendTestSuite) TestLendIlluminate() {
 	s.Erc20.TransferReturns(true)
 	s.Env.Blockchain.Commit()
 
+	s.YieldToken.BaseReturns(s.Dep.Erc20Address)
+	s.Env.Blockchain.Commit()
+
 	s.MarketPlace.MarketsReturns([8]common.Address{
 		common.HexToAddress("0x0"),
 		common.HexToAddress("0x1"),
@@ -168,6 +171,9 @@ func (s *lendTestSuite) TestLendYield() {
 	s.Env.Blockchain.Commit()
 
 	s.Erc20.TransferReturns(true)
+	s.Env.Blockchain.Commit()
+
+	s.YieldToken.BaseReturns(s.Dep.Erc20Address)
 	s.Env.Blockchain.Commit()
 
 	markets := [8]common.Address{
