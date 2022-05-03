@@ -279,6 +279,18 @@ func (s *lendTestSuite) TestLendSwivel() {
 func (s *lendTestSuite) TestLendElement() {
 	assert := assert.New(s.T())
 
+	s.MarketPlace.MarketsReturns([8]common.Address{
+		s.Dep.ElementTokenAddress,
+		s.Dep.ElementTokenAddress,
+		s.Dep.ElementTokenAddress,
+		s.Dep.ElementTokenAddress,
+		s.Dep.ElementTokenAddress,
+		s.Dep.ElementTokenAddress,
+		s.Dep.ElementTokenAddress,
+		s.Dep.ElementTokenAddress,
+	})
+	s.Env.Blockchain.Commit()
+
 	maturity := big.NewInt(100000)
 	elementPoolId := [32]byte{1}
 	amount := big.NewInt(10000)
@@ -302,7 +314,7 @@ func (s *lendTestSuite) TestLendElement() {
 	log.Printf("current underlying: %s", s.Dep.Erc20Address)
 	log.Printf("element underlying: %s", elementUnderlying)
 
-	tx, err = s.Lender.Lend0(3, s.Dep.Erc20Address, maturity, s.Dep.ElementTokenAddress, elementPoolId, amount, returnAmount, deadline)
+	tx, err = s.Lender.Lend0(3, s.Dep.Erc20Address, maturity, s.Dep.ElementAddress, elementPoolId, amount, returnAmount, deadline)
 	assert.Nil(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()

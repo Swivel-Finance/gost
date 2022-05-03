@@ -120,7 +120,8 @@ contract Lender {
     // safe transfer from uToken is uniform
     Safe.transferFrom(IErc20(u), msg.sender, address(this), a);
 
-    IElementToken eToken = IElementToken(e);
+
+    IElementToken eToken = IElementToken(IMarketPlace(marketPlace).markets(u, m)[p]);
 
     // the element token must match the market pair
     require(eToken.underlying() == u, '');

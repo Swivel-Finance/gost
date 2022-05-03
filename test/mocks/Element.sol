@@ -28,6 +28,22 @@ contract Element {
     uint256 returnCalled;
     address fundManagementSenderCalled;
     uint256 singleSwapAmountCalled;
+
+    function amount() external view returns (uint256) {
+        return amountCalled;
+    }
+
+    function return_() external view returns (uint256) {
+        return returnCalled;
+    }
+
+    function fundManagementSender() external view returns (address) {
+        return fundManagementSenderCalled;
+    }
+    
+    function singleSwapAmount() external view returns (uint256) {
+        return singleSwapAmountCalled;
+    }
     
     function swap(SingleSwap memory s, FundManagement memory f, uint256 a, uint256 r) external returns (uint256) {
         amountCalled = a;
