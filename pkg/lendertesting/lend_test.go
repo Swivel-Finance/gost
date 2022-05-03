@@ -239,6 +239,23 @@ func (s *lendTestSuite) TestLendSwivel() {
 	assert.Nil(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
+
+	// verify that mocks were called as expected
+	amountResult, err := s.SwivelToken.InitiateCalledAmount(ORDERS[0].Maker)
+	assert.Nil(err)
+	assert.Equal(AMOUNTS[0], amountResult)
+
+	amountResult, err = s.SwivelToken.InitiateCalledAmount(ORDERS[1].Maker)
+	assert.Nil(err)
+	assert.Equal(AMOUNTS[1], amountResult)
+
+	signatureResult, err := s.SwivelToken.InitiateCalledSignature(ORDERS[0].Maker)
+	assert.Nil(err)
+	assert.Equal(COMPONENTS[0].V, signatureResult)
+
+	signatureResult, err = s.SwivelToken.InitiateCalledSignature(ORDERS[1].Maker)
+	assert.Nil(err)
+	assert.Equal(COMPONENTS[1].V, signatureResult)
 }
 
 func TestLendSuite(t *test.T) {
