@@ -30,7 +30,7 @@ interface IYieldToken { // TODO OG has `is ..Erc20` - is that necessary?
 }
 
 interface IElement {
-  function swap(Element.SingleSwap, Element.FundManagement, uint256, uint256) external returns (uint256);
+  function swap(Element.SingleSwap memory, Element.FundManagement memory, uint256, uint256) external returns (uint256);
 }
 
 interface IElementToken {
@@ -45,3 +45,5 @@ interface ISense {
 interface IZcToken {
   function mint(address, uint256) external returns (bool);
 }
+
+interface Any {}

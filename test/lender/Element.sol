@@ -2,13 +2,13 @@
 
 pragma solidity 0.8.13;
 
+import './Interfaces.sol';
+
 library Element {
   // TODO are these established element names? kind? not type? etc...
-  enum SwapKind { In, Out } // TODO In, Out vs GIVEN_IN, GIVEN_OUT. If those names are needed they should be GivenIn etc...
-    
-  // a blank interface for the assets, TODO this may be useful elsewhere (move if so...)
-  interface Any {};
-
+  // TODO In, Out vs GIVEN_IN, GIVEN_OUT. If those names are needed they should be GivenIn etc...
+  enum SwapKind { In, Out }
+  
   // TODO audit structure / names / order-of-members etc...
   struct SingleSwap {
     bytes userData;
