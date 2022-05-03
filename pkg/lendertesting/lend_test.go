@@ -14,14 +14,15 @@ import (
 
 type lendTestSuite struct {
 	suite.Suite
-	Env         *Env
-	Dep         *Dep
-	Erc20       *mocks.Erc20Session
-	MarketPlace *mocks.MarketPlaceSession
-	YieldToken  *mocks.YieldTokenSession
-	ZcToken     *mocks.ZcTokenSession
-	Swivel      *mocks.SwivelSession
-	Lender      *lender.LenderSession
+	Env          *Env
+	Dep          *Dep
+	Erc20        *mocks.Erc20Session
+	MarketPlace  *mocks.MarketPlaceSession
+	YieldToken   *mocks.YieldTokenSession
+	ZcToken      *mocks.ZcTokenSession
+	Swivel       *mocks.SwivelSession
+	ElementToken *mocks.ElementTokenSession
+	Lender       *lender.LenderSession
 }
 
 func (s *lendTestSuite) SetupSuite() {
@@ -80,6 +81,15 @@ func (s *lendTestSuite) SetupSuite() {
 		},
 	}
 
+	s.ElementToken = &mocks.ElementTokenSession{
+		Contract: s.Dep.ElementToken,
+		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
+		TransactOpts: bind.TransactOpts{
+			From:   s.Env.Owner.Opts.From,
+			Signer: s.Env.Owner.Opts.Signer,
+		},
+	}
+
 	s.Lender = &lender.LenderSession{
 		Contract: s.Dep.Lender,
 		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
@@ -131,7 +141,7 @@ func (s *lendTestSuite) TestLendIlluminate() {
 	s.YieldToken.SellBaseReturns(sellBasePreview)
 	s.Env.Blockchain.Commit()
 
-	tx, err := s.Lender.Lend0(0, s.Dep.Erc20Address, maturity, s.Dep.YieldTokenAddress, amountLent)
+	tx, err := s.Lender.Lend1(0, s.Dep.Erc20Address, maturity, s.Dep.YieldTokenAddress, amountLent)
 	assert.Nil(err)
 	assert.NotNil(tx)
 
@@ -201,7 +211,7 @@ func (s *lendTestSuite) TestLendYield() {
 	s.ZcToken.MintReturns(true)
 	s.Env.Blockchain.Commit()
 
-	tx, err := s.Lender.Lend0(2, s.Dep.Erc20Address, maturity, s.Dep.YieldTokenAddress, amountLent)
+	tx, err := s.Lender.Lend1(2, s.Dep.Erc20Address, maturity, s.Dep.YieldTokenAddress, amountLent)
 	assert.Nil(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
@@ -264,11 +274,11 @@ func (s *lendTestSuite) TestLendSwivel() {
 	assert.Equal(COMPONENTS[1].V, signatureResult)
 }
 
-// func (s *lendTestSuite) TestLendElement() {
-// 	assert := assert.New(s.T())
+func (s *lendTestSuite) TestLendElement() {
+	assert := assert.New(s.T())
 
-// 	tx, err := s.Lender.Lend1()
-// }
+	assert.Equal(1, 2)
+}
 
 func TestLendSuite(t *test.T) {
 	suite.Run(t, &lendTestSuite{})

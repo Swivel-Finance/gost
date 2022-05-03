@@ -7,18 +7,20 @@ import (
 )
 
 type Dep struct {
-	Erc20Address       common.Address
-	Erc20              *mocks.Erc20
-	YieldTokenAddress  common.Address
-	YieldToken         *mocks.YieldToken
-	MarketPlaceAddress common.Address
-	MarketPlace        *mocks.MarketPlace
-	LenderAddress      common.Address
-	Lender             *lender.Lender
-	ZcTokenAddress     common.Address
-	ZcToken            *mocks.ZcToken
-	SwivelAddress      common.Address
-	Swivel             *mocks.Swivel
+	Erc20Address        common.Address
+	Erc20               *mocks.Erc20
+	YieldTokenAddress   common.Address
+	YieldToken          *mocks.YieldToken
+	MarketPlaceAddress  common.Address
+	MarketPlace         *mocks.MarketPlace
+	LenderAddress       common.Address
+	Lender              *lender.Lender
+	ZcTokenAddress      common.Address
+	ZcToken             *mocks.ZcToken
+	SwivelAddress       common.Address
+	Swivel              *mocks.Swivel
+	ElementTokenAddress common.Address
+	ElementToken        *mocks.ElementToken
 }
 
 func Deploy(e *Env) (*Dep, error) {
@@ -70,18 +72,27 @@ func Deploy(e *Env) (*Dep, error) {
 
 	e.Blockchain.Commit()
 
+	elAddress, _, elContract, elErr := mocks.DeployElementToken(e.Owner.Opts, e.Blockchain)
+
+	if elErr != nil {
+		return nil, elErr
+	}
+
+	e.Blockchain.Commit()
 	return &Dep{
-		Erc20Address:       ercAddress,
-		Erc20:              ercContract,
-		YieldTokenAddress:  ytAddress,
-		YieldToken:         ytContract,
-		MarketPlaceAddress: mpAddress,
-		MarketPlace:        mpContract,
-		LenderAddress:      lenderAddress,
-		Lender:             lender,
-		ZcTokenAddress:     zcAddress,
-		ZcToken:            zcContract,
-		SwivelAddress:      swAddress,
-		Swivel:             swContract,
+		Erc20Address:        ercAddress,
+		Erc20:               ercContract,
+		YieldTokenAddress:   ytAddress,
+		YieldToken:          ytContract,
+		MarketPlaceAddress:  mpAddress,
+		MarketPlace:         mpContract,
+		LenderAddress:       lenderAddress,
+		Lender:              lender,
+		ZcTokenAddress:      zcAddress,
+		ZcToken:             zcContract,
+		SwivelAddress:       swAddress,
+		Swivel:              swContract,
+		ElementTokenAddress: elAddress,
+		ElementToken:        elContract,
 	}, nil
 }
