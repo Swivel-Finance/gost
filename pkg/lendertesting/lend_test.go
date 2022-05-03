@@ -20,6 +20,7 @@ type lendTestSuite struct {
 	MarketPlace *mocks.MarketPlaceSession
 	YieldToken  *mocks.YieldTokenSession
 	ZcToken     *mocks.ZcTokenSession
+	SwivelToken *mocks.SwivelTokenSession
 	Lender      *lender.LenderSession
 }
 
@@ -70,6 +71,15 @@ func (s *lendTestSuite) SetupSuite() {
 		},
 	}
 
+	s.SwivelToken = &mocks.SwivelTokenSession{
+		Contract: s.Dep.SwivelToken,
+		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
+		TransactOpts: bind.TransactOpts{
+			From:   s.Env.Owner.Opts.From,
+			Signer: s.Env.Owner.Opts.Signer,
+		},
+	}
+
 	s.Lender = &lender.LenderSession{
 		Contract: s.Dep.Lender,
 		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
@@ -78,6 +88,9 @@ func (s *lendTestSuite) SetupSuite() {
 			Signer: s.Env.Owner.Opts.Signer,
 		},
 	}
+
+	ORDERS[0].Maker = s.Env.User1.Opts.From
+	ORDERS[1].Maker = s.Env.User2.Opts.From
 }
 
 func (s *lendTestSuite) TestLendIlluminate() {
@@ -113,7 +126,7 @@ func (s *lendTestSuite) TestLendIlluminate() {
 	s.YieldToken.SellBaseReturns(sellBasePreview)
 	s.Env.Blockchain.Commit()
 
-	tx, err := s.Lender.Lend(0, s.Dep.Erc20Address, maturity, s.Dep.YieldTokenAddress, amountLent)
+	tx, err := s.Lender.Lend0(0, s.Dep.Erc20Address, maturity, s.Dep.YieldTokenAddress, amountLent)
 	assert.Nil(err)
 	assert.NotNil(tx)
 
@@ -180,7 +193,7 @@ func (s *lendTestSuite) TestLendYield() {
 	s.ZcToken.MintReturns(true)
 	s.Env.Blockchain.Commit()
 
-	tx, err := s.Lender.Lend(2, s.Dep.Erc20Address, maturity, s.Dep.YieldTokenAddress, amountLent)
+	tx, err := s.Lender.Lend0(2, s.Dep.Erc20Address, maturity, s.Dep.YieldTokenAddress, amountLent)
 	assert.Nil(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
@@ -210,6 +223,21 @@ func (s *lendTestSuite) TestLendYield() {
 	mint, err := s.ZcToken.MintCalled(s.Env.Owner.Opts.From)
 	assert.Nil(err)
 	assert.Equal(amountLent, mint)
+}
+
+func (s *lendTestSuite) TestLendSwivel() {
+	assert := assert.New(s.T())
+	maturity := big.NewInt(100000)
+
+	tx, err := s.SwivelToken.InitiateReturns(true)
+	assert.Nil(err)
+	assert.NotNil(tx)
+	s.Env.Blockchain.Commit()
+
+	tx, err = s.Lender.Lend(3, s.Dep.Erc20Address, maturity, s.Dep.YieldTokenAddress, ORDERS, AMOUNTS, COMPONENTS)
+	assert.Nil(err)
+	assert.NotNil(tx)
+	s.Env.Blockchain.Commit()
 }
 
 func TestLendSuite(t *test.T) {

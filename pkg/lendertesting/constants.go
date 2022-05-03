@@ -1,6 +1,8 @@
 package lendertesting
 
-import "math/big"
+import (
+	"math/big"
+)
 
 const ONE_ETH = 1000000000000000000
 const ONE_GWEI = 1000000000
