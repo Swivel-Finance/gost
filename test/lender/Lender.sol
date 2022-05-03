@@ -7,6 +7,7 @@ import './MarketPlace.sol'; // library of market place specific constructs
 import './Swivel.sol'; // library of swivel specific constructs
 import './Safe.sol';
 import './Cast.sol';
+import './Element.sol';
 
 contract Lender {
   address public admin;
@@ -115,47 +116,47 @@ contract Lender {
   /// @param a amount ?
   /// @param r minimum amount to return ?
   /// @param d deadline ?
-  // function lend(uint8 p, address u, uint256 m, address t, bytes32 i, uint256 a, uint256 r, uint256 d) public returns (uint256) {
-  //   address self = address(this);
+  function lend(uint8 p, address u, uint256 m, address t, bytes32 i, uint256 a, uint256 r, uint256 d) public returns (uint256) {
+    address self = address(this);
 
-  //   // get the market...
-  //   // uint8[8] market = MarketPlace(marketPlace).markets(u, m) etc...
+    // get the market...
+    uint8[8] market = MarketPlace(marketPlace).markets(u, m);
 
-  //   // the underlying...
-  //   // Erc20 uToken = ...
+    // the underlying...
+    IErc20 uToken = IErc20(u);
 
-  //   // safe transfer from uToken is uniform
-  //   Safe.transferFrom(uToken, msg.Sender, self, a);
+    // safe transfer from uToken is uniform
+    Safe.transferFrom(uToken, msg.Sender, self, a);
 
-  //   address principal = market[market.Principals.Element];
-  //   ElementToken eToken = ElementToken(principal);
+    address principal = market[market.Principals.Element];
+    IElementToken eToken = IElementToken(principal);
 
-  //   // the element token must match the market pair
-  //   require(address(eToken.underlying()) == u, '');
-  //   require(eToken.unlockTimestamp() == m, '');
+    // the element token must match the market pair
+    require(address(eToken.underlying()) == u, '');
+    require(eToken.unlockTimestamp() == m, '');
 
-  //   // safe transfer... self...
-  //   Element.SingleSwap memory swap = Element.SingleSwap({
-  //     userData: address(0),
-  //     poolId: i, 
-  //     amount: a,
-  //     kind: Element.SwapKind.In, // TODO OG cantract has foo.Enum(0) ?
-  //     assetIn: Element.Any(u),
-  //     assetOut: Element.Any(principal)
-  //   });
+    // safe transfer... self...
+    Element.SingleSwap memory swap = Element.SingleSwap({
+      userData: address(0),
+      poolId: i, 
+      amount: a,
+      kind: Element.SwapKind.In, // TODO OG cantract has foo.Enum(0) ?
+      assetIn: Element.Any(u),
+      assetOut: Element.Any(principal)
+    });
 
-  //   Element.FundManagement memory fund = Element.FundManagement({
-  //     sender: self,
-  //     recipient: payable(self),
-  //     fromInternalBalance: false,
-  //     toInternalBalance: false
-  //   });
+    Element.FundManagement memory fund = Element.FundManagement({
+      sender: self,
+      recipient: payable(self),
+      fromInternalBalance: false,
+      toInternalBalance: false
+    });
 
-  //   uint256 returned = Element(e).swap(swap, fund, r, d);
+    uint256 returned = Element(e).swap(swap, fund, r, d);
 
-  //   emit Lend(p, u, m, returned);
-  //   return returned;
-  // }
+    emit Lend(p, u, m, returned);
+    return returned;
+  }
 
   /// @dev lend method signature for pendle
   /// @notice Can be called before maturity to lend to Pendle while minting Illuminate tokens
