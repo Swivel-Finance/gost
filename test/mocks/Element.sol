@@ -24,13 +24,13 @@ struct FundManagement {
 }
 
 contract Element {     
-    uint256 amountCalled;
+    uint256 deadlineCalled;
     uint256 returnCalled;
     address fundManagementSenderCalled;
     uint256 singleSwapAmountCalled;
 
-    function amount() external view returns (uint256) {
-        return amountCalled;
+    function deadline() external view returns (uint256) {
+        return deadlineCalled;
     }
 
     function return_() external view returns (uint256) {
@@ -44,10 +44,10 @@ contract Element {
     function singleSwapAmount() external view returns (uint256) {
         return singleSwapAmountCalled;
     }
-    
-    function swap(SingleSwap memory s, FundManagement memory f, uint256 a, uint256 r) external returns (uint256) {
-        amountCalled = a;
+
+    function swap(SingleSwap memory s, FundManagement memory f, uint256 r, uint256 d) external returns (uint256) {
         returnCalled = r;
+        deadlineCalled = d;
         fundManagementSenderCalled = f.sender;
         singleSwapAmountCalled = s.amount;
         return 0;

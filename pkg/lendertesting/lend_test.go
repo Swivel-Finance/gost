@@ -92,6 +92,15 @@ func (s *lendTestSuite) SetupSuite() {
 		},
 	}
 
+	s.Element = &mocks.ElementSession{
+		Contract: s.Dep.Element,
+		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
+		TransactOpts: bind.TransactOpts{
+			From:   s.Env.Owner.Opts.From,
+			Signer: s.Env.Owner.Opts.Signer,
+		},
+	}
+
 	s.Lender = &lender.LenderSession{
 		Contract: s.Dep.Lender,
 		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
@@ -318,6 +327,23 @@ func (s *lendTestSuite) TestLendElement() {
 	assert.Nil(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
+
+	// verify that mocks were called as expected
+	elementTokenMaturity, err := s.ElementToken.UnlockTimestamp()
+	assert.Nil(err)
+	assert.Equal(maturity, elementTokenMaturity)
+
+	elementTokenUnderlying, err := s.ElementToken.Underlying()
+	assert.Nil(err)
+	assert.Equal(s.Dep.Erc20Address, elementTokenUnderlying)
+
+	elementDeadline, err := s.Element.Deadline()
+	assert.Nil(err)
+	assert.Equal(deadline, elementDeadline)
+
+	elementReturn, err := s.Element.Return()
+	assert.Nil(err)
+	assert.Equal(returnAmount, elementReturn)
 }
 
 func TestLendSuite(t *test.T) {
