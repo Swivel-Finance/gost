@@ -97,6 +97,16 @@ compile_go_lender_test:
 
 compile_lender_test: compile_solidity_lender_test compile_go_lender_test
 
+compile_solidity_redeemer_test:
+	@echo "compiling Redeemer solidity source into abi and bin files"
+	solc -o ./test/redeemer --optimize --optimize-runs=15000 --abi --bin --overwrite ./test/redeemer/Redeemer.sol
+
+compile_go_redeemer_test:
+	@echo "compiling Redeemer abi and bin files to golang"
+	abigen --abi ./test/redeemer/Redeemer.abi --bin ./test/redeemer/Redeemer.bin -pkg redeemer -type Redeemer -out ./test/redeemer/redeemer.go
+
+compile_redeemer_test: compile_solidity_redeemer_test compile_go_redeemer_test
+
 # Cleaning
 clean_test_abi:
 	@echo "removing abi files from test/ dirs"

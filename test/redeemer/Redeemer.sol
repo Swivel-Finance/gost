@@ -14,10 +14,11 @@ contract Redeemer {
 
   event Redeem(uint8 principal, address indexed underlying, uint256 indexed maturity, uint256 amount);  
 
-  constructor () {
+  /// @param m the deployed MarketPlace contract
+  constructor(address m) {
     admin = msg.sender;
+    marketPlace = m; // TODO add an authorized setter for this?
   }
-
   /// @dev redeem method signature for illuminate, tempus, apwine
   /// @param p value of a specific principal according to the MarketPlace Principals Enum
   /// @param u underlying token being redeemed
