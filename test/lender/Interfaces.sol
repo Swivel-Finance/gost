@@ -35,17 +35,14 @@ interface IPendleRouter {
 }
 
 interface IPendleData {
-  function getForgeAddress(bytes32 f) external view returns (address);
   function isValidXYT(bytes32 f, address u, uint256 m) external view returns (bool);
   function isValidOT(bytes32 f, address u, uint256 m) external view returns (bool);
   function xytTokens(bytes32 f, address u, uint256 m) external view returns (IPendleYieldToken);
-  function otTokens(bytes32 f, address u, uint256 m) external view returns (IPendleYieldToken);
 }
 
 interface IPendleYieldToken {
   function underlyingAsset() external view returns (address);
   function underlyingYieldToken() external view returns (address);
-
 }
 
 interface IElement {
