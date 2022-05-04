@@ -98,8 +98,8 @@ compile_go_lender_test:
 compile_lender_test: compile_solidity_lender_test compile_go_lender_test
 
 compile_solidity_redeemer_test:
-	@echo "compiling Lender solidity source into abi and bin files"
-	solc -o ./test/lender --optimize --optimize-runs=15000 --abi --bin --overwrite ./test/redeemer/Redeemer.sol
+	@echo "compiling Redeemer solidity source into abi and bin files"
+	solc -o ./test/redeemer --optimize --optimize-runs=15000 --abi --bin --overwrite ./test/redeemer/Redeemer.sol
 
 compile_go_redeemer_test:
 	@echo "compiling Redeemer abi and bin files to golang"

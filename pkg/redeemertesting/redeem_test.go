@@ -6,8 +6,8 @@ import (
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/stretchr/testify/suite"
-	"github.com/swivel-finance/gost/test/lender"
 	"github.com/swivel-finance/gost/test/mocks"
+	"github.com/swivel-finance/gost/test/redeemer"
 )
 
 type redeemTestSuite struct {
@@ -19,7 +19,7 @@ type redeemTestSuite struct {
 	YieldToken  *mocks.YieldTokenSession
 	ZcToken     *mocks.ZcTokenSession
 	Swivel      *mocks.SwivelSession
-	Lender      *lender.LenderSession
+	Redeemer    *redeemer.RedeemerSession
 }
 
 func (s *redeemTestSuite) SetupSuite() {
@@ -78,7 +78,7 @@ func (s *redeemTestSuite) SetupSuite() {
 		},
 	}
 
-	s.Lender = &lender.LenderSession{
+	s.Redeemer = &redeemer.RedeemerSession{
 		Contract: s.Dep.Redeemer,
 		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
 		TransactOpts: bind.TransactOpts{
