@@ -5,6 +5,8 @@ pragma solidity 0.8.13;
 import './Swivel.sol'; // library of swivel specific constructs
 import './Element.sol'; // library of Element specific constructs
 
+interface Any {}
+
 interface IErc20 {
 	function approve(address, uint256) external returns (bool);
 	function transfer(address, uint256) external returns (bool);
@@ -45,5 +47,3 @@ interface ISense {
 interface IZcToken {
   function mint(address, uint256) external returns (bool);
 }
-
-interface Any {}
