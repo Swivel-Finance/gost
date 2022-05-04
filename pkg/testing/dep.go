@@ -22,6 +22,8 @@ type Dep struct {
 	PendleYieldTokenAddress common.Address
 	PendleRouter            *mocks.PendleRouter
 	PendleRouterAddress     common.Address
+	PendleData              *mocks.PendleData
+	PendleDataAddress       common.Address
 }
 
 func Deploy(e *Env) (*Dep, error) {
@@ -88,6 +90,13 @@ func Deploy(e *Env) (*Dep, error) {
 
 	e.Blockchain.Commit()
 
+	pdAddress, _, pdContract, pdErr := mocks.DeployPendleData(e.Owner.Opts, e.Blockchain)
+
+	if pdErr != nil {
+		return nil, pdErr
+	}
+
+	e.Blockchain.Commit()
 	return &Dep{
 		Erc20Address:            ercAddress,
 		Erc20:                   ercContract,
@@ -103,7 +112,9 @@ func Deploy(e *Env) (*Dep, error) {
 		Element:                 elementContract,
 		PendleYieldTokenAddress: pytAddress,
 		PendleYieldToken:        pytContract,
-		PendleRouter:            prContract,
 		PendleRouterAddress:     prAddress,
+		PendleRouter:            prContract,
+		PendleDataAddress:       pdAddress,
+		PendleData:              pdContract,
 	}, nil
 }

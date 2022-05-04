@@ -85,8 +85,6 @@ func (s *pendleRouterTestSuite) TestTokenizeYield() {
 	returnedToken, err := s.PendleRouter.TokenizeYieldTokenCalled()
 	assert.NoError(err)
 	assert.Equal(destination, returnedToken)
-
-	assert.Equal(1, 2)
 }
 
 func TestPendleRouterSuite(t *test.T) {

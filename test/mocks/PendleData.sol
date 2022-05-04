@@ -8,21 +8,21 @@ interface IPendleYieldToken {
 }
 
 contract PendleData {
-    bool isValidXYTReturn;
-    bool isValidOTReturn;
-    address xytTokensReturn;
+    bool private isValidXYTReturn;
+    bool private isValidOTReturn;
+    address private xytTokensReturn;
 
-    bytes32 isValidOTId;
-    address isValidOTUnderlying;
-    uint256 isValidOTMaturity;
+    bytes32 public isValidOTId;
+    address public isValidOTUnderlying;
+    uint256 public isValidOTMaturity;
 
-    bytes32 isValidXYTId;
-    address isValidXYTUnderlying;
-    uint256 isValidXYTMaturity;
+    bytes32 public isValidXYTId;
+    address public isValidXYTUnderlying;
+    uint256 public isValidXYTMaturity;
 
-    bytes32 xytTokensCalledId;
-    address xytTokensCalledUnderlying;
-    uint256 xytTokensCalledMaturity;
+    bytes32 public xytTokensCalledId;
+    address public xytTokensCalledUnderlying;
+    uint256 public xytTokensCalledMaturity;
 
 
     function isValidXYTReturns(bool x) external {
