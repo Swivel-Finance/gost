@@ -2,7 +2,7 @@
 
 pragma solidity 0.8.13;
 
-contract IPendleYieldToken {
+contract PendleYieldToken {
     address underlyingAssetReturn;
     address underlyingYieldTokenReturn;
 

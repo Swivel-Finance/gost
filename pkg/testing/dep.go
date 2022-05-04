@@ -6,18 +6,20 @@ import (
 )
 
 type Dep struct {
-	Erc20Address        common.Address
-	Erc20               *mocks.Erc20
-	YieldTokenAddress   common.Address
-	YieldToken          *mocks.YieldToken
-	ZcTokenAddress      common.Address
-	ZcToken             *mocks.ZcToken
-	SwivelAddress       common.Address
-	Swivel              *mocks.Swivel
-	ElementTokenAddress common.Address
-	ElementToken        *mocks.ElementToken
-	ElementAddress      common.Address
-	Element             *mocks.Element
+	Erc20Address            common.Address
+	Erc20                   *mocks.Erc20
+	YieldTokenAddress       common.Address
+	YieldToken              *mocks.YieldToken
+	ZcTokenAddress          common.Address
+	ZcToken                 *mocks.ZcToken
+	SwivelAddress           common.Address
+	Swivel                  *mocks.Swivel
+	ElementTokenAddress     common.Address
+	ElementToken            *mocks.ElementToken
+	ElementAddress          common.Address
+	Element                 *mocks.Element
+	PendleYieldToken        *mocks.PendleYieldToken
+	PendleYieldTokenAddress common.Address
 }
 
 func Deploy(e *Env) (*Dep, error) {
@@ -68,18 +70,28 @@ func Deploy(e *Env) (*Dep, error) {
 
 	e.Blockchain.Commit()
 
+	pytAddress, _, pytContract, pytErr := mocks.DeployPendleYieldToken(e.Owner.Opts, e.Blockchain)
+
+	if pytErr != nil {
+		return nil, pytErr
+	}
+
+	e.Blockchain.Commit()
+
 	return &Dep{
-		Erc20Address:        ercAddress,
-		Erc20:               ercContract,
-		YieldTokenAddress:   ytAddress,
-		YieldToken:          ytContract,
-		ZcTokenAddress:      zcAddress,
-		ZcToken:             zcContract,
-		SwivelAddress:       swAddress,
-		Swivel:              swContract,
-		ElementTokenAddress: elementTokenAddress,
-		ElementToken:        elementTokenContract,
-		ElementAddress:      elementAddress,
-		Element:             elementContract,
+		Erc20Address:            ercAddress,
+		Erc20:                   ercContract,
+		YieldTokenAddress:       ytAddress,
+		YieldToken:              ytContract,
+		ZcTokenAddress:          zcAddress,
+		ZcToken:                 zcContract,
+		SwivelAddress:           swAddress,
+		Swivel:                  swContract,
+		ElementTokenAddress:     elementTokenAddress,
+		ElementToken:            elementTokenContract,
+		ElementAddress:          elementAddress,
+		Element:                 elementContract,
+		PendleYieldTokenAddress: pytAddress,
+		PendleYieldToken:        pytContract,
 	}, nil
 }
