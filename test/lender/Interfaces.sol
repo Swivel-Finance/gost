@@ -29,6 +29,25 @@ interface IYieldToken { // TODO OG has `is ..Erc20` - is that necessary?
   function sellBasePreview(uint128) external returns (uint128);
 }
 
+interface IPendleRouter {
+  function data() external view returns (IPendleData);
+  function tokenizeYield(bytes32 f, address u, uint256 m, uint256 a, address t) external returns (address, address, uint256);
+}
+
+interface IPendleData {
+  function getForgeAddress(bytes32 f) external view returns (address);
+  function isValidXYT(bytes32 f, address u, uint256 m) external view returns (bool);
+  function isValidOT(bytes32 f, address u, uint256 m) external view returns (bool);
+  function xytTokens(bytes32 f, address u, uint256 m) external view returns (IPendleYieldToken);
+  function otTokens(bytes32 f, address u, uint256 m) external view returns (IPendleYieldToken);
+}
+
+interface IPendleYieldToken {
+  function underlyingAsset() external view returns (address);
+  function underlyingYieldToken() external view returns (address);
+
+}
+
 interface IElement {
   function swap(Element.SingleSwap memory, Element.FundManagement memory, uint256, uint256) external returns (uint256);
 }

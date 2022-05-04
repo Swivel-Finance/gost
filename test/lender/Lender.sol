@@ -120,7 +120,6 @@ contract Lender {
     // safe transfer from uToken is uniform
     Safe.transferFrom(IErc20(u), msg.sender, address(this), a);
 
-
     IElementToken eToken = IElementToken(IMarketPlace(marketPlace).markets(u, m)[p]);
 
     // the element token must match the market pair
@@ -156,16 +155,35 @@ contract Lender {
   /// @param p value of a specific principal according to the MarketPlace Principals Enum
   /// @param u underlying token being ?
   /// @param m maturity of the market being ?
-  /// @param i pendle id ?
+  /// @param i pendle id (aka forge ID) ?
   /// @param a amount ?
   /// @param r minimum amount to return ?
-  // function lend(uint8 p, address u, uint256 m, bytes32 i, uint256 a, uint256 r) public returns (uint256) {
-  //   // ...
-  //   uint256 returned = 0;
+  function lend(uint8 p, address u, uint256 m, bytes32 i, uint256 a, uint256 r) public returns (uint256) {
+    // ensure that the maturity and underlying match the market pair
+    IPendleRouter router = IPendleRouter(IMarketPlace(marketPlace).markets(u, m)[p]);
+    IPendleData data = router.data();
+    require(data.isValidXYT(i, u, m));
+    IPendleYieldToken yToken = IPendleYieldToken(data.xytTokens(i, u, m));
+    require(yToken.underlyingAsset() == u, 'pendle market underlying != underlying');
 
-  //   emit Lend(p, u, m, returned);
-  //   return returned;
-  // }
+    address yieldToken = yToken.underlyingYieldToken();
+
+    // safe transfer from user to illuminate
+    Safe.transferFrom(IErc20(u), msg.sender, address(this), a);
+
+    // This method is the lend equivalent for pendle
+    (, , uint256 amountMinted) = router.tokenizeYield(i, u, m, a, yieldToken);
+
+    uint256 returned = a - amountMinted;
+
+    // TODO: What does minimum amount to return mean?
+    if (returned < r) {
+      returned = r;
+    }
+
+    emit Lend(p, u, m, returned);
+    return returned;
+  }
 
   /// @dev lend method signature for tempus
   /// @notice Can be called before maturity to lend to Tempus while minting Illuminate tokens
