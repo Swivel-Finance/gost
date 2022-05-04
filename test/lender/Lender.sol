@@ -116,46 +116,39 @@ contract Lender {
   /// @param a amount ?
   /// @param r minimum amount to return ?
   /// @param d deadline ?
-  function lend(uint8 p, address u, uint256 m, address t, bytes32 i, uint256 a, uint256 r, uint256 d) public returns (uint256) {
-    address self = address(this);
-
-    // get the market...
-    uint8[8] market = MarketPlace(marketPlace).markets(u, m);
-
-    // the underlying...
-    IErc20 uToken = IErc20(u);
-
+  function lend(uint8 p, address u, uint256 m, address e, bytes32 i, uint256 a, uint256 r, uint256 d) public returns (uint256) {
     // safe transfer from uToken is uniform
-    Safe.transferFrom(uToken, msg.Sender, self, a);
+    Safe.transferFrom(IErc20(u), msg.sender, address(this), a);
 
-    address principal = market[market.Principals.Element];
-    IElementToken eToken = IElementToken(principal);
+
+    IElementToken eToken = IElementToken(IMarketPlace(marketPlace).markets(u, m)[p]);
 
     // the element token must match the market pair
-    require(address(eToken.underlying()) == u, '');
+    require(eToken.underlying() == u, '');
     require(eToken.unlockTimestamp() == m, '');
 
+
     // safe transfer... self...
+    
+    // TODO: userData should be set to address(0) in bytes form
     Element.SingleSwap memory swap = Element.SingleSwap({
-      userData: address(0),
+      userData: "",
       poolId: i, 
       amount: a,
       kind: Element.SwapKind.In, // TODO OG cantract has foo.Enum(0) ?
-      assetIn: Element.Any(u),
-      assetOut: Element.Any(principal)
+      assetIn: Any(u),
+      assetOut: Any(e)
     });
 
     Element.FundManagement memory fund = Element.FundManagement({
-      sender: self,
-      recipient: payable(self),
+      sender: address(this),
+      recipient: payable(address(this)),
       fromInternalBalance: false,
       toInternalBalance: false
     });
 
-    uint256 returned = Element(e).swap(swap, fund, r, d);
-
-    emit Lend(p, u, m, returned);
-    return returned;
+    emit Lend(p, u, m, IElement(e).swap(swap, fund, r, d));
+    return IElement(e).swap(swap, fund, r, d);
   }
 
   /// @dev lend method signature for pendle

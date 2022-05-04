@@ -1,6 +1,7 @@
 package lendertesting
 
 import (
+	"log"
 	"math/big"
 	test "testing"
 
@@ -14,14 +15,16 @@ import (
 
 type lendTestSuite struct {
 	suite.Suite
-	Env         *Env
-	Dep         *Dep
-	Erc20       *mocks.Erc20Session
-	MarketPlace *mocks.MarketPlaceSession
-	YieldToken  *mocks.YieldTokenSession
-	ZcToken     *mocks.ZcTokenSession
-	Swivel      *mocks.SwivelSession
-	Lender      *lender.LenderSession
+	Env          *Env
+	Dep          *Dep
+	Erc20        *mocks.Erc20Session
+	MarketPlace  *mocks.MarketPlaceSession
+	YieldToken   *mocks.YieldTokenSession
+	ZcToken      *mocks.ZcTokenSession
+	Swivel       *mocks.SwivelSession
+	ElementToken *mocks.ElementTokenSession
+	Element      *mocks.ElementSession
+	Lender       *lender.LenderSession
 }
 
 func (s *lendTestSuite) SetupSuite() {
@@ -80,6 +83,24 @@ func (s *lendTestSuite) SetupSuite() {
 		},
 	}
 
+	s.ElementToken = &mocks.ElementTokenSession{
+		Contract: s.Dep.ElementToken,
+		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
+		TransactOpts: bind.TransactOpts{
+			From:   s.Env.Owner.Opts.From,
+			Signer: s.Env.Owner.Opts.Signer,
+		},
+	}
+
+	s.Element = &mocks.ElementSession{
+		Contract: s.Dep.Element,
+		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
+		TransactOpts: bind.TransactOpts{
+			From:   s.Env.Owner.Opts.From,
+			Signer: s.Env.Owner.Opts.Signer,
+		},
+	}
+
 	s.Lender = &lender.LenderSession{
 		Contract: s.Dep.Lender,
 		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
@@ -131,7 +152,7 @@ func (s *lendTestSuite) TestLendIlluminate() {
 	s.YieldToken.SellBaseReturns(sellBasePreview)
 	s.Env.Blockchain.Commit()
 
-	tx, err := s.Lender.Lend0(0, s.Dep.Erc20Address, maturity, s.Dep.YieldTokenAddress, amountLent)
+	tx, err := s.Lender.Lend1(0, s.Dep.Erc20Address, maturity, s.Dep.YieldTokenAddress, amountLent)
 	assert.Nil(err)
 	assert.NotNil(tx)
 
@@ -201,7 +222,7 @@ func (s *lendTestSuite) TestLendYield() {
 	s.ZcToken.MintReturns(true)
 	s.Env.Blockchain.Commit()
 
-	tx, err := s.Lender.Lend0(2, s.Dep.Erc20Address, maturity, s.Dep.YieldTokenAddress, amountLent)
+	tx, err := s.Lender.Lend1(2, s.Dep.Erc20Address, maturity, s.Dep.YieldTokenAddress, amountLent)
 	assert.Nil(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
@@ -262,7 +283,67 @@ func (s *lendTestSuite) TestLendSwivel() {
 	signatureResult, err = s.Swivel.InitiateCalledSignature(ORDERS[1].Maker)
 	assert.Nil(err)
 	assert.Equal(COMPONENTS[1].V, signatureResult)
+}
 
+func (s *lendTestSuite) TestLendElement() {
+	assert := assert.New(s.T())
+
+	s.MarketPlace.MarketsReturns([8]common.Address{
+		s.Dep.ElementTokenAddress,
+		s.Dep.ElementTokenAddress,
+		s.Dep.ElementTokenAddress,
+		s.Dep.ElementTokenAddress,
+		s.Dep.ElementTokenAddress,
+		s.Dep.ElementTokenAddress,
+		s.Dep.ElementTokenAddress,
+		s.Dep.ElementTokenAddress,
+	})
+	s.Env.Blockchain.Commit()
+
+	maturity := big.NewInt(100000)
+	elementPoolId := [32]byte{1}
+	amount := big.NewInt(10000)
+	returnAmount := big.NewInt(100)
+	deadline := big.NewInt(9999)
+
+	tx, err := s.ElementToken.UnderlyingReturns(s.Dep.Erc20Address)
+	assert.Nil(err)
+	assert.NotNil(tx)
+	s.Env.Blockchain.Commit()
+
+	tx, err = s.ElementToken.UnlockTimestampReturns(maturity)
+	assert.Nil(err)
+	assert.NotNil(tx)
+	s.Env.Blockchain.Commit()
+
+	tx, err = s.Erc20.TransferFromReturns(true)
+	s.Env.Blockchain.Commit()
+
+	elementUnderlying, _ := s.ElementToken.Underlying()
+	log.Printf("current underlying: %s", s.Dep.Erc20Address)
+	log.Printf("element underlying: %s", elementUnderlying)
+
+	tx, err = s.Lender.Lend0(3, s.Dep.Erc20Address, maturity, s.Dep.ElementAddress, elementPoolId, amount, returnAmount, deadline)
+	assert.Nil(err)
+	assert.NotNil(tx)
+	s.Env.Blockchain.Commit()
+
+	// verify that mocks were called as expected
+	elementTokenMaturity, err := s.ElementToken.UnlockTimestamp()
+	assert.Nil(err)
+	assert.Equal(maturity, elementTokenMaturity)
+
+	elementTokenUnderlying, err := s.ElementToken.Underlying()
+	assert.Nil(err)
+	assert.Equal(s.Dep.Erc20Address, elementTokenUnderlying)
+
+	elementDeadline, err := s.Element.Deadline()
+	assert.Nil(err)
+	assert.Equal(deadline, elementDeadline)
+
+	elementReturn, err := s.Element.Return()
+	assert.Nil(err)
+	assert.Equal(returnAmount, elementReturn)
 }
 
 func TestLendSuite(t *test.T) {

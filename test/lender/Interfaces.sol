@@ -3,7 +3,9 @@
 pragma solidity 0.8.13;
 
 import './Swivel.sol'; // library of swivel specific constructs
-// import './Element.sol'; // library of Element specific constructs
+import './Element.sol'; // library of Element specific constructs
+
+interface Any {}
 
 interface IErc20 {
 	function approve(address, uint256) external returns (bool);
@@ -29,10 +31,9 @@ interface IYieldToken { // TODO OG has `is ..Erc20` - is that necessary?
   function sellBasePreview(uint128) external returns (uint128);
 }
 
-// interface IElement {
-  // TODO man those structs names are verbose... can it be ELement.Swap, Element.Fund etc... ?
-  // function swap(Element.SingleSwap, Element.FundManagement, uint256, uint256) external returns (uint256);
-// }
+interface IElement {
+  function swap(Element.SingleSwap memory, Element.FundManagement memory, uint256, uint256) external returns (uint256);
+}
 
 interface IElementToken {
   function unlockTimestamp() external returns (uint256);
