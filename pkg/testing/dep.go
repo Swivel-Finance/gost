@@ -20,6 +20,8 @@ type Dep struct {
 	Element                 *mocks.Element
 	PendleYieldToken        *mocks.PendleYieldToken
 	PendleYieldTokenAddress common.Address
+	PendleRouter            *mocks.PendleRouter
+	PendleRouterAddress     common.Address
 }
 
 func Deploy(e *Env) (*Dep, error) {
@@ -78,6 +80,14 @@ func Deploy(e *Env) (*Dep, error) {
 
 	e.Blockchain.Commit()
 
+	prAddress, _, prContract, prErr := mocks.DeployPendleRouter(e.Owner.Opts, e.Blockchain)
+
+	if prErr != nil {
+		return nil, prErr
+	}
+
+	e.Blockchain.Commit()
+
 	return &Dep{
 		Erc20Address:            ercAddress,
 		Erc20:                   ercContract,
@@ -93,5 +103,7 @@ func Deploy(e *Env) (*Dep, error) {
 		Element:                 elementContract,
 		PendleYieldTokenAddress: pytAddress,
 		PendleYieldToken:        pytContract,
+		PendleRouter:            prContract,
+		PendleRouterAddress:     prAddress,
 	}, nil
 }

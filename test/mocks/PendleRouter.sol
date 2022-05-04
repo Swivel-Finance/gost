@@ -17,11 +17,11 @@ contract PendleRouter {
     uint256 tokenizeYieldReturn;
     IPendleData dataReturn;
 
-    bytes32 tokenizeYieldIdCalled;
-    address tokenizeYieldUnderlyingCalled;
-    uint256 tokenizeYieldMaturityCalled;
-    uint256 tokenizeYieldAmountCalled;
-    address tokenizeYieldTokenCalled;
+    bytes32 public tokenizeYieldIdCalled;
+    address public tokenizeYieldUnderlyingCalled;
+    uint256 public tokenizeYieldMaturityCalled;
+    uint256 public tokenizeYieldAmountCalled;
+    address public tokenizeYieldTokenCalled;
 
     function tokenizeYieldReturns (uint256 x) external {
         tokenizeYieldReturn = x;
