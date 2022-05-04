@@ -24,6 +24,8 @@ type lendTestSuite struct {
 	Swivel       *mocks.SwivelSession
 	ElementToken *mocks.ElementTokenSession
 	Element      *mocks.ElementSession
+	PendleToken  *mocks.PendleDataSession
+	Pendle       *mocks.PendleRouterSession
 	Lender       *lender.LenderSession
 }
 
@@ -344,6 +346,11 @@ func (s *lendTestSuite) TestLendElement() {
 	elementReturn, err := s.Element.Return()
 	assert.Nil(err)
 	assert.Equal(returnAmount, elementReturn)
+}
+
+func (s *lendTestSuite) TestLendPendle() {
+	assert := assert.New(s.T())
+
 }
 
 func TestLendSuite(t *test.T) {
