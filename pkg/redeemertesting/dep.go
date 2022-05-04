@@ -14,6 +14,8 @@ type Dep struct {
 	ZcToken           *mocks.ZcToken
 	SwivelAddress     common.Address
 	Swivel            *mocks.Swivel
+	RedeemerAddress   common.Address
+	Redeemer          *redeemer.Redeemer
 }
 
 func Deploy(e *Env) (*Dep, error) {
