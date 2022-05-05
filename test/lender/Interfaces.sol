@@ -47,3 +47,12 @@ interface ISense {
 interface IZcToken {
   function mint(address, uint256) external returns (bool);
 }
+
+interface IPendle {
+  function underlying() external returns (address);
+  function maturity() external returns (uint256);
+}
+
+interface ISushiPool {
+  function swapExactTokensForTokens(uint256, uint256, address[] calldata, address, uint256) external returns (uint[] memory amounts);
+}

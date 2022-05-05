@@ -161,23 +161,30 @@ contract Lender {
   /// @param d deadline
   function lend(uint8 p, address u, uint256 m, uint256 a, uint256 mb, uint256 d) public returns (uint256) {
       // Instantiate market and tokens
-      IPendle memory pendle = IPendle(IMarketPlace(markets[u][maturity]));
-      ISushiPool pool = ISushiPool(pendleRouter);
+      address market = IMarketPlace(marketPlace).markets(u, m)[p];
+      IPendle pendle = IPendle(market);
+
+      // confirm that we are in the correct market
+      require(pendle.underlying() == u, 'pendle underlying != underlying');
+      require(pendle.maturity() == m, 'pendle maturity != maturity');
+
+      ISushiPool pool = ISushiPool(market);
 
       // Transfer funds from user to Illuminate    
-      SafeTransferLib.safeTransferFrom(IErc20(u), msg.sender, address(this), a);   
+      Safe.transferFrom(IErc20(u), msg.sender, address(this), a);   
 
       address[] memory path = new address[](2);
-      path[0] = underlying;
-      path[1] = market.pendle;
+      path[0] = u;
+      path[1] = market;
 
       // Swap on the Pendle Router using the provided market and params
       uint256 returned = pool.swapExactTokensForTokens(a, mb, path, address(this), d)[0];
 
       // Mint Illuminate zero coupons
-      ZcToken(market[uint256(MarketPLace.Principals.Illuminate)]).mint(msg.sender, returned);
+      address[8] memory markets = IMarketPlace(marketPlace).markets(u, m); 
+      IZcToken(markets[uint256(MarketPlace.Principals.Illuminate)]).mint(msg.sender, returned);
 
-      emit Lend(u, m, returned);
+      emit Lend(p, u, m, returned);
 
       return returned;
   }
