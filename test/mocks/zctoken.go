@@ -27,10 +27,10 @@ var (
 )
 
 // ZcTokenABI is the input ABI used to generate the binding from.
-const ZcTokenABI = "[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"a\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"u\",\"type\":\"uint256\"}],\"name\":\"mint\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"mintCalled\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bool\",\"name\":\"r\",\"type\":\"bool\"}],\"name\":\"mintReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]"
+const ZcTokenABI = "[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"a\",\"type\":\"address\"}],\"name\":\"balanceOf\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"a\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"b\",\"type\":\"uint256\"}],\"name\":\"balanceOfReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"balances\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"a\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"u\",\"type\":\"uint256\"}],\"name\":\"mint\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bool\",\"name\":\"r\",\"type\":\"bool\"}],\"name\":\"mintReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]"
 
 // ZcTokenBin is the compiled bytecode used for deploying new contracts.
-var ZcTokenBin = "0x608060405234801561001057600080fd5b50610347806100206000396000f3fe608060405234801561001057600080fd5b50600436106100415760003560e01c806340c10f1914610046578063ee4db57014610076578063fdfe5f4d146100a6575b600080fd5b610060600480360381019061005b91906101eb565b6100c2565b60405161006d9190610246565b60405180910390f35b610090600480360381019061008b9190610261565b61011e565b60405161009d919061029d565b60405180910390f35b6100c060048036038101906100bb91906102e4565b610136565b005b600081600160008573ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1681526020019081526020016000208190555060008054906101000a900460ff16905092915050565b60016020528060005260406000206000915090505481565b806000806101000a81548160ff02191690831515021790555050565b600080fd5b600073ffffffffffffffffffffffffffffffffffffffff82169050919050565b600061018282610157565b9050919050565b61019281610177565b811461019d57600080fd5b50565b6000813590506101af81610189565b92915050565b6000819050919050565b6101c8816101b5565b81146101d357600080fd5b50565b6000813590506101e5816101bf565b92915050565b6000806040838503121561020257610201610152565b5b6000610210858286016101a0565b9250506020610221858286016101d6565b9150509250929050565b60008115159050919050565b6102408161022b565b82525050565b600060208201905061025b6000830184610237565b92915050565b60006020828403121561027757610276610152565b5b6000610285848285016101a0565b91505092915050565b610297816101b5565b82525050565b60006020820190506102b2600083018461028e565b92915050565b6102c18161022b565b81146102cc57600080fd5b50565b6000813590506102de816102b8565b92915050565b6000602082840312156102fa576102f9610152565b5b6000610308848285016102cf565b9150509291505056fea26469706673582212202572ce29e046dea734b89d3e9803598c62f2e21e29efc0410b1db7aceb1e0f2b64736f6c634300080d0033"
+var ZcTokenBin = "0x608060405234801561001057600080fd5b5061043a806100206000396000f3fe608060405234801561001057600080fd5b50600436106100575760003560e01c806327e235e31461005c57806340c10f191461008c57806370a08231146100bc578063c0c6e5ab146100ec578063fdfe5f4d14610108575b600080fd5b610076600480360381019061007191906102a8565b610124565b60405161008391906102ee565b60405180910390f35b6100a660048036038101906100a19190610335565b61013c565b6040516100b39190610390565b60405180910390f35b6100d660048036038101906100d191906102a8565b610199565b6040516100e391906102ee565b60405180910390f35b61010660048036038101906101019190610335565b6101e1565b005b610122600480360381019061011d91906103d7565b610228565b005b60006020528060005260406000206000915090505481565b6000816000808573ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002081905550600160009054906101000a900460ff16905092915050565b60008060008373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020549050919050565b806000808473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020819055505050565b80600160006101000a81548160ff02191690831515021790555050565b600080fd5b600073ffffffffffffffffffffffffffffffffffffffff82169050919050565b60006102758261024a565b9050919050565b6102858161026a565b811461029057600080fd5b50565b6000813590506102a28161027c565b92915050565b6000602082840312156102be576102bd610245565b5b60006102cc84828501610293565b91505092915050565b6000819050919050565b6102e8816102d5565b82525050565b600060208201905061030360008301846102df565b92915050565b610312816102d5565b811461031d57600080fd5b50565b60008135905061032f81610309565b92915050565b6000806040838503121561034c5761034b610245565b5b600061035a85828601610293565b925050602061036b85828601610320565b9150509250929050565b60008115159050919050565b61038a81610375565b82525050565b60006020820190506103a56000830184610381565b92915050565b6103b481610375565b81146103bf57600080fd5b50565b6000813590506103d1816103ab565b92915050565b6000602082840312156103ed576103ec610245565b5b60006103fb848285016103c2565b9150509291505056fea2646970667358221220b697ddeb44cc0fbe8baf9a2a3d655f894ea1e46fe856e9bff41c3780cb8424c064736f6c634300080d0033"
 
 // DeployZcToken deploys a new Ethereum contract, binding an instance of ZcToken to it.
 func DeployZcToken(auth *bind.TransactOpts, backend bind.ContractBackend) (common.Address, *types.Transaction, *ZcToken, error) {
@@ -188,12 +188,12 @@ func (_ZcToken *ZcTokenTransactorRaw) Transact(opts *bind.TransactOpts, method s
 	return _ZcToken.Contract.contract.Transact(opts, method, params...)
 }
 
-// MintCalled is a free data retrieval call binding the contract method 0xee4db570.
+// BalanceOf is a free data retrieval call binding the contract method 0x70a08231.
 //
-// Solidity: function mintCalled(address ) view returns(uint256)
-func (_ZcToken *ZcTokenCaller) MintCalled(opts *bind.CallOpts, arg0 common.Address) (*big.Int, error) {
+// Solidity: function balanceOf(address a) view returns(uint256)
+func (_ZcToken *ZcTokenCaller) BalanceOf(opts *bind.CallOpts, a common.Address) (*big.Int, error) {
 	var out []interface{}
-	err := _ZcToken.contract.Call(opts, &out, "mintCalled", arg0)
+	err := _ZcToken.contract.Call(opts, &out, "balanceOf", a)
 
 	if err != nil {
 		return *new(*big.Int), err
@@ -205,18 +205,70 @@ func (_ZcToken *ZcTokenCaller) MintCalled(opts *bind.CallOpts, arg0 common.Addre
 
 }
 
-// MintCalled is a free data retrieval call binding the contract method 0xee4db570.
+// BalanceOf is a free data retrieval call binding the contract method 0x70a08231.
 //
-// Solidity: function mintCalled(address ) view returns(uint256)
-func (_ZcToken *ZcTokenSession) MintCalled(arg0 common.Address) (*big.Int, error) {
-	return _ZcToken.Contract.MintCalled(&_ZcToken.CallOpts, arg0)
+// Solidity: function balanceOf(address a) view returns(uint256)
+func (_ZcToken *ZcTokenSession) BalanceOf(a common.Address) (*big.Int, error) {
+	return _ZcToken.Contract.BalanceOf(&_ZcToken.CallOpts, a)
 }
 
-// MintCalled is a free data retrieval call binding the contract method 0xee4db570.
+// BalanceOf is a free data retrieval call binding the contract method 0x70a08231.
 //
-// Solidity: function mintCalled(address ) view returns(uint256)
-func (_ZcToken *ZcTokenCallerSession) MintCalled(arg0 common.Address) (*big.Int, error) {
-	return _ZcToken.Contract.MintCalled(&_ZcToken.CallOpts, arg0)
+// Solidity: function balanceOf(address a) view returns(uint256)
+func (_ZcToken *ZcTokenCallerSession) BalanceOf(a common.Address) (*big.Int, error) {
+	return _ZcToken.Contract.BalanceOf(&_ZcToken.CallOpts, a)
+}
+
+// Balances is a free data retrieval call binding the contract method 0x27e235e3.
+//
+// Solidity: function balances(address ) view returns(uint256)
+func (_ZcToken *ZcTokenCaller) Balances(opts *bind.CallOpts, arg0 common.Address) (*big.Int, error) {
+	var out []interface{}
+	err := _ZcToken.contract.Call(opts, &out, "balances", arg0)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
+}
+
+// Balances is a free data retrieval call binding the contract method 0x27e235e3.
+//
+// Solidity: function balances(address ) view returns(uint256)
+func (_ZcToken *ZcTokenSession) Balances(arg0 common.Address) (*big.Int, error) {
+	return _ZcToken.Contract.Balances(&_ZcToken.CallOpts, arg0)
+}
+
+// Balances is a free data retrieval call binding the contract method 0x27e235e3.
+//
+// Solidity: function balances(address ) view returns(uint256)
+func (_ZcToken *ZcTokenCallerSession) Balances(arg0 common.Address) (*big.Int, error) {
+	return _ZcToken.Contract.Balances(&_ZcToken.CallOpts, arg0)
+}
+
+// BalanceOfReturns is a paid mutator transaction binding the contract method 0xc0c6e5ab.
+//
+// Solidity: function balanceOfReturns(address a, uint256 b) returns()
+func (_ZcToken *ZcTokenTransactor) BalanceOfReturns(opts *bind.TransactOpts, a common.Address, b *big.Int) (*types.Transaction, error) {
+	return _ZcToken.contract.Transact(opts, "balanceOfReturns", a, b)
+}
+
+// BalanceOfReturns is a paid mutator transaction binding the contract method 0xc0c6e5ab.
+//
+// Solidity: function balanceOfReturns(address a, uint256 b) returns()
+func (_ZcToken *ZcTokenSession) BalanceOfReturns(a common.Address, b *big.Int) (*types.Transaction, error) {
+	return _ZcToken.Contract.BalanceOfReturns(&_ZcToken.TransactOpts, a, b)
+}
+
+// BalanceOfReturns is a paid mutator transaction binding the contract method 0xc0c6e5ab.
+//
+// Solidity: function balanceOfReturns(address a, uint256 b) returns()
+func (_ZcToken *ZcTokenTransactorSession) BalanceOfReturns(a common.Address, b *big.Int) (*types.Transaction, error) {
+	return _ZcToken.Contract.BalanceOfReturns(&_ZcToken.TransactOpts, a, b)
 }
 
 // Mint is a paid mutator transaction binding the contract method 0x40c10f19.

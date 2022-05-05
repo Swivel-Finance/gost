@@ -210,16 +210,13 @@ contract Lender {
         IErc20 underlyingToken = IErc20(u);
         Safe.transferFrom(underlyingToken, msg.sender, address(this), a);
 
-        // Read balance before swap to calculate difference
-        uint256 starting = IZcToken(market[MarketPlace.Principals.Tempus]).balanceOf(address(this));
-
         // Swap on the Tempus Router using the provided market and params
-        uint256 returned = tempus.depositAndFix(x, t, amount, true, r, d) - starting;
+        uint256 returned = tempus.depositAndFix(Any(x), Any(t), a, true, r, d) - IZcToken(market).balanceOf(address(this));
 
         // Mint Illuminate zero coupons
-        IZcToken(markets[uint256(MarketPlace.Principals.Illuminate)]).mint(msg.sender, returned);
+        IZcToken(IMarketPlace(marketPlace).markets(u, m)[uint256(MarketPlace.Principals.Illuminate)]).mint(msg.sender, returned);
 
-        emit tempusLent(u, m, returned);
+        emit Lend(p, u, m, returned);
 
         return returned;
     }
