@@ -179,8 +179,7 @@ contract Lender {
       path[1] = market;
 
       // Swap on the Pendle Router using the provided market and params
-      ISushi sushi = ISushi(sushiRouter);
-      uint256 returned = sushi.swapExactTokensForTokens(a, mb, path, address(this), d)[0];
+      uint256 returned = ISushi(sushiRouter).swapExactTokensForTokens(a, mb, path, address(this), d)[0];
 
       // Mint Illuminate zero coupons
       address[8] memory markets = IMarketPlace(marketPlace).markets(u, m); 

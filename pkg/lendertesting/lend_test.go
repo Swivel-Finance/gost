@@ -392,9 +392,36 @@ func (s *lendTestSuite) TestLendPendle() {
 	amount := big.NewInt(100)
 	minimumBought := big.NewInt(50)
 	deadline := big.NewInt(1000000000)
+
 	tx, err := s.Lender.Lend(4, s.Dep.Erc20Address, maturity, amount, minimumBought, deadline)
 	assert.NoError(err)
 	assert.NotNil(tx)
+	s.Env.Blockchain.Commit()
+
+	// verify that mocks were called as expected
+	in, err := s.Sushi.InCalled()
+	assert.NoError(err)
+	assert.Equal(amount, in)
+
+	out, err := s.Sushi.OutMinimumCalled()
+	assert.NoError(err)
+	assert.Equal(minimumBought, out)
+
+	address, err := s.Sushi.PathCalled(big.NewInt(0))
+	assert.NoError(err)
+	assert.Equal(s.Dep.Erc20Address, address)
+
+	address, err = s.Sushi.PathCalled(big.NewInt(1))
+	assert.NoError(err)
+	assert.Equal(s.Dep.PendleAddress, address)
+
+	to, err := s.Sushi.ToCalled()
+	assert.NoError(err)
+	assert.Equal(s.Dep.LenderAddress, to)
+
+	calledDeadline, err := s.Sushi.DeadlineCalled()
+	assert.NoError(err)
+	assert.Equal(deadline, calledDeadline)
 }
 
 func TestLendSuite(t *test.T) {
