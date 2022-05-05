@@ -154,11 +154,11 @@ contract Lender {
   /// @dev lend method signature for pendle
   /// @notice Can be called before maturity to lend to Pendle while minting Illuminate tokens
   /// @param p value of a specific principal according to the MarketPlace Principals Enum
-  /// @param u underlying token being ?
-  /// @param m maturity of the market being ?
-  /// @param a amount
-  /// @param mb minimum bought amount
-  /// @param d deadline
+  /// @param u the underlying token being redeemed
+  /// @param m the maturity of the market being redeemed
+  /// @param a the amount of underlying tokens to lend
+  /// @param mb the minimum amount of zero-coupon tokens to return accounting for slippage
+  /// @param d the maximum timestamp at which the transaction can be executed
   function lend(uint8 p, address u, uint256 m, uint256 a, uint256 mb, uint256 d) public returns (uint256) {
       // Instantiate market and tokens
       address market = IMarketPlace(marketPlace).markets(u, m)[p];
@@ -168,8 +168,6 @@ contract Lender {
       require(pendle.underlying() == u, 'pendle underlying != underlying');
       require(pendle.maturity() == m, 'pendle maturity != maturity');
 
-      ISushiPool pool = ISushiPool(market);
-
       // Transfer funds from user to Illuminate    
       Safe.transferFrom(IErc20(u), msg.sender, address(this), a);   
 
@@ -178,7 +176,8 @@ contract Lender {
       path[1] = market;
 
       // Swap on the Pendle Router using the provided market and params
-      uint256 returned = pool.swapExactTokensForTokens(a, mb, path, address(this), d)[0];
+      ISushi sushi = ISushi(market);
+      uint256 returned = sushi.swapExactTokensForTokens(a, mb, path, address(this), d)[0];
 
       // Mint Illuminate zero coupons
       address[8] memory markets = IMarketPlace(marketPlace).markets(u, m); 

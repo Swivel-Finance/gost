@@ -54,6 +54,6 @@ interface IPendle {
   function maturity() external returns (uint256);
 }
 
-interface ISushiPool {
+interface ISushi {
   function swapExactTokensForTokens(uint256, uint256, address[] calldata, address, uint256) external returns (uint[] memory amounts);
 }
