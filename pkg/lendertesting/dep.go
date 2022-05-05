@@ -63,13 +63,6 @@ func Deploy(e *Env) (*Dep, error) {
 
 	e.Blockchain.Commit()
 
-	lenderAddress, _, lender, lenderErr := lender.DeployLender(e.Owner.Opts, e.Blockchain, mpAddress, swAddress)
-	if lenderErr != nil {
-		return nil, lenderErr
-	}
-
-	e.Blockchain.Commit()
-
 	zcAddress, _, zcContract, zcErr := mocks.DeployZcToken(e.Owner.Opts, e.Blockchain)
 
 	if zcErr != nil {
@@ -102,10 +95,17 @@ func Deploy(e *Env) (*Dep, error) {
 
 	e.Blockchain.Commit()
 
-	sAddress, _, sContract, sErr := mocks.DeploySushi(e.Owner.Opts, e.Blockchain)
+	suAddress, _, suContract, suErr := mocks.DeploySushi(e.Owner.Opts, e.Blockchain)
 
-	if sErr != nil {
-		return nil, sErr
+	if suErr != nil {
+		return nil, suErr
+	}
+
+	e.Blockchain.Commit()
+
+	lenderAddress, _, lender, lenderErr := lender.DeployLender(e.Owner.Opts, e.Blockchain, mpAddress, swAddress, suAddress)
+	if lenderErr != nil {
+		return nil, lenderErr
 	}
 
 	e.Blockchain.Commit()
@@ -129,7 +129,7 @@ func Deploy(e *Env) (*Dep, error) {
 		Element:             elementContract,
 		PendleAddress:       pAddress,
 		Pendle:              pContract,
-		SushiAddress:        sAddress,
-		Sushi:               sContract,
+		SushiAddress:        suAddress,
+		Sushi:               suContract,
 	}, nil
 }

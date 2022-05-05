@@ -15,14 +15,16 @@ contract Lender {
 
   // TODO the nature of these addresses?
   address public swivelAddr; // addresses of the 3rd party protocol contracts
+  address public sushiRouter;
 
   event Lend(uint8 principal, address indexed underlying, uint256 indexed maturity, uint256 returned);
 
   /// @param m the deployed MarketPlace contract
-  constructor(address m, address s) {
+  constructor(address m, address s, address su) {
     admin = msg.sender;
     marketPlace = m; // TODO add an authorized setter for this?
     swivelAddr = s;
+    sushiRouter = su;
   }
 
   // TODO since we are heavily using overriding here do we need any extra fallback function security?
@@ -168,15 +170,16 @@ contract Lender {
       require(pendle.underlying() == u, 'pendle underlying != underlying');
       require(pendle.maturity() == m, 'pendle maturity != maturity');
 
-      // Transfer funds from user to Illuminate    
-      Safe.transferFrom(IErc20(u), msg.sender, address(this), a);   
+      // Transfer funds from user to Illuminate
+      Safe.transferFrom(IErc20(u), msg.sender, address(this), a);
+
 
       address[] memory path = new address[](2);
       path[0] = u;
       path[1] = market;
 
       // Swap on the Pendle Router using the provided market and params
-      ISushi sushi = ISushi(market);
+      ISushi sushi = ISushi(sushiRouter);
       uint256 returned = sushi.swapExactTokensForTokens(a, mb, path, address(this), d)[0];
 
       // Mint Illuminate zero coupons
