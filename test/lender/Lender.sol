@@ -16,15 +16,17 @@ contract Lender {
   // TODO the nature of these addresses?
   address public swivelAddr; // addresses of the 3rd party protocol contracts
   address public sushiRouter;
+  address public tempusRouter;
 
   event Lend(uint8 principal, address indexed underlying, uint256 indexed maturity, uint256 returned);
 
   /// @param m the deployed MarketPlace contract
-  constructor(address m, address s, address su) {
+  constructor(address m, address s, address su, address t) {
     admin = msg.sender;
     marketPlace = m; // TODO add an authorized setter for this?
     swivelAddr = s;
     sushiRouter = su;
+    tempusRouter = t;
   }
 
   // TODO since we are heavily using overriding here do we need any extra fallback function security?
@@ -122,7 +124,6 @@ contract Lender {
     // safe transfer from uToken is uniform
     Safe.transferFrom(IErc20(u), msg.sender, address(this), a);
 
-
     IElementToken eToken = IElementToken(IMarketPlace(marketPlace).markets(u, m)[p]);
 
     // the element token must match the market pair
@@ -195,18 +196,33 @@ contract Lender {
   /// @param p value of a specific principal according to the MarketPlace Principals Enum
   /// @param u underlying token being ?
   /// @param m maturity of the market being ?
-  /// @param t tempus pool ?
-  /// @param x tempus amm ?
   /// @param a amount ?
   /// @param r minimum amount to return ?
+  /// @param x tempus amm ?
+  /// @param t tempus pool ?
   /// @param d deadline ?
-  // function lend(uint8 p, address u, uint256 m, address t, address x, uint256 a, uint256 r, uint256 d) public returns (uint256) {
-  //   // ...
-  //   uint256 returned = 0;
+    function tempusLend(uint8 p, address u, uint256 m, uint256 a, uint256 r, address x, address t, uint256 d) public returns (uint256) {
+        // Instantiate market and tokens
+        address market = IMarketPlace(marketPlace).markets(u, m)[p];
+        ITempus tempus = ITempus(tempusRouter);
 
-  //   emit Lend(p, u, m, returned);
-  //   return returned;
-  // }
+        // Transfer funds from user to Illuminate, Scope to avoid stack limit
+        IErc20 underlyingToken = IErc20(u);
+        Safe.transferFrom(underlyingToken, msg.sender, address(this), a);
+
+        // Read balance before swap to calculate difference
+        uint256 starting = IZcToken(market[MarketPlace.Principals.Tempus]).balanceOf(address(this));
+
+        // Swap on the Tempus Router using the provided market and params
+        uint256 returned = tempus.depositAndFix(x, t, amount, true, r, d) - starting;
+
+        // Mint Illuminate zero coupons
+        IZcToken(markets[uint256(MarketPlace.Principals.Illuminate)]).mint(msg.sender, returned);
+
+        emit tempusLent(u, m, returned);
+
+        return returned;
+    }
 
   /// @dev lend method signature for sense
   /// @notice Can be called before maturity to lend to Sense while minting Illuminate tokens

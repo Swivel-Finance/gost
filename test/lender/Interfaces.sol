@@ -57,3 +57,7 @@ interface IPendle {
 interface ISushi {
   function swapExactTokensForTokens(uint256, uint256, address[] calldata, address, uint256) external returns (uint[] memory amounts);
 }
+
+interface ITempus {
+  function depositAndFix(address, address, uint256, bool, uint256, uint256) external returns (uint256);
+}
