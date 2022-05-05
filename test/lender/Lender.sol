@@ -156,16 +156,31 @@ contract Lender {
   /// @param p value of a specific principal according to the MarketPlace Principals Enum
   /// @param u underlying token being ?
   /// @param m maturity of the market being ?
-  /// @param i pendle id ?
-  /// @param a amount ?
-  /// @param r minimum amount to return ?
-  // function lend(uint8 p, address u, uint256 m, bytes32 i, uint256 a, uint256 r) public returns (uint256) {
-  //   // ...
-  //   uint256 returned = 0;
+  /// @param a amount
+  /// @param mb minimum bought amount
+  /// @param d deadline
+  function lend(uint8 p, address u, uint256 m, uint256 a, uint256 mb, uint256 d) public returns (uint256) {
+      // Instantiate market and tokens
+      IPendle memory pendle = IPendle(IMarketPlace(markets[u][maturity]));
+      ISushiPool pool = ISushiPool(pendleRouter);
 
-  //   emit Lend(p, u, m, returned);
-  //   return returned;
-  // }
+      // Transfer funds from user to Illuminate    
+      SafeTransferLib.safeTransferFrom(IErc20(u), msg.sender, address(this), a);   
+
+      address[] memory path = new address[](2);
+      path[0] = underlying;
+      path[1] = market.pendle;
+
+      // Swap on the Pendle Router using the provided market and params
+      uint256 returned = pool.swapExactTokensForTokens(a, mb, path, address(this), d)[0];
+
+      // Mint Illuminate zero coupons
+      ZcToken(market[uint256(MarketPLace.Principals.Illuminate)]).mint(msg.sender, returned);
+
+      emit Lend(u, m, returned);
+
+      return returned;
+  }
 
   /// @dev lend method signature for tempus
   /// @notice Can be called before maturity to lend to Tempus while minting Illuminate tokens
