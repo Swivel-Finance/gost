@@ -6,6 +6,8 @@ contract ZcToken {
     mapping (address => uint256) public balances;
     bool private mintReturn;
 
+    mapping (address => uint256) public mintCalled;
+
     function mintReturns(bool r) external {
         mintReturn = r;
     }
@@ -16,6 +18,7 @@ contract ZcToken {
 
     function mint(address a, uint256 u) external returns (bool) {
         balances[a] = u;
+        mintCalled[a] = u;
         return mintReturn;
     }
 
