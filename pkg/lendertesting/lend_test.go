@@ -458,6 +458,9 @@ func (s *lendTestSuite) TestLendTempus() {
 	s.ZcToken.MintReturns(true)
 	s.Env.Blockchain.Commit()
 
+	s.ZcToken.BalanceOfReturns(s.Dep.LenderAddress, big.NewInt(100))
+	s.Env.Blockchain.Commit()
+
 	maturity := big.NewInt(12094201240)
 	amount := big.NewInt(1032)
 	minimumReturn := big.NewInt(312)
@@ -465,13 +468,15 @@ func (s *lendTestSuite) TestLendTempus() {
 	pool := common.HexToAddress("0x1234")
 	deadline := big.NewInt(9999)
 
-	s.Lender.Lend3(5, s.Dep.Erc20Address, maturity, amount, minimumReturn, amm, pool, deadline)
+	tx, err := s.Lender.Lend3(5, s.Dep.Erc20Address, maturity, amount, minimumReturn, amm, pool, deadline)
+	assert.NoError(err)
+	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
 
 	// verify that mocks were called as expected
-	amm, err := s.Tempus.TempusAMMCalled()
+	ammCalled, err := s.Tempus.TempusAMMCalled()
 	assert.NoError(err)
-	assert.Equal(s.Dep.Erc20Address, amm)
+	assert.Equal(amm, ammCalled)
 
 	poolCalled, err := s.Tempus.TempusPoolCalled()
 	assert.NoError(err)

@@ -5,7 +5,7 @@ pragma solidity 0.8.13;
 interface Any {}
 
 contract Tempus {
-    uint256 depositAndFixReturn;
+    uint256 private depositAndFixReturn;
 
     Any public tempusAMMCalled;
     Any public tempusPoolCalled;
