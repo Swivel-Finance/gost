@@ -79,6 +79,6 @@ func (s *yieldTestSuite) TestSellBasePreview() {
 
 }
 
-func TestYieldTokenSuite(t *test.T) {
+func TestYieldSuite(t *test.T) {
 	suite.Run(t, &yieldTestSuite{})
 }

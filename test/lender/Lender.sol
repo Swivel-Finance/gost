@@ -37,7 +37,7 @@ contract Lender {
   /// @param a amount of underlying tokens to lend ?
   function lend(uint8 p, address u, uint256 m, address y, uint256 a) public returns (uint256) {
     // uses yield token interface...
-    IYieldToken yToken = IYieldToken(y);
+    IYield yToken = IYield(y);
 
     // the yield token must match the market pair
     // TODO this needs to be cast? the inteface says yToken.maturity() returns uint32
