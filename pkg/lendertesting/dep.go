@@ -141,7 +141,7 @@ func Deploy(e *Env) (*Dep, error) {
 		Pendle:              pContract,
 		SushiAddress:        suAddress,
 		Sushi:               suContract,
-		Tempus:              tContract,
 		TempusAddress:       tAddress,
+		Tempus:              tContract,
 	}, nil
 }

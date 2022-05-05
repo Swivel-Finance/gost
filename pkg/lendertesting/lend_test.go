@@ -25,6 +25,7 @@ type lendTestSuite struct {
 	Element      *mocks.ElementSession
 	Pendle       *mocks.PendleSession
 	Sushi        *mocks.SushiSession
+	Tempus       *mocks.TempusSession
 	Lender       *lender.LenderSession
 }
 
@@ -113,6 +114,15 @@ func (s *lendTestSuite) SetupSuite() {
 
 	s.Sushi = &mocks.SushiSession{
 		Contract: s.Dep.Sushi,
+		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
+		TransactOpts: bind.TransactOpts{
+			From:   s.Env.Owner.Opts.From,
+			Signer: s.Env.Owner.Opts.Signer,
+		},
+	}
+
+	s.Tempus = &mocks.TempusSession{
+		Contract: s.Dep.Tempus,
 		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
 		TransactOpts: bind.TransactOpts{
 			From:   s.Env.Owner.Opts.From,
@@ -422,6 +432,66 @@ func (s *lendTestSuite) TestLendPendle() {
 	calledDeadline, err := s.Sushi.DeadlineCalled()
 	assert.NoError(err)
 	assert.Equal(deadline, calledDeadline)
+}
+
+func (s *lendTestSuite) TestLendTempus() {
+	assert := assert.New(s.T())
+
+	s.MarketPlace.MarketsReturns([8]common.Address{
+		s.Dep.ZcTokenAddress,
+		s.Dep.TempusAddress,
+		s.Dep.TempusAddress,
+		s.Dep.TempusAddress,
+		s.Dep.TempusAddress,
+		s.Dep.TempusAddress,
+		s.Dep.TempusAddress,
+		s.Dep.TempusAddress,
+	})
+	s.Env.Blockchain.Commit()
+
+	s.Tempus.DepositAndFixReturns(big.NewInt(102))
+	s.Env.Blockchain.Commit()
+
+	s.Erc20.TransferFromReturns(true)
+	s.Env.Blockchain.Commit()
+
+	s.ZcToken.MintReturns(true)
+	s.Env.Blockchain.Commit()
+
+	maturity := big.NewInt(12094201240)
+	amount := big.NewInt(1032)
+	minimumReturn := big.NewInt(312)
+	amm := common.HexToAddress("0x4321")
+	pool := common.HexToAddress("0x1234")
+	deadline := big.NewInt(9999)
+
+	s.Lender.Lend3(5, s.Dep.Erc20Address, maturity, amount, minimumReturn, amm, pool, deadline)
+	s.Env.Blockchain.Commit()
+
+	// verify that mocks were called as expected
+	amm, err := s.Tempus.TempusAMMCalled()
+	assert.NoError(err)
+	assert.Equal(s.Dep.Erc20Address, amm)
+
+	poolCalled, err := s.Tempus.TempusPoolCalled()
+	assert.NoError(err)
+	assert.Equal(pool, poolCalled)
+
+	amountCalled, err := s.Tempus.AmountCalled()
+	assert.NoError(err)
+	assert.Equal(amount, amountCalled)
+
+	isTokenBacking, err := s.Tempus.IsBackingTokenCalled()
+	assert.NoError(err)
+	assert.True(isTokenBacking)
+
+	minimumReturnCalled, err := s.Tempus.MinimumReturnCalled()
+	assert.NoError(err)
+	assert.Equal(minimumReturn, minimumReturnCalled)
+
+	deadlineCalled, err := s.Tempus.DeadlineCalled()
+	assert.NoError(err)
+	assert.Equal(deadline, deadlineCalled)
 }
 
 func TestLendSuite(t *test.T) {

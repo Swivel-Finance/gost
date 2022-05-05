@@ -201,25 +201,26 @@ contract Lender {
   /// @param x tempus amm ?
   /// @param t tempus pool ?
   /// @param d deadline ?
-    function tempusLend(uint8 p, address u, uint256 m, uint256 a, uint256 r, address x, address t, uint256 d) public returns (uint256) {
-        // Instantiate market and tokens
-        address market = IMarketPlace(marketPlace).markets(u, m)[p];
-        ITempus tempus = ITempus(tempusRouter);
+  function lend(uint8 p, address u, uint256 m, uint256 a, uint256 r, address x, address t, uint256 d) public returns (uint256) {
+      // Instantiate market and tokens
+      address market = IMarketPlace(marketPlace).markets(u, m)[p];
 
-        // Transfer funds from user to Illuminate, Scope to avoid stack limit
-        IErc20 underlyingToken = IErc20(u);
-        Safe.transferFrom(underlyingToken, msg.sender, address(this), a);
+      // TODO: Confirm that we have the right underlying and maturity
 
-        // Swap on the Tempus Router using the provided market and params
-        uint256 returned = tempus.depositAndFix(Any(x), Any(t), a, true, r, d) - IZcToken(market).balanceOf(address(this));
+      // Transfer funds from user to Illuminate, Scope to avoid stack limit
+      IErc20 underlyingToken = IErc20(u);
+      Safe.transferFrom(underlyingToken, msg.sender, address(this), a);
 
-        // Mint Illuminate zero coupons
-        IZcToken(IMarketPlace(marketPlace).markets(u, m)[uint256(MarketPlace.Principals.Illuminate)]).mint(msg.sender, returned);
+      // Swap on the Tempus Router using the provided market and params
+      uint256 returned = ITempus(tempusRouter).depositAndFix(Any(x), Any(t), a, true, r, d) - IZcToken(market).balanceOf(address(this));
 
-        emit Lend(p, u, m, returned);
+      // Mint Illuminate zero coupons
+      IZcToken(IMarketPlace(marketPlace).markets(u, m)[uint256(MarketPlace.Principals.Illuminate)]).mint(msg.sender, returned);
 
-        return returned;
-    }
+      emit Lend(p, u, m, returned);
+
+      return returned;
+  }
 
   /// @dev lend method signature for sense
   /// @notice Can be called before maturity to lend to Sense while minting Illuminate tokens
