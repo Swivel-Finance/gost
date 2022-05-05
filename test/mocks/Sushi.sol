@@ -3,13 +3,13 @@
 pragma solidity 0.8.13;
 
 contract Sushi {
-    uint[] swapExactTokensForTokensReturn;
+    uint[] private swapExactTokensForTokensReturn;
 
-    uint256 inCalled;
-    uint256 outMinimumCalled;
-    address[] pathCalled;
-    address toCalled;
-    uint256 deadlineCalled;
+    uint256 public inCalled;
+    uint256 public outMinimumCalled;
+    address[] public pathCalled;
+    address public toCalled;
+    uint256 public deadlineCalled;
 
     function swapExactTokensForTokensReturns(uint[] memory r) external {
         swapExactTokensForTokensReturn = r;
