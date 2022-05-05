@@ -9,8 +9,8 @@ import (
 type Dep struct {
 	Erc20Address       common.Address
 	Erc20              *mocks.Erc20
-	YieldTokenAddress  common.Address
-	YieldToken         *mocks.YieldToken
+	YieldAddress       common.Address
+	Yield              *mocks.Yield
 	ZcTokenAddress     common.Address
 	ZcToken            *mocks.ZcToken
 	SwivelAddress      common.Address
@@ -31,7 +31,7 @@ func Deploy(e *Env) (*Dep, error) {
 
 	e.Blockchain.Commit()
 
-	ytAddress, _, ytContract, ytErr := mocks.DeployYieldToken(e.Owner.Opts, e.Blockchain)
+	ytAddress, _, ytContract, ytErr := mocks.DeployYield(e.Owner.Opts, e.Blockchain)
 
 	if ytErr != nil {
 		return nil, ytErr
@@ -74,8 +74,8 @@ func Deploy(e *Env) (*Dep, error) {
 	return &Dep{
 		Erc20Address:       ercAddress,
 		Erc20:              ercContract,
-		YieldTokenAddress:  ytAddress,
-		YieldToken:         ytContract,
+		YieldAddress:       ytAddress,
+		Yield:              ytContract,
 		ZcTokenAddress:     zcAddress,
 		ZcToken:            zcContract,
 		SwivelAddress:      swivelAddress,

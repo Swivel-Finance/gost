@@ -24,7 +24,7 @@ interface ISwivel {
 }
 
 // we'll use ...Token for interfaces that are Erc20s
-interface IYieldToken { // TODO OG has `is ..Erc20` - is that necessary?
+interface IYield { // TODO OG has `is ..Erc20` - is that necessary?
   function base() external returns (IErc20); // TODO can we use the wide Interface here?
   function maturity() external returns (uint32);
   function sellBase(address, uint128) external returns (uint128);

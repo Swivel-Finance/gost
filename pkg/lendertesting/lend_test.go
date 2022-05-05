@@ -19,7 +19,7 @@ type lendTestSuite struct {
 	Dep          *Dep
 	Erc20        *mocks.Erc20Session
 	MarketPlace  *mocks.MarketPlaceSession
-	YieldToken   *mocks.YieldTokenSession
+	Yield        *mocks.YieldSession
 	ZcToken      *mocks.ZcTokenSession
 	Swivel       *mocks.SwivelSession
 	ElementToken *mocks.ElementTokenSession
@@ -65,8 +65,8 @@ func (s *lendTestSuite) SetupSuite() {
 		},
 	}
 
-	s.YieldToken = &mocks.YieldTokenSession{
-		Contract: s.Dep.YieldToken,
+	s.Yield = &mocks.YieldSession{
+		Contract: s.Dep.Yield,
 		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
 		TransactOpts: bind.TransactOpts{
 			From:   s.Env.Owner.Opts.From,
@@ -129,7 +129,7 @@ func (s *lendTestSuite) TestLendIlluminate() {
 	s.Erc20.TransferReturns(true)
 	s.Env.Blockchain.Commit()
 
-	s.YieldToken.BaseReturns(s.Dep.Erc20Address)
+	s.Yield.BaseReturns(s.Dep.Erc20Address)
 	s.Env.Blockchain.Commit()
 
 	s.MarketPlace.MarketsReturns([8]common.Address{
@@ -143,42 +143,42 @@ func (s *lendTestSuite) TestLendIlluminate() {
 		common.HexToAddress("0x7"),
 	})
 
-	s.YieldToken.MaturityReturns(uint32(maturity.Uint64()))
+	s.Yield.MaturityReturns(uint32(maturity.Uint64()))
 	s.Env.Blockchain.Commit()
 
-	s.YieldToken.SellBasePreviewReturns(amountLent)
+	s.Yield.SellBasePreviewReturns(amountLent)
 	s.Env.Blockchain.Commit()
 
-	s.YieldToken.SellBaseReturns(sellBasePreview)
+	s.Yield.SellBaseReturns(sellBasePreview)
 	s.Env.Blockchain.Commit()
 
-	tx, err := s.Lender.Lend1(0, s.Dep.Erc20Address, maturity, s.Dep.YieldTokenAddress, amountLent)
+	tx, err := s.Lender.Lend1(0, s.Dep.Erc20Address, maturity, s.Dep.YieldAddress, amountLent)
 	assert.Nil(err)
 	assert.NotNil(tx)
 
 	s.Env.Blockchain.Commit()
 
 	// verify that mocks were called as expected
-	yieldTokenMaturity, err := s.YieldToken.Maturity()
+	yieldMaturity, err := s.Yield.Maturity()
 	assert.Nil(err)
-	assert.Equal(uint32(maturity.Uint64()), yieldTokenMaturity)
+	assert.Equal(uint32(maturity.Uint64()), yieldMaturity)
 
 	transferFromRes, err := s.Erc20.TransferFromCalled(s.Env.Owner.Opts.From)
 	assert.Nil(err)
 	assert.Equal(amountLent, transferFromRes.Amount)
 	assert.Equal(s.Dep.LenderAddress, transferFromRes.To)
 
-	yieldTokenSellBasePreview, err := s.YieldToken.SellBasePreviewCalled()
+	yieldSellBasePreview, err := s.Yield.SellBasePreviewCalled()
 	assert.Nil(err)
-	assert.Equal(amountLent, yieldTokenSellBasePreview)
+	assert.Equal(amountLent, yieldSellBasePreview)
 
-	transferRes, err := s.Erc20.TransferCalled(s.Dep.YieldTokenAddress)
+	transferRes, err := s.Erc20.TransferCalled(s.Dep.YieldAddress)
 	assert.Nil(err)
 	assert.Equal(amountLent, transferRes)
 
-	yieldTokenSellBase, err := s.YieldToken.SellBaseCalled(s.Dep.LenderAddress)
+	yieldSellBase, err := s.Yield.SellBaseCalled(s.Dep.LenderAddress)
 	assert.Nil(err)
-	assert.Equal(amountLent, yieldTokenSellBase)
+	assert.Equal(amountLent, yieldSellBase)
 }
 
 func (s *lendTestSuite) TestLendYield() {
@@ -194,7 +194,7 @@ func (s *lendTestSuite) TestLendYield() {
 	s.Erc20.TransferReturns(true)
 	s.Env.Blockchain.Commit()
 
-	s.YieldToken.BaseReturns(s.Dep.Erc20Address)
+	s.Yield.BaseReturns(s.Dep.Erc20Address)
 	s.Env.Blockchain.Commit()
 
 	markets := [8]common.Address{
@@ -210,44 +210,44 @@ func (s *lendTestSuite) TestLendYield() {
 	s.MarketPlace.MarketsReturns(markets)
 	s.Env.Blockchain.Commit()
 
-	s.YieldToken.MaturityReturns(uint32(maturity.Uint64()))
+	s.Yield.MaturityReturns(uint32(maturity.Uint64()))
 	s.Env.Blockchain.Commit()
 
-	s.YieldToken.SellBasePreviewReturns(amountLent)
+	s.Yield.SellBasePreviewReturns(amountLent)
 	s.Env.Blockchain.Commit()
 
-	s.YieldToken.SellBaseReturns(sellBasePreview)
+	s.Yield.SellBaseReturns(sellBasePreview)
 	s.Env.Blockchain.Commit()
 
 	s.ZcToken.MintReturns(true)
 	s.Env.Blockchain.Commit()
 
-	tx, err := s.Lender.Lend1(2, s.Dep.Erc20Address, maturity, s.Dep.YieldTokenAddress, amountLent)
+	tx, err := s.Lender.Lend1(2, s.Dep.Erc20Address, maturity, s.Dep.YieldAddress, amountLent)
 	assert.Nil(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
 
 	// verify that mocks were called as expected
-	yieldTokenMaturity, err := s.YieldToken.Maturity()
+	yieldMaturity, err := s.Yield.Maturity()
 	assert.Nil(err)
-	assert.Equal(uint32(maturity.Uint64()), yieldTokenMaturity)
+	assert.Equal(uint32(maturity.Uint64()), yieldMaturity)
 
 	transferFromRes, err := s.Erc20.TransferFromCalled(s.Env.Owner.Opts.From)
 	assert.Nil(err)
 	assert.Equal(amountLent, transferFromRes.Amount)
 	assert.Equal(s.Dep.LenderAddress, transferFromRes.To)
 
-	yieldTokenSellBasePreview, err := s.YieldToken.SellBasePreviewCalled()
+	yieldSellBasePreview, err := s.Yield.SellBasePreviewCalled()
 	assert.Nil(err)
-	assert.Equal(amountLent, yieldTokenSellBasePreview)
+	assert.Equal(amountLent, yieldSellBasePreview)
 
-	transferRes, err := s.Erc20.TransferCalled(s.Dep.YieldTokenAddress)
+	transferRes, err := s.Erc20.TransferCalled(s.Dep.YieldAddress)
 	assert.Nil(err)
 	assert.Equal(amountLent, transferRes)
 
-	yieldTokenSellBase, err := s.YieldToken.SellBaseCalled(s.Dep.LenderAddress)
+	yieldSellBase, err := s.Yield.SellBaseCalled(s.Dep.LenderAddress)
 	assert.Nil(err)
-	assert.Equal(amountLent, yieldTokenSellBase)
+	assert.Equal(amountLent, yieldSellBase)
 
 	mint, err := s.ZcToken.MintCalled(s.Env.Owner.Opts.From)
 	assert.Nil(err)
@@ -262,7 +262,7 @@ func (s *lendTestSuite) TestLendSwivel() {
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
 
-	tx, err = s.Lender.Lend(3, s.Dep.Erc20Address, TEST_MATURITY, s.Dep.YieldTokenAddress, ORDERS, AMOUNTS, COMPONENTS)
+	tx, err = s.Lender.Lend(3, s.Dep.Erc20Address, TEST_MATURITY, s.Dep.YieldAddress, ORDERS, AMOUNTS, COMPONENTS)
 	assert.Nil(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()

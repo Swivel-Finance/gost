@@ -1,5 +1,5 @@
 .PHONY: compile_solidity_mock_erc compile_go_mock_erc compile_mock_erc
-.PHONY: compile_solidity_mock_yield_token compile_go_mock_yield_token compile_mock_yield_token
+.PHONY: compile_solidity_mock_yield compile_go_mock_yield compile_mock_yield
 .PHONY: compile_solidity_mock_element_token compile_go_mock_element_token compile_mock_element_token
 .PHONY: compile_solidity_mock_market_place compile_go_mock_market_place compile_mock_market_place
 .PHONY: compile_mocks
@@ -30,15 +30,15 @@ compile_go_mock_erc:
 
 compile_mock_erc: compile_solidity_mock_erc compile_go_mock_erc
 
-compile_solidity_mock_yield_token:
-	@echo "compiling Mock YToken solidity source into abi and bin files"
-	solc -o ./test/mocks --abi --bin --overwrite ./test/mocks/YieldToken.sol
+compile_solidity_mock_yield:
+	@echo "compiling Mock Yield solidity source into abi and bin files"
+	solc -o ./test/mocks --abi --bin --overwrite ./test/mocks/Yield.sol
 
-compile_go_mock_yield_token:
+compile_go_mock_yield:
 	@echo "compiling abi and bin files to golang"
-	abigen --abi ./test/mocks/YieldToken.abi --bin ./test/mocks/YieldToken.bin -pkg mocks -type YieldToken -out ./test/mocks/yieldtoken.go 
+	abigen --abi ./test/mocks/Yield.abi --bin ./test/mocks/Yield.bin -pkg mocks -type Yield -out ./test/mocks/yield.go 
 
-compile_mock_yield_token: compile_solidity_mock_yield_token compile_go_mock_yield_token
+compile_mock_yield: compile_solidity_mock_yield compile_go_mock_yield
 
 compile_solidity_mock_element_token:
 	@echo "compiling Mock ElementToken solidity source into abi and bin files"
@@ -90,7 +90,7 @@ compile_go_mock_zc_token:
 
 compile_mock_zc_token: compile_solidity_mock_zc_token compile_go_mock_zc_token
 
-compile_mocks: compile_mock_erc compile_mock_yield_token compile_mock_element_token compile_mock_element compile_mock_market_place compile_mock_zc_token compile_mock_swivel
+compile_mocks: compile_mock_erc compile_mock_yield compile_mock_element_token compile_mock_element compile_mock_market_place compile_mock_zc_token compile_mock_swivel
 
 # Real Tokens
 # compile_solidity_zct:

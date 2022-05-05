@@ -9,7 +9,7 @@ interface IErc20 {
 	function transferFrom(address, address, uint256) external returns (bool);
 }
 
-contract YieldToken {
+contract Yield {
     uint32 private maturityReturn;
     IErc20 private baseReturn;
     uint128 private sellBaseReturn;

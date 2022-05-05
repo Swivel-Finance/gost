@@ -16,7 +16,7 @@ type redeemTestSuite struct {
 	Dep         *Dep
 	Erc20       *mocks.Erc20Session
 	MarketPlace *mocks.MarketPlaceSession
-	YieldToken  *mocks.YieldTokenSession
+	Yield       *mocks.YieldSession
 	ZcToken     *mocks.ZcTokenSession
 	Swivel      *mocks.SwivelSession
 	Redeemer    *redeemer.RedeemerSession
@@ -60,8 +60,8 @@ func (s *redeemTestSuite) SetupSuite() {
 		},
 	}
 
-	s.YieldToken = &mocks.YieldTokenSession{
-		Contract: s.Dep.YieldToken,
+	s.Yield = &mocks.YieldSession{
+		Contract: s.Dep.Yield,
 		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
 		TransactOpts: bind.TransactOpts{
 			From:   s.Env.Owner.Opts.From,
