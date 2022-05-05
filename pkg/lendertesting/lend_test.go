@@ -19,7 +19,7 @@ type lendTestSuite struct {
 	Dep          *Dep
 	Erc20        *mocks.Erc20Session
 	MarketPlace  *mocks.MarketPlaceSession
-	YieldToken   *mocks.YieldTokenSession
+	YieldToken   *mocks.YieldSession
 	ZcToken      *mocks.ZcTokenSession
 	Swivel       *mocks.SwivelSession
 	ElementToken *mocks.ElementTokenSession
@@ -65,8 +65,8 @@ func (s *lendTestSuite) SetupSuite() {
 		},
 	}
 
-	s.YieldToken = &mocks.YieldTokenSession{
-		Contract: s.Dep.YieldToken,
+	s.YieldToken = &mocks.YieldSession{
+		Contract: s.Dep.Yield,
 		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
 		TransactOpts: bind.TransactOpts{
 			From:   s.Env.Owner.Opts.From,
@@ -152,7 +152,7 @@ func (s *lendTestSuite) TestLendIlluminate() {
 	s.YieldToken.SellBaseReturns(sellBasePreview)
 	s.Env.Blockchain.Commit()
 
-	tx, err := s.Lender.Lend1(0, s.Dep.Erc20Address, maturity, s.Dep.YieldTokenAddress, amountLent)
+	tx, err := s.Lender.Lend1(0, s.Dep.Erc20Address, maturity, s.Dep.YieldAddress, amountLent)
 	assert.Nil(err)
 	assert.NotNil(tx)
 
@@ -172,7 +172,7 @@ func (s *lendTestSuite) TestLendIlluminate() {
 	assert.Nil(err)
 	assert.Equal(amountLent, yieldTokenSellBasePreview)
 
-	transferRes, err := s.Erc20.TransferCalled(s.Dep.YieldTokenAddress)
+	transferRes, err := s.Erc20.TransferCalled(s.Dep.YieldAddress)
 	assert.Nil(err)
 	assert.Equal(amountLent, transferRes)
 
@@ -222,7 +222,7 @@ func (s *lendTestSuite) TestLendYield() {
 	s.ZcToken.MintReturns(true)
 	s.Env.Blockchain.Commit()
 
-	tx, err := s.Lender.Lend1(2, s.Dep.Erc20Address, maturity, s.Dep.YieldTokenAddress, amountLent)
+	tx, err := s.Lender.Lend1(2, s.Dep.Erc20Address, maturity, s.Dep.YieldAddress, amountLent)
 	assert.Nil(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
@@ -241,7 +241,7 @@ func (s *lendTestSuite) TestLendYield() {
 	assert.Nil(err)
 	assert.Equal(amountLent, yieldTokenSellBasePreview)
 
-	transferRes, err := s.Erc20.TransferCalled(s.Dep.YieldTokenAddress)
+	transferRes, err := s.Erc20.TransferCalled(s.Dep.YieldAddress)
 	assert.Nil(err)
 	assert.Equal(amountLent, transferRes)
 
@@ -262,7 +262,7 @@ func (s *lendTestSuite) TestLendSwivel() {
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
 
-	tx, err = s.Lender.Lend(3, s.Dep.Erc20Address, TEST_MATURITY, s.Dep.YieldTokenAddress, ORDERS, AMOUNTS, COMPONENTS)
+	tx, err = s.Lender.Lend(3, s.Dep.Erc20Address, TEST_MATURITY, s.Dep.YieldAddress, ORDERS, AMOUNTS, COMPONENTS)
 	assert.Nil(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
