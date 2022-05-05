@@ -59,5 +59,5 @@ interface ISushi {
 }
 
 interface ITempus {
-  function depositAndFix(address, address, uint256, bool, uint256, uint256) external returns (uint256);
+  function depositAndFix(Any, Any, uint256, bool, uint256, uint256) external returns (uint256);
 }
