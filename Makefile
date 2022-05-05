@@ -1,5 +1,6 @@
 .PHONY: compile_solidity_mock_erc compile_go_mock_erc compile_mock_erc
 .PHONY: compile_solidity_mock_yield compile_go_mock_yield compile_mock_yield
+.PHONY: compile_solidity_mock_pendle compile_go_mock_pendle compile_mock_pendle
 .PHONY: compile_solidity_mock_element_token compile_go_mock_element_token compile_mock_element_token
 .PHONY: compile_solidity_mock_market_place compile_go_mock_market_place compile_mock_market_place
 .PHONY: compile_mocks
@@ -39,6 +40,16 @@ compile_go_mock_yield:
 	abigen --abi ./test/mocks/Yield.abi --bin ./test/mocks/Yield.bin -pkg mocks -type Yield -out ./test/mocks/yield.go 
 
 compile_mock_yield: compile_solidity_mock_yield compile_go_mock_yield
+
+compile_solidity_mock_pendle:
+	@echo "compiling Mock Pendle solidity source into abi and bin files"
+	solc -o ./test/mocks --abi --bin --overwrite ./test/mocks/Pendle.sol
+
+compile_go_mock_pendle:
+	@echo "compiling abi and bin files to golang"
+	abigen --abi ./test/mocks/Pendle.abi --bin ./test/mocks/Pendle.bin -pkg mocks -type Pendle -out ./test/mocks/pendle.go 
+
+compile_mock_pendle: compile_solidity_mock_pendle compile_go_mock_pendle
 
 compile_solidity_mock_element_token:
 	@echo "compiling Mock ElementToken solidity source into abi and bin files"
@@ -90,7 +101,7 @@ compile_go_mock_zc_token:
 
 compile_mock_zc_token: compile_solidity_mock_zc_token compile_go_mock_zc_token
 
-compile_mocks: compile_mock_erc compile_mock_yield compile_mock_element_token compile_mock_element compile_mock_market_place compile_mock_zc_token compile_mock_swivel
+compile_mocks: compile_mock_erc compile_mock_yield compile_mock_pendle compile_mock_element_token compile_mock_element compile_mock_market_place compile_mock_zc_token compile_mock_swivel
 
 # Real Tokens
 # compile_solidity_zct:
