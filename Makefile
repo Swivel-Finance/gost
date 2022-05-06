@@ -6,8 +6,13 @@
 
 # TODO under? api-specific sol?
 
-.PHONY: compile_solidity_zct compile_go_zct compile_zct
-.PHONY: compile_tokens
+# .PHONY: compile_solidity_zct compile_go_zct compile_zct
+# .PHONY: compile_tokens
+
+.PHONY: compile_solidity_illuminate_test compile_go_illuminate_test compile_illuminate_test
+.PHONY: compile_solidity_lender_test compile_go_lender_test compile_lender_test
+.PHONY: compile_solidity_redeemer_test compile_go_redeemer_test compile_redeemer_test
+.PHONY: compile_test
 
 .PHONY: clean_test_abi clean_test_bin clean_test_go
 .PHONY: clean_test
@@ -108,6 +113,16 @@ compile_mocks: compile_mock_erc compile_mock_yield compile_mock_element_token co
 # Fakes
 
 # Contracts
+compile_solidity_illuminate_test:
+	@echo "compiling Illuminate solidity source into abi and bin files"
+	solc -o ./test/illuminate --optimize --optimize-runs=15000 --abi --bin --overwrite ./test/illuminate/Illuminate.sol
+
+compile_go_illuminate_test:
+	@echo "compiling Illuminate abi and bin files to golang"
+	abigen --abi ./test/illuminate/Illuminate.abi --bin ./test/illuminate/Illuminate.bin -pkg illuminate -type Illuminate -out ./test/illuminate/illuminate.go
+
+compile_illuminate_test: compile_solidity_illuminate_test compile_go_illuminate_test
+
 compile_solidity_lender_test:
 	@echo "compiling Lender solidity source into abi and bin files"
 	solc -o ./test/lender --optimize --optimize-runs=15000 --abi --bin --overwrite ./test/lender/Lender.sol
@@ -127,6 +142,7 @@ compile_go_redeemer_test:
 	abigen --abi ./test/redeemer/Redeemer.abi --bin ./test/redeemer/Redeemer.bin -pkg redeemer -type Redeemer -out ./test/redeemer/redeemer.go
 
 compile_redeemer_test: compile_solidity_redeemer_test compile_go_redeemer_test
+compile_test: compile_illuminate_test compile_lender_test compile_redeemer_test
 
 # Cleaning
 clean_test_abi:
