@@ -61,3 +61,7 @@ interface ISushi {
 interface ITempus {
   function depositAndFix(Any, Any, uint256, bool, uint256, uint256) external returns (uint256);
 }
+
+interface IAPWine {
+  function swapExactAmountIn(uint256, uint256, uint256, uint256, uint256, address) external returns (uint256);
+}
