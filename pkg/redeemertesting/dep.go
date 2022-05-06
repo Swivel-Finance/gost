@@ -3,22 +3,21 @@ package redeemertesting
 import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/swivel-finance/gost/test/mocks"
-	"github.com/swivel-finance/gost/test/redeemer"
 )
 
 type Dep struct {
-	Erc20Address       common.Address
-	Erc20              *mocks.Erc20
-	YieldAddress       common.Address
-	Yield              *mocks.Yield
-	ZcTokenAddress     common.Address
-	ZcToken            *mocks.ZcToken
-	SwivelAddress      common.Address
-	Swivel             *mocks.Swivel
-	MarketPlaceAddress common.Address
-	MarketPlace        *mocks.MarketPlace
-	RedeemerAddress    common.Address
-	Redeemer           *redeemer.Redeemer
+	Erc20Address      common.Address
+	Erc20             *mocks.Erc20
+	YieldAddress      common.Address
+	Yield             *mocks.Yield
+	ZcTokenAddress    common.Address
+	ZcToken           *mocks.ZcToken
+	SwivelAddress     common.Address
+	Swivel            *mocks.Swivel
+	IlluminateAddress common.Address
+	Illuminate        *mocks.Illuminate
+	RedeemerAddress   common.Address
+	Redeemer          *redeemer.Redeemer
 }
 
 func Deploy(e *Env) (*Dep, error) {
@@ -55,7 +54,7 @@ func Deploy(e *Env) (*Dep, error) {
 
 	e.Blockchain.Commit()
 
-	mpAddress, _, mpContract, mpErr := mocks.DeployMarketPlace(e.Owner.Opts, e.Blockchain)
+	mpAddress, _, mpContract, mpErr := mocks.DeployIlluminate(e.Owner.Opts, e.Blockchain)
 
 	if mpErr != nil {
 		return nil, mpErr
@@ -72,17 +71,17 @@ func Deploy(e *Env) (*Dep, error) {
 	e.Blockchain.Commit()
 
 	return &Dep{
-		Erc20Address:       ercAddress,
-		Erc20:              ercContract,
-		YieldAddress:       ytAddress,
-		Yield:              ytContract,
-		ZcTokenAddress:     zcAddress,
-		ZcToken:            zcContract,
-		SwivelAddress:      swivelAddress,
-		Swivel:             swivelContract,
-		MarketPlaceAddress: mpAddress,
-		MarketPlace:        mpContract,
-		RedeemerAddress:    redeemerAddress,
-		Redeemer:           redeemerContract,
+		Erc20Address:      ercAddress,
+		Erc20:             ercContract,
+		YieldAddress:      ytAddress,
+		Yield:             ytContract,
+		ZcTokenAddress:    zcAddress,
+		ZcToken:           zcContract,
+		SwivelAddress:     swivelAddress,
+		Swivel:            swivelContract,
+		IlluminateAddress: mpAddress,
+		Illuminate:        mpContract,
+		RedeemerAddress:   redeemerAddress,
+		Redeemer:          redeemerContract,
 	}, nil
 }
