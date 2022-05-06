@@ -10,17 +10,17 @@ contract Redeemer {
   // etc...
 
   address public admin;
-  address public marketPlace;
+  address public illuminate;
 
   event Redeem(uint8 principal, address indexed underlying, uint256 indexed maturity, uint256 amount);  
 
-  /// @param m the deployed MarketPlace contract
+  /// @param m the deployed Illuminate contract
   constructor(address m) {
     admin = msg.sender;
-    marketPlace = m; // TODO add an authorized setter for this?
+    illuminate = m; // TODO add an authorized setter for this?
   }
   /// @dev redeem method signature for illuminate, tempus, apwine
-  /// @param p value of a specific principal according to the MarketPlace Principals Enum
+  /// @param p value of a specific principal according to the Illuminate Principals Enum
   /// @param u underlying token being redeemed
   /// @param m maturity of the market being redeemed
   /// @param o owner / tempus pool / apiwine vault ?
@@ -30,7 +30,7 @@ contract Redeemer {
   }
 
   /// @dev redeem method signature for swivel, yield, element, 
-  /// @param p value of a specific principal according to the MarketPlace Principals Enum
+  /// @param p value of a specific principal according to the Illuminate Principals Enum
   /// @param u underlying token being redeemed
   /// @param m maturity of the market being redeemed
   function redeem(uint8 p, address u, uint256 m) public returns (bool) {
@@ -39,7 +39,7 @@ contract Redeemer {
   }
 
   /// @dev redeem method signature for pendle 
-  /// @param p value of a specific principal according to the MarketPlace Principals Enum
+  /// @param p value of a specific principal according to the Illuminate Principals Enum
   /// @param u underlying token being redeemed
   /// @param m maturity of the market being redeemed
   /// @param i pendle id ?
@@ -49,7 +49,7 @@ contract Redeemer {
   }
 
   /// @dev redeem method signature for sense
-  /// @param p value of a specific principal according to the MarketPlace Principals Enum
+  /// @param p value of a specific principal according to the Illuminate Principals Enum
   /// @param u underlying token being redeemed
   /// @param m maturity of the market being redeemed
   /// @param d sense wut (divider?) ?

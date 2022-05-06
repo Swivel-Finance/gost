@@ -11,7 +11,7 @@ type Dep struct {
 	Erc20               *mocks.Erc20
 	YieldAddress        common.Address
 	Yield               *mocks.Yield
-	MarketPlaceAddress  common.Address
+	IlluminateAddress   common.Address
 	Illuminate          *mocks.Illuminate
 	LenderAddress       common.Address
 	Lender              *lender.Lender
@@ -94,7 +94,7 @@ func Deploy(e *Env) (*Dep, error) {
 		Erc20:               ercContract,
 		YieldAddress:        ytAddress,
 		Yield:               ytContract,
-		MarketPlaceAddress:  mpAddress,
+		IlluminateAddress:   mpAddress,
 		Illuminate:          mpContract,
 		LenderAddress:       lenderAddress,
 		Lender:              lender,
