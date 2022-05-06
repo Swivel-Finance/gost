@@ -12,7 +12,7 @@ type Dep struct {
 	YieldAddress        common.Address
 	Yield               *mocks.Yield
 	MarketPlaceAddress  common.Address
-	MarketPlace         *mocks.MarketPlace
+	Illuminate          *mocks.Illuminate
 	LenderAddress       common.Address
 	Lender              *lender.Lender
 	ZcTokenAddress      common.Address
@@ -43,7 +43,7 @@ func Deploy(e *Env) (*Dep, error) {
 
 	e.Blockchain.Commit()
 
-	mpAddress, _, mpContract, mpErr := mocks.DeployMarketPlace(e.Owner.Opts, e.Blockchain)
+	mpAddress, _, mpContract, mpErr := mocks.DeployIlluminate(e.Owner.Opts, e.Blockchain)
 
 	if mpErr != nil {
 		return nil, mpErr
@@ -95,7 +95,7 @@ func Deploy(e *Env) (*Dep, error) {
 		YieldAddress:        ytAddress,
 		Yield:               ytContract,
 		MarketPlaceAddress:  mpAddress,
-		MarketPlace:         mpContract,
+		Illuminate:          mpContract,
 		LenderAddress:       lenderAddress,
 		Lender:              lender,
 		ZcTokenAddress:      zcAddress,

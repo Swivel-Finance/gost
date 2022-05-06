@@ -12,14 +12,14 @@ import (
 
 type redeemTestSuite struct {
 	suite.Suite
-	Env         *Env
-	Dep         *Dep
-	Erc20       *mocks.Erc20Session
-	MarketPlace *mocks.MarketPlaceSession
-	Yield       *mocks.YieldSession
-	ZcToken     *mocks.ZcTokenSession
-	Swivel      *mocks.SwivelSession
-	Redeemer    *redeemer.RedeemerSession
+	Env        *Env
+	Dep        *Dep
+	Erc20      *mocks.Erc20Session
+	Illuminate *mocks.IlluminateSession
+	Yield      *mocks.YieldSession
+	ZcToken    *mocks.ZcTokenSession
+	Swivel     *mocks.SwivelSession
+	Redeemer   *redeemer.RedeemerSession
 }
 
 func (s *redeemTestSuite) SetupSuite() {
@@ -42,8 +42,8 @@ func (s *redeemTestSuite) SetupSuite() {
 		},
 	}
 
-	s.MarketPlace = &mocks.MarketPlaceSession{
-		Contract: s.Dep.MarketPlace,
+	s.Illuminate = &mocks.IlluminateSession{
+		Contract: s.Dep.Illuminate,
 		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
 		TransactOpts: bind.TransactOpts{
 			From:   s.Env.Owner.Opts.From,
