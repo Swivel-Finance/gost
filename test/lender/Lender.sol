@@ -230,8 +230,6 @@ contract Lender {
       IErc20 underlyingToken = IErc20(u);
       Safe.transferFrom(underlyingToken, msg.sender, address(this), a);
 
-
-
       // Swap on the Tempus Router using the provided market and params
       IZcToken illuminateToken = IZcToken(IIlluminate(illuminate).markets(u, m)[uint256(Illuminate.Principals.Illuminate)]);
       uint256 returned = ITempus(tempusRouter).depositAndFix(Any(x), Any(t), a, true, r, d) - illuminateToken.balanceOf(address(this));
@@ -249,31 +247,26 @@ contract Lender {
   /// @param p value of a specific principal according to the Illuminate Principals Enum
   /// @param u underlying token being ?
   /// @param m maturity of the market being ?
-  /// @param s sense pool ?
-  /// @param x sense wut ?
+  /// @param sp sense pool ?
+  /// @param sa sense wut ?
   /// @param a amount ?
-  /// @param r minimum amount to return ?
-  // function lend(uint8 p, address u, uint256 m, address s, address x, uint256 a, uint256 r) public returns (uint256) {
-  //   // ...
-  //   uint256 returned = 0;
+  /// @param mb amount ?
+  function senseLend(uint8 p, address u, uint256 m, address sp, address sa, uint128 a, uint256 mb) public returns (uint256){
+        // Instantiate market and tokens
+        address market = IIlluminate(illuminate).markets(u, m)[p];
+        IErc20 underlyingToken = IErc20(u);
 
-  //   emit Lend(p, u, m, returned);
-  //   return returned;
-  // }
+        // Transfer funds from user to Illuminate
+        Safe.transferFrom(underlyingToken, msg.sender, address(this), a);
 
-  /// @dev lend method signature for apwine
-  /// @notice Can be called before maturity to lend to APWine while minting Illuminate tokens
-  /// @param p value of a specific principal according to the Illuminate Principals Enum
-  /// @param u underlying token being ?
-  /// @param m maturity of the market being ?
-  /// @param w apwine pool ?
-  /// @param i apwine pair id ?
-  /// @param r minimum amount to return ?
-  // function lend(uint8 p, address u, uint256 m, address w, uint256 i, uint256 r) public returns (uint256) {
-  //   // ...
-  //   uint256 returned = 0;
+        uint256 returned = ISense(sp).swapUnderlyingForPTs(sa, m, a, mb);
 
-  //   emit Lend(p, u, m, returned);
-  //   return returned;
-  // }
+        address[8] memory markets = IIlluminate(illuminate).markets(u, m);
+        IZcToken illuminateToken = IZcToken(markets[uint256(Illuminate.Principals.Illuminate)]);
+        illuminateToken.mint(msg.sender, returned);
+
+        emit Lend(p, u, m, returned);
+
+        return (returned);
+  }
 }
