@@ -26,6 +26,8 @@ type Dep struct {
 	Tempus              *mocks.Tempus
 	SenseAddress        common.Address
 	Sense               *mocks.Sense
+	APWineAddress       common.Address
+	APWine              *mocks.APWine
 }
 
 func Deploy(e *Env) (*Dep, error) {
@@ -108,6 +110,14 @@ func Deploy(e *Env) (*Dep, error) {
 
 	e.Blockchain.Commit()
 
+	apAddress, _, apContract, apErr := mocks.DeployAPWine(e.Owner.Opts, e.Blockchain)
+
+	if apErr != nil {
+		return nil, apErr
+	}
+
+	e.Blockchain.Commit()
+
 	return &Dep{
 		Erc20Address:        ercAddress,
 		Erc20:               ercContract,
@@ -129,5 +139,7 @@ func Deploy(e *Env) (*Dep, error) {
 		Tempus:              tContract,
 		SenseAddress:        seAddress,
 		Sense:               seContract,
+		APWineAddress:       apAddress,
+		APWine:              apContract,
 	}, nil
 }

@@ -139,7 +139,17 @@ compile_go_mock_sense:
 
 compile_mock_sense: compile_solidity_mock_sense compile_go_mock_sense
 
-compile_mocks: compile_mock_erc compile_mock_yield compile_mock_pendle compile_mock_sushi compile_mock_element_token compile_mock_element compile_mock_illuminate compile_mock_zc_token compile_mock_swivel compile_mock_tempus compile_mock_sense
+compile_solidity_mock_apwine:
+	@echo "compiling Mock APWine solidity source into abi and bin files"
+	solc -o ./test/mocks --abi --bin --overwrite ./test/mocks/APWine.sol
+
+compile_go_mock_apwine:
+	@echo "compiling abi and bin files to golang"
+	abigen --abi ./test/mocks/APWine.abi --bin ./test/mocks/APWine.bin -pkg mocks -type APWine -out ./test/mocks/apwine.go 
+
+compile_mock_apwine: compile_solidity_mock_apwine compile_go_mock_apwine
+
+compile_mocks: compile_mock_erc compile_mock_yield compile_mock_pendle compile_mock_sushi compile_mock_element_token compile_mock_element compile_mock_illuminate compile_mock_zc_token compile_mock_swivel compile_mock_tempus compile_mock_sense compile_mock_apwine
 
 # Real Tokens
 # compile_solidity_zct:
