@@ -117,11 +117,7 @@ compile_go_mock_zc_token:
 
 compile_mock_zc_token: compile_solidity_mock_zc_token compile_go_mock_zc_token
 
-<<<<<<< HEAD
-compile_mocks: compile_mock_erc compile_mock_yield compile_mock_pendle compile_mock_sushi compile_mock_element_token compile_mock_element compile_mock_market_place compile_mock_zc_token compile_mock_swivel
-=======
-compile_mocks: compile_mock_erc compile_mock_yield compile_mock_element_token compile_mock_element compile_mock_illuminate compile_mock_zc_token compile_mock_swivel
->>>>>>> 69e558432fd0c7c13017ab2d0a040bff43803735
+compile_mocks: compile_mock_erc compile_mock_yield compile_mock_pendle compile_mock_sushi compile_mock_element_token compile_mock_element compile_mock_illuminate compile_mock_zc_token compile_mock_swivel
 
 # Real Tokens
 # compile_solidity_zct:

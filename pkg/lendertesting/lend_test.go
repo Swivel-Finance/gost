@@ -378,7 +378,7 @@ func (s *lendTestSuite) TestLendPendle() {
 	s.Env.Blockchain.Commit()
 
 	// TODO: This should be a helper that always returns a given address
-	s.MarketPlace.MarketsReturns([8]common.Address{
+	s.Illuminate.MarketsReturns([8]common.Address{
 		s.Dep.ZcTokenAddress,
 		s.Dep.PendleAddress,
 		s.Dep.PendleAddress,
