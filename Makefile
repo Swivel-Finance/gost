@@ -1,7 +1,7 @@
 .PHONY: compile_solidity_mock_erc compile_go_mock_erc compile_mock_erc
 .PHONY: compile_solidity_mock_yield compile_go_mock_yield compile_mock_yield
 .PHONY: compile_solidity_mock_element_token compile_go_mock_element_token compile_mock_element_token
-.PHONY: compile_solidity_mock_market_place compile_go_mock_market_place compile_mock_market_place
+.PHONY: compile_solidity_mock_illuminate compile_go_mock_illuminate compile_mock_illuminate
 .PHONY: compile_mocks
 
 # TODO under? api-specific sol?
@@ -75,15 +75,15 @@ compile_go_mock_swivel:
 
 compile_mock_swivel: compile_solidity_mock_swivel compile_go_mock_swivel
 
-compile_solidity_mock_market_place:
-	@echo "compiling Mock MarketPlace solidity source into abi and bin files"
-	solc -o ./test/mocks --abi --bin --overwrite ./test/mocks/MarketPlace.sol
+compile_solidity_mock_illuminate:
+	@echo "compiling Mock Illuminate solidity source into abi and bin files"
+	solc -o ./test/mocks --abi --bin --overwrite ./test/mocks/Illuminate.sol
 
-compile_go_mock_market_place:
+compile_go_mock_illuminate:
 	@echo "compiling abi and bin files to golang"
-	abigen --abi ./test/mocks/MarketPlace.abi --bin ./test/mocks/MarketPlace.bin -pkg mocks -type MarketPlace -out ./test/mocks/marketplace.go 
+	abigen --abi ./test/mocks/Illuminate.abi --bin ./test/mocks/Illuminate.bin -pkg mocks -type Illuminate -out ./test/mocks/illuminate.go 
 
-compile_mock_market_place: compile_solidity_mock_market_place compile_go_mock_market_place
+compile_mock_illuminate: compile_solidity_mock_illuminate compile_go_mock_illuminate
 
 compile_solidity_mock_zc_token:
 	@echo "compiling Mock ZcToken solidity source into abi and bin files"
@@ -95,7 +95,7 @@ compile_go_mock_zc_token:
 
 compile_mock_zc_token: compile_solidity_mock_zc_token compile_go_mock_zc_token
 
-compile_mocks: compile_mock_erc compile_mock_yield compile_mock_element_token compile_mock_element compile_mock_market_place compile_mock_zc_token compile_mock_swivel
+compile_mocks: compile_mock_erc compile_mock_yield compile_mock_element_token compile_mock_element compile_mock_illuminate compile_mock_zc_token compile_mock_swivel
 
 # Real Tokens
 # compile_solidity_zct:

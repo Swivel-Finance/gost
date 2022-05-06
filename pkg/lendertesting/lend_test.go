@@ -18,7 +18,7 @@ type lendTestSuite struct {
 	Env          *Env
 	Dep          *Dep
 	Erc20        *mocks.Erc20Session
-	MarketPlace  *mocks.MarketPlaceSession
+	Illuminate   *mocks.IlluminateSession
 	Yield        *mocks.YieldSession
 	ZcToken      *mocks.ZcTokenSession
 	Swivel       *mocks.SwivelSession
@@ -47,8 +47,8 @@ func (s *lendTestSuite) SetupSuite() {
 		},
 	}
 
-	s.MarketPlace = &mocks.MarketPlaceSession{
-		Contract: s.Dep.MarketPlace,
+	s.Illuminate = &mocks.IlluminateSession{
+		Contract: s.Dep.Illuminate,
 		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
 		TransactOpts: bind.TransactOpts{
 			From:   s.Env.Owner.Opts.From,
@@ -132,7 +132,7 @@ func (s *lendTestSuite) TestLendIlluminate() {
 	s.Yield.BaseReturns(s.Dep.Erc20Address)
 	s.Env.Blockchain.Commit()
 
-	s.MarketPlace.MarketsReturns([8]common.Address{
+	s.Illuminate.MarketsReturns([8]common.Address{
 		common.HexToAddress("0x0"),
 		common.HexToAddress("0x1"),
 		common.HexToAddress("0x2"),
@@ -207,7 +207,7 @@ func (s *lendTestSuite) TestLendYield() {
 		common.HexToAddress("0x6"),
 		common.HexToAddress("0x7"),
 	}
-	s.MarketPlace.MarketsReturns(markets)
+	s.Illuminate.MarketsReturns(markets)
 	s.Env.Blockchain.Commit()
 
 	s.Yield.MaturityReturns(uint32(maturity.Uint64()))
@@ -288,7 +288,7 @@ func (s *lendTestSuite) TestLendSwivel() {
 func (s *lendTestSuite) TestLendElement() {
 	assert := assert.New(s.T())
 
-	s.MarketPlace.MarketsReturns([8]common.Address{
+	s.Illuminate.MarketsReturns([8]common.Address{
 		s.Dep.ElementTokenAddress,
 		s.Dep.ElementTokenAddress,
 		s.Dep.ElementTokenAddress,
