@@ -14,8 +14,7 @@ interface IErc20 {
 	function transferFrom(address, address, uint256) external returns (bool);
 }
 
-// TODO move to ./MarketPlace.sol as a stand alone enum?
-interface IMarketPlace {
+interface IIlluminate {
   function markets(address, uint256) external returns (address[8] calldata);
 }
 

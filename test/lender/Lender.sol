@@ -3,7 +3,7 @@
 pragma solidity 0.8.13;
 
 import './Interfaces.sol';
-import './MarketPlace.sol'; // library of market place specific constructs
+import './Illuminate.sol'; // library of market place specific constructs
 import './Swivel.sol'; // library of swivel specific constructs
 import './Safe.sol';
 import './Cast.sol';
@@ -11,20 +11,39 @@ import './Element.sol';
 
 contract Lender {
   address public admin;
-  address public marketPlace; // TODO authorized setter for this
+  address public illuminate; // TODO authorized setter for this
 
   // TODO the nature of these addresses?
   address public swivelAddr; // addresses of the 3rd party protocol contracts
   address public sushiRouter;
 
   event Lend(uint8 principal, address indexed underlying, uint256 indexed maturity, uint256 returned);
+  event Mint(uint8 principal, address indexed underlying, uint256 indexed maturity, uint256 amount);
 
-  /// @param m the deployed MarketPlace contract
-  constructor(address m, address s, address su) {
+  /// @param i the deployed Illuminate contract
+  constructor(address i, address s, address su) {
     admin = msg.sender;
-    marketPlace = m; // TODO add an authorized setter for this?
+    illuminate = i; // TODO add an authorized setter for this?
     swivelAddr = s;
     sushiRouter = su;
+  }
+
+  /// @dev mint is uniform across all principals, thus there is no need for a 'minter'
+  // @param p value of a specific principal according to the Illuminate Principals Enum.
+  // @param u address of an underlying asset
+  // @param m maturity (timestamp) of the market
+  // @param a amount being minted
+  function mint(uint8 p, address u, uint256 m, uint256 a) public returns (bool) {
+    //use market interface to fetch the market for the given market pair
+    address[8] memory market = IIlluminate(illuminate).markets(u, m);
+    //use safe transfer lib and ERC interface...
+    Safe.transferFrom(IErc20(market[p]), msg.sender, address(this), a);
+    //use zctoken interface...
+    IZcToken(market[uint256(Illuminate.Principals.Illuminate)]).mint(msg.sender, a);
+
+    emit Mint(p, u, m, a);
+
+    return true;
   }
 
   // TODO since we are heavily using overriding here do we need any extra fallback function security?
@@ -32,7 +51,7 @@ contract Lender {
 
   /// @dev lend method signature for both illuminate and yield
   /// @notice Can be called before maturity to lend to Illuminate / Yield ?
-  /// @param p value of a specific principal according to the MarketPlace Principals Enum
+  /// @param p value of a specific principal according to the Illuminate Principals Enum
   /// @param u underlying token being ?
   /// @param m maturity of the market being ?
   /// @param y yield pool ?
@@ -60,10 +79,10 @@ contract Lender {
     yToken.sellBase(self, returned);
 
     // this step is only needed when the lend is for yield
-    if (p == uint8(MarketPlace.Principals.Yield)) {
-      address[8] memory market = IMarketPlace(marketPlace).markets(u, m); 
+    if (p == uint8(Illuminate.Principals.Yield)) {
+      address[8] memory market = IIlluminate(illuminate).markets(u, m); 
       // TODO should we require on this?
-      IZcToken(market[uint256(MarketPlace.Principals.Illuminate)]).mint(msg.sender, returned);
+      IZcToken(market[uint256(Illuminate.Principals.Illuminate)]).mint(msg.sender, returned);
     }
 
     emit Lend(p, u, m, returned);
@@ -73,7 +92,7 @@ contract Lender {
 
   /// @dev lend method signature for swivel
   /// @notice can be called before maturity to lend to Swivel while minting Illuminate tokens
-  /// @param p value of a specific principal according to the MarketPlace Principals Enum
+  /// @param p value of a specific principal according to the Illuminate Principals Enum
   /// @param u underlying token being ?
   /// @param m maturity of the market being ?
   /// @param y yield pool
@@ -110,7 +129,7 @@ contract Lender {
 
   /// @dev lend method signature for element
   /// @notice can be called before maturity to lend to Element / Sense ?
-  /// @param p value of a specific principal according to the MarketPlace Principals Enum
+  /// @param p value of a specific principal according to the Illuminate Principals Enum
   /// @param u underlying token being ?
   /// @param m maturity of the market being ?
   /// @param e element pool ?
@@ -123,7 +142,7 @@ contract Lender {
     Safe.transferFrom(IErc20(u), msg.sender, address(this), a);
 
 
-    IElementToken eToken = IElementToken(IMarketPlace(marketPlace).markets(u, m)[p]);
+    IElementToken eToken = IElementToken(IIlluminate(illuminate).markets(u, m)[p]);
 
     // the element token must match the market pair
     require(eToken.underlying() == u, '');
@@ -163,7 +182,7 @@ contract Lender {
   /// @param d the maximum timestamp at which the transaction can be executed
   function lend(uint8 p, address u, uint256 m, uint256 a, uint256 mb, uint256 d) public returns (uint256) {
       // Instantiate market and tokens
-      address market = IMarketPlace(marketPlace).markets(u, m)[p];
+      address market = IIlluminate(illuminate).markets(u, m)[p];
       IPendle pendle = IPendle(market);
 
       // confirm that we are in the correct market
@@ -182,8 +201,8 @@ contract Lender {
       uint256 returned = ISushi(sushiRouter).swapExactTokensForTokens(a, mb, path, address(this), d)[0];
 
       // Mint Illuminate zero coupons
-      address[8] memory markets = IMarketPlace(marketPlace).markets(u, m); 
-      IZcToken(markets[uint256(MarketPlace.Principals.Illuminate)]).mint(msg.sender, returned);
+      address[8] memory markets = IIlluminate(illuminate).markets(u, m); 
+      IZcToken(markets[uint256(Illuminate.Principals.Illuminate)]).mint(msg.sender, returned);
 
       emit Lend(p, u, m, returned);
 
@@ -192,7 +211,7 @@ contract Lender {
 
   /// @dev lend method signature for tempus
   /// @notice Can be called before maturity to lend to Tempus while minting Illuminate tokens
-  /// @param p value of a specific principal according to the MarketPlace Principals Enum
+  /// @param p value of a specific principal according to the Illuminate Principals Enum
   /// @param u underlying token being ?
   /// @param m maturity of the market being ?
   /// @param t tempus pool ?
@@ -210,7 +229,7 @@ contract Lender {
 
   /// @dev lend method signature for sense
   /// @notice Can be called before maturity to lend to Sense while minting Illuminate tokens
-  /// @param p value of a specific principal according to the MarketPlace Principals Enum
+  /// @param p value of a specific principal according to the Illuminate Principals Enum
   /// @param u underlying token being ?
   /// @param m maturity of the market being ?
   /// @param s sense pool ?
@@ -227,7 +246,7 @@ contract Lender {
 
   /// @dev lend method signature for apwine
   /// @notice Can be called before maturity to lend to APWine while minting Illuminate tokens
-  /// @param p value of a specific principal according to the MarketPlace Principals Enum
+  /// @param p value of a specific principal according to the Illuminate Principals Enum
   /// @param u underlying token being ?
   /// @param m maturity of the market being ?
   /// @param w apwine pool ?

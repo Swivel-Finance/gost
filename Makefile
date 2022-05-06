@@ -3,13 +3,18 @@
 .PHONY: compile_solidity_mock_pendle compile_go_mock_pendle compile_mock_pendle
 .PHONY: compile_solidity_mock_sushi compile_go_mock_sushi compile_mock_sushi
 .PHONY: compile_solidity_mock_element_token compile_go_mock_element_token compile_mock_element_token
-.PHONY: compile_solidity_mock_market_place compile_go_mock_market_place compile_mock_market_place
+.PHONY: compile_solidity_mock_illuminate compile_go_mock_illuminate compile_mock_illuminate
 .PHONY: compile_mocks
 
 # TODO under? api-specific sol?
 
-.PHONY: compile_solidity_zct compile_go_zct compile_zct
-.PHONY: compile_tokens
+# .PHONY: compile_solidity_zct compile_go_zct compile_zct
+# .PHONY: compile_tokens
+
+.PHONY: compile_solidity_illuminate_test compile_go_illuminate_test compile_illuminate_test
+.PHONY: compile_solidity_lender_test compile_go_lender_test compile_lender_test
+.PHONY: compile_solidity_redeemer_test compile_go_redeemer_test compile_redeemer_test
+.PHONY: compile_test
 
 .PHONY: clean_test_abi clean_test_bin clean_test_go
 .PHONY: clean_test
@@ -92,15 +97,15 @@ compile_go_mock_swivel:
 
 compile_mock_swivel: compile_solidity_mock_swivel compile_go_mock_swivel
 
-compile_solidity_mock_market_place:
-	@echo "compiling Mock MarketPlace solidity source into abi and bin files"
-	solc -o ./test/mocks --abi --bin --overwrite ./test/mocks/MarketPlace.sol
+compile_solidity_mock_illuminate:
+	@echo "compiling Mock Illuminate solidity source into abi and bin files"
+	solc -o ./test/mocks --abi --bin --overwrite ./test/mocks/Illuminate.sol
 
-compile_go_mock_market_place:
+compile_go_mock_illuminate:
 	@echo "compiling abi and bin files to golang"
-	abigen --abi ./test/mocks/MarketPlace.abi --bin ./test/mocks/MarketPlace.bin -pkg mocks -type MarketPlace -out ./test/mocks/marketplace.go 
+	abigen --abi ./test/mocks/Illuminate.abi --bin ./test/mocks/Illuminate.bin -pkg mocks -type Illuminate -out ./test/mocks/illuminate.go 
 
-compile_mock_market_place: compile_solidity_mock_market_place compile_go_mock_market_place
+compile_mock_illuminate: compile_solidity_mock_illuminate compile_go_mock_illuminate
 
 compile_solidity_mock_zc_token:
 	@echo "compiling Mock ZcToken solidity source into abi and bin files"
@@ -112,7 +117,11 @@ compile_go_mock_zc_token:
 
 compile_mock_zc_token: compile_solidity_mock_zc_token compile_go_mock_zc_token
 
+<<<<<<< HEAD
 compile_mocks: compile_mock_erc compile_mock_yield compile_mock_pendle compile_mock_sushi compile_mock_element_token compile_mock_element compile_mock_market_place compile_mock_zc_token compile_mock_swivel
+=======
+compile_mocks: compile_mock_erc compile_mock_yield compile_mock_element_token compile_mock_element compile_mock_illuminate compile_mock_zc_token compile_mock_swivel
+>>>>>>> 69e558432fd0c7c13017ab2d0a040bff43803735
 
 # Real Tokens
 # compile_solidity_zct:
@@ -130,6 +139,16 @@ compile_mocks: compile_mock_erc compile_mock_yield compile_mock_pendle compile_m
 # Fakes
 
 # Contracts
+compile_solidity_illuminate_test:
+	@echo "compiling Illuminate solidity source into abi and bin files"
+	solc -o ./test/illuminate --optimize --optimize-runs=15000 --abi --bin --overwrite ./test/illuminate/Illuminate.sol
+
+compile_go_illuminate_test:
+	@echo "compiling Illuminate abi and bin files to golang"
+	abigen --abi ./test/illuminate/Illuminate.abi --bin ./test/illuminate/Illuminate.bin -pkg illuminate -type Illuminate -out ./test/illuminate/illuminate.go
+
+compile_illuminate_test: compile_solidity_illuminate_test compile_go_illuminate_test
+
 compile_solidity_lender_test:
 	@echo "compiling Lender solidity source into abi and bin files"
 	solc -o ./test/lender --optimize --optimize-runs=15000 --abi --bin --overwrite ./test/lender/Lender.sol
@@ -149,6 +168,7 @@ compile_go_redeemer_test:
 	abigen --abi ./test/redeemer/Redeemer.abi --bin ./test/redeemer/Redeemer.bin -pkg redeemer -type Redeemer -out ./test/redeemer/redeemer.go
 
 compile_redeemer_test: compile_solidity_redeemer_test compile_go_redeemer_test
+compile_test: compile_illuminate_test compile_lender_test compile_redeemer_test
 
 # Cleaning
 clean_test_abi:
