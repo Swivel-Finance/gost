@@ -69,26 +69,6 @@ contract Illuminate {
     return true;
   }
 
-  /// @dev mint is uniform across all principals, thus there is no need for a 'minter'
-  // @param p value of a specific principal according to the MarketPlace Principals Enum.
-  // @param u address of an underlying asset
-  // @param m maturity (timestamp) of the market
-  // @param a amount being minted
-  // TODO move to lender.sol
-  // function mint(uint8 p, address u, uint256 m, uint256 a) public returns (bool) {
-    // address mPlace = marketPlace(marketPlace);
-    // use market interface to fetch the market for the given market pair
-    // address[8] market = mPlace.markets(u, m);
-    // use safe transfer lib and ERC interface...
-    // Safe.transferFrom(Erc20(market[p]), msg.sender, address(this), a);
-    // use zctoken interface...
-    // ZcToken(market[mPlace.Principals.Illuminate]).mint(msg.sender, a);
-
-    // emit Mint(p, u, m, a);
-
-    // return true;
-  // }
-
   modifier authorized(address a) {
     require(msg.sender == a, 'sender must be authorized');
     _;
