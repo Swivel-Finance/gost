@@ -48,7 +48,7 @@ func (s *lendTestSuite) SetupSuite() {
 	}
 
 	s.Illuminate = &mocks.IlluminateSession{
-		Contract: s.Dep.MarketPlace,
+		Contract: s.Dep.Illuminate,
 		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
 		TransactOpts: bind.TransactOpts{
 			From:   s.Env.Owner.Opts.From,

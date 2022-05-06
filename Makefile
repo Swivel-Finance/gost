@@ -1,7 +1,7 @@
 .PHONY: compile_solidity_mock_erc compile_go_mock_erc compile_mock_erc
 .PHONY: compile_solidity_mock_yield compile_go_mock_yield compile_mock_yield
 .PHONY: compile_solidity_mock_element_token compile_go_mock_element_token compile_mock_element_token
-.PHONY: compile_solidity_mock_market_place compile_go_mock_market_place compile_mock_market_place
+.PHONY: compile_solidity_mock_illuminate compile_go_mock_illuminate compile_mock_illuminate
 .PHONY: compile_mocks
 
 # TODO under? api-specific sol?
