@@ -17,12 +17,26 @@ contract Lender {
   address public swivelAddr; // addresses of the 3rd party protocol contracts
 
   event Lend(uint8 principal, address indexed underlying, uint256 indexed maturity, uint256 returned);
+  event Mint(uint8 principal, address indexed underlying, uint256 indexed maturity, uint256 amount);
 
   /// @param m the deployed MarketPlace contract
   constructor(address m, address s) {
     admin = msg.sender;
     marketPlace = m; // TODO add an authorized setter for this?
     swivelAddr = s;
+  }
+
+  function mint(uint8 p, address u, uint256 m, uint256 a) public returns (bool) {
+    //use market interface to fetch the market for the given market pair
+    address[8] memory market = IMarketPlace(marketPlace).markets(u, m);
+    //use safe transfer lib and ERC interface...
+    Safe.transferFrom(IErc20(market[p]), msg.sender, address(this), a);
+    //use zctoken interface...
+    IZcToken(market[uint256(MarketPlace.Principals.Illuminate)]).mint(msg.sender, a);
+
+    emit Mint(p, u, m, a);
+
+    return true;
   }
 
   // TODO since we are heavily using overriding here do we need any extra fallback function security?
