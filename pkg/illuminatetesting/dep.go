@@ -2,7 +2,6 @@ package illuminatetesting
 
 import (
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/swivel-finance/gost/test/illuminate"
 	"github.com/swivel-finance/gost/test/mocks"
 )
 
@@ -10,7 +9,7 @@ type Dep struct {
 	Erc20Address      common.Address
 	Erc20             *mocks.Erc20
 	IlluminateAddress common.Address
-	Illuminate        *illuminate.Illuminate
+	Illuminate        *mocks.Illuminate
 }
 
 func Deploy(e *Env) (*Dep, error) {
@@ -23,7 +22,7 @@ func Deploy(e *Env) (*Dep, error) {
 
 	e.Blockchain.Commit()
 
-	illAddress, _, illContract, illErr := illuminate.DeployIlluminate(e.Owner.Opts, e.Blockchain)
+	illAddress, _, illContract, illErr := mocks.DeployIlluminate(e.Owner.Opts, e.Blockchain)
 	if illErr != nil {
 		return nil, illErr
 	}

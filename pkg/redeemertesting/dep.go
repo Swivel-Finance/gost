@@ -3,6 +3,7 @@ package redeemertesting
 import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/swivel-finance/gost/test/mocks"
+	"github.com/swivel-finance/gost/test/redeemer"
 )
 
 type Dep struct {

@@ -7,6 +7,7 @@ import (
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/stretchr/testify/suite"
 	"github.com/swivel-finance/gost/test/mocks"
+	"github.com/swivel-finance/gost/test/redeemer"
 )
 
 type redeemTestSuite struct {
