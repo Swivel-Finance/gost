@@ -54,9 +54,9 @@ func (s *senseTestSuite) TestSwapUnderlyingForPTs() {
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
 
-	pool, err := s.Sense.SensePoolCalled()
+	adapter, err := s.Sense.SenseAdapterCalled()
 	assert.NoError(err)
-	assert.Equal(common.BigToAddress(big.NewInt(1)), pool)
+	assert.Equal(common.BigToAddress(big.NewInt(1)), adapter)
 
 	maturity, err := s.Sense.MaturityCalled()
 	assert.NoError(err)

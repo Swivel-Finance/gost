@@ -5,7 +5,7 @@ pragma solidity 0.8.13;
 contract Sense {
     uint256 swapUnderlyingForPTsReturn;
 
-    address public sensePoolCalled;
+    address public senseAdapterCalled;
     uint256 public maturityCalled;
     uint256 public amountCalled;
     uint256 public minimumBoughtCalled;
@@ -14,8 +14,8 @@ contract Sense {
         swapUnderlyingForPTsReturn = s;
     }
     
-    function swapUnderlyingForPTs(address sp, uint256 m, uint256 a, uint256 mb) external returns (uint256) {
-        sensePoolCalled = sp;
+    function swapUnderlyingForPTs(address sa, uint256 m, uint256 a, uint256 mb) external returns (uint256) {
+        senseAdapterCalled = sa;
         maturityCalled = m;
         amountCalled = a;
         minimumBoughtCalled = mb;

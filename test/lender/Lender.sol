@@ -251,17 +251,18 @@ contract Lender {
   /// @param sa sense wut ?
   /// @param a amount ?
   /// @param mb amount ?
-  function senseLend(uint8 p, address u, uint256 m, address sp, address sa, uint128 a, uint256 mb) public returns (uint256){
+  function lend(uint8 p, address u, uint256 m, address sp, address sa, uint128 a, uint256 mb) public returns (uint256){
         // Instantiate market and tokens
-        address market = IIlluminate(illuminate).markets(u, m)[p];
+        address[8] memory markets = IIlluminate(illuminate).markets(u, m);
+        address senseMarket = markets[p];
+        // TODO: Check that we have the right underlying and maturity
+
         IErc20 underlyingToken = IErc20(u);
 
         // Transfer funds from user to Illuminate
         Safe.transferFrom(underlyingToken, msg.sender, address(this), a);
-
         uint256 returned = ISense(sp).swapUnderlyingForPTs(sa, m, a, mb);
 
-        address[8] memory markets = IIlluminate(illuminate).markets(u, m);
         IZcToken illuminateToken = IZcToken(markets[uint256(Illuminate.Principals.Illuminate)]);
         illuminateToken.mint(msg.sender, returned);
 

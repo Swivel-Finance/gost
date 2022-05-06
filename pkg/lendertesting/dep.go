@@ -29,6 +29,8 @@ type Dep struct {
 	Sushi               *mocks.Sushi
 	TempusAddress       common.Address
 	Tempus              *mocks.Tempus
+	SenseAddress        common.Address
+	Sense               *mocks.Sense
 }
 
 func Deploy(e *Env) (*Dep, error) {
@@ -113,6 +115,14 @@ func Deploy(e *Env) (*Dep, error) {
 
 	e.Blockchain.Commit()
 
+	seAddress, _, seContract, seErr := mocks.DeploySense(e.Owner.Opts, e.Blockchain)
+
+	if seErr != nil {
+		return nil, seErr
+	}
+
+	e.Blockchain.Commit()
+
 	lenderAddress, _, lender, lenderErr := lender.DeployLender(e.Owner.Opts, e.Blockchain, mpAddress, swAddress, suAddress, tAddress)
 	if lenderErr != nil {
 		return nil, lenderErr
@@ -143,5 +153,7 @@ func Deploy(e *Env) (*Dep, error) {
 		Sushi:               suContract,
 		TempusAddress:       tAddress,
 		Tempus:              tContract,
+		SenseAddress:        seAddress,
+		Sense:               seContract,
 	}, nil
 }
