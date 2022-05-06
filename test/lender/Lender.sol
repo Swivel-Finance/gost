@@ -276,12 +276,12 @@ contract Lender {
   /// @param m the maturity of the market being redeemed
   /// @param a the amount of underlying tokens to lend
   /// @param ma the minimum amount of zero-coupon tokens to return accounting for slippage
-  /// @param p the address of a given APWine pool
+  /// @param po the address of a given APWine pool
   /// @param i the id of the pool
-  function APWineLend(uint8 p, address u, uint256 m, uint256 a, uint256 ma, address po, uint256 i) public returns (uint256) {
+  function lend(uint8 p, address u, uint256 m, uint256 a, uint256 ma, address po, uint256 i) public returns (uint256) {
       // Instantiate market and tokens
       address[8] memory markets = IIlluminate(illuminate).markets(u, m);
-      address apwine = markets[p];
+      //address apwine = markets[p];
       // TODO: Confirm that we have the right underlying and maturity
 
       // Transfer funds from user to Illuminate    
