@@ -26,6 +26,11 @@ contract Lender {
     swivelAddr = s;
   }
 
+  /// @dev mint is uniform across all principals, thus there is no need for a 'minter'
+  // @param p value of a specific principal according to the MarketPlace Principals Enum.
+  // @param u address of an underlying asset
+  // @param m maturity (timestamp) of the market
+  // @param a amount being minted
   function mint(uint8 p, address u, uint256 m, uint256 a) public returns (bool) {
     //use market interface to fetch the market for the given market pair
     address[8] memory market = IMarketPlace(marketPlace).markets(u, m);
