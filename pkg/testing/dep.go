@@ -24,6 +24,8 @@ type Dep struct {
 	Sushi               *mocks.Sushi
 	TempusAddress       common.Address
 	Tempus              *mocks.Tempus
+	SenseAddress        common.Address
+	Sense               *mocks.Sense
 }
 
 func Deploy(e *Env) (*Dep, error) {
@@ -98,6 +100,14 @@ func Deploy(e *Env) (*Dep, error) {
 
 	e.Blockchain.Commit()
 
+	seAddress, _, seContract, seErr := mocks.DeploySense(e.Owner.Opts, e.Blockchain)
+
+	if seErr != nil {
+		return nil, seErr
+	}
+
+	e.Blockchain.Commit()
+
 	return &Dep{
 		Erc20Address:        ercAddress,
 		Erc20:               ercContract,
@@ -117,5 +127,7 @@ func Deploy(e *Env) (*Dep, error) {
 		Sushi:               sContract,
 		TempusAddress:       tAddress,
 		Tempus:              tContract,
+		SenseAddress:        seAddress,
+		Sense:               seContract,
 	}, nil
 }
