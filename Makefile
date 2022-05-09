@@ -2,6 +2,7 @@
 .PHONY: compile_solidity_mock_yield compile_go_mock_yield compile_mock_yield
 .PHONY: compile_solidity_mock_pendle compile_go_mock_pendle compile_mock_pendle
 .PHONY: compile_solidity_mock_sushi compile_go_mock_sushi compile_mock_sushi
+.PHONY: compile_solidity_mock_tempus compile_go_mock_tempus compile_mock_tempus
 .PHONY: compile_solidity_mock_element_token compile_go_mock_element_token compile_mock_element_token
 .PHONY: compile_solidity_mock_illuminate compile_go_mock_illuminate compile_mock_illuminate
 .PHONY: compile_mocks
@@ -117,7 +118,17 @@ compile_go_mock_zc_token:
 
 compile_mock_zc_token: compile_solidity_mock_zc_token compile_go_mock_zc_token
 
-compile_mocks: compile_mock_erc compile_mock_yield compile_mock_pendle compile_mock_sushi compile_mock_element_token compile_mock_element compile_mock_illuminate compile_mock_zc_token compile_mock_swivel
+compile_solidity_mock_tempus:
+	@echo "compiling Mock Tempus solidity source into abi and bin files"
+	solc -o ./test/mocks --abi --bin --overwrite ./test/mocks/Tempus.sol
+
+compile_go_mock_tempus:
+	@echo "compiling abi and bin files to golang"
+	abigen --abi ./test/mocks/Tempus.abi --bin ./test/mocks/Tempus.bin -pkg mocks -type Tempus -out ./test/mocks/tempus.go 
+
+compile_mock_tempus: compile_solidity_mock_tempus compile_go_mock_tempus
+
+compile_mocks: compile_mock_erc compile_mock_yield compile_mock_pendle compile_mock_sushi compile_mock_element_token compile_mock_element compile_mock_illuminate compile_mock_zc_token compile_mock_swivel compile_mock_tempus
 
 # Real Tokens
 # compile_solidity_zct:

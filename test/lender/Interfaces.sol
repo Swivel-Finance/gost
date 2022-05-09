@@ -14,6 +14,12 @@ interface IErc20 {
 	function transferFrom(address, address, uint256) external returns (bool);
 }
 
+interface IErc20Metadata is IErc20 {
+    function name() external view returns (string memory);
+    function symbol() external view returns (string memory);
+    function decimals() external view returns (uint8);
+}
+
 interface IIlluminate {
   function markets(address, uint256) external returns (address[8] calldata);
 }
@@ -45,6 +51,7 @@ interface ISense {
 
 interface IZcToken {
   function mint(address, uint256) external returns (bool);
+  function balanceOf(address) external returns (uint256);
 }
 
 interface IPendle {
@@ -54,4 +61,10 @@ interface IPendle {
 
 interface ISushi {
   function swapExactTokensForTokens(uint256, uint256, address[] calldata, address, uint256) external returns (uint[] memory amounts);
+}
+
+interface ITempus {
+  function maturityTime() external view returns (uint256);
+  function yieldBearingToken() external view returns (IErc20Metadata);
+  function depositAndFix(Any, Any, uint256, bool, uint256, uint256) external returns (uint256);
 }

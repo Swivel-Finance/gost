@@ -16,17 +16,18 @@ contract Lender {
   // TODO the nature of these addresses?
   address public swivelAddr; // addresses of the 3rd party protocol contracts
   address public sushiRouter;
-  bytes public pendleForgeId;
+  address public tempusRouter;
 
   event Lend(uint8 principal, address indexed underlying, uint256 indexed maturity, uint256 returned);
   event Mint(uint8 principal, address indexed underlying, uint256 indexed maturity, uint256 amount);
 
   /// @param i the deployed Illuminate contract
-  constructor(address i, address s, address su) {
+  constructor(address i, address s, address su, address t) {
     admin = msg.sender;
     illuminate = i; // TODO add an authorized setter for this?
     swivelAddr = s;
     sushiRouter = su;
+    tempusRouter = t;
   }
 
   /// @dev mint is uniform across all principals, thus there is no need for a 'minter'
@@ -53,8 +54,8 @@ contract Lender {
   /// @dev lend method signature for both illuminate and yield
   /// @notice Can be called before maturity to lend to Illuminate / Yield ?
   /// @param p value of a specific principal according to the Illuminate Principals Enum
-  /// @param u underlying token being ?
-  /// @param m maturity of the market being ?
+  /// @param u address of an underlying asset
+  /// @param m maturity (timestamp) of the market
   /// @param y yield pool ?
   /// @param a amount of underlying tokens to lend ?
   function lend(uint8 p, address u, uint256 m, address y, uint256 a) public returns (uint256) {
@@ -94,8 +95,8 @@ contract Lender {
   /// @dev lend method signature for swivel
   /// @notice can be called before maturity to lend to Swivel while minting Illuminate tokens
   /// @param p value of a specific principal according to the Illuminate Principals Enum
-  /// @param u underlying token being ?
-  /// @param m maturity of the market being ?
+  /// @param u address of an underlying asset
+  /// @param m maturity (timestamp) of the market
   /// @param y yield pool
   /// @param o array of swivel orders being filled
   /// @param a array of amounts of underlying tokens lent to each order in the orders array
@@ -131,8 +132,8 @@ contract Lender {
   /// @dev lend method signature for element
   /// @notice can be called before maturity to lend to Element / Sense ?
   /// @param p value of a specific principal according to the Illuminate Principals Enum
-  /// @param u underlying token being ?
-  /// @param m maturity of the market being ?
+  /// @param u address of an underlying asset
+  /// @param m maturity (timestamp) of the market
   /// @param e element pool ?
   /// @param i element pool id ?
   /// @param a amount ?
@@ -176,8 +177,8 @@ contract Lender {
   /// @dev lend method signature for pendle
   /// @notice Can be called before maturity to lend to Pendle while minting Illuminate tokens
   /// @param p value of a specific principal according to the MarketPlace Principals Enum
-  /// @param u the underlying token being redeemed
-  /// @param m the maturity of the market being redeemed
+  /// @param u address of an underlying asset
+  /// @param m maturity (timestamp) of the market
   /// @param a the amount of underlying tokens to lend
   /// @param mb the minimum amount of zero-coupon tokens to return accounting for slippage
   /// @param d the maximum timestamp at which the transaction can be executed
@@ -202,7 +203,8 @@ contract Lender {
       uint256 returned = ISushi(sushiRouter).swapExactTokensForTokens(a, mb, path, address(this), d)[0];
 
       // Mint Illuminate zero coupons
-      IZcToken(IIlluminate(illuminate).markets(u, m)[uint256(Illuminate.Principals.Illuminate)]).mint(msg.sender, returned);
+      address[8] memory markets = IIlluminate(illuminate).markets(u, m); 
+      IZcToken(markets[uint256(Illuminate.Principals.Illuminate)]).mint(msg.sender, returned);
 
       emit Lend(p, u, m, returned);
 
@@ -212,26 +214,40 @@ contract Lender {
   /// @dev lend method signature for tempus
   /// @notice Can be called before maturity to lend to Tempus while minting Illuminate tokens
   /// @param p value of a specific principal according to the Illuminate Principals Enum
-  /// @param u underlying token being ?
-  /// @param m maturity of the market being ?
-  /// @param t tempus pool ?
-  /// @param x tempus amm ?
+  /// @param u address of an underlying asset
+  /// @param m maturity (timestamp) of the market
   /// @param a amount ?
   /// @param r minimum amount to return ?
+  /// @param x tempus amm ?
+  /// @param t tempus pool ?
   /// @param d deadline ?
-  // function lend(uint8 p, address u, uint256 m, address t, address x, uint256 a, uint256 r, uint256 d) public returns (uint256) {
-  //   // ...
-  //   uint256 returned = 0;
+  function lend(uint8 p, address u, uint256 m, uint256 a, uint256 r, address x, address t, uint256 d) public returns (uint256) {
+      // Instantiate market and tokens
+      address market = IIlluminate(illuminate).markets(u, m)[p];
+      require(ITempus(market).yieldBearingToken() == IErc20Metadata(u), 'tempus underlying != underlying');
+      require(ITempus(market).maturityTime() == m, 'tempus maturity != maturity');
 
-  //   emit Lend(p, u, m, returned);
-  //   return returned;
-  // }
+      // Transfer funds from user to Illuminate, Scope to avoid stack limit
+      IErc20 underlyingToken = IErc20(u);
+      Safe.transferFrom(underlyingToken, msg.sender, address(this), a);
+
+      // Swap on the Tempus Router using the provided market and params
+      IZcToken illuminateToken = IZcToken(IIlluminate(illuminate).markets(u, m)[uint256(Illuminate.Principals.Illuminate)]);
+      uint256 returned = ITempus(tempusRouter).depositAndFix(Any(x), Any(t), a, true, r, d) - illuminateToken.balanceOf(address(this));
+
+      // Mint Illuminate zero coupons
+      illuminateToken.mint(msg.sender, returned);
+
+      emit Lend(p, u, m, returned);
+
+      return returned;
+  }
 
   /// @dev lend method signature for sense
   /// @notice Can be called before maturity to lend to Sense while minting Illuminate tokens
   /// @param p value of a specific principal according to the Illuminate Principals Enum
-  /// @param u underlying token being ?
-  /// @param m maturity of the market being ?
+  /// @param u address of an underlying asset
+  /// @param m maturity (timestamp) of the market
   /// @param s sense pool ?
   /// @param x sense wut ?
   /// @param a amount ?
@@ -248,7 +264,7 @@ contract Lender {
   /// @notice Can be called before maturity to lend to APWine while minting Illuminate tokens
   /// @param p value of a specific principal according to the Illuminate Principals Enum
   /// @param u underlying token being ?
-  /// @param m maturity of the market being ?
+  /// @param m maturity (timestamp) of the market
   /// @param w apwine pool ?
   /// @param i apwine pair id ?
   /// @param r minimum amount to return ?
