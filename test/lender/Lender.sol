@@ -272,4 +272,31 @@ contract Lender {
 
         return (returned);
   }
+
+    /// @notice Can be called before maturity to lend to APWine while minting Illuminate tokens
+  /// @param u the underlying token being redeemed
+  /// @param m the maturity of the market being redeemed
+  /// @param a the amount of underlying tokens to lend
+  /// @param ma the minimum amount of zero-coupon tokens to return accounting for slippage
+  /// @param po the address of a given APWine pool
+  /// @param i the id of the pool
+  function lend(uint8 p, address u, uint256 m, uint256 a, uint256 ma, address po, uint256 i) public returns (uint256) {
+      // Instantiate market and tokens
+      address[8] memory markets = IIlluminate(illuminate).markets(u, m);
+      require(IAPWine(markets[p]).getPTAddress() == u, "apwine principle != principle");
+
+      // Transfer funds from user to Illuminate    
+      Safe.transferFrom(IErc20(u), msg.sender, address(this), a);   
+
+      // Swap on the APWine Pool using the provided market and params
+      uint256 returned = IAPWineRouter(po).swapExactAmountIn(i, 1, a, 0, ma, address(this));
+
+      // Mint Illuminate zero coupons
+      IZcToken(markets[uint256(Illuminate.Principals.Illuminate)]).mint(msg.sender, returned);
+
+      emit Lend(p, u, m, returned);
+
+      return returned;
+  }
+
 }

@@ -72,3 +72,11 @@ interface ITempus {
   function yieldBearingToken() external view returns (IErc20Metadata);
   function depositAndFix(Any, Any, uint256, bool, uint256, uint256) external returns (uint256);
 }
+
+interface IAPWineRouter {
+  function swapExactAmountIn(uint256, uint256, uint256, uint256, uint256, address) external returns (uint256);
+}
+
+interface IAPWine {
+  function getPTAddress() external view returns (address);
+}

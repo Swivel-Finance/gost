@@ -28,6 +28,10 @@ type Dep struct {
 	Sense               *mocks.Sense
 	SenseAdapterAddress common.Address
 	SenseAdapter        *mocks.SenseAdapter
+	APWineAddress       common.Address
+	APWine              *mocks.APWine
+	APWineRouterAddress common.Address
+	APWineRouter        *mocks.APWineRouter
 }
 
 func Deploy(e *Env) (*Dep, error) {
@@ -118,6 +122,22 @@ func Deploy(e *Env) (*Dep, error) {
 
 	e.Blockchain.Commit()
 
+	apAddress, _, apContract, apErr := mocks.DeployAPWine(e.Owner.Opts, e.Blockchain)
+
+	if apErr != nil {
+		return nil, apErr
+	}
+
+	e.Blockchain.Commit()
+
+	aprAddress, _, aprContract, aprErr := mocks.DeployAPWineRouter(e.Owner.Opts, e.Blockchain)
+
+	if aprErr != nil {
+		return nil, aprErr
+	}
+
+	e.Blockchain.Commit()
+
 	return &Dep{
 		Erc20Address:        ercAddress,
 		Erc20:               ercContract,
@@ -141,5 +161,9 @@ func Deploy(e *Env) (*Dep, error) {
 		Sense:               seContract,
 		SenseAdapterAddress: senseAdapterAddress,
 		SenseAdapter:        senseAdapterContract,
+		APWineAddress:       apAddress,
+		APWine:              apContract,
+		APWineRouterAddress: aprAddress,
+		APWineRouter:        aprContract,
 	}, nil
 }

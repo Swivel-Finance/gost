@@ -27,10 +27,10 @@ var (
 )
 
 // SenseAdapterABI is the input ABI used to generate the binding from.
-const SenseAdapterABI = "[{\"inputs\":[],\"name\":\"underlying\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"a\",\"type\":\"address\"}],\"name\":\"underlyingReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]"
+const SenseAdapterABI = "[{\"inputs\":[],\"name\":\"underlying\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"a\",\"type\":\"address\"}],\"name\":\"underlyingReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]"
 
 // SenseAdapterBin is the compiled bytecode used for deploying new contracts.
-var SenseAdapterBin = "0x608060405234801561001057600080fd5b506101d1806100206000396000f3fe608060405234801561001057600080fd5b50600436106100365760003560e01c80636f307dc31461003b578063e7ba677414610059575b600080fd5b610043610075565b6040516100509190610122565b60405180910390f35b610073600480360381019061006e919061016e565b61009e565b005b60008060009054906101000a900473ffffffffffffffffffffffffffffffffffffffff16905090565b806000806101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555050565b600073ffffffffffffffffffffffffffffffffffffffff82169050919050565b600061010c826100e1565b9050919050565b61011c81610101565b82525050565b60006020820190506101376000830184610113565b92915050565b600080fd5b61014b81610101565b811461015657600080fd5b50565b60008135905061016881610142565b92915050565b6000602082840312156101845761018361013d565b5b600061019284828501610159565b9150509291505056fea2646970667358221220edef5549a4bd3235fec623980e67bd1d8a6eb16f1da7842327ffe8188e41117564736f6c634300080d0033"
+var SenseAdapterBin = "0x608060405234801561001057600080fd5b506101d1806100206000396000f3fe608060405234801561001057600080fd5b50600436106100365760003560e01c80636f307dc31461003b578063e7ba677414610059575b600080fd5b610043610075565b6040516100509190610122565b60405180910390f35b610073600480360381019061006e919061016e565b61009e565b005b60008060009054906101000a900473ffffffffffffffffffffffffffffffffffffffff16905090565b806000806101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555050565b600073ffffffffffffffffffffffffffffffffffffffff82169050919050565b600061010c826100e1565b9050919050565b61011c81610101565b82525050565b60006020820190506101376000830184610113565b92915050565b600080fd5b61014b81610101565b811461015657600080fd5b50565b60008135905061016881610142565b92915050565b6000602082840312156101845761018361013d565b5b600061019284828501610159565b9150509291505056fea2646970667358221220519b635174382a2da803a68ddc8dcb7a802348dbf105a0f4f318d06d892e3ca964736f6c634300080d0033"
 
 // DeploySenseAdapter deploys a new Ethereum contract, binding an instance of SenseAdapter to it.
 func DeploySenseAdapter(auth *bind.TransactOpts, backend bind.ContractBackend) (common.Address, *types.Transaction, *SenseAdapter, error) {
@@ -188,25 +188,35 @@ func (_SenseAdapter *SenseAdapterTransactorRaw) Transact(opts *bind.TransactOpts
 	return _SenseAdapter.Contract.contract.Transact(opts, method, params...)
 }
 
-// Underlying is a paid mutator transaction binding the contract method 0x6f307dc3.
+// Underlying is a free data retrieval call binding the contract method 0x6f307dc3.
 //
-// Solidity: function underlying() returns(address)
-func (_SenseAdapter *SenseAdapterTransactor) Underlying(opts *bind.TransactOpts) (*types.Transaction, error) {
-	return _SenseAdapter.contract.Transact(opts, "underlying")
+// Solidity: function underlying() view returns(address)
+func (_SenseAdapter *SenseAdapterCaller) Underlying(opts *bind.CallOpts) (common.Address, error) {
+	var out []interface{}
+	err := _SenseAdapter.contract.Call(opts, &out, "underlying")
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
 }
 
-// Underlying is a paid mutator transaction binding the contract method 0x6f307dc3.
+// Underlying is a free data retrieval call binding the contract method 0x6f307dc3.
 //
-// Solidity: function underlying() returns(address)
-func (_SenseAdapter *SenseAdapterSession) Underlying() (*types.Transaction, error) {
-	return _SenseAdapter.Contract.Underlying(&_SenseAdapter.TransactOpts)
+// Solidity: function underlying() view returns(address)
+func (_SenseAdapter *SenseAdapterSession) Underlying() (common.Address, error) {
+	return _SenseAdapter.Contract.Underlying(&_SenseAdapter.CallOpts)
 }
 
-// Underlying is a paid mutator transaction binding the contract method 0x6f307dc3.
+// Underlying is a free data retrieval call binding the contract method 0x6f307dc3.
 //
-// Solidity: function underlying() returns(address)
-func (_SenseAdapter *SenseAdapterTransactorSession) Underlying() (*types.Transaction, error) {
-	return _SenseAdapter.Contract.Underlying(&_SenseAdapter.TransactOpts)
+// Solidity: function underlying() view returns(address)
+func (_SenseAdapter *SenseAdapterCallerSession) Underlying() (common.Address, error) {
+	return _SenseAdapter.Contract.Underlying(&_SenseAdapter.CallOpts)
 }
 
 // UnderlyingReturns is a paid mutator transaction binding the contract method 0xe7ba6774.
