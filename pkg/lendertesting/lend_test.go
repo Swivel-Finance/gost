@@ -26,6 +26,8 @@ type lendTestSuite struct {
 	Pendle       *mocks.PendleSession
 	Sushi        *mocks.SushiSession
 	Tempus       *mocks.TempusSession
+	Sense        *mocks.SenseSession
+	SenseAdapter *mocks.SenseAdapterSession
 	Lender       *lender.LenderSession
 }
 
@@ -130,6 +132,24 @@ func (s *lendTestSuite) SetupSuite() {
 		},
 	}
 
+	s.Sense = &mocks.SenseSession{
+		Contract: s.Dep.Sense,
+		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
+		TransactOpts: bind.TransactOpts{
+			From:   s.Env.Owner.Opts.From,
+			Signer: s.Env.Owner.Opts.Signer,
+		},
+	}
+
+	s.SenseAdapter = &mocks.SenseAdapterSession{
+		Contract: s.Dep.SenseAdapter,
+		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
+		TransactOpts: bind.TransactOpts{
+			From:   s.Env.Owner.Opts.From,
+			Signer: s.Env.Owner.Opts.Signer,
+		},
+	}
+
 	s.Lender = &lender.LenderSession{
 		Contract: s.Dep.Lender,
 		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
@@ -181,7 +201,7 @@ func (s *lendTestSuite) TestLendIlluminate() {
 	s.Yield.SellBaseReturns(sellBasePreview)
 	s.Env.Blockchain.Commit()
 
-	tx, err := s.Lender.Lend2(0, s.Dep.Erc20Address, maturity, s.Dep.YieldAddress, amountLent)
+	tx, err := s.Lender.Lend3(0, s.Dep.Erc20Address, maturity, s.Dep.YieldAddress, amountLent)
 	assert.Nil(err)
 	assert.NotNil(tx)
 
@@ -251,7 +271,7 @@ func (s *lendTestSuite) TestLendYield() {
 	s.ZcToken.MintReturns(true)
 	s.Env.Blockchain.Commit()
 
-	tx, err := s.Lender.Lend2(2, s.Dep.Erc20Address, maturity, s.Dep.YieldAddress, amountLent)
+	tx, err := s.Lender.Lend3(2, s.Dep.Erc20Address, maturity, s.Dep.YieldAddress, amountLent)
 	assert.Nil(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
@@ -348,7 +368,7 @@ func (s *lendTestSuite) TestLendElement() {
 	tx, err = s.Erc20.TransferFromReturns(true)
 	s.Env.Blockchain.Commit()
 
-	tx, err = s.Lender.Lend1(3, s.Dep.Erc20Address, maturity, s.Dep.ElementAddress, elementPoolId, amount, returnAmount, deadline)
+	tx, err = s.Lender.Lend2(3, s.Dep.Erc20Address, maturity, s.Dep.ElementAddress, elementPoolId, amount, returnAmount, deadline)
 	assert.Nil(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
@@ -474,7 +494,7 @@ func (s *lendTestSuite) TestLendTempus() {
 	pool := common.HexToAddress("0x1234")
 	deadline := big.NewInt(9999)
 
-	tx, err := s.Lender.Lend3(5, s.Dep.Erc20Address, maturity, amount, minimumReturn, amm, pool, deadline)
+	tx, err := s.Lender.Lend4(5, s.Dep.Erc20Address, maturity, amount, minimumReturn, amm, pool, deadline)
 	assert.NoError(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
@@ -503,6 +523,60 @@ func (s *lendTestSuite) TestLendTempus() {
 	deadlineCalled, err := s.Tempus.DeadlineCalled()
 	assert.NoError(err)
 	assert.Equal(deadline, deadlineCalled)
+}
+
+func (s *lendTestSuite) TestLendSense() {
+	assert := assert.New(s.T())
+	s.Illuminate.MarketsReturns([8]common.Address{
+		s.Dep.ZcTokenAddress,
+		s.Dep.SenseAddress,
+		s.Dep.SenseAddress,
+		s.Dep.SenseAddress,
+		s.Dep.SenseAddress,
+		s.Dep.SenseAddress,
+		s.Dep.SenseAddress,
+		s.Dep.SenseAddress,
+	})
+	s.Env.Blockchain.Commit()
+
+	s.SenseAdapter.UnderlyingReturns(s.Dep.Erc20Address)
+	s.Env.Blockchain.Commit()
+
+	s.Erc20.TransferFromReturns(true)
+	s.Env.Blockchain.Commit()
+
+	s.Sense.SwapUnderlyingForPTsReturns(big.NewInt(12345))
+	s.Env.Blockchain.Commit()
+
+	s.ZcToken.MintReturns(true)
+	s.Env.Blockchain.Commit()
+
+	maturity := big.NewInt(12094201240)
+	adapter := common.HexToAddress("0x1234")
+	amount := big.NewInt(1032)
+	minimumBought := big.NewInt(34)
+
+	tx, err := s.Lender.Lend1(6, s.Dep.Erc20Address, maturity, s.Dep.SenseAddress, adapter, amount, minimumBought)
+	assert.NoError(err)
+	assert.NotNil(tx)
+	s.Env.Blockchain.Commit()
+
+	// verify that mocks were called as expected
+	adapterCalled, err := s.Sense.SenseAdapterCalled()
+	assert.NoError(err)
+	assert.Equal(adapter, adapterCalled)
+
+	maturityCalled, err := s.Sense.MaturityCalled()
+	assert.NoError(err)
+	assert.Equal(maturity, maturityCalled)
+
+	amountCalled, err := s.Sense.AmountCalled()
+	assert.NoError(err)
+	assert.Equal(amount, amountCalled)
+
+	minimumBoughtCalled, err := s.Sense.MinimumBoughtCalled()
+	assert.NoError(err)
+	assert.Equal(minimumBought, minimumBoughtCalled)
 }
 
 func TestLendSuite(t *test.T) {

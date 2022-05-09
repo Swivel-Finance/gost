@@ -46,7 +46,11 @@ interface IElementToken {
 }
 
 interface ISense {
-  function swapUnderlyingForPTs() external returns (uint256);
+  function swapUnderlyingForPTs(address, uint256, uint256, uint256) external returns (uint256);
+}
+
+interface ISenseAdapter {
+  function underlying() external returns (address);
 }
 
 interface IZcToken {
