@@ -223,7 +223,6 @@ contract Lender {
   /// @param d deadline ?
   function lend(uint8 p, address u, uint256 m, uint256 a, uint256 r, address x, address t, uint256 d) public returns (uint256) {
       // Instantiate market and tokens
-      // TODO: Confirm that we have the right underlying and maturity
       address market = IIlluminate(illuminate).markets(u, m)[p];
       require(ITempus(market).yieldBearingToken() == IErc20Metadata(u), 'tempus underlying != underlying');
       require(ITempus(market).maturityTime() == m, 'tempus maturity != maturity');
