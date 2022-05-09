@@ -45,13 +45,11 @@ interface ISense {
 
 interface IZcToken {
   function mint(address, uint256) external returns (bool);
-  function balanceOf(address) external returns (uint256);
 }
 
-// TODO: Get the actual methods for retrieving pendle's maturity and underlying
 interface IPendle {
-  function underlying() external returns (address);
-  function maturity() external returns (uint256);
+    function yieldToken() external returns (address);
+    function expiry() external returns (uint256);
 }
 
 interface ISushi {

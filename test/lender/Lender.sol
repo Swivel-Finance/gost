@@ -188,8 +188,8 @@ contract Lender {
       IPendle pendle = IPendle(market);
 
       // confirm that we are in the correct market
-      require(pendle.underlying() == u, 'pendle underlying != underlying');
-      require(pendle.maturity() == m, 'pendle maturity != maturity');
+      require(pendle.yieldToken() == u, 'pendle underlying != underlying');
+      require(pendle.expiry() == m, 'pendle maturity != maturity');
 
       // Transfer funds from user to Illuminate
       Safe.transferFrom(IErc20(u), msg.sender, address(this), a);
