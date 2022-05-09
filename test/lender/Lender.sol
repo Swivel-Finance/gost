@@ -54,8 +54,8 @@ contract Lender {
   /// @dev lend method signature for both illuminate and yield
   /// @notice Can be called before maturity to lend to Illuminate / Yield ?
   /// @param p value of a specific principal according to the Illuminate Principals Enum
-  /// @param u underlying token being ?
-  /// @param m maturity of the market being ?
+  /// @param u address of an underlying asset
+  /// @param m maturity (timestamp) of the market
   /// @param y yield pool ?
   /// @param a amount of underlying tokens to lend ?
   function lend(uint8 p, address u, uint256 m, address y, uint256 a) public returns (uint256) {
@@ -95,8 +95,8 @@ contract Lender {
   /// @dev lend method signature for swivel
   /// @notice can be called before maturity to lend to Swivel while minting Illuminate tokens
   /// @param p value of a specific principal according to the Illuminate Principals Enum
-  /// @param u underlying token being ?
-  /// @param m maturity of the market being ?
+  /// @param u address of an underlying asset
+  /// @param m maturity (timestamp) of the market
   /// @param y yield pool
   /// @param o array of swivel orders being filled
   /// @param a array of amounts of underlying tokens lent to each order in the orders array
@@ -132,8 +132,8 @@ contract Lender {
   /// @dev lend method signature for element
   /// @notice can be called before maturity to lend to Element / Sense ?
   /// @param p value of a specific principal according to the Illuminate Principals Enum
-  /// @param u underlying token being ?
-  /// @param m maturity of the market being ?
+  /// @param u address of an underlying asset
+  /// @param m maturity (timestamp) of the market
   /// @param e element pool ?
   /// @param i element pool id ?
   /// @param a amount ?
@@ -177,8 +177,8 @@ contract Lender {
   /// @dev lend method signature for pendle
   /// @notice Can be called before maturity to lend to Pendle while minting Illuminate tokens
   /// @param p value of a specific principal according to the MarketPlace Principals Enum
-  /// @param u the underlying token being redeemed
-  /// @param m the maturity of the market being redeemed
+  /// @param u address of an underlying asset
+  /// @param m maturity (timestamp) of the market
   /// @param a the amount of underlying tokens to lend
   /// @param mb the minimum amount of zero-coupon tokens to return accounting for slippage
   /// @param d the maximum timestamp at which the transaction can be executed
@@ -188,8 +188,8 @@ contract Lender {
       IPendle pendle = IPendle(market);
 
       // confirm that we are in the correct market
-      require(pendle.underlying() == u, 'pendle underlying != underlying');
-      require(pendle.maturity() == m, 'pendle maturity != maturity');
+      require(pendle.yieldToken() == u, 'pendle underlying != underlying');
+      require(pendle.expiry() == m, 'pendle maturity != maturity');
 
       // Transfer funds from user to Illuminate
       Safe.transferFrom(IErc20(u), msg.sender, address(this), a);
@@ -214,8 +214,8 @@ contract Lender {
   /// @dev lend method signature for tempus
   /// @notice Can be called before maturity to lend to Tempus while minting Illuminate tokens
   /// @param p value of a specific principal according to the Illuminate Principals Enum
-  /// @param u underlying token being ?
-  /// @param m maturity of the market being ?
+  /// @param u address of an underlying asset
+  /// @param m maturity (timestamp) of the market
   /// @param a amount ?
   /// @param r minimum amount to return ?
   /// @param x tempus amm ?
@@ -223,8 +223,9 @@ contract Lender {
   /// @param d deadline ?
   function lend(uint8 p, address u, uint256 m, uint256 a, uint256 r, address x, address t, uint256 d) public returns (uint256) {
       // Instantiate market and tokens
-      // TODO: Confirm that we have the right underlying and maturity
-      // address market = IMarketPlace(marketPlace).markets(u, m)[p];
+      address market = IIlluminate(illuminate).markets(u, m)[p];
+      require(ITempus(market).yieldBearingToken() == IErc20Metadata(u), 'tempus underlying != underlying');
+      require(ITempus(market).maturityTime() == m, 'tempus maturity != maturity');
 
       // Transfer funds from user to Illuminate, Scope to avoid stack limit
       IErc20 underlyingToken = IErc20(u);
@@ -245,13 +246,13 @@ contract Lender {
   /// @dev lend method signature for sense
   /// @notice Can be called before maturity to lend to Sense while minting Illuminate tokens
   /// @param p value of a specific principal according to the Illuminate Principals Enum
-  /// @param u underlying token being ?
-  /// @param m maturity of the market being ?
-  /// @param sp sense pool ?
-  /// @param sa sense wut ?
+  /// @param u address of an underlying asset
+  /// @param m maturity (timestamp) of the market
+  /// @param x sense wut ?
+  /// @param sa sense adapter?
   /// @param a amount ?
   /// @param mb amount ?
-  function lend(uint8 p, address u, uint256 m, address sp, address sa, uint128 a, uint256 mb) public returns (uint256){
+  function lend(uint8 p, address u, uint256 m, address x, address sa, uint128 a, uint256 mb) public returns (uint256){
         // Instantiate market and tokens
         address[8] memory markets = IIlluminate(illuminate).markets(u, m);
         address senseMarket = markets[p];
@@ -261,7 +262,7 @@ contract Lender {
 
         // Transfer funds from user to Illuminate
         Safe.transferFrom(underlyingToken, msg.sender, address(this), a);
-        uint256 returned = ISense(sp).swapUnderlyingForPTs(sa, m, a, mb);
+        uint256 returned = ISense(x).swapUnderlyingForPTs(sa, m, a, mb);
 
         IZcToken illuminateToken = IZcToken(markets[uint256(Illuminate.Principals.Illuminate)]);
         illuminateToken.mint(msg.sender, returned);
