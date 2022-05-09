@@ -14,6 +14,12 @@ interface IErc20 {
 	function transferFrom(address, address, uint256) external returns (bool);
 }
 
+interface IErc20Metadata is IErc20 {
+    function name() external view returns (string memory);
+    function symbol() external view returns (string memory);
+    function decimals() external view returns (uint8);
+}
+
 interface IIlluminate {
   function markets(address, uint256) external returns (address[8] calldata);
 }
@@ -43,15 +49,18 @@ interface ISense {
   function swapUnderlyingForPTs(address, uint256, uint256, uint256) external returns (uint256);
 }
 
+interface ISenseAdapter {
+  function underlying() external returns (address);
+}
+
 interface IZcToken {
   function mint(address, uint256) external returns (bool);
   function balanceOf(address) external returns (uint256);
 }
 
-// TODO: Get the actual methods for retrieving pendle's maturity and underlying
 interface IPendle {
-  function underlying() external returns (address);
-  function maturity() external returns (uint256);
+    function yieldToken() external returns (address);
+    function expiry() external returns (uint256);
 }
 
 interface ISushi {
@@ -59,9 +68,14 @@ interface ISushi {
 }
 
 interface ITempus {
+  function maturityTime() external view returns (uint256);
+  function yieldBearingToken() external view returns (IErc20Metadata);
   function depositAndFix(Any, Any, uint256, bool, uint256, uint256) external returns (uint256);
 }
 
 interface IAPWine {
   function swapExactAmountIn(uint256, uint256, uint256, uint256, uint256, address) external returns (uint256);
+  function maturityTime() external view returns (uint256);
+  function yieldBearingToken() external view returns (IErc20Metadata);
+  function depositAndFix(Any, Any, uint256, bool, uint256, uint256) external returns (uint256);
 }

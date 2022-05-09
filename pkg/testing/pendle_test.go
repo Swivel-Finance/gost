@@ -39,30 +39,32 @@ func (s *pendleTestSuite) SetupSuite() {
 	}
 }
 
-func (s *pendleTestSuite) TestUnderlying() {
+func (s *pendleTestSuite) TestExpiry() {
 	assert := assert.New(s.T())
-	underlying := common.BigToAddress(big.NewInt(10))
-	tx, err := s.Pendle.UnderlyingReturns(underlying)
+
+	expiry := big.NewInt(10)
+	tx, err := s.Pendle.ExpiryReturns(expiry)
 	assert.NotNil(tx)
 	assert.Nil(err)
 	s.Env.Blockchain.Commit()
 
-	pendleUnderlying, err := s.Pendle.Underlying()
+	pendleMaturity, err := s.Pendle.Expiry()
 	assert.Nil(err)
-	assert.Equal(underlying, pendleUnderlying)
+	assert.Equal(expiry, pendleMaturity)
 }
 
-func (s *pendleTestSuite) TestMaturity() {
+func (s *pendleTestSuite) TestYieldToken() {
 	assert := assert.New(s.T())
-	maturity := big.NewInt(20)
-	tx, err := s.Pendle.MaturityReturns(maturity)
+
+	yieldToken := common.HexToAddress("0x0000000000000000000000000000000000000001")
+	tx, err := s.Pendle.YieldTokenReturns(yieldToken)
 	assert.NotNil(tx)
 	assert.Nil(err)
 	s.Env.Blockchain.Commit()
 
-	pendleMaturity, err := s.Pendle.Maturity()
+	pendleUnderlying, err := s.Pendle.YieldToken()
 	assert.Nil(err)
-	assert.Equal(maturity, pendleMaturity)
+	assert.Equal(yieldToken, pendleUnderlying)
 }
 
 func TestPendleSuite(t *test.T) {

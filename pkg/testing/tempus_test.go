@@ -39,6 +39,32 @@ func (s *tempusTestSuite) SetupTest() {
 	}
 }
 
+func (s *tempusTestSuite) TestMaturityTime() {
+	assert := assert.New(s.T())
+
+	maturity := big.NewInt(14204)
+	s.Tempus.MaturityTimeReturns(maturity)
+
+	s.Env.Blockchain.Commit()
+
+	maturityTime, err := s.Tempus.MaturityTime()
+	assert.NoError(err)
+	assert.Equal(maturity, maturityTime)
+}
+
+func (s *tempusTestSuite) TestYieldBearingToken() {
+	assert := assert.New(s.T())
+
+	token := common.BigToAddress(big.NewInt(1))
+	s.Tempus.YieldBearingTokenReturns(token)
+
+	s.Env.Blockchain.Commit()
+
+	returnedToken, err := s.Tempus.YieldBearingToken()
+	assert.NoError(err)
+	assert.Equal(token, returnedToken)
+}
+
 func (s *tempusTestSuite) TestDepositAndFix() {
 	assert := assert.New(s.T())
 	s.Tempus.DepositAndFixReturns(big.NewInt(1000))
