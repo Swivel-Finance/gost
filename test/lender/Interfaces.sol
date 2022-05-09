@@ -47,9 +47,13 @@ interface IZcToken {
   function mint(address, uint256) external returns (bool);
 }
 
-// TODO: Get the actual methods for retrieving pendle's maturity and underlying
+interface IPendleYieldToken {
+    function underlyingAsset() external view returns (address);
+}
+
 interface IPendle {
-  function yieldTokenHolders() external returns (address, uint256);
+    function yieldToken() external returns (address);
+    function expiry() external returns (uint256);
 }
 
 interface ISushi {

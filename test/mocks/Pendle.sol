@@ -3,18 +3,22 @@
 pragma solidity 0.8.13;
 
 contract Pendle {
-    address private underlyingReturn;
-    uint256 private maturityReturn;
+    address private yieldTokenReturn;
+    uint256 private expiryReturn;
 
-    function underlyingReturns(address a) external {
-        underlyingReturn = a;
+    function yieldTokenReturns(address a) external {
+        yieldTokenReturn = a;
     }
 
-    function maturityReturns(uint256 m) external {
-        maturityReturn = m;
+    function expiryReturns(uint256 m) external {
+        expiryReturn = m;
     }
 
-    function yieldTokenHolders() external view returns (address, uint256) {
-        return (underlyingReturn, maturityReturn);
+    function yieldToken() external view returns (address) {
+        return yieldTokenReturn;
+    }
+
+    function expiry() external view returns (uint256) {
+        return expiryReturn;
     }
 }

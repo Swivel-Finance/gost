@@ -27,10 +27,10 @@ var (
 )
 
 // PendleABI is the input ABI used to generate the binding from.
-const PendleABI = "[{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"m\",\"type\":\"uint256\"}],\"name\":\"maturityReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"a\",\"type\":\"address\"}],\"name\":\"underlyingReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"yieldTokenHolders\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"}]"
+const PendleABI = "[{\"inputs\":[],\"name\":\"expiry\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"m\",\"type\":\"uint256\"}],\"name\":\"expiryReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"yieldToken\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"a\",\"type\":\"address\"}],\"name\":\"yieldTokenReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]"
 
 // PendleBin is the compiled bytecode used for deploying new contracts.
-var PendleBin = "0x608060405234801561001057600080fd5b50610289806100206000396000f3fe608060405234801561001057600080fd5b50600436106100415760003560e01c8063af7705be14610046578063b4c4a4c814610065578063e7ba677414610081575b600080fd5b61004e61009d565b60405161005c929190610173565b60405180910390f35b61007f600480360381019061007a91906101cd565b6100cc565b005b61009b60048036038101906100969190610226565b6100d6565b005b60008060008054906101000a900473ffffffffffffffffffffffffffffffffffffffff16600154915091509091565b8060018190555050565b806000806101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555050565b600073ffffffffffffffffffffffffffffffffffffffff82169050919050565b600061014482610119565b9050919050565b61015481610139565b82525050565b6000819050919050565b61016d8161015a565b82525050565b6000604082019050610188600083018561014b565b6101956020830184610164565b9392505050565b600080fd5b6101aa8161015a565b81146101b557600080fd5b50565b6000813590506101c7816101a1565b92915050565b6000602082840312156101e3576101e261019c565b5b60006101f1848285016101b8565b91505092915050565b61020381610139565b811461020e57600080fd5b50565b600081359050610220816101fa565b92915050565b60006020828403121561023c5761023b61019c565b5b600061024a84828501610211565b9150509291505056fea26469706673582212202762a042f018cbec6ee145450d8ba06f62e77afc8fcbdc82426eec483384654d64736f6c634300080d0033"
+var PendleBin = "0x608060405234801561001057600080fd5b506102c2806100206000396000f3fe608060405234801561001057600080fd5b506004361061004c5760003560e01c806345c0684b1461005157806376d5de851461006d578063e184c9be1461008b578063ffd71860146100a9575b600080fd5b61006b600480360381019061006691906101a8565b6100c5565b005b610075610108565b60405161008291906101e4565b60405180910390f35b610093610131565b6040516100a09190610218565b60405180910390f35b6100c360048036038101906100be919061025f565b61013b565b005b806000806101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555050565b60008060009054906101000a900473ffffffffffffffffffffffffffffffffffffffff16905090565b6000600154905090565b8060018190555050565b600080fd5b600073ffffffffffffffffffffffffffffffffffffffff82169050919050565b60006101758261014a565b9050919050565b6101858161016a565b811461019057600080fd5b50565b6000813590506101a28161017c565b92915050565b6000602082840312156101be576101bd610145565b5b60006101cc84828501610193565b91505092915050565b6101de8161016a565b82525050565b60006020820190506101f960008301846101d5565b92915050565b6000819050919050565b610212816101ff565b82525050565b600060208201905061022d6000830184610209565b92915050565b61023c816101ff565b811461024757600080fd5b50565b60008135905061025981610233565b92915050565b60006020828403121561027557610274610145565b5b60006102838482850161024a565b9150509291505056fea2646970667358221220cbffdf7effe8bf3c74a006d39e818dfe937a72a71e5253a149ac280420fd7b3064736f6c634300080d0033"
 
 // DeployPendle deploys a new Ethereum contract, binding an instance of Pendle to it.
 func DeployPendle(auth *bind.TransactOpts, backend bind.ContractBackend) (common.Address, *types.Transaction, *Pendle, error) {
@@ -188,76 +188,106 @@ func (_Pendle *PendleTransactorRaw) Transact(opts *bind.TransactOpts, method str
 	return _Pendle.Contract.contract.Transact(opts, method, params...)
 }
 
-// YieldTokenHolders is a free data retrieval call binding the contract method 0xaf7705be.
+// Expiry is a free data retrieval call binding the contract method 0xe184c9be.
 //
-// Solidity: function yieldTokenHolders() view returns(address, uint256)
-func (_Pendle *PendleCaller) YieldTokenHolders(opts *bind.CallOpts) (common.Address, *big.Int, error) {
+// Solidity: function expiry() view returns(uint256)
+func (_Pendle *PendleCaller) Expiry(opts *bind.CallOpts) (*big.Int, error) {
 	var out []interface{}
-	err := _Pendle.contract.Call(opts, &out, "yieldTokenHolders")
+	err := _Pendle.contract.Call(opts, &out, "expiry")
 
 	if err != nil {
-		return *new(common.Address), *new(*big.Int), err
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
+}
+
+// Expiry is a free data retrieval call binding the contract method 0xe184c9be.
+//
+// Solidity: function expiry() view returns(uint256)
+func (_Pendle *PendleSession) Expiry() (*big.Int, error) {
+	return _Pendle.Contract.Expiry(&_Pendle.CallOpts)
+}
+
+// Expiry is a free data retrieval call binding the contract method 0xe184c9be.
+//
+// Solidity: function expiry() view returns(uint256)
+func (_Pendle *PendleCallerSession) Expiry() (*big.Int, error) {
+	return _Pendle.Contract.Expiry(&_Pendle.CallOpts)
+}
+
+// YieldToken is a free data retrieval call binding the contract method 0x76d5de85.
+//
+// Solidity: function yieldToken() view returns(address)
+func (_Pendle *PendleCaller) YieldToken(opts *bind.CallOpts) (common.Address, error) {
+	var out []interface{}
+	err := _Pendle.contract.Call(opts, &out, "yieldToken")
+
+	if err != nil {
+		return *new(common.Address), err
 	}
 
 	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
-	out1 := *abi.ConvertType(out[1], new(*big.Int)).(**big.Int)
 
-	return out0, out1, err
+	return out0, err
 
 }
 
-// YieldTokenHolders is a free data retrieval call binding the contract method 0xaf7705be.
+// YieldToken is a free data retrieval call binding the contract method 0x76d5de85.
 //
-// Solidity: function yieldTokenHolders() view returns(address, uint256)
-func (_Pendle *PendleSession) YieldTokenHolders() (common.Address, *big.Int, error) {
-	return _Pendle.Contract.YieldTokenHolders(&_Pendle.CallOpts)
+// Solidity: function yieldToken() view returns(address)
+func (_Pendle *PendleSession) YieldToken() (common.Address, error) {
+	return _Pendle.Contract.YieldToken(&_Pendle.CallOpts)
 }
 
-// YieldTokenHolders is a free data retrieval call binding the contract method 0xaf7705be.
+// YieldToken is a free data retrieval call binding the contract method 0x76d5de85.
 //
-// Solidity: function yieldTokenHolders() view returns(address, uint256)
-func (_Pendle *PendleCallerSession) YieldTokenHolders() (common.Address, *big.Int, error) {
-	return _Pendle.Contract.YieldTokenHolders(&_Pendle.CallOpts)
+// Solidity: function yieldToken() view returns(address)
+func (_Pendle *PendleCallerSession) YieldToken() (common.Address, error) {
+	return _Pendle.Contract.YieldToken(&_Pendle.CallOpts)
 }
 
-// MaturityReturns is a paid mutator transaction binding the contract method 0xb4c4a4c8.
+// ExpiryReturns is a paid mutator transaction binding the contract method 0xffd71860.
 //
-// Solidity: function maturityReturns(uint256 m) returns()
-func (_Pendle *PendleTransactor) MaturityReturns(opts *bind.TransactOpts, m *big.Int) (*types.Transaction, error) {
-	return _Pendle.contract.Transact(opts, "maturityReturns", m)
+// Solidity: function expiryReturns(uint256 m) returns()
+func (_Pendle *PendleTransactor) ExpiryReturns(opts *bind.TransactOpts, m *big.Int) (*types.Transaction, error) {
+	return _Pendle.contract.Transact(opts, "expiryReturns", m)
 }
 
-// MaturityReturns is a paid mutator transaction binding the contract method 0xb4c4a4c8.
+// ExpiryReturns is a paid mutator transaction binding the contract method 0xffd71860.
 //
-// Solidity: function maturityReturns(uint256 m) returns()
-func (_Pendle *PendleSession) MaturityReturns(m *big.Int) (*types.Transaction, error) {
-	return _Pendle.Contract.MaturityReturns(&_Pendle.TransactOpts, m)
+// Solidity: function expiryReturns(uint256 m) returns()
+func (_Pendle *PendleSession) ExpiryReturns(m *big.Int) (*types.Transaction, error) {
+	return _Pendle.Contract.ExpiryReturns(&_Pendle.TransactOpts, m)
 }
 
-// MaturityReturns is a paid mutator transaction binding the contract method 0xb4c4a4c8.
+// ExpiryReturns is a paid mutator transaction binding the contract method 0xffd71860.
 //
-// Solidity: function maturityReturns(uint256 m) returns()
-func (_Pendle *PendleTransactorSession) MaturityReturns(m *big.Int) (*types.Transaction, error) {
-	return _Pendle.Contract.MaturityReturns(&_Pendle.TransactOpts, m)
+// Solidity: function expiryReturns(uint256 m) returns()
+func (_Pendle *PendleTransactorSession) ExpiryReturns(m *big.Int) (*types.Transaction, error) {
+	return _Pendle.Contract.ExpiryReturns(&_Pendle.TransactOpts, m)
 }
 
-// UnderlyingReturns is a paid mutator transaction binding the contract method 0xe7ba6774.
+// YieldTokenReturns is a paid mutator transaction binding the contract method 0x45c0684b.
 //
-// Solidity: function underlyingReturns(address a) returns()
-func (_Pendle *PendleTransactor) UnderlyingReturns(opts *bind.TransactOpts, a common.Address) (*types.Transaction, error) {
-	return _Pendle.contract.Transact(opts, "underlyingReturns", a)
+// Solidity: function yieldTokenReturns(address a) returns()
+func (_Pendle *PendleTransactor) YieldTokenReturns(opts *bind.TransactOpts, a common.Address) (*types.Transaction, error) {
+	return _Pendle.contract.Transact(opts, "yieldTokenReturns", a)
 }
 
-// UnderlyingReturns is a paid mutator transaction binding the contract method 0xe7ba6774.
+// YieldTokenReturns is a paid mutator transaction binding the contract method 0x45c0684b.
 //
-// Solidity: function underlyingReturns(address a) returns()
-func (_Pendle *PendleSession) UnderlyingReturns(a common.Address) (*types.Transaction, error) {
-	return _Pendle.Contract.UnderlyingReturns(&_Pendle.TransactOpts, a)
+// Solidity: function yieldTokenReturns(address a) returns()
+func (_Pendle *PendleSession) YieldTokenReturns(a common.Address) (*types.Transaction, error) {
+	return _Pendle.Contract.YieldTokenReturns(&_Pendle.TransactOpts, a)
 }
 
-// UnderlyingReturns is a paid mutator transaction binding the contract method 0xe7ba6774.
+// YieldTokenReturns is a paid mutator transaction binding the contract method 0x45c0684b.
 //
-// Solidity: function underlyingReturns(address a) returns()
-func (_Pendle *PendleTransactorSession) UnderlyingReturns(a common.Address) (*types.Transaction, error) {
-	return _Pendle.Contract.UnderlyingReturns(&_Pendle.TransactOpts, a)
+// Solidity: function yieldTokenReturns(address a) returns()
+func (_Pendle *PendleTransactorSession) YieldTokenReturns(a common.Address) (*types.Transaction, error) {
+	return _Pendle.Contract.YieldTokenReturns(&_Pendle.TransactOpts, a)
 }

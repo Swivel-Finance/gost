@@ -368,10 +368,10 @@ func (s *lendTestSuite) TestLendPendle() {
 	s.Sushi.SwapExactTokensForTokensReturns([]*big.Int{big.NewInt(1), big.NewInt(2)})
 	s.Env.Blockchain.Commit()
 
-	s.Pendle.MaturityReturns(maturity)
+	s.Pendle.ExpiryReturns(maturity)
 	s.Env.Blockchain.Commit()
 
-	s.Pendle.UnderlyingReturns(s.Dep.Erc20Address)
+	s.Pendle.YieldTokenReturns(s.Dep.Erc20Address)
 	s.Env.Blockchain.Commit()
 
 	s.ZcToken.MintReturns(true)

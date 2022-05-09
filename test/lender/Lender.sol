@@ -16,6 +16,7 @@ contract Lender {
   // TODO the nature of these addresses?
   address public swivelAddr; // addresses of the 3rd party protocol contracts
   address public sushiRouter;
+  bytes public pendleForgeId;
 
   event Lend(uint8 principal, address indexed underlying, uint256 indexed maturity, uint256 returned);
   event Mint(uint8 principal, address indexed underlying, uint256 indexed maturity, uint256 amount);
@@ -186,9 +187,8 @@ contract Lender {
       IPendle pendle = IPendle(market);
 
       // confirm that we are in the correct market
-      (address underlying, uint256 maturity) = pendle.yieldTokenHolders();
-      require(underlying == u, 'pendle underlying != underlying');
-      require(maturity == m, 'pendle maturity != maturity');
+      require(pendle.yieldToken() == u, 'pendle underlying != underlying');
+      require(pendle.expiry() == m, 'pendle maturity != maturity');
 
       // Transfer funds from user to Illuminate
       Safe.transferFrom(IErc20(u), msg.sender, address(this), a);
