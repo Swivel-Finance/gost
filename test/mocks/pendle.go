@@ -27,10 +27,10 @@ var (
 )
 
 // PendleABI is the input ABI used to generate the binding from.
-const PendleABI = "[{\"inputs\":[],\"name\":\"maturity\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"m\",\"type\":\"uint256\"}],\"name\":\"maturityReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"underlying\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"a\",\"type\":\"address\"}],\"name\":\"underlyingReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]"
+const PendleABI = "[{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"m\",\"type\":\"uint256\"}],\"name\":\"maturityReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"a\",\"type\":\"address\"}],\"name\":\"underlyingReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"yieldTokenHolders\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"}]"
 
 // PendleBin is the compiled bytecode used for deploying new contracts.
-var PendleBin = "0x608060405234801561001057600080fd5b506102c2806100206000396000f3fe608060405234801561001057600080fd5b506004361061004c5760003560e01c8063204f83f9146100515780636f307dc31461006f578063b4c4a4c81461008d578063e7ba6774146100a9575b600080fd5b6100596100c5565b604051610066919061015e565b60405180910390f35b6100776100cf565b60405161008491906101ba565b60405180910390f35b6100a760048036038101906100a29190610206565b6100f8565b005b6100c360048036038101906100be919061025f565b610102565b005b6000600154905090565b60008060009054906101000a900473ffffffffffffffffffffffffffffffffffffffff16905090565b8060018190555050565b806000806101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555050565b6000819050919050565b61015881610145565b82525050565b6000602082019050610173600083018461014f565b92915050565b600073ffffffffffffffffffffffffffffffffffffffff82169050919050565b60006101a482610179565b9050919050565b6101b481610199565b82525050565b60006020820190506101cf60008301846101ab565b92915050565b600080fd5b6101e381610145565b81146101ee57600080fd5b50565b600081359050610200816101da565b92915050565b60006020828403121561021c5761021b6101d5565b5b600061022a848285016101f1565b91505092915050565b61023c81610199565b811461024757600080fd5b50565b60008135905061025981610233565b92915050565b600060208284031215610275576102746101d5565b5b60006102838482850161024a565b9150509291505056fea264697066735822122031fd903b370b2bcefbac342cc987570d4dd2f4cb4669cfc104fec22d58ed572b64736f6c634300080d0033"
+var PendleBin = "0x608060405234801561001057600080fd5b50610289806100206000396000f3fe608060405234801561001057600080fd5b50600436106100415760003560e01c8063af7705be14610046578063b4c4a4c814610065578063e7ba677414610081575b600080fd5b61004e61009d565b60405161005c929190610173565b60405180910390f35b61007f600480360381019061007a91906101cd565b6100cc565b005b61009b60048036038101906100969190610226565b6100d6565b005b60008060008054906101000a900473ffffffffffffffffffffffffffffffffffffffff16600154915091509091565b8060018190555050565b806000806101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555050565b600073ffffffffffffffffffffffffffffffffffffffff82169050919050565b600061014482610119565b9050919050565b61015481610139565b82525050565b6000819050919050565b61016d8161015a565b82525050565b6000604082019050610188600083018561014b565b6101956020830184610164565b9392505050565b600080fd5b6101aa8161015a565b81146101b557600080fd5b50565b6000813590506101c7816101a1565b92915050565b6000602082840312156101e3576101e261019c565b5b60006101f1848285016101b8565b91505092915050565b61020381610139565b811461020e57600080fd5b50565b600081359050610220816101fa565b92915050565b60006020828403121561023c5761023b61019c565b5b600061024a84828501610211565b9150509291505056fea26469706673582212202762a042f018cbec6ee145450d8ba06f62e77afc8fcbdc82426eec483384654d64736f6c634300080d0033"
 
 // DeployPendle deploys a new Ethereum contract, binding an instance of Pendle to it.
 func DeployPendle(auth *bind.TransactOpts, backend bind.ContractBackend) (common.Address, *types.Transaction, *Pendle, error) {
@@ -188,66 +188,36 @@ func (_Pendle *PendleTransactorRaw) Transact(opts *bind.TransactOpts, method str
 	return _Pendle.Contract.contract.Transact(opts, method, params...)
 }
 
-// Maturity is a free data retrieval call binding the contract method 0x204f83f9.
+// YieldTokenHolders is a free data retrieval call binding the contract method 0xaf7705be.
 //
-// Solidity: function maturity() view returns(uint256)
-func (_Pendle *PendleCaller) Maturity(opts *bind.CallOpts) (*big.Int, error) {
+// Solidity: function yieldTokenHolders() view returns(address, uint256)
+func (_Pendle *PendleCaller) YieldTokenHolders(opts *bind.CallOpts) (common.Address, *big.Int, error) {
 	var out []interface{}
-	err := _Pendle.contract.Call(opts, &out, "maturity")
+	err := _Pendle.contract.Call(opts, &out, "yieldTokenHolders")
 
 	if err != nil {
-		return *new(*big.Int), err
-	}
-
-	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
-
-	return out0, err
-
-}
-
-// Maturity is a free data retrieval call binding the contract method 0x204f83f9.
-//
-// Solidity: function maturity() view returns(uint256)
-func (_Pendle *PendleSession) Maturity() (*big.Int, error) {
-	return _Pendle.Contract.Maturity(&_Pendle.CallOpts)
-}
-
-// Maturity is a free data retrieval call binding the contract method 0x204f83f9.
-//
-// Solidity: function maturity() view returns(uint256)
-func (_Pendle *PendleCallerSession) Maturity() (*big.Int, error) {
-	return _Pendle.Contract.Maturity(&_Pendle.CallOpts)
-}
-
-// Underlying is a free data retrieval call binding the contract method 0x6f307dc3.
-//
-// Solidity: function underlying() view returns(address)
-func (_Pendle *PendleCaller) Underlying(opts *bind.CallOpts) (common.Address, error) {
-	var out []interface{}
-	err := _Pendle.contract.Call(opts, &out, "underlying")
-
-	if err != nil {
-		return *new(common.Address), err
+		return *new(common.Address), *new(*big.Int), err
 	}
 
 	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+	out1 := *abi.ConvertType(out[1], new(*big.Int)).(**big.Int)
 
-	return out0, err
+	return out0, out1, err
 
 }
 
-// Underlying is a free data retrieval call binding the contract method 0x6f307dc3.
+// YieldTokenHolders is a free data retrieval call binding the contract method 0xaf7705be.
 //
-// Solidity: function underlying() view returns(address)
-func (_Pendle *PendleSession) Underlying() (common.Address, error) {
-	return _Pendle.Contract.Underlying(&_Pendle.CallOpts)
+// Solidity: function yieldTokenHolders() view returns(address, uint256)
+func (_Pendle *PendleSession) YieldTokenHolders() (common.Address, *big.Int, error) {
+	return _Pendle.Contract.YieldTokenHolders(&_Pendle.CallOpts)
 }
 
-// Underlying is a free data retrieval call binding the contract method 0x6f307dc3.
+// YieldTokenHolders is a free data retrieval call binding the contract method 0xaf7705be.
 //
-// Solidity: function underlying() view returns(address)
-func (_Pendle *PendleCallerSession) Underlying() (common.Address, error) {
-	return _Pendle.Contract.Underlying(&_Pendle.CallOpts)
+// Solidity: function yieldTokenHolders() view returns(address, uint256)
+func (_Pendle *PendleCallerSession) YieldTokenHolders() (common.Address, *big.Int, error) {
+	return _Pendle.Contract.YieldTokenHolders(&_Pendle.CallOpts)
 }
 
 // MaturityReturns is a paid mutator transaction binding the contract method 0xb4c4a4c8.

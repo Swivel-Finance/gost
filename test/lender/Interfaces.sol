@@ -49,8 +49,7 @@ interface IZcToken {
 
 // TODO: Get the actual methods for retrieving pendle's maturity and underlying
 interface IPendle {
-  function underlying() external returns (address);
-  function maturity() external returns (uint256);
+  function yieldTokenHolders() external returns (address, uint256);
 }
 
 interface ISushi {

@@ -186,8 +186,9 @@ contract Lender {
       IPendle pendle = IPendle(market);
 
       // confirm that we are in the correct market
-      require(pendle.underlying() == u, 'pendle underlying != underlying');
-      require(pendle.maturity() == m, 'pendle maturity != maturity');
+      (address underlying, uint256 maturity) = pendle.yieldTokenHolders();
+      require(underlying == u, 'pendle underlying != underlying');
+      require(maturity == m, 'pendle maturity != maturity');
 
       // Transfer funds from user to Illuminate
       Safe.transferFrom(IErc20(u), msg.sender, address(this), a);
@@ -201,8 +202,7 @@ contract Lender {
       uint256 returned = ISushi(sushiRouter).swapExactTokensForTokens(a, mb, path, address(this), d)[0];
 
       // Mint Illuminate zero coupons
-      address[8] memory markets = IIlluminate(illuminate).markets(u, m); 
-      IZcToken(markets[uint256(Illuminate.Principals.Illuminate)]).mint(msg.sender, returned);
+      IZcToken(IIlluminate(illuminate).markets(u, m)[uint256(Illuminate.Principals.Illuminate)]).mint(msg.sender, returned);
 
       emit Lend(p, u, m, returned);
 

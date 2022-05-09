@@ -14,11 +14,7 @@ contract Pendle {
         maturityReturn = m;
     }
 
-    function underlying() external view returns (address) {
-        return underlyingReturn;
-    }
-
-    function maturity() external view returns (uint256) {
-        return maturityReturn;
+    function yieldTokenHolders() external view returns (address, uint256) {
+        return (underlyingReturn, maturityReturn);
     }
 }
