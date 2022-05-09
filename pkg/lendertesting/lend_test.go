@@ -603,14 +603,17 @@ func (s *lendTestSuite) TestAPWineSense() {
 	assert := assert.New(s.T())
 	s.Illuminate.MarketsReturns([8]common.Address{
 		s.Dep.ZcTokenAddress,
-		s.Dep.APWineRouterAddress,
-		s.Dep.APWineRouterAddress,
-		s.Dep.APWineRouterAddress,
-		s.Dep.APWineRouterAddress,
-		s.Dep.APWineRouterAddress,
-		s.Dep.APWineRouterAddress,
-		s.Dep.APWineRouterAddress,
+		s.Dep.APWineAddress,
+		s.Dep.APWineAddress,
+		s.Dep.APWineAddress,
+		s.Dep.APWineAddress,
+		s.Dep.APWineAddress,
+		s.Dep.APWineAddress,
+		s.Dep.APWineAddress,
 	})
+	s.Env.Blockchain.Commit()
+
+	s.APWine.GetPTAddressReturns(s.Dep.Erc20Address)
 	s.Env.Blockchain.Commit()
 
 	s.Erc20.TransferFromReturns(true)
