@@ -449,6 +449,13 @@ func (s *lendTestSuite) TestLendTempus() {
 	})
 	s.Env.Blockchain.Commit()
 
+	maturity := big.NewInt(12094201240)
+	s.Tempus.MaturityTimeReturns(maturity)
+	s.Env.Blockchain.Commit()
+
+	s.Tempus.YieldBearingTokenReturns(s.Dep.Erc20Address)
+	s.Env.Blockchain.Commit()
+
 	s.Tempus.DepositAndFixReturns(big.NewInt(102))
 	s.Env.Blockchain.Commit()
 
@@ -461,7 +468,6 @@ func (s *lendTestSuite) TestLendTempus() {
 	s.ZcToken.BalanceOfReturns(s.Dep.LenderAddress, big.NewInt(100))
 	s.Env.Blockchain.Commit()
 
-	maturity := big.NewInt(12094201240)
 	amount := big.NewInt(1032)
 	minimumReturn := big.NewInt(312)
 	amm := common.HexToAddress("0x4321")
