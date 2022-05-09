@@ -27,6 +27,7 @@ type lendTestSuite struct {
 	Sushi        *mocks.SushiSession
 	Tempus       *mocks.TempusSession
 	Sense        *mocks.SenseSession
+	SenseAdapter *mocks.SenseAdapterSession
 	Lender       *lender.LenderSession
 }
 
@@ -133,6 +134,15 @@ func (s *lendTestSuite) SetupSuite() {
 
 	s.Sense = &mocks.SenseSession{
 		Contract: s.Dep.Sense,
+		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
+		TransactOpts: bind.TransactOpts{
+			From:   s.Env.Owner.Opts.From,
+			Signer: s.Env.Owner.Opts.Signer,
+		},
+	}
+
+	s.SenseAdapter = &mocks.SenseAdapterSession{
+		Contract: s.Dep.SenseAdapter,
 		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
 		TransactOpts: bind.TransactOpts{
 			From:   s.Env.Owner.Opts.From,
@@ -527,6 +537,9 @@ func (s *lendTestSuite) TestLendSense() {
 		s.Dep.SenseAddress,
 		s.Dep.SenseAddress,
 	})
+	s.Env.Blockchain.Commit()
+
+	s.SenseAdapter.UnderlyingReturns(s.Dep.Erc20Address)
 	s.Env.Blockchain.Commit()
 
 	s.Erc20.TransferFromReturns(true)

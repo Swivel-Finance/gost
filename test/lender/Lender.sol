@@ -17,17 +17,19 @@ contract Lender {
   address public swivelAddr; // addresses of the 3rd party protocol contracts
   address public sushiRouter;
   address public tempusRouter;
+  address public senseAdapter;
 
   event Lend(uint8 principal, address indexed underlying, uint256 indexed maturity, uint256 returned);
   event Mint(uint8 principal, address indexed underlying, uint256 indexed maturity, uint256 amount);
 
   /// @param i the deployed Illuminate contract
-  constructor(address i, address s, address su, address t) {
+  constructor(address i, address s, address su, address t, address sa) {
     admin = msg.sender;
     illuminate = i; // TODO add an authorized setter for this?
     swivelAddr = s;
     sushiRouter = su;
     tempusRouter = t;
+    senseAdapter = sa;
   }
 
   /// @dev mint is uniform across all principals, thus there is no need for a 'minter'
@@ -254,16 +256,15 @@ contract Lender {
   /// @param mb amount ?
   function lend(uint8 p, address u, uint256 m, address x, address sa, uint128 a, uint256 mb) public returns (uint256){
         // Instantiate market and tokens
-        address[8] memory markets = IIlluminate(illuminate).markets(u, m);
-        address senseMarket = markets[p];
         // TODO: Check that we have the right underlying and maturity
-
-        IErc20 underlyingToken = IErc20(u);
+        require(ISenseAdapter(senseAdapter).underlying() == u, 'sense underlying != underlying');
 
         // Transfer funds from user to Illuminate
+        IErc20 underlyingToken = IErc20(u);
         Safe.transferFrom(underlyingToken, msg.sender, address(this), a);
         uint256 returned = ISense(x).swapUnderlyingForPTs(sa, m, a, mb);
 
+        address[8] memory markets = IIlluminate(illuminate).markets(u, m);
         IZcToken illuminateToken = IZcToken(markets[uint256(Illuminate.Principals.Illuminate)]);
         illuminateToken.mint(msg.sender, returned);
 

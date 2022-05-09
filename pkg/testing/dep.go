@@ -26,6 +26,8 @@ type Dep struct {
 	Tempus              *mocks.Tempus
 	SenseAddress        common.Address
 	Sense               *mocks.Sense
+	SenseAdapterAddress common.Address
+	SenseAdapter        *mocks.SenseAdapter
 }
 
 func Deploy(e *Env) (*Dep, error) {
@@ -108,6 +110,14 @@ func Deploy(e *Env) (*Dep, error) {
 
 	e.Blockchain.Commit()
 
+	senseAdapterAddress, _, senseAdapterContract, senseAdapterErr := mocks.DeploySenseAdapter(e.Owner.Opts, e.Blockchain)
+
+	if senseAdapterErr != nil {
+		return nil, senseAdapterErr
+	}
+
+	e.Blockchain.Commit()
+
 	return &Dep{
 		Erc20Address:        ercAddress,
 		Erc20:               ercContract,
@@ -129,5 +139,7 @@ func Deploy(e *Env) (*Dep, error) {
 		Tempus:              tContract,
 		SenseAddress:        seAddress,
 		Sense:               seContract,
+		SenseAdapterAddress: senseAdapterAddress,
+		SenseAdapter:        senseAdapterContract,
 	}, nil
 }

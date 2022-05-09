@@ -49,6 +49,10 @@ interface ISense {
   function swapUnderlyingForPTs(address, uint256, uint256, uint256) external returns (uint256);
 }
 
+interface ISenseAdapter {
+  function underlying() external returns (address);
+}
+
 interface IZcToken {
   function mint(address, uint256) external returns (bool);
   function balanceOf(address) external returns (uint256);
