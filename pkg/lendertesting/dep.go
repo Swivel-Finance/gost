@@ -23,6 +23,10 @@ type Dep struct {
 	ElementToken        *mocks.ElementToken
 	ElementAddress      common.Address
 	Element             *mocks.Element
+	PendleAddress       common.Address
+	Pendle              *mocks.Pendle
+	SushiAddress        common.Address
+	Sushi               *mocks.Sushi
 }
 
 func Deploy(e *Env) (*Dep, error) {
@@ -59,13 +63,6 @@ func Deploy(e *Env) (*Dep, error) {
 
 	e.Blockchain.Commit()
 
-	lenderAddress, _, lender, lenderErr := lender.DeployLender(e.Owner.Opts, e.Blockchain, mpAddress, swAddress)
-	if lenderErr != nil {
-		return nil, lenderErr
-	}
-
-	e.Blockchain.Commit()
-
 	zcAddress, _, zcContract, zcErr := mocks.DeployZcToken(e.Owner.Opts, e.Blockchain)
 
 	if zcErr != nil {
@@ -89,6 +86,30 @@ func Deploy(e *Env) (*Dep, error) {
 	}
 
 	e.Blockchain.Commit()
+
+	pAddress, _, pContract, pErr := mocks.DeployPendle(e.Owner.Opts, e.Blockchain)
+
+	if pErr != nil {
+		return nil, pErr
+	}
+
+	e.Blockchain.Commit()
+
+	suAddress, _, suContract, suErr := mocks.DeploySushi(e.Owner.Opts, e.Blockchain)
+
+	if suErr != nil {
+		return nil, suErr
+	}
+
+	e.Blockchain.Commit()
+
+	lenderAddress, _, lender, lenderErr := lender.DeployLender(e.Owner.Opts, e.Blockchain, mpAddress, swAddress, suAddress)
+	if lenderErr != nil {
+		return nil, lenderErr
+	}
+
+	e.Blockchain.Commit()
+
 	return &Dep{
 		Erc20Address:        ercAddress,
 		Erc20:               ercContract,
@@ -106,5 +127,9 @@ func Deploy(e *Env) (*Dep, error) {
 		ElementToken:        elementTokenContract,
 		ElementAddress:      elementAddress,
 		Element:             elementContract,
+		PendleAddress:       pAddress,
+		Pendle:              pContract,
+		SushiAddress:        suAddress,
+		Sushi:               suContract,
 	}, nil
 }

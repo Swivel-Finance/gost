@@ -15,15 +15,18 @@ contract Lender {
 
   // TODO the nature of these addresses?
   address public swivelAddr; // addresses of the 3rd party protocol contracts
+  address public sushiRouter;
+  bytes public pendleForgeId;
 
   event Lend(uint8 principal, address indexed underlying, uint256 indexed maturity, uint256 returned);
   event Mint(uint8 principal, address indexed underlying, uint256 indexed maturity, uint256 amount);
 
   /// @param i the deployed Illuminate contract
-  constructor(address i, address s) {
+  constructor(address i, address s, address su) {
     admin = msg.sender;
     illuminate = i; // TODO add an authorized setter for this?
     swivelAddr = s;
+    sushiRouter = su;
   }
 
   /// @dev mint is uniform across all principals, thus there is no need for a 'minter'
@@ -172,19 +175,39 @@ contract Lender {
 
   /// @dev lend method signature for pendle
   /// @notice Can be called before maturity to lend to Pendle while minting Illuminate tokens
-  /// @param p value of a specific principal according to the Illuminate Principals Enum
-  /// @param u underlying token being ?
-  /// @param m maturity of the market being ?
-  /// @param i pendle id ?
-  /// @param a amount ?
-  /// @param r minimum amount to return ?
-  // function lend(uint8 p, address u, uint256 m, bytes32 i, uint256 a, uint256 r) public returns (uint256) {
-  //   // ...
-  //   uint256 returned = 0;
+  /// @param p value of a specific principal according to the MarketPlace Principals Enum
+  /// @param u the underlying token being redeemed
+  /// @param m the maturity of the market being redeemed
+  /// @param a the amount of underlying tokens to lend
+  /// @param mb the minimum amount of zero-coupon tokens to return accounting for slippage
+  /// @param d the maximum timestamp at which the transaction can be executed
+  function lend(uint8 p, address u, uint256 m, uint256 a, uint256 mb, uint256 d) public returns (uint256) {
+      // Instantiate market and tokens
+      address market = IIlluminate(illuminate).markets(u, m)[p];
+      IPendle pendle = IPendle(market);
 
-  //   emit Lend(p, u, m, returned);
-  //   return returned;
-  // }
+      // confirm that we are in the correct market
+      require(pendle.yieldToken() == u, 'pendle underlying != underlying');
+      require(pendle.expiry() == m, 'pendle maturity != maturity');
+
+      // Transfer funds from user to Illuminate
+      Safe.transferFrom(IErc20(u), msg.sender, address(this), a);
+
+
+      address[] memory path = new address[](2);
+      path[0] = u;
+      path[1] = market;
+
+      // Swap on the Pendle Router using the provided market and params
+      uint256 returned = ISushi(sushiRouter).swapExactTokensForTokens(a, mb, path, address(this), d)[0];
+
+      // Mint Illuminate zero coupons
+      IZcToken(IIlluminate(illuminate).markets(u, m)[uint256(Illuminate.Principals.Illuminate)]).mint(msg.sender, returned);
+
+      emit Lend(p, u, m, returned);
+
+      return returned;
+  }
 
   /// @dev lend method signature for tempus
   /// @notice Can be called before maturity to lend to Tempus while minting Illuminate tokens

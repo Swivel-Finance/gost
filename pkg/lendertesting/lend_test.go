@@ -1,7 +1,6 @@
 package lendertesting
 
 import (
-	"log"
 	"math/big"
 	test "testing"
 
@@ -24,6 +23,8 @@ type lendTestSuite struct {
 	Swivel       *mocks.SwivelSession
 	ElementToken *mocks.ElementTokenSession
 	Element      *mocks.ElementSession
+	Pendle       *mocks.PendleSession
+	Sushi        *mocks.SushiSession
 	Lender       *lender.LenderSession
 }
 
@@ -101,6 +102,24 @@ func (s *lendTestSuite) SetupSuite() {
 		},
 	}
 
+	s.Pendle = &mocks.PendleSession{
+		Contract: s.Dep.Pendle,
+		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
+		TransactOpts: bind.TransactOpts{
+			From:   s.Env.Owner.Opts.From,
+			Signer: s.Env.Owner.Opts.Signer,
+		},
+	}
+
+	s.Sushi = &mocks.SushiSession{
+		Contract: s.Dep.Sushi,
+		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
+		TransactOpts: bind.TransactOpts{
+			From:   s.Env.Owner.Opts.From,
+			Signer: s.Env.Owner.Opts.Signer,
+		},
+	}
+
 	s.Lender = &lender.LenderSession{
 		Contract: s.Dep.Lender,
 		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
@@ -152,7 +171,7 @@ func (s *lendTestSuite) TestLendIlluminate() {
 	s.Yield.SellBaseReturns(sellBasePreview)
 	s.Env.Blockchain.Commit()
 
-	tx, err := s.Lender.Lend1(0, s.Dep.Erc20Address, maturity, s.Dep.YieldAddress, amountLent)
+	tx, err := s.Lender.Lend2(0, s.Dep.Erc20Address, maturity, s.Dep.YieldAddress, amountLent)
 	assert.Nil(err)
 	assert.NotNil(tx)
 
@@ -222,7 +241,7 @@ func (s *lendTestSuite) TestLendYield() {
 	s.ZcToken.MintReturns(true)
 	s.Env.Blockchain.Commit()
 
-	tx, err := s.Lender.Lend1(2, s.Dep.Erc20Address, maturity, s.Dep.YieldAddress, amountLent)
+	tx, err := s.Lender.Lend2(2, s.Dep.Erc20Address, maturity, s.Dep.YieldAddress, amountLent)
 	assert.Nil(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
@@ -262,7 +281,7 @@ func (s *lendTestSuite) TestLendSwivel() {
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
 
-	tx, err = s.Lender.Lend(3, s.Dep.Erc20Address, TEST_MATURITY, s.Dep.YieldAddress, ORDERS, AMOUNTS, COMPONENTS)
+	tx, err = s.Lender.Lend0(3, s.Dep.Erc20Address, TEST_MATURITY, s.Dep.YieldAddress, ORDERS, AMOUNTS, COMPONENTS)
 	assert.Nil(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
@@ -319,11 +338,7 @@ func (s *lendTestSuite) TestLendElement() {
 	tx, err = s.Erc20.TransferFromReturns(true)
 	s.Env.Blockchain.Commit()
 
-	elementUnderlying, _ := s.ElementToken.Underlying()
-	log.Printf("current underlying: %s", s.Dep.Erc20Address)
-	log.Printf("element underlying: %s", elementUnderlying)
-
-	tx, err = s.Lender.Lend0(3, s.Dep.Erc20Address, maturity, s.Dep.ElementAddress, elementPoolId, amount, returnAmount, deadline)
+	tx, err = s.Lender.Lend1(3, s.Dep.Erc20Address, maturity, s.Dep.ElementAddress, elementPoolId, amount, returnAmount, deadline)
 	assert.Nil(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
@@ -344,6 +359,69 @@ func (s *lendTestSuite) TestLendElement() {
 	elementReturn, err := s.Element.Return()
 	assert.Nil(err)
 	assert.Equal(returnAmount, elementReturn)
+}
+
+func (s *lendTestSuite) TestLendPendle() {
+	assert := assert.New(s.T())
+	maturity := big.NewInt(100000)
+
+	s.Sushi.SwapExactTokensForTokensReturns([]*big.Int{big.NewInt(1), big.NewInt(2)})
+	s.Env.Blockchain.Commit()
+
+	s.Pendle.ExpiryReturns(maturity)
+	s.Env.Blockchain.Commit()
+
+	s.Pendle.YieldTokenReturns(s.Dep.Erc20Address)
+	s.Env.Blockchain.Commit()
+
+	s.ZcToken.MintReturns(true)
+	s.Env.Blockchain.Commit()
+
+	// TODO: This should be a helper that always returns a given address
+	s.Illuminate.MarketsReturns([8]common.Address{
+		s.Dep.ZcTokenAddress,
+		s.Dep.PendleAddress,
+		s.Dep.PendleAddress,
+		s.Dep.PendleAddress,
+		s.Dep.PendleAddress,
+		s.Dep.PendleAddress,
+		s.Dep.PendleAddress,
+		s.Dep.PendleAddress,
+	})
+
+	amount := big.NewInt(100)
+	minimumBought := big.NewInt(50)
+	deadline := big.NewInt(1000000000)
+
+	tx, err := s.Lender.Lend(4, s.Dep.Erc20Address, maturity, amount, minimumBought, deadline)
+	assert.NoError(err)
+	assert.NotNil(tx)
+	s.Env.Blockchain.Commit()
+
+	// verify that mocks were called as expected
+	in, err := s.Sushi.InCalled()
+	assert.NoError(err)
+	assert.Equal(amount, in)
+
+	out, err := s.Sushi.OutMinimumCalled()
+	assert.NoError(err)
+	assert.Equal(minimumBought, out)
+
+	address, err := s.Sushi.PathCalled(big.NewInt(0))
+	assert.NoError(err)
+	assert.Equal(s.Dep.Erc20Address, address)
+
+	address, err = s.Sushi.PathCalled(big.NewInt(1))
+	assert.NoError(err)
+	assert.Equal(s.Dep.PendleAddress, address)
+
+	to, err := s.Sushi.ToCalled()
+	assert.NoError(err)
+	assert.Equal(s.Dep.LenderAddress, to)
+
+	calledDeadline, err := s.Sushi.DeadlineCalled()
+	assert.NoError(err)
+	assert.Equal(deadline, calledDeadline)
 }
 
 func TestLendSuite(t *test.T) {
