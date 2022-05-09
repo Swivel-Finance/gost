@@ -47,10 +47,6 @@ interface IZcToken {
   function mint(address, uint256) external returns (bool);
 }
 
-interface IPendleYieldToken {
-    function underlyingAsset() external view returns (address);
-}
-
 interface IPendle {
     function yieldToken() external returns (address);
     function expiry() external returns (uint256);
