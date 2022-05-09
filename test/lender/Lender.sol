@@ -230,8 +230,6 @@ contract Lender {
       IErc20 underlyingToken = IErc20(u);
       Safe.transferFrom(underlyingToken, msg.sender, address(this), a);
 
-
-
       // Swap on the Tempus Router using the provided market and params
       IZcToken illuminateToken = IZcToken(IIlluminate(illuminate).markets(u, m)[uint256(Illuminate.Principals.Illuminate)]);
       uint256 returned = ITempus(tempusRouter).depositAndFix(Any(x), Any(t), a, true, r, d) - illuminateToken.balanceOf(address(this));

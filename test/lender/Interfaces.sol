@@ -45,6 +45,7 @@ interface ISense {
 
 interface IZcToken {
   function mint(address, uint256) external returns (bool);
+  function balanceOf(address) external returns (uint256);
 }
 
 interface IPendle {
