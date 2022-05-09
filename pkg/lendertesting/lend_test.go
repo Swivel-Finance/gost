@@ -29,6 +29,7 @@ type lendTestSuite struct {
 	Sense        *mocks.SenseSession
 	SenseAdapter *mocks.SenseAdapterSession
 	APWine       *mocks.APWineSession
+	APWineRouter *mocks.APWineRouterSession
 	Lender       *lender.LenderSession
 }
 
@@ -153,6 +154,15 @@ func (s *lendTestSuite) SetupSuite() {
 
 	s.APWine = &mocks.APWineSession{
 		Contract: s.Dep.APWine,
+		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
+		TransactOpts: bind.TransactOpts{
+			From:   s.Env.Owner.Opts.From,
+			Signer: s.Env.Owner.Opts.Signer,
+		},
+	}
+
+	s.APWineRouter = &mocks.APWineRouterSession{
+		Contract: s.Dep.APWineRouter,
 		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
 		TransactOpts: bind.TransactOpts{
 			From:   s.Env.Owner.Opts.From,
@@ -593,20 +603,20 @@ func (s *lendTestSuite) TestAPWineSense() {
 	assert := assert.New(s.T())
 	s.Illuminate.MarketsReturns([8]common.Address{
 		s.Dep.ZcTokenAddress,
-		s.Dep.APWineAddress,
-		s.Dep.APWineAddress,
-		s.Dep.APWineAddress,
-		s.Dep.APWineAddress,
-		s.Dep.APWineAddress,
-		s.Dep.APWineAddress,
-		s.Dep.APWineAddress,
+		s.Dep.APWineRouterAddress,
+		s.Dep.APWineRouterAddress,
+		s.Dep.APWineRouterAddress,
+		s.Dep.APWineRouterAddress,
+		s.Dep.APWineRouterAddress,
+		s.Dep.APWineRouterAddress,
+		s.Dep.APWineRouterAddress,
 	})
 	s.Env.Blockchain.Commit()
 
 	s.Erc20.TransferFromReturns(true)
 	s.Env.Blockchain.Commit()
 
-	s.APWine.SwapExactAmountInReturns(big.NewInt(12345))
+	s.APWineRouter.SwapExactAmountInReturns(big.NewInt(12345))
 	s.Env.Blockchain.Commit()
 
 	s.ZcToken.MintReturns(true)
@@ -617,33 +627,33 @@ func (s *lendTestSuite) TestAPWineSense() {
 	minimumAmount := big.NewInt(34)
 	id := big.NewInt(1000)
 
-	tx, err := s.Lender.Lend(7, s.Dep.Erc20Address, maturity, amount, minimumAmount, s.Dep.APWineAddress, id)
+	tx, err := s.Lender.Lend(7, s.Dep.Erc20Address, maturity, amount, minimumAmount, s.Dep.APWineRouterAddress, id)
 	assert.NoError(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
 
 	// verify that mocks were called as expected
-	idCalled, err := s.APWine.IdCalled()
+	idCalled, err := s.APWineRouter.IdCalled()
 	assert.NoError(err)
 	assert.Equal(id, idCalled)
 
-	tokenInCalled, err := s.APWine.TokenInCalled()
+	tokenInCalled, err := s.APWineRouter.TokenInCalled()
 	assert.NoError(err)
 	assert.Equal(big.NewInt(1), tokenInCalled)
 
-	amountCalled, err := s.APWine.AmountCalled()
+	amountCalled, err := s.APWineRouter.AmountCalled()
 	assert.NoError(err)
 	assert.Equal(amount, amountCalled)
 
-	tokenOutCalled, err := s.APWine.TokenOutCalled()
+	tokenOutCalled, err := s.APWineRouter.TokenOutCalled()
 	assert.NoError(err)
 	assert.True(big.NewInt(0).Cmp(tokenOutCalled) == 0)
 
-	minimumAmountCalled, err := s.APWine.MinimumAmountCalled()
+	minimumAmountCalled, err := s.APWineRouter.MinimumAmountCalled()
 	assert.NoError(err)
 	assert.Equal(minimumAmount, minimumAmountCalled)
 
-	toCalled, err := s.APWine.ToCalled()
+	toCalled, err := s.APWineRouter.ToCalled()
 	assert.NoError(err)
 	assert.Equal(s.Dep.LenderAddress, toCalled)
 }

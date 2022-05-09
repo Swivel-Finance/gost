@@ -283,15 +283,14 @@ contract Lender {
   function lend(uint8 p, address u, uint256 m, uint256 a, uint256 ma, address po, uint256 i) public returns (uint256) {
       // Instantiate market and tokens
       address[8] memory markets = IIlluminate(illuminate).markets(u, m);
-      //address apwine = markets[p];
-      // TODO: Confirm that we have the right underlying and maturity
+      require(IAPWine(markets[p]).getPTAddress() == u, "apwine principle != principle");
 
       // Transfer funds from user to Illuminate    
       IErc20 underlyingToken = IErc20(u);
       Safe.transferFrom(underlyingToken, msg.sender, address(this), a);   
 
       // Swap on the APWine Pool using the provided market and params
-      IAPWine pool = IAPWine(po);
+      IAPWineRouter pool = IAPWineRouter(po);
       uint256 returned = pool.swapExactAmountIn(i, 1, a, 0, ma, address(this));
 
       // Mint Illuminate zero coupons

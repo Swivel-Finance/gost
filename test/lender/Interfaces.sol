@@ -73,9 +73,10 @@ interface ITempus {
   function depositAndFix(Any, Any, uint256, bool, uint256, uint256) external returns (uint256);
 }
 
-interface IAPWine {
+interface IAPWineRouter {
   function swapExactAmountIn(uint256, uint256, uint256, uint256, uint256, address) external returns (uint256);
-  function maturityTime() external view returns (uint256);
-  function yieldBearingToken() external view returns (IErc20Metadata);
-  function depositAndFix(Any, Any, uint256, bool, uint256, uint256) external returns (uint256);
+}
+
+interface IAPWine {
+  function getPTAddress() external view returns (address);
 }
