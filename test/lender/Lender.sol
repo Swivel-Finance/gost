@@ -286,16 +286,13 @@ contract Lender {
       require(IAPWine(markets[p]).getPTAddress() == u, "apwine principle != principle");
 
       // Transfer funds from user to Illuminate    
-      IErc20 underlyingToken = IErc20(u);
-      Safe.transferFrom(underlyingToken, msg.sender, address(this), a);   
+      Safe.transferFrom(IErc20(u), msg.sender, address(this), a);   
 
       // Swap on the APWine Pool using the provided market and params
-      IAPWineRouter pool = IAPWineRouter(po);
-      uint256 returned = pool.swapExactAmountIn(i, 1, a, 0, ma, address(this));
+      uint256 returned = IAPWineRouter(po).swapExactAmountIn(i, 1, a, 0, ma, address(this));
 
       // Mint Illuminate zero coupons
-      IZcToken illuminateToken = IZcToken(markets[uint256(Illuminate.Principals.Illuminate)]);
-      illuminateToken.mint(msg.sender, returned);
+      IZcToken(markets[uint256(Illuminate.Principals.Illuminate)]).mint(msg.sender, returned);
 
       emit Lend(p, u, m, returned);
 
