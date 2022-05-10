@@ -10,9 +10,6 @@ import './Cast.sol';
 import './Element.sol';
 
 
-// TOKEN => refers to checking the underlying / maturity
-// [protocol] => refers to addresses executing the business logic of the protocol
-
 contract Lender {
   address public admin;
   address public illuminate; // TODO authorized setter for this
