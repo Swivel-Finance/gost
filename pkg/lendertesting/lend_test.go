@@ -27,7 +27,7 @@ type lendTestSuite struct {
 	Pendle       *mocks.PendleSession
 	Tempus       *mocks.TempusSession
 	Sense        *mocks.SenseSession
-	SenseAdapter *mocks.SenseAdapterSession
+	SenseToken   *mocks.SenseTokenSession
 	APWineToken  *mocks.APWineTokenSession
 	APWine       *mocks.APWineSession
 	Lender       *lender.LenderSession
@@ -143,8 +143,8 @@ func (s *lendTestSuite) SetupSuite() {
 		},
 	}
 
-	s.SenseAdapter = &mocks.SenseAdapterSession{
-		Contract: s.Dep.SenseAdapter,
+	s.SenseToken = &mocks.SenseTokenSession{
+		Contract: s.Dep.SenseToken,
 		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
 		TransactOpts: bind.TransactOpts{
 			From:   s.Env.Owner.Opts.From,
@@ -559,7 +559,7 @@ func (s *lendTestSuite) TestLendSense() {
 	})
 	s.Env.Blockchain.Commit()
 
-	s.SenseAdapter.UnderlyingReturns(s.Dep.Erc20Address)
+	s.SenseToken.UnderlyingReturns(s.Dep.Erc20Address)
 	s.Env.Blockchain.Commit()
 
 	s.Erc20.TransferFromReturns(true)
@@ -582,7 +582,7 @@ func (s *lendTestSuite) TestLendSense() {
 	s.Env.Blockchain.Commit()
 
 	// verify that mocks were called as expected
-	adapterCalled, err := s.Sense.SenseAdapterCalled()
+	adapterCalled, err := s.Sense.SenseTokenCalled()
 	assert.NoError(err)
 	assert.Equal(adapter, adapterCalled)
 

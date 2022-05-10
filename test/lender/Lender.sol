@@ -17,7 +17,7 @@ contract Lender {
   address public swivelAddr; // addresses of the 3rd party protocol contracts
   address public pendleRouter;
   address public tempusRouter;
-  address public senseAdapter;
+  address public senseToken;
 
   event Lend(uint8 principal, address indexed underlying, uint256 indexed maturity, uint256 returned);
   event Mint(uint8 principal, address indexed underlying, uint256 indexed maturity, uint256 amount);
@@ -29,7 +29,7 @@ contract Lender {
     swivelAddr = s;
     pendleRouter = su;
     tempusRouter = t;
-    senseAdapter = sa;
+    senseToken = sa;
   }
 
   /// @dev mint is uniform across all principals, thus there is no need for a 'minter'
@@ -257,7 +257,7 @@ contract Lender {
   function lend(uint8 p, address u, uint256 m, address x, address sa, uint128 a, uint256 mb) public returns (uint256){
         // Instantiate market and tokens
         // TODO: Check that we have the right underlying and maturity
-        require(ISenseAdapter(senseAdapter).underlying() == u, 'sense underlying != underlying');
+        require(ISenseToken(senseToken).underlying() == u, 'sense underlying != underlying');
 
         // Transfer funds from user to Illuminate
         IErc20 underlyingToken = IErc20(u);

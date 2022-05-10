@@ -6,7 +6,7 @@
 .PHONY: compile_solidity_mock_sense compile_go_mock_sense compile_mock_sense
 .PHONY: compile_solidity_mock_apwine_token compile_go_mock_apwine_token compile_mock_apwine_token
 .PHONY: compile_solidity_mock_apwine compile_go_mock_apwine compile_mock_apwine
-.PHONY: compile_solidity_mock_sense_adapter compile_go_mock_sense_adapter compile_mock_sense_adapter
+.PHONY: compile_solidity_mock_sense_token compile_go_mock_sense_token compile_mock_sense_token
 .PHONY: compile_solidity_mock_element_token compile_go_mock_element_token compile_mock_element_token
 .PHONY: compile_solidity_mock_illuminate compile_go_mock_illuminate compile_mock_illuminate
 .PHONY: compile_mocks
@@ -142,15 +142,15 @@ compile_go_mock_sense:
 
 compile_mock_sense: compile_solidity_mock_sense compile_go_mock_sense
 
-compile_solidity_mock_sense_adapter:
-	@echo "compiling Mock SenseAdapter solidity source into abi and bin files"
-	solc -o ./test/mocks --abi --bin --overwrite ./test/mocks/SenseAdapter.sol
+compile_solidity_mock_sense_token:
+	@echo "compiling Mock SenseToken solidity source into abi and bin files"
+	solc -o ./test/mocks --abi --bin --overwrite ./test/mocks/SenseToken.sol
 
-compile_go_mock_sense_adapter:
+compile_go_mock_sense_token:
 	@echo "compiling abi and bin files to golang"
-	abigen --abi ./test/mocks/SenseAdapter.abi --bin ./test/mocks/SenseAdapter.bin -pkg mocks -type SenseAdapter -out ./test/mocks/senseadapter.go 
+	abigen --abi ./test/mocks/SenseToken.abi --bin ./test/mocks/SenseToken.bin -pkg mocks -type SenseToken -out ./test/mocks/sensetoken.go 
 
-compile_mock_sense_adapter: compile_solidity_mock_sense_adapter compile_go_mock_sense_adapter
+compile_mock_sense_token: compile_solidity_mock_sense_token compile_go_mock_sense_token
 
 compile_solidity_mock_apwine_token:
 	@echo "compiling Mock APWine Token solidity source into abi and bin files"
@@ -172,7 +172,7 @@ compile_go_mock_apwine:
 
 compile_mock_apwine: compile_solidity_mock_apwine compile_go_mock_apwine
 
-compile_mocks: compile_mock_erc compile_mock_yield compile_mock_pendle compile_mock_pendle_token compile_mock_element_token compile_mock_element compile_mock_illuminate compile_mock_zc_token compile_mock_swivel compile_mock_tempus compile_mock_sense compile_mock_sense_adapter compile_go_mock_apwine_token compile_mock_apwine
+compile_mocks: compile_mock_erc compile_mock_yield compile_mock_pendle compile_mock_pendle_token compile_mock_element_token compile_mock_element compile_mock_illuminate compile_mock_zc_token compile_mock_swivel compile_mock_tempus compile_mock_sense compile_mock_sense_token compile_go_mock_apwine_token compile_mock_apwine
 
 
 # Real Tokens

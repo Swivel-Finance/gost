@@ -49,7 +49,7 @@ interface ISense {
   function swapUnderlyingForPTs(address, uint256, uint256, uint256) external returns (uint256);
 }
 
-interface ISenseAdapter {
+interface ISenseToken {
   function underlying() external returns (address);
 }
 
