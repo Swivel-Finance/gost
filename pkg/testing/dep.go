@@ -18,10 +18,10 @@ type Dep struct {
 	ElementToken        *mocks.ElementToken
 	ElementAddress      common.Address
 	Element             *mocks.Element
+	PendleTokenAddress  common.Address
+	PendleToken         *mocks.PendleToken
 	PendleAddress       common.Address
 	Pendle              *mocks.Pendle
-	SushiAddress        common.Address
-	Sushi               *mocks.Sushi
 	TempusAddress       common.Address
 	Tempus              *mocks.Tempus
 	SenseAddress        common.Address
@@ -82,7 +82,7 @@ func Deploy(e *Env) (*Dep, error) {
 
 	e.Blockchain.Commit()
 
-	pAddress, _, pContract, pErr := mocks.DeployPendle(e.Owner.Opts, e.Blockchain)
+	pAddress, _, pContract, pErr := mocks.DeployPendleToken(e.Owner.Opts, e.Blockchain)
 
 	if pErr != nil {
 		return nil, pErr
@@ -90,10 +90,10 @@ func Deploy(e *Env) (*Dep, error) {
 
 	e.Blockchain.Commit()
 
-	sAddress, _, sContract, sErr := mocks.DeploySushi(e.Owner.Opts, e.Blockchain)
+	peAddress, _, peContract, peErr := mocks.DeployPendle(e.Owner.Opts, e.Blockchain)
 
-	if sErr != nil {
-		return nil, sErr
+	if peErr != nil {
+		return nil, peErr
 	}
 
 	e.Blockchain.Commit()
@@ -151,10 +151,10 @@ func Deploy(e *Env) (*Dep, error) {
 		ElementToken:        elementTokenContract,
 		ElementAddress:      elementAddress,
 		Element:             elementContract,
-		PendleAddress:       pAddress,
-		Pendle:              pContract,
-		SushiAddress:        sAddress,
-		Sushi:               sContract,
+		PendleTokenAddress:  pAddress,
+		PendleToken:         pContract,
+		PendleAddress:       peAddress,
+		Pendle:              peContract,
 		TempusAddress:       tAddress,
 		Tempus:              tContract,
 		SenseAddress:        seAddress,

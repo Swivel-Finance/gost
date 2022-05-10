@@ -15,7 +15,7 @@ contract Lender {
 
   // TODO the nature of these addresses?
   address public swivelAddr; // addresses of the 3rd party protocol contracts
-  address public sushiRouter;
+  address public pendleRouter;
   address public tempusRouter;
   address public senseAdapter;
 
@@ -27,7 +27,7 @@ contract Lender {
     admin = msg.sender;
     illuminate = i; // TODO add an authorized setter for this?
     swivelAddr = s;
-    sushiRouter = su;
+    pendleRouter = su;
     tempusRouter = t;
     senseAdapter = sa;
   }
@@ -202,7 +202,7 @@ contract Lender {
       path[1] = market;
 
       // Swap on the Pendle Router using the provided market and params
-      uint256 returned = ISushi(sushiRouter).swapExactTokensForTokens(a, mb, path, address(this), d)[0];
+      uint256 returned = IPendle(pendleRouter).swapExactTokensForTokens(a, mb, path, address(this), d)[0];
 
       // Mint Illuminate zero coupons
       address[8] memory markets = IIlluminate(illuminate).markets(u, m); 

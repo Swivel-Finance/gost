@@ -24,7 +24,7 @@ type lendTestSuite struct {
 	ElementToken *mocks.ElementTokenSession
 	Element      *mocks.ElementSession
 	PendleToken  *mocks.PendleTokenSession
-	Sushi        *mocks.SushiSession
+	Pendle       *mocks.PendleSession
 	Tempus       *mocks.TempusSession
 	Sense        *mocks.SenseSession
 	SenseAdapter *mocks.SenseAdapterSession
@@ -116,8 +116,8 @@ func (s *lendTestSuite) SetupSuite() {
 		},
 	}
 
-	s.Sushi = &mocks.SushiSession{
-		Contract: s.Dep.Sushi,
+	s.Pendle = &mocks.PendleSession{
+		Contract: s.Dep.Pendle,
 		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
 		TransactOpts: bind.TransactOpts{
 			From:   s.Env.Owner.Opts.From,
@@ -415,7 +415,7 @@ func (s *lendTestSuite) TestLendPendle() {
 	assert := assert.New(s.T())
 	maturity := big.NewInt(100000)
 
-	s.Sushi.SwapExactTokensForTokensReturns([]*big.Int{big.NewInt(1), big.NewInt(2)})
+	s.Pendle.SwapExactTokensForTokensReturns([]*big.Int{big.NewInt(1), big.NewInt(2)})
 	s.Env.Blockchain.Commit()
 
 	s.PendleToken.ExpiryReturns(maturity)
@@ -449,27 +449,27 @@ func (s *lendTestSuite) TestLendPendle() {
 	s.Env.Blockchain.Commit()
 
 	// verify that mocks were called as expected
-	in, err := s.Sushi.InCalled()
+	in, err := s.Pendle.InCalled()
 	assert.NoError(err)
 	assert.Equal(amount, in)
 
-	out, err := s.Sushi.OutMinimumCalled()
+	out, err := s.Pendle.OutMinimumCalled()
 	assert.NoError(err)
 	assert.Equal(minimumBought, out)
 
-	address, err := s.Sushi.PathCalled(big.NewInt(0))
+	address, err := s.Pendle.PathCalled(big.NewInt(0))
 	assert.NoError(err)
 	assert.Equal(s.Dep.Erc20Address, address)
 
-	address, err = s.Sushi.PathCalled(big.NewInt(1))
+	address, err = s.Pendle.PathCalled(big.NewInt(1))
 	assert.NoError(err)
 	assert.Equal(s.Dep.PendleTokenAddress, address)
 
-	to, err := s.Sushi.ToCalled()
+	to, err := s.Pendle.ToCalled()
 	assert.NoError(err)
 	assert.Equal(s.Dep.LenderAddress, to)
 
-	calledDeadline, err := s.Sushi.DeadlineCalled()
+	calledDeadline, err := s.Pendle.DeadlineCalled()
 	assert.NoError(err)
 	assert.Equal(deadline, calledDeadline)
 }
