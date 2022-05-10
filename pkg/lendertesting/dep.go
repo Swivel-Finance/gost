@@ -23,8 +23,8 @@ type Dep struct {
 	ElementToken        *mocks.ElementToken
 	ElementAddress      common.Address
 	Element             *mocks.Element
-	PendleAddress       common.Address
-	Pendle              *mocks.Pendle
+	PendleTokenAddress  common.Address
+	PendleToken         *mocks.PendleToken
 	SushiAddress        common.Address
 	Sushi               *mocks.Sushi
 	TempusAddress       common.Address
@@ -97,7 +97,7 @@ func Deploy(e *Env) (*Dep, error) {
 
 	e.Blockchain.Commit()
 
-	pAddress, _, pContract, pErr := mocks.DeployPendle(e.Owner.Opts, e.Blockchain)
+	pAddress, _, pContract, pErr := mocks.DeployPendleToken(e.Owner.Opts, e.Blockchain)
 
 	if pErr != nil {
 		return nil, pErr
@@ -177,8 +177,8 @@ func Deploy(e *Env) (*Dep, error) {
 		ElementToken:        elementTokenContract,
 		ElementAddress:      elementAddress,
 		Element:             elementContract,
-		PendleAddress:       pAddress,
-		Pendle:              pContract,
+		PendleTokenAddress:  pAddress,
+		PendleToken:         pContract,
 		SushiAddress:        suAddress,
 		Sushi:               suContract,
 		TempusAddress:       tAddress,

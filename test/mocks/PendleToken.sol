@@ -2,7 +2,7 @@
 
 pragma solidity 0.8.13;
 
-contract Pendle {
+contract PendleToken {
     address private yieldTokenReturn;
     uint256 private expiryReturn;
 

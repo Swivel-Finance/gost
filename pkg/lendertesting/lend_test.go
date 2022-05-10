@@ -23,7 +23,7 @@ type lendTestSuite struct {
 	Swivel       *mocks.SwivelSession
 	ElementToken *mocks.ElementTokenSession
 	Element      *mocks.ElementSession
-	Pendle       *mocks.PendleSession
+	PendleToken  *mocks.PendleTokenSession
 	Sushi        *mocks.SushiSession
 	Tempus       *mocks.TempusSession
 	Sense        *mocks.SenseSession
@@ -107,8 +107,8 @@ func (s *lendTestSuite) SetupSuite() {
 		},
 	}
 
-	s.Pendle = &mocks.PendleSession{
-		Contract: s.Dep.Pendle,
+	s.PendleToken = &mocks.PendleTokenSession{
+		Contract: s.Dep.PendleToken,
 		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
 		TransactOpts: bind.TransactOpts{
 			From:   s.Env.Owner.Opts.From,
@@ -418,10 +418,10 @@ func (s *lendTestSuite) TestLendPendle() {
 	s.Sushi.SwapExactTokensForTokensReturns([]*big.Int{big.NewInt(1), big.NewInt(2)})
 	s.Env.Blockchain.Commit()
 
-	s.Pendle.ExpiryReturns(maturity)
+	s.PendleToken.ExpiryReturns(maturity)
 	s.Env.Blockchain.Commit()
 
-	s.Pendle.YieldTokenReturns(s.Dep.Erc20Address)
+	s.PendleToken.YieldTokenReturns(s.Dep.Erc20Address)
 	s.Env.Blockchain.Commit()
 
 	s.ZcToken.MintReturns(true)
@@ -430,13 +430,13 @@ func (s *lendTestSuite) TestLendPendle() {
 	// TODO: This should be a helper that always returns a given address
 	s.Illuminate.MarketsReturns([8]common.Address{
 		s.Dep.ZcTokenAddress,
-		s.Dep.PendleAddress,
-		s.Dep.PendleAddress,
-		s.Dep.PendleAddress,
-		s.Dep.PendleAddress,
-		s.Dep.PendleAddress,
-		s.Dep.PendleAddress,
-		s.Dep.PendleAddress,
+		s.Dep.PendleTokenAddress,
+		s.Dep.PendleTokenAddress,
+		s.Dep.PendleTokenAddress,
+		s.Dep.PendleTokenAddress,
+		s.Dep.PendleTokenAddress,
+		s.Dep.PendleTokenAddress,
+		s.Dep.PendleTokenAddress,
 	})
 
 	amount := big.NewInt(100)
@@ -463,7 +463,7 @@ func (s *lendTestSuite) TestLendPendle() {
 
 	address, err = s.Sushi.PathCalled(big.NewInt(1))
 	assert.NoError(err)
-	assert.Equal(s.Dep.PendleAddress, address)
+	assert.Equal(s.Dep.PendleTokenAddress, address)
 
 	to, err := s.Sushi.ToCalled()
 	assert.NoError(err)

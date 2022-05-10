@@ -58,12 +58,12 @@ interface IZcToken {
   function balanceOf(address) external returns (uint256);
 }
 
-interface IPendle {
+interface IPendleToken {
     function yieldToken() external returns (address);
     function expiry() external returns (uint256);
 }
 
-interface ISushi {
+interface ISushi { // IPendle 
   function swapExactTokensForTokens(uint256, uint256, address[] calldata, address, uint256) external returns (uint[] memory amounts);
 }
 
@@ -73,10 +73,10 @@ interface ITempus {
   function depositAndFix(Any, Any, uint256, bool, uint256, uint256) external returns (uint256);
 }
 
-interface IAPWineRouter {
+interface IAPWineRouter { // --> APWINE
   function swapExactAmountIn(uint256, uint256, uint256, uint256, uint256, address) external returns (uint256);
 }
 
-interface IAPWine {
+interface IAPWine { // --> APWINE TOKEN
   function getPTAddress() external view returns (address);
 }

@@ -187,7 +187,7 @@ contract Lender {
   function lend(uint8 p, address u, uint256 m, uint256 a, uint256 mb, uint256 d) public returns (uint256) {
       // Instantiate market and tokens
       address market = IIlluminate(illuminate).markets(u, m)[p];
-      IPendle pendle = IPendle(market);
+      IPendleToken pendle = IPendleToken(market);
 
       // confirm that we are in the correct market
       require(pendle.yieldToken() == u, 'pendle underlying != underlying');
