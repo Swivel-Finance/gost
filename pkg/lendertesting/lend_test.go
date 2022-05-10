@@ -29,7 +29,7 @@ type lendTestSuite struct {
 	Sense        *mocks.SenseSession
 	SenseAdapter *mocks.SenseAdapterSession
 	APWineToken  *mocks.APWineTokenSession
-	APWineRouter *mocks.APWineRouterSession
+	APWine       *mocks.APWineSession
 	Lender       *lender.LenderSession
 }
 
@@ -161,8 +161,8 @@ func (s *lendTestSuite) SetupSuite() {
 		},
 	}
 
-	s.APWineRouter = &mocks.APWineRouterSession{
-		Contract: s.Dep.APWineRouter,
+	s.APWine = &mocks.APWineSession{
+		Contract: s.Dep.APWine,
 		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
 		TransactOpts: bind.TransactOpts{
 			From:   s.Env.Owner.Opts.From,
@@ -619,7 +619,7 @@ func (s *lendTestSuite) TestAPWineSense() {
 	s.Erc20.TransferFromReturns(true)
 	s.Env.Blockchain.Commit()
 
-	s.APWineRouter.SwapExactAmountInReturns(big.NewInt(12345))
+	s.APWine.SwapExactAmountInReturns(big.NewInt(12345))
 	s.Env.Blockchain.Commit()
 
 	s.ZcToken.MintReturns(true)
@@ -630,33 +630,33 @@ func (s *lendTestSuite) TestAPWineSense() {
 	minimumAmount := big.NewInt(34)
 	id := big.NewInt(1000)
 
-	tx, err := s.Lender.Lend(7, s.Dep.Erc20Address, maturity, amount, minimumAmount, s.Dep.APWineRouterAddress, id)
+	tx, err := s.Lender.Lend(7, s.Dep.Erc20Address, maturity, amount, minimumAmount, s.Dep.APWineAddress, id)
 	assert.NoError(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
 
 	// verify that mocks were called as expected
-	idCalled, err := s.APWineRouter.IdCalled()
+	idCalled, err := s.APWine.IdCalled()
 	assert.NoError(err)
 	assert.Equal(id, idCalled)
 
-	tokenInCalled, err := s.APWineRouter.TokenInCalled()
+	tokenInCalled, err := s.APWine.TokenInCalled()
 	assert.NoError(err)
 	assert.Equal(big.NewInt(1), tokenInCalled)
 
-	amountCalled, err := s.APWineRouter.AmountCalled()
+	amountCalled, err := s.APWine.AmountCalled()
 	assert.NoError(err)
 	assert.Equal(amount, amountCalled)
 
-	tokenOutCalled, err := s.APWineRouter.TokenOutCalled()
+	tokenOutCalled, err := s.APWine.TokenOutCalled()
 	assert.NoError(err)
 	assert.True(big.NewInt(0).Cmp(tokenOutCalled) == 0)
 
-	minimumAmountCalled, err := s.APWineRouter.MinimumAmountCalled()
+	minimumAmountCalled, err := s.APWine.MinimumAmountCalled()
 	assert.NoError(err)
 	assert.Equal(minimumAmount, minimumAmountCalled)
 
-	toCalled, err := s.APWineRouter.ToCalled()
+	toCalled, err := s.APWine.ToCalled()
 	assert.NoError(err)
 	assert.Equal(s.Dep.LenderAddress, toCalled)
 }

@@ -2,7 +2,7 @@
 
 pragma solidity 0.8.13;
 
-contract APWineRouter {
+contract APWine {
     uint256 private swapExactAmountInReturn;
 
     uint256 public idCalled;

@@ -33,10 +33,10 @@ type Dep struct {
 	Sense               *mocks.Sense
 	SenseAdapterAddress common.Address
 	SenseAdapter        *mocks.SenseAdapter
-	APWineToken         *mocks.APWine
+	APWineToken         *mocks.APWineToken
 	APWineTokenAddress  common.Address
-	APWineRouterAddress common.Address
-	APWineRouter        *mocks.APWineRouter
+	APWine              *mocks.APWine
+	APWineAddress       common.Address
 }
 
 func Deploy(e *Env) (*Dep, error) {
@@ -145,7 +145,7 @@ func Deploy(e *Env) (*Dep, error) {
 
 	e.Blockchain.Commit()
 
-	aprAddress, _, aprContract, aprErr := mocks.DeployAPWineRouter(e.Owner.Opts, e.Blockchain)
+	aprAddress, _, aprContract, aprErr := mocks.DeployAPWine(e.Owner.Opts, e.Blockchain)
 
 	if aprErr != nil {
 		return nil, aprErr
@@ -189,7 +189,7 @@ func Deploy(e *Env) (*Dep, error) {
 		SenseAdapter:        senseAdapterContract,
 		APWineToken:         apContract,
 		APWineTokenAddress:  apAddress,
-		APWineRouterAddress: aprAddress,
-		APWineRouter:        aprContract,
+		APWineAddress:       aprAddress,
+		APWine:              aprContract,
 	}, nil
 }
