@@ -14,7 +14,6 @@ contract Lender {
   address public admin;
   address public illuminate; // TODO authorized setter for this
 
-  // TODO the nature of these addresses?
   address public swivelAddr; // addresses of the 3rd party protocol contracts
   address public pendleAddr;
   address public tempusAddr;
