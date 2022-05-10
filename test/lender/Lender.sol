@@ -9,27 +9,31 @@ import './Safe.sol';
 import './Cast.sol';
 import './Element.sol';
 
+
+// TOKEN => refers to checking the underlying / maturity
+// [protocol] => refers to addresses executing the business logic of the protocol
+
 contract Lender {
   address public admin;
   address public illuminate; // TODO authorized setter for this
 
   // TODO the nature of these addresses?
   address public swivelAddr; // addresses of the 3rd party protocol contracts
-  address public pendleRouter;
-  address public tempusRouter;
+  address public pendleAddr;
+  address public tempusAddr;
   address public senseToken;
 
   event Lend(uint8 principal, address indexed underlying, uint256 indexed maturity, uint256 returned);
   event Mint(uint8 principal, address indexed underlying, uint256 indexed maturity, uint256 amount);
 
   /// @param i the deployed Illuminate contract
-  constructor(address i, address s, address su, address t, address sa) {
+  constructor(address i, address s, address pr, address t, address st) {
     admin = msg.sender;
     illuminate = i; // TODO add an authorized setter for this?
     swivelAddr = s;
-    pendleRouter = su;
-    tempusRouter = t;
-    senseToken = sa;
+    pendleAddr = pr;
+    tempusAddr = t;
+    senseToken = st;
   }
 
   /// @dev mint is uniform across all principals, thus there is no need for a 'minter'
@@ -176,7 +180,7 @@ contract Lender {
     return IElement(e).swap(swap, fund, r, d);
   }
 
-  /// @dev lend method signature for pendle
+  /// @dev lend method signature for pendleAddr
   /// @notice Can be called before maturity to lend to Pendle while minting Illuminate tokens
   /// @param p value of a specific principal according to the MarketPlace Principals Enum
   /// @param u address of an underlying asset
@@ -187,11 +191,11 @@ contract Lender {
   function lend(uint8 p, address u, uint256 m, uint256 a, uint256 mb, uint256 d) public returns (uint256) {
       // Instantiate market and tokens
       address market = IIlluminate(illuminate).markets(u, m)[p];
-      IPendleToken pendle = IPendleToken(market);
+      IPendleToken pendleToken = IPendleToken(market); // rename to pendletoken
 
       // confirm that we are in the correct market
-      require(pendle.yieldToken() == u, 'pendle underlying != underlying');
-      require(pendle.expiry() == m, 'pendle maturity != maturity');
+      require(pendleToken.yieldToken() == u, 'pendle underlying != underlying');
+      require(pendleToken.expiry() == m, 'pendle maturity != maturity');
 
       // Transfer funds from user to Illuminate
       Safe.transferFrom(IErc20(u), msg.sender, address(this), a);
@@ -202,7 +206,8 @@ contract Lender {
       path[1] = market;
 
       // Swap on the Pendle Router using the provided market and params
-      uint256 returned = IPendle(pendleRouter).swapExactTokensForTokens(a, mb, path, address(this), d)[0];
+                                // PendleRouter == IPendle
+      uint256 returned = IPendle(pendleAddr).swapExactTokensForTokens(a, mb, path, address(this), d)[0];
 
       // Mint Illuminate zero coupons
       address[8] memory markets = IIlluminate(illuminate).markets(u, m); 
@@ -225,9 +230,9 @@ contract Lender {
   /// @param d deadline ?
   function lend(uint8 p, address u, uint256 m, uint256 a, uint256 r, address x, address t, uint256 d) public returns (uint256) {
       // Instantiate market and tokens
-      address market = IIlluminate(illuminate).markets(u, m)[p];
-      require(ITempus(market).yieldBearingToken() == IErc20Metadata(u), 'tempus underlying != underlying');
-      require(ITempus(market).maturityTime() == m, 'tempus maturity != maturity');
+      address tempusToken = IIlluminate(illuminate).markets(u, m)[p];
+      require(ITempus(tempusToken).yieldBearingToken() == IErc20Metadata(u), 'tempus underlying != underlying');
+      require(ITempus(tempusToken).maturityTime() == m, 'tempus maturity != maturity');
 
       // Transfer funds from user to Illuminate, Scope to avoid stack limit
       IErc20 underlyingToken = IErc20(u);
@@ -235,7 +240,7 @@ contract Lender {
 
       // Swap on the Tempus Router using the provided market and params
       IZcToken illuminateToken = IZcToken(IIlluminate(illuminate).markets(u, m)[uint256(Illuminate.Principals.Illuminate)]);
-      uint256 returned = ITempus(tempusRouter).depositAndFix(Any(x), Any(t), a, true, r, d) - illuminateToken.balanceOf(address(this));
+      uint256 returned = ITempus(tempusAddr).depositAndFix(Any(x), Any(t), a, true, r, d) - illuminateToken.balanceOf(address(this));
 
       // Mint Illuminate zero coupons
       illuminateToken.mint(msg.sender, returned);
