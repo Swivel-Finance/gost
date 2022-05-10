@@ -2,7 +2,6 @@ package lendertesting
 
 import (
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/swivel-finance/gost/test/lender"
 	"github.com/swivel-finance/gost/test/mocks"
 )
 
