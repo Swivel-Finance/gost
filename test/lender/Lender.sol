@@ -283,7 +283,7 @@ contract Lender {
   function lend(uint8 p, address u, uint256 m, uint256 a, uint256 ma, address po, uint256 i) public returns (uint256) {
       // Instantiate market and tokens
       address[8] memory markets = IIlluminate(illuminate).markets(u, m);
-      require(IAPWine(markets[p]).getPTAddress() == u, "apwine principle != principle");
+      require(IAPWineToken(markets[p]).getPTAddress() == u, "apwine principle != principle");
 
       // Transfer funds from user to Illuminate    
       Safe.transferFrom(IErc20(u), msg.sender, address(this), a);   

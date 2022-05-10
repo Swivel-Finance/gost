@@ -28,7 +28,7 @@ type lendTestSuite struct {
 	Tempus       *mocks.TempusSession
 	Sense        *mocks.SenseSession
 	SenseAdapter *mocks.SenseAdapterSession
-	APWine       *mocks.APWineSession
+	APWineToken  *mocks.APWineTokenSession
 	APWineRouter *mocks.APWineRouterSession
 	Lender       *lender.LenderSession
 }
@@ -152,8 +152,8 @@ func (s *lendTestSuite) SetupSuite() {
 		},
 	}
 
-	s.APWine = &mocks.APWineSession{
-		Contract: s.Dep.APWine,
+	s.APWineToken = &mocks.APWineTokenSession{
+		Contract: s.Dep.APWineToken,
 		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
 		TransactOpts: bind.TransactOpts{
 			From:   s.Env.Owner.Opts.From,
@@ -603,17 +603,17 @@ func (s *lendTestSuite) TestAPWineSense() {
 	assert := assert.New(s.T())
 	s.Illuminate.MarketsReturns([8]common.Address{
 		s.Dep.ZcTokenAddress,
-		s.Dep.APWineAddress,
-		s.Dep.APWineAddress,
-		s.Dep.APWineAddress,
-		s.Dep.APWineAddress,
-		s.Dep.APWineAddress,
-		s.Dep.APWineAddress,
-		s.Dep.APWineAddress,
+		s.Dep.APWineTokenAddress,
+		s.Dep.APWineTokenAddress,
+		s.Dep.APWineTokenAddress,
+		s.Dep.APWineTokenAddress,
+		s.Dep.APWineTokenAddress,
+		s.Dep.APWineTokenAddress,
+		s.Dep.APWineTokenAddress,
 	})
 	s.Env.Blockchain.Commit()
 
-	s.APWine.GetPTAddressReturns(s.Dep.Erc20Address)
+	s.APWineToken.GetPTAddressReturns(s.Dep.Erc20Address)
 	s.Env.Blockchain.Commit()
 
 	s.Erc20.TransferFromReturns(true)

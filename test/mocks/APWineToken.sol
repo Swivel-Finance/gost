@@ -2,7 +2,7 @@
 
 pragma solidity 0.8.13;
 
-contract APWine {
+contract APWineToken {
     address getPTAddressReturn;
 
     function getPTAddressReturns(address a) external {
