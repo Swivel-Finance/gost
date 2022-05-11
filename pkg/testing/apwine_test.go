@@ -11,14 +11,14 @@ import (
 	"github.com/swivel-finance/gost/test/mocks"
 )
 
-type apWineRouterTestSuite struct {
+type apWineTestSuite struct {
 	suite.Suite
-	Env          *Env
-	Dep          *Dep
-	APWineRouter *mocks.APWineRouterSession
+	Env    *Env
+	Dep    *Dep
+	APWine *mocks.APWineSession
 }
 
-func (s *apWineRouterTestSuite) SetupTest() {
+func (s *apWineTestSuite) SetupTest() {
 	var err error
 
 	s.Env = NewEnv(big.NewInt(ONE_ETH)) // each of the wallets in the env will begin with this balance
@@ -29,8 +29,8 @@ func (s *apWineRouterTestSuite) SetupTest() {
 	}
 
 	// binding owner to both, kind of why it exists - but could be any of the env wallets
-	s.APWineRouter = &mocks.APWineRouterSession{
-		Contract: s.Dep.APWineRouter,
+	s.APWine = &mocks.APWineSession{
+		Contract: s.Dep.APWine,
 		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
 		TransactOpts: bind.TransactOpts{
 			From:   s.Env.Owner.Opts.From,
@@ -39,13 +39,13 @@ func (s *apWineRouterTestSuite) SetupTest() {
 	}
 }
 
-func (s *apWineRouterTestSuite) TestSwapExactAmountIn() {
+func (s *apWineTestSuite) TestSwapExactAmountIn() {
 	assert := assert.New(s.T())
 
-	s.APWineRouter.SwapExactAmountInReturns(big.NewInt(1000))
+	s.APWine.SwapExactAmountInReturns(big.NewInt(1000))
 	s.Env.Blockchain.Commit()
 
-	s.APWineRouter.SwapExactAmountIn(
+	s.APWine.SwapExactAmountIn(
 		big.NewInt(1000),
 		big.NewInt(2000),
 		big.NewInt(3000),
@@ -55,31 +55,31 @@ func (s *apWineRouterTestSuite) TestSwapExactAmountIn() {
 	)
 	s.Env.Blockchain.Commit()
 
-	id, err := s.APWineRouter.IdCalled()
+	id, err := s.APWine.IdCalled()
 	assert.Nil(err)
 	assert.Equal(big.NewInt(1000), id)
 
-	tokenIn, err := s.APWineRouter.TokenInCalled()
+	tokenIn, err := s.APWine.TokenInCalled()
 	assert.Nil(err)
 	assert.Equal(big.NewInt(2000), tokenIn)
 
-	amount, err := s.APWineRouter.AmountCalled()
+	amount, err := s.APWine.AmountCalled()
 	assert.Nil(err)
 	assert.Equal(big.NewInt(3000), amount)
 
-	tokenOut, err := s.APWineRouter.TokenOutCalled()
+	tokenOut, err := s.APWine.TokenOutCalled()
 	assert.Nil(err)
 	assert.Equal(big.NewInt(4000), tokenOut)
 
-	minimumAmount, err := s.APWineRouter.MinimumAmountCalled()
+	minimumAmount, err := s.APWine.MinimumAmountCalled()
 	assert.Nil(err)
 	assert.Equal(big.NewInt(5000), minimumAmount)
 
-	to, err := s.APWineRouter.ToCalled()
+	to, err := s.APWine.ToCalled()
 	assert.Nil(err)
 	assert.Equal(common.HexToAddress("0x0000000000000000000000000000000000000002"), to)
 }
 
 func TestAPWineSuite(t *test.T) {
-	suite.Run(t, &apWineRouterTestSuite{})
+	suite.Run(t, &apWineTestSuite{})
 }

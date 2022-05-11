@@ -2,7 +2,7 @@
 
 pragma solidity 0.8.13;
 
-contract SenseAdapter {
+contract SenseToken {
     address private underlyingReturn;
 
     function underlyingReturns(address a) external {

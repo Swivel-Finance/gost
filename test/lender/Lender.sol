@@ -9,27 +9,25 @@ import './Safe.sol';
 import './Cast.sol';
 import './Element.sol';
 
+
 contract Lender {
   address public admin;
   address public illuminate; // TODO authorized setter for this
 
-  // TODO the nature of these addresses?
   address public swivelAddr; // addresses of the 3rd party protocol contracts
-  address public sushiRouter;
-  address public tempusRouter;
-  address public senseAdapter;
+  address public pendleAddr;
+  address public tempusAddr;
 
   event Lend(uint8 principal, address indexed underlying, uint256 indexed maturity, uint256 returned);
   event Mint(uint8 principal, address indexed underlying, uint256 indexed maturity, uint256 amount);
 
   /// @param i the deployed Illuminate contract
-  constructor(address i, address s, address su, address t, address sa) {
+  constructor(address i, address s, address p, address t) {
     admin = msg.sender;
     illuminate = i; // TODO add an authorized setter for this?
     swivelAddr = s;
-    sushiRouter = su;
-    tempusRouter = t;
-    senseAdapter = sa;
+    pendleAddr = p;
+    tempusAddr = t;
   }
 
   /// @dev mint is uniform across all principals, thus there is no need for a 'minter'
@@ -145,15 +143,14 @@ contract Lender {
     // safe transfer from uToken is uniform
     Safe.transferFrom(IErc20(u), msg.sender, address(this), a);
 
-
-    IElementToken eToken = IElementToken(IIlluminate(illuminate).markets(u, m)[p]);
+    IElementToken token = IElementToken(IIlluminate(illuminate).markets(u, m)[p]);
 
     // the element token must match the market pair
-    require(eToken.underlying() == u, '');
-    require(eToken.unlockTimestamp() == m, '');
+    require(token.underlying() == u, '');
+    require(token.unlockTimestamp() == m, '');
 
 
-    // safe transfer... self...
+    // TODO:  safe transfer... self...
     
     // TODO: userData should be set to address(0) in bytes form
     Element.SingleSwap memory swap = Element.SingleSwap({
@@ -186,12 +183,12 @@ contract Lender {
   /// @param d the maximum timestamp at which the transaction can be executed
   function lend(uint8 p, address u, uint256 m, uint256 a, uint256 mb, uint256 d) public returns (uint256) {
       // Instantiate market and tokens
-      address market = IIlluminate(illuminate).markets(u, m)[p];
-      IPendle pendle = IPendle(market);
+      address principal = IIlluminate(illuminate).markets(u, m)[p];
+      IPendleToken token = IPendleToken(principal); // rename to pendletoken
 
       // confirm that we are in the correct market
-      require(pendle.yieldToken() == u, 'pendle underlying != underlying');
-      require(pendle.expiry() == m, 'pendle maturity != maturity');
+      require(token.yieldToken() == u, 'pendle underlying != underlying');
+      require(token.expiry() == m, 'pendle maturity != maturity');
 
       // Transfer funds from user to Illuminate
       Safe.transferFrom(IErc20(u), msg.sender, address(this), a);
@@ -199,10 +196,11 @@ contract Lender {
 
       address[] memory path = new address[](2);
       path[0] = u;
-      path[1] = market;
+      path[1] = principal;
 
       // Swap on the Pendle Router using the provided market and params
-      uint256 returned = ISushi(sushiRouter).swapExactTokensForTokens(a, mb, path, address(this), d)[0];
+                                // PendleRouter == IPendle
+      uint256 returned = IPendle(pendleAddr).swapExactTokensForTokens(a, mb, path, address(this), d)[0];
 
       // Mint Illuminate zero coupons
       address[8] memory markets = IIlluminate(illuminate).markets(u, m); 
@@ -225,9 +223,9 @@ contract Lender {
   /// @param d deadline ?
   function lend(uint8 p, address u, uint256 m, uint256 a, uint256 r, address x, address t, uint256 d) public returns (uint256) {
       // Instantiate market and tokens
-      address market = IIlluminate(illuminate).markets(u, m)[p];
-      require(ITempus(market).yieldBearingToken() == IErc20Metadata(u), 'tempus underlying != underlying');
-      require(ITempus(market).maturityTime() == m, 'tempus maturity != maturity');
+      address principal = IIlluminate(illuminate).markets(u, m)[p];
+      require(ITempus(principal).yieldBearingToken() == IErc20Metadata(u), 'tempus underlying != underlying');
+      require(ITempus(principal).maturityTime() == m, 'tempus maturity != maturity');
 
       // Transfer funds from user to Illuminate, Scope to avoid stack limit
       IErc20 underlyingToken = IErc20(u);
@@ -235,7 +233,7 @@ contract Lender {
 
       // Swap on the Tempus Router using the provided market and params
       IZcToken illuminateToken = IZcToken(IIlluminate(illuminate).markets(u, m)[uint256(Illuminate.Principals.Illuminate)]);
-      uint256 returned = ITempus(tempusRouter).depositAndFix(Any(x), Any(t), a, true, r, d) - illuminateToken.balanceOf(address(this));
+      uint256 returned = ITempus(tempusAddr).depositAndFix(Any(x), Any(t), a, true, r, d) - illuminateToken.balanceOf(address(this));
 
       // Mint Illuminate zero coupons
       illuminateToken.mint(msg.sender, returned);
@@ -257,11 +255,10 @@ contract Lender {
   function lend(uint8 p, address u, uint256 m, address x, address sa, uint128 a, uint256 mb) public returns (uint256){
         // Instantiate market and tokens
         // TODO: Check that we have the right underlying and maturity
-        require(ISenseAdapter(senseAdapter).underlying() == u, 'sense underlying != underlying');
 
         // Transfer funds from user to Illuminate
-        IErc20 underlyingToken = IErc20(u);
-        Safe.transferFrom(underlyingToken, msg.sender, address(this), a);
+        IErc20 token = IErc20(u);
+        Safe.transferFrom(token, msg.sender, address(this), a);
         uint256 returned = ISense(x).swapUnderlyingForPTs(sa, m, a, mb);
 
         address[8] memory markets = IIlluminate(illuminate).markets(u, m);
@@ -283,7 +280,7 @@ contract Lender {
   function lend(uint8 p, address u, uint256 m, uint256 a, uint256 ma, address po, uint256 i) public returns (uint256) {
       // Instantiate market and tokens
       address[8] memory markets = IIlluminate(illuminate).markets(u, m);
-      require(IAPWine(markets[p]).getPTAddress() == u, "apwine principle != principle");
+      require(IAPWineToken(markets[p]).getPTAddress() == u, "apwine principle != principle");
 
       // Transfer funds from user to Illuminate    
       Safe.transferFrom(IErc20(u), msg.sender, address(this), a);   

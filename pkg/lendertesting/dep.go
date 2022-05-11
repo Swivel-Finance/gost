@@ -23,20 +23,20 @@ type Dep struct {
 	ElementToken        *mocks.ElementToken
 	ElementAddress      common.Address
 	Element             *mocks.Element
+	PendleTokenAddress  common.Address
+	PendleToken         *mocks.PendleToken
 	PendleAddress       common.Address
 	Pendle              *mocks.Pendle
-	SushiAddress        common.Address
-	Sushi               *mocks.Sushi
 	TempusAddress       common.Address
 	Tempus              *mocks.Tempus
 	SenseAddress        common.Address
 	Sense               *mocks.Sense
-	SenseAdapterAddress common.Address
-	SenseAdapter        *mocks.SenseAdapter
+	SenseTokenAddress   common.Address
+	SenseToken          *mocks.SenseToken
+	APWineToken         *mocks.APWineToken
+	APWineTokenAddress  common.Address
 	APWine              *mocks.APWine
 	APWineAddress       common.Address
-	APWineRouterAddress common.Address
-	APWineRouter        *mocks.APWineRouter
 }
 
 func Deploy(e *Env) (*Dep, error) {
@@ -97,7 +97,7 @@ func Deploy(e *Env) (*Dep, error) {
 
 	e.Blockchain.Commit()
 
-	pAddress, _, pContract, pErr := mocks.DeployPendle(e.Owner.Opts, e.Blockchain)
+	pAddress, _, pContract, pErr := mocks.DeployPendleToken(e.Owner.Opts, e.Blockchain)
 
 	if pErr != nil {
 		return nil, pErr
@@ -105,10 +105,10 @@ func Deploy(e *Env) (*Dep, error) {
 
 	e.Blockchain.Commit()
 
-	suAddress, _, suContract, suErr := mocks.DeploySushi(e.Owner.Opts, e.Blockchain)
+	peAddress, _, peContract, peErr := mocks.DeployPendle(e.Owner.Opts, e.Blockchain)
 
-	if suErr != nil {
-		return nil, suErr
+	if peErr != nil {
+		return nil, peErr
 	}
 
 	e.Blockchain.Commit()
@@ -129,15 +129,15 @@ func Deploy(e *Env) (*Dep, error) {
 
 	e.Blockchain.Commit()
 
-	senseAdapterAddress, _, senseAdapterContract, senseAdapterErr := mocks.DeploySenseAdapter(e.Owner.Opts, e.Blockchain)
+	senseTokenAddress, _, senseTokenContract, senseTokenErr := mocks.DeploySenseToken(e.Owner.Opts, e.Blockchain)
 
-	if senseAdapterErr != nil {
-		return nil, senseAdapterErr
+	if senseTokenErr != nil {
+		return nil, senseTokenErr
 	}
 
 	e.Blockchain.Commit()
 
-	apAddress, _, apContract, apErr := mocks.DeployAPWine(e.Owner.Opts, e.Blockchain)
+	apAddress, _, apContract, apErr := mocks.DeployAPWineToken(e.Owner.Opts, e.Blockchain)
 
 	if apErr != nil {
 		return nil, apErr
@@ -145,7 +145,7 @@ func Deploy(e *Env) (*Dep, error) {
 
 	e.Blockchain.Commit()
 
-	aprAddress, _, aprContract, aprErr := mocks.DeployAPWineRouter(e.Owner.Opts, e.Blockchain)
+	aprAddress, _, aprContract, aprErr := mocks.DeployAPWine(e.Owner.Opts, e.Blockchain)
 
 	if aprErr != nil {
 		return nil, aprErr
@@ -153,7 +153,7 @@ func Deploy(e *Env) (*Dep, error) {
 
 	e.Blockchain.Commit()
 
-	lenderAddress, _, lender, lenderErr := lender.DeployLender(e.Owner.Opts, e.Blockchain, mpAddress, swAddress, suAddress, tAddress, senseAdapterAddress)
+	lenderAddress, _, lender, lenderErr := lender.DeployLender(e.Owner.Opts, e.Blockchain, mpAddress, swAddress, peAddress, tAddress)
 	if lenderErr != nil {
 		return nil, lenderErr
 	}
@@ -177,19 +177,19 @@ func Deploy(e *Env) (*Dep, error) {
 		ElementToken:        elementTokenContract,
 		ElementAddress:      elementAddress,
 		Element:             elementContract,
-		PendleAddress:       pAddress,
-		Pendle:              pContract,
-		SushiAddress:        suAddress,
-		Sushi:               suContract,
+		PendleTokenAddress:  pAddress,
+		PendleToken:         pContract,
+		PendleAddress:       peAddress,
+		Pendle:              peContract,
 		TempusAddress:       tAddress,
 		Tempus:              tContract,
 		SenseAddress:        seAddress,
 		Sense:               seContract,
-		SenseAdapterAddress: senseAdapterAddress,
-		SenseAdapter:        senseAdapterContract,
-		APWine:              apContract,
-		APWineAddress:       apAddress,
-		APWineRouterAddress: aprAddress,
-		APWineRouter:        aprContract,
+		SenseTokenAddress:   senseTokenAddress,
+		SenseToken:          senseTokenContract,
+		APWineToken:         apContract,
+		APWineTokenAddress:  apAddress,
+		APWineAddress:       aprAddress,
+		APWine:              aprContract,
 	}, nil
 }

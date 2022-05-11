@@ -39,34 +39,52 @@ func (s *pendleTestSuite) SetupSuite() {
 	}
 }
 
-func (s *pendleTestSuite) TestExpiry() {
+func (s *pendleTestSuite) TestSwapExactTokensForTokens() {
 	assert := assert.New(s.T())
-
-	expiry := big.NewInt(10)
-	tx, err := s.Pendle.ExpiryReturns(expiry)
+	returnedArray := []*big.Int{big.NewInt(1), big.NewInt(2)}
+	tx, err := s.Pendle.SwapExactTokensForTokensReturns(returnedArray)
 	assert.NotNil(tx)
 	assert.Nil(err)
 	s.Env.Blockchain.Commit()
 
-	pendleMaturity, err := s.Pendle.Expiry()
-	assert.Nil(err)
-	assert.Equal(expiry, pendleMaturity)
-}
+	in := big.NewInt(1)
+	out := big.NewInt(2)
+	path := []common.Address{common.HexToAddress("0x1"), common.HexToAddress("0x2")}
+	to := common.HexToAddress("0x3")
+	deadline := big.NewInt(4)
 
-func (s *pendleTestSuite) TestYieldToken() {
-	assert := assert.New(s.T())
-
-	yieldToken := common.HexToAddress("0x0000000000000000000000000000000000000001")
-	tx, err := s.Pendle.YieldTokenReturns(yieldToken)
+	tx, err = s.Pendle.SwapExactTokensForTokens(in, out, path, to, deadline)
 	assert.NotNil(tx)
 	assert.Nil(err)
 	s.Env.Blockchain.Commit()
 
-	pendleUnderlying, err := s.Pendle.YieldToken()
+	inCalled, err := s.Pendle.InCalled()
 	assert.Nil(err)
-	assert.Equal(yieldToken, pendleUnderlying)
+	assert.Equal(in, inCalled)
+
+	outCalled, err := s.Pendle.OutMinimumCalled()
+	assert.Nil(err)
+	assert.Equal(out, outCalled)
+
+	var pathCalled [2]common.Address
+	path0, err := s.Pendle.PathCalled(big.NewInt(0))
+	pathCalled[0] = path0
+	path1, err := s.Pendle.PathCalled(big.NewInt(1))
+	pathCalled[1] = path1
+	assert.Nil(err)
+	assert.Equal(path[0], pathCalled[0])
+	assert.Equal(path[1], pathCalled[1])
+	assert.Equal(len(path), len(pathCalled))
+
+	toCalled, err := s.Pendle.ToCalled()
+	assert.Nil(err)
+	assert.Equal(to, toCalled)
+
+	deadlineCalled, err := s.Pendle.DeadlineCalled()
+	assert.Nil(err)
+	assert.Equal(deadline, deadlineCalled)
 }
 
-func TestPendleSuite(t *test.T) {
+func TestSushiSuite(t *test.T) {
 	suite.Run(t, &pendleTestSuite{})
 }
