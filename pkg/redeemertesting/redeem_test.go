@@ -145,11 +145,7 @@ func (s *redeemTestSuite) TestAPWineRedeem() {
 	s.Env.Blockchain.Commit()
 
 	// verify that the mocked functions were called as expected
-	ownerCalled, err := s.APWine.OwnerCalled()
-	assert.NoError(err)
-	assert.Equal(vault, ownerCalled)
-
-	amountCalled, err := s.APWine.AmountCalled()
+	amountCalled, err := s.APWine.WithdrawCalled(vault)
 	assert.NoError(err)
 	assert.Equal(amount, amountCalled)
 
