@@ -28,6 +28,9 @@ contract Tempus {
     bool public isBackingTokenCalled;
     uint256 public minimumReturnCalled;
     uint256 public deadlineCalled;
+    address public ownerCalled;
+    uint256 public maturityCalled;
+    address public underlyingCalled;
 
     function depositAndFixReturns(uint256 r) external {
         depositAndFixReturn = r;
@@ -58,5 +61,12 @@ contract Tempus {
         deadlineCalled = d;
 
         return depositAndFixReturn;
+    }
+
+    function redeemToBacking(address o, uint256 m, uint256 a, address u) external {
+        ownerCalled = o;
+        maturityCalled = m;
+        amountCalled = a;
+        underlyingCalled = u;
     }
 }
