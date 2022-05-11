@@ -4,6 +4,7 @@
 package mocks
 
 import (
+	"errors"
 	"math/big"
 	"strings"
 
@@ -17,6 +18,7 @@ import (
 
 // Reference imports to suppress errors if they are not otherwise used.
 var (
+	_ = errors.New
 	_ = big.NewInt
 	_ = strings.NewReader
 	_ = ethereum.NotFound
@@ -26,20 +28,31 @@ var (
 	_ = event.NewSubscription
 )
 
+// APWineTokenMetaData contains all meta data concerning the APWineToken contract.
+var APWineTokenMetaData = &bind.MetaData{
+	ABI: "[{\"inputs\":[],\"name\":\"getPTAddress\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"a\",\"type\":\"address\"}],\"name\":\"getPTAddressReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]",
+	Bin: "0x608060405234801561001057600080fd5b506101d1806100206000396000f3fe608060405234801561001057600080fd5b50600436106100365760003560e01c80631e5f74a11461003b5780639a8cb8f314610059575b600080fd5b610043610075565b6040516100509190610122565b60405180910390f35b610073600480360381019061006e919061016e565b61009e565b005b60008060009054906101000a900473ffffffffffffffffffffffffffffffffffffffff16905090565b806000806101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555050565b600073ffffffffffffffffffffffffffffffffffffffff82169050919050565b600061010c826100e1565b9050919050565b61011c81610101565b82525050565b60006020820190506101376000830184610113565b92915050565b600080fd5b61014b81610101565b811461015657600080fd5b50565b60008135905061016881610142565b92915050565b6000602082840312156101845761018361013d565b5b600061019284828501610159565b9150509291505056fea2646970667358221220170efc283760638e14d30eb332a0b929da823596810d82cbbd38f903526a97ac64736f6c634300080d0033",
+}
+
 // APWineTokenABI is the input ABI used to generate the binding from.
-const APWineTokenABI = "[{\"inputs\":[],\"name\":\"getPTAddress\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"a\",\"type\":\"address\"}],\"name\":\"getPTAddressReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]"
+// Deprecated: Use APWineTokenMetaData.ABI instead.
+var APWineTokenABI = APWineTokenMetaData.ABI
 
 // APWineTokenBin is the compiled bytecode used for deploying new contracts.
-var APWineTokenBin = "0x608060405234801561001057600080fd5b506101d1806100206000396000f3fe608060405234801561001057600080fd5b50600436106100365760003560e01c80631e5f74a11461003b5780639a8cb8f314610059575b600080fd5b610043610075565b6040516100509190610122565b60405180910390f35b610073600480360381019061006e919061016e565b61009e565b005b60008060009054906101000a900473ffffffffffffffffffffffffffffffffffffffff16905090565b806000806101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555050565b600073ffffffffffffffffffffffffffffffffffffffff82169050919050565b600061010c826100e1565b9050919050565b61011c81610101565b82525050565b60006020820190506101376000830184610113565b92915050565b600080fd5b61014b81610101565b811461015657600080fd5b50565b60008135905061016881610142565b92915050565b6000602082840312156101845761018361013d565b5b600061019284828501610159565b9150509291505056fea2646970667358221220170efc283760638e14d30eb332a0b929da823596810d82cbbd38f903526a97ac64736f6c634300080d0033"
+// Deprecated: Use APWineTokenMetaData.Bin instead.
+var APWineTokenBin = APWineTokenMetaData.Bin
 
 // DeployAPWineToken deploys a new Ethereum contract, binding an instance of APWineToken to it.
 func DeployAPWineToken(auth *bind.TransactOpts, backend bind.ContractBackend) (common.Address, *types.Transaction, *APWineToken, error) {
-	parsed, err := abi.JSON(strings.NewReader(APWineTokenABI))
+	parsed, err := APWineTokenMetaData.GetAbi()
 	if err != nil {
 		return common.Address{}, nil, nil, err
 	}
+	if parsed == nil {
+		return common.Address{}, nil, nil, errors.New("GetABI returned nil")
+	}
 
-	address, tx, contract, err := bind.DeployContract(auth, parsed, common.FromHex(APWineTokenBin), backend)
+	address, tx, contract, err := bind.DeployContract(auth, *parsed, common.FromHex(APWineTokenBin), backend)
 	if err != nil {
 		return common.Address{}, nil, nil, err
 	}

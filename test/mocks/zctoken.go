@@ -4,6 +4,7 @@
 package mocks
 
 import (
+	"errors"
 	"math/big"
 	"strings"
 
@@ -17,6 +18,7 @@ import (
 
 // Reference imports to suppress errors if they are not otherwise used.
 var (
+	_ = errors.New
 	_ = big.NewInt
 	_ = strings.NewReader
 	_ = ethereum.NotFound
@@ -26,20 +28,31 @@ var (
 	_ = event.NewSubscription
 )
 
+// ZcTokenMetaData contains all meta data concerning the ZcToken contract.
+var ZcTokenMetaData = &bind.MetaData{
+	ABI: "[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"a\",\"type\":\"address\"}],\"name\":\"balanceOf\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"a\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"b\",\"type\":\"uint256\"}],\"name\":\"balanceOfReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"balances\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"a\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"u\",\"type\":\"uint256\"}],\"name\":\"mint\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"mintCalled\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bool\",\"name\":\"r\",\"type\":\"bool\"}],\"name\":\"mintReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]",
+	Bin: "0x608060405234801561001057600080fd5b506104d1806100206000396000f3fe608060405234801561001057600080fd5b50600436106100625760003560e01c806327e235e31461006757806340c10f191461009757806370a08231146100c7578063c0c6e5ab146100f7578063ee4db57014610113578063fdfe5f4d14610143575b600080fd5b610081600480360381019061007c919061033f565b61015f565b60405161008e9190610385565b60405180910390f35b6100b160048036038101906100ac91906103cc565b610177565b6040516100be9190610427565b60405180910390f35b6100e160048036038101906100dc919061033f565b610218565b6040516100ee9190610385565b60405180910390f35b610111600480360381019061010c91906103cc565b610260565b005b61012d6004803603810190610128919061033f565b6102a7565b60405161013a9190610385565b60405180910390f35b61015d6004803603810190610158919061046e565b6102bf565b005b60006020528060005260406000206000915090505481565b6000816000808573ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1681526020019081526020016000208190555081600260008573ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002081905550600160009054906101000a900460ff16905092915050565b60008060008373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020549050919050565b806000808473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020819055505050565b60026020528060005260406000206000915090505481565b80600160006101000a81548160ff02191690831515021790555050565b600080fd5b600073ffffffffffffffffffffffffffffffffffffffff82169050919050565b600061030c826102e1565b9050919050565b61031c81610301565b811461032757600080fd5b50565b60008135905061033981610313565b92915050565b600060208284031215610355576103546102dc565b5b60006103638482850161032a565b91505092915050565b6000819050919050565b61037f8161036c565b82525050565b600060208201905061039a6000830184610376565b92915050565b6103a98161036c565b81146103b457600080fd5b50565b6000813590506103c6816103a0565b92915050565b600080604083850312156103e3576103e26102dc565b5b60006103f18582860161032a565b9250506020610402858286016103b7565b9150509250929050565b60008115159050919050565b6104218161040c565b82525050565b600060208201905061043c6000830184610418565b92915050565b61044b8161040c565b811461045657600080fd5b50565b60008135905061046881610442565b92915050565b600060208284031215610484576104836102dc565b5b600061049284828501610459565b9150509291505056fea26469706673582212208b34f2e698f24550ba3dd1cececbbfa23050796bcf04c668a260499468e3c75064736f6c634300080d0033",
+}
+
 // ZcTokenABI is the input ABI used to generate the binding from.
-const ZcTokenABI = "[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"a\",\"type\":\"address\"}],\"name\":\"balanceOf\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"a\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"b\",\"type\":\"uint256\"}],\"name\":\"balanceOfReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"balances\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"a\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"u\",\"type\":\"uint256\"}],\"name\":\"mint\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"mintCalled\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bool\",\"name\":\"r\",\"type\":\"bool\"}],\"name\":\"mintReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]"
+// Deprecated: Use ZcTokenMetaData.ABI instead.
+var ZcTokenABI = ZcTokenMetaData.ABI
 
 // ZcTokenBin is the compiled bytecode used for deploying new contracts.
-var ZcTokenBin = "0x608060405234801561001057600080fd5b506104d1806100206000396000f3fe608060405234801561001057600080fd5b50600436106100625760003560e01c806327e235e31461006757806340c10f191461009757806370a08231146100c7578063c0c6e5ab146100f7578063ee4db57014610113578063fdfe5f4d14610143575b600080fd5b610081600480360381019061007c919061033f565b61015f565b60405161008e9190610385565b60405180910390f35b6100b160048036038101906100ac91906103cc565b610177565b6040516100be9190610427565b60405180910390f35b6100e160048036038101906100dc919061033f565b610218565b6040516100ee9190610385565b60405180910390f35b610111600480360381019061010c91906103cc565b610260565b005b61012d6004803603810190610128919061033f565b6102a7565b60405161013a9190610385565b60405180910390f35b61015d6004803603810190610158919061046e565b6102bf565b005b60006020528060005260406000206000915090505481565b6000816000808573ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1681526020019081526020016000208190555081600260008573ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002081905550600160009054906101000a900460ff16905092915050565b60008060008373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020549050919050565b806000808473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020819055505050565b60026020528060005260406000206000915090505481565b80600160006101000a81548160ff02191690831515021790555050565b600080fd5b600073ffffffffffffffffffffffffffffffffffffffff82169050919050565b600061030c826102e1565b9050919050565b61031c81610301565b811461032757600080fd5b50565b60008135905061033981610313565b92915050565b600060208284031215610355576103546102dc565b5b60006103638482850161032a565b91505092915050565b6000819050919050565b61037f8161036c565b82525050565b600060208201905061039a6000830184610376565b92915050565b6103a98161036c565b81146103b457600080fd5b50565b6000813590506103c6816103a0565b92915050565b600080604083850312156103e3576103e26102dc565b5b60006103f18582860161032a565b9250506020610402858286016103b7565b9150509250929050565b60008115159050919050565b6104218161040c565b82525050565b600060208201905061043c6000830184610418565b92915050565b61044b8161040c565b811461045657600080fd5b50565b60008135905061046881610442565b92915050565b600060208284031215610484576104836102dc565b5b600061049284828501610459565b9150509291505056fea26469706673582212208b34f2e698f24550ba3dd1cececbbfa23050796bcf04c668a260499468e3c75064736f6c634300080d0033"
+// Deprecated: Use ZcTokenMetaData.Bin instead.
+var ZcTokenBin = ZcTokenMetaData.Bin
 
 // DeployZcToken deploys a new Ethereum contract, binding an instance of ZcToken to it.
 func DeployZcToken(auth *bind.TransactOpts, backend bind.ContractBackend) (common.Address, *types.Transaction, *ZcToken, error) {
-	parsed, err := abi.JSON(strings.NewReader(ZcTokenABI))
+	parsed, err := ZcTokenMetaData.GetAbi()
 	if err != nil {
 		return common.Address{}, nil, nil, err
 	}
+	if parsed == nil {
+		return common.Address{}, nil, nil, errors.New("GetABI returned nil")
+	}
 
-	address, tx, contract, err := bind.DeployContract(auth, parsed, common.FromHex(ZcTokenBin), backend)
+	address, tx, contract, err := bind.DeployContract(auth, *parsed, common.FromHex(ZcTokenBin), backend)
 	if err != nil {
 		return common.Address{}, nil, nil, err
 	}
