@@ -20,3 +20,6 @@
 
 .idea
 .DS_Store
+
+# vscode directory
+.vscode/

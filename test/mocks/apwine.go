@@ -4,7 +4,6 @@
 package mocks
 
 import (
-	"errors"
 	"math/big"
 	"strings"
 
@@ -18,7 +17,6 @@ import (
 
 // Reference imports to suppress errors if they are not otherwise used.
 var (
-	_ = errors.New
 	_ = big.NewInt
 	_ = strings.NewReader
 	_ = ethereum.NotFound
@@ -28,31 +26,20 @@ var (
 	_ = event.NewSubscription
 )
 
-// APWineMetaData contains all meta data concerning the APWine contract.
-var APWineMetaData = &bind.MetaData{
-	ABI: "[{\"inputs\":[],\"name\":\"amountCalled\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"idCalled\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"minimumAmountCalled\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"id\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"tokenIn\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"tokenOut\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"minimumAmount\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"}],\"name\":\"swapExactAmountIn\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"s\",\"type\":\"uint256\"}],\"name\":\"swapExactAmountInReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"toCalled\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"tokenInCalled\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"tokenOutCalled\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"}]",
-	Bin: "0x608060405234801561001057600080fd5b5061042d806100206000396000f3fe608060405234801561001057600080fd5b50600436106100885760003560e01c80639eedc5b01161005b5780639eedc5b014610115578063cb2df34614610133578063cdd4255f14610151578063d179c9c51461016f57610088565b80633ef943bb1461008d5780635275215b146100ab5780635dde4ba6146100c757806362a01c1f146100f7575b600080fd5b61009561018d565b6040516100a29190610269565b60405180910390f35b6100c560048036038101906100c091906102b5565b610193565b005b6100e160048036038101906100dc9190610340565b61019d565b6040516100ee9190610269565b60405180910390f35b6100ff610212565b60405161010c9190610269565b60405180910390f35b61011d610218565b60405161012a9190610269565b60405180910390f35b61013b61021e565b6040516101489190610269565b60405180910390f35b610159610224565b60405161016691906103dc565b60405180910390f35b61017761024a565b6040516101849190610269565b60405180910390f35b60035481565b8060008190555050565b6000866001819055508560028190555084600381905550836004819055508260058190555081600660006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555060005490509695505050505050565b60045481565b60055481565b60025481565b600660009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1681565b60015481565b6000819050919050565b61026381610250565b82525050565b600060208201905061027e600083018461025a565b92915050565b600080fd5b61029281610250565b811461029d57600080fd5b50565b6000813590506102af81610289565b92915050565b6000602082840312156102cb576102ca610284565b5b60006102d9848285016102a0565b91505092915050565b600073ffffffffffffffffffffffffffffffffffffffff82169050919050565b600061030d826102e2565b9050919050565b61031d81610302565b811461032857600080fd5b50565b60008135905061033a81610314565b92915050565b60008060008060008060c0878903121561035d5761035c610284565b5b600061036b89828a016102a0565b965050602061037c89828a016102a0565b955050604061038d89828a016102a0565b945050606061039e89828a016102a0565b93505060806103af89828a016102a0565b92505060a06103c089828a0161032b565b9150509295509295509295565b6103d681610302565b82525050565b60006020820190506103f160008301846103cd565b9291505056fea2646970667358221220b3a6d31326cfd02d134cb348a26f7dd7987ee831c2374d3e63b8b3c26e7953ef64736f6c634300080d0033",
-}
-
 // APWineABI is the input ABI used to generate the binding from.
-// Deprecated: Use APWineMetaData.ABI instead.
-var APWineABI = APWineMetaData.ABI
+const APWineABI = "[{\"inputs\":[],\"name\":\"amountCalled\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"idCalled\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"minimumAmountCalled\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"id\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"tokenIn\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"tokenOut\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"minimumAmount\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"}],\"name\":\"swapExactAmountIn\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"s\",\"type\":\"uint256\"}],\"name\":\"swapExactAmountInReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"toCalled\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"tokenInCalled\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"tokenOutCalled\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"o\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"a\",\"type\":\"uint256\"}],\"name\":\"withdraw\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"withdrawCalled\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"}]"
 
 // APWineBin is the compiled bytecode used for deploying new contracts.
-// Deprecated: Use APWineMetaData.Bin instead.
-var APWineBin = APWineMetaData.Bin
+var APWineBin = "0x608060405234801561001057600080fd5b5061055c806100206000396000f3fe608060405234801561001057600080fd5b506004361061009e5760003560e01c8063b79c449b11610066578063b79c449b14610149578063cb2df34614610179578063cdd4255f14610197578063d179c9c5146101b5578063f3fef3a3146101d35761009e565b80633ef943bb146100a35780635275215b146100c15780635dde4ba6146100dd57806362a01c1f1461010d5780639eedc5b01461012b575b600080fd5b6100ab6101ef565b6040516100b8919061032b565b60405180910390f35b6100db60048036038101906100d69190610377565b6101f5565b005b6100f760048036038101906100f29190610402565b6101ff565b604051610104919061032b565b60405180910390f35b610115610274565b604051610122919061032b565b60405180910390f35b61013361027a565b604051610140919061032b565b60405180910390f35b610163600480360381019061015e919061048f565b610280565b604051610170919061032b565b60405180910390f35b610181610298565b60405161018e919061032b565b60405180910390f35b61019f61029e565b6040516101ac91906104cb565b60405180910390f35b6101bd6102c4565b6040516101ca919061032b565b60405180910390f35b6101ed60048036038101906101e891906104e6565b6102ca565b005b60035481565b8060008190555050565b6000866001819055508560028190555084600381905550836004819055508260058190555081600660006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555060005490509695505050505050565b60045481565b60055481565b60076020528060005260406000206000915090505481565b60025481565b600660009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1681565b60015481565b80600760008473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020819055505050565b6000819050919050565b61032581610312565b82525050565b6000602082019050610340600083018461031c565b92915050565b600080fd5b61035481610312565b811461035f57600080fd5b50565b6000813590506103718161034b565b92915050565b60006020828403121561038d5761038c610346565b5b600061039b84828501610362565b91505092915050565b600073ffffffffffffffffffffffffffffffffffffffff82169050919050565b60006103cf826103a4565b9050919050565b6103df816103c4565b81146103ea57600080fd5b50565b6000813590506103fc816103d6565b92915050565b60008060008060008060c0878903121561041f5761041e610346565b5b600061042d89828a01610362565b965050602061043e89828a01610362565b955050604061044f89828a01610362565b945050606061046089828a01610362565b935050608061047189828a01610362565b92505060a061048289828a016103ed565b9150509295509295509295565b6000602082840312156104a5576104a4610346565b5b60006104b3848285016103ed565b91505092915050565b6104c5816103c4565b82525050565b60006020820190506104e060008301846104bc565b92915050565b600080604083850312156104fd576104fc610346565b5b600061050b858286016103ed565b925050602061051c85828601610362565b915050925092905056fea2646970667358221220fa77e17b13e6d43909d4a3fada6fe04421a562c212f7e598d1553c07f83e205f64736f6c634300080d0033"
 
 // DeployAPWine deploys a new Ethereum contract, binding an instance of APWine to it.
 func DeployAPWine(auth *bind.TransactOpts, backend bind.ContractBackend) (common.Address, *types.Transaction, *APWine, error) {
-	parsed, err := APWineMetaData.GetAbi()
+	parsed, err := abi.JSON(strings.NewReader(APWineABI))
 	if err != nil {
 		return common.Address{}, nil, nil, err
 	}
-	if parsed == nil {
-		return common.Address{}, nil, nil, errors.New("GetABI returned nil")
-	}
 
-	address, tx, contract, err := bind.DeployContract(auth, *parsed, common.FromHex(APWineBin), backend)
+	address, tx, contract, err := bind.DeployContract(auth, parsed, common.FromHex(APWineBin), backend)
 	if err != nil {
 		return common.Address{}, nil, nil, err
 	}
@@ -387,6 +374,37 @@ func (_APWine *APWineCallerSession) TokenOutCalled() (*big.Int, error) {
 	return _APWine.Contract.TokenOutCalled(&_APWine.CallOpts)
 }
 
+// WithdrawCalled is a free data retrieval call binding the contract method 0xb79c449b.
+//
+// Solidity: function withdrawCalled(address ) view returns(uint256)
+func (_APWine *APWineCaller) WithdrawCalled(opts *bind.CallOpts, arg0 common.Address) (*big.Int, error) {
+	var out []interface{}
+	err := _APWine.contract.Call(opts, &out, "withdrawCalled", arg0)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
+}
+
+// WithdrawCalled is a free data retrieval call binding the contract method 0xb79c449b.
+//
+// Solidity: function withdrawCalled(address ) view returns(uint256)
+func (_APWine *APWineSession) WithdrawCalled(arg0 common.Address) (*big.Int, error) {
+	return _APWine.Contract.WithdrawCalled(&_APWine.CallOpts, arg0)
+}
+
+// WithdrawCalled is a free data retrieval call binding the contract method 0xb79c449b.
+//
+// Solidity: function withdrawCalled(address ) view returns(uint256)
+func (_APWine *APWineCallerSession) WithdrawCalled(arg0 common.Address) (*big.Int, error) {
+	return _APWine.Contract.WithdrawCalled(&_APWine.CallOpts, arg0)
+}
+
 // SwapExactAmountIn is a paid mutator transaction binding the contract method 0x5dde4ba6.
 //
 // Solidity: function swapExactAmountIn(uint256 id, uint256 tokenIn, uint256 amount, uint256 tokenOut, uint256 minimumAmount, address to) returns(uint256)
@@ -427,4 +445,25 @@ func (_APWine *APWineSession) SwapExactAmountInReturns(s *big.Int) (*types.Trans
 // Solidity: function swapExactAmountInReturns(uint256 s) returns()
 func (_APWine *APWineTransactorSession) SwapExactAmountInReturns(s *big.Int) (*types.Transaction, error) {
 	return _APWine.Contract.SwapExactAmountInReturns(&_APWine.TransactOpts, s)
+}
+
+// Withdraw is a paid mutator transaction binding the contract method 0xf3fef3a3.
+//
+// Solidity: function withdraw(address o, uint256 a) returns()
+func (_APWine *APWineTransactor) Withdraw(opts *bind.TransactOpts, o common.Address, a *big.Int) (*types.Transaction, error) {
+	return _APWine.contract.Transact(opts, "withdraw", o, a)
+}
+
+// Withdraw is a paid mutator transaction binding the contract method 0xf3fef3a3.
+//
+// Solidity: function withdraw(address o, uint256 a) returns()
+func (_APWine *APWineSession) Withdraw(o common.Address, a *big.Int) (*types.Transaction, error) {
+	return _APWine.Contract.Withdraw(&_APWine.TransactOpts, o, a)
+}
+
+// Withdraw is a paid mutator transaction binding the contract method 0xf3fef3a3.
+//
+// Solidity: function withdraw(address o, uint256 a) returns()
+func (_APWine *APWineTransactorSession) Withdraw(o common.Address, a *big.Int) (*types.Transaction, error) {
+	return _APWine.Contract.Withdraw(&_APWine.TransactOpts, o, a)
 }

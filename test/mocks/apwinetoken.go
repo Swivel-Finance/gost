@@ -4,7 +4,6 @@
 package mocks
 
 import (
-	"errors"
 	"math/big"
 	"strings"
 
@@ -18,7 +17,6 @@ import (
 
 // Reference imports to suppress errors if they are not otherwise used.
 var (
-	_ = errors.New
 	_ = big.NewInt
 	_ = strings.NewReader
 	_ = ethereum.NotFound
@@ -28,31 +26,20 @@ var (
 	_ = event.NewSubscription
 )
 
-// APWineTokenMetaData contains all meta data concerning the APWineToken contract.
-var APWineTokenMetaData = &bind.MetaData{
-	ABI: "[{\"inputs\":[],\"name\":\"getPTAddress\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"a\",\"type\":\"address\"}],\"name\":\"getPTAddressReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]",
-	Bin: "0x608060405234801561001057600080fd5b506101d1806100206000396000f3fe608060405234801561001057600080fd5b50600436106100365760003560e01c80631e5f74a11461003b5780639a8cb8f314610059575b600080fd5b610043610075565b6040516100509190610122565b60405180910390f35b610073600480360381019061006e919061016e565b61009e565b005b60008060009054906101000a900473ffffffffffffffffffffffffffffffffffffffff16905090565b806000806101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555050565b600073ffffffffffffffffffffffffffffffffffffffff82169050919050565b600061010c826100e1565b9050919050565b61011c81610101565b82525050565b60006020820190506101376000830184610113565b92915050565b600080fd5b61014b81610101565b811461015657600080fd5b50565b60008135905061016881610142565b92915050565b6000602082840312156101845761018361013d565b5b600061019284828501610159565b9150509291505056fea2646970667358221220170efc283760638e14d30eb332a0b929da823596810d82cbbd38f903526a97ac64736f6c634300080d0033",
-}
-
 // APWineTokenABI is the input ABI used to generate the binding from.
-// Deprecated: Use APWineTokenMetaData.ABI instead.
-var APWineTokenABI = APWineTokenMetaData.ABI
+const APWineTokenABI = "[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"t\",\"type\":\"address\"}],\"name\":\"balanceOf\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"balanceOfCalled\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"b\",\"type\":\"uint256\"}],\"name\":\"balanceOfReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"getPTAddress\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"a\",\"type\":\"address\"}],\"name\":\"getPTAddressReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"t\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"a\",\"type\":\"uint256\"}],\"name\":\"transfer\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"transferCalled\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"f\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"t\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"a\",\"type\":\"uint256\"}],\"name\":\"transferFrom\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"transferFromCalled\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bool\",\"name\":\"b\",\"type\":\"bool\"}],\"name\":\"transferFromReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bool\",\"name\":\"b\",\"type\":\"bool\"}],\"name\":\"transferReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]"
 
 // APWineTokenBin is the compiled bytecode used for deploying new contracts.
-// Deprecated: Use APWineTokenMetaData.Bin instead.
-var APWineTokenBin = APWineTokenMetaData.Bin
+var APWineTokenBin = "0x608060405234801561001057600080fd5b5061081b806100206000396000f3fe608060405234801561001057600080fd5b50600436106100a95760003560e01c806370a082311161007157806370a08231146101505780639a8cb8f314610180578063a9059cbb1461019c578063c1d2e9a1146101cc578063dea1a7e2146101fc578063e541efa21461021a576100a9565b80631e5f74a1146100ae57806323b872dd146100cc57806339100838146100fc57806342b6cdbc146101185780636521b96a14610134575b600080fd5b6100b661024b565b6040516100c39190610594565b60405180910390f35b6100e660048036038101906100e19190610616565b610275565b6040516100f39190610684565b60405180910390f35b6101166004803603810190610111919061069f565b61036f565b005b610132600480360381019061012d91906106f8565b610379565b005b61014e600480360381019061014991906106f8565b610396565b005b61016a60048036038101906101659190610725565b6103b3565b6040516101779190610761565b60405180910390f35b61019a60048036038101906101959190610725565b610400565b005b6101b660048036038101906101b1919061077c565b610444565b6040516101c39190610684565b60405180910390f35b6101e660048036038101906101e19190610725565b6104a1565b6040516101f39190610761565b60405180910390f35b6102046104b9565b6040516102119190610594565b60405180910390f35b610234600480360381019061022f9190610725565b6104df565b6040516102429291906107bc565b60405180910390f35b6000600360009054906101000a900473ffffffffffffffffffffffffffffffffffffffff16905090565b600061027f610523565b83816000019073ffffffffffffffffffffffffffffffffffffffff16908173ffffffffffffffffffffffffffffffffffffffff16815250508281602001818152505080600160008773ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060008201518160000160006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555060208201518160010155905050600560019054906101000a900460ff169150509392505050565b8060048190555050565b80600560006101000a81548160ff02191690831515021790555050565b80600560016101000a81548160ff02191690831515021790555050565b600081600260006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff1602179055506004549050919050565b80600360006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555050565b6000816000808573ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002081905550600560009054906101000a900460ff16905092915050565b60006020528060005260406000206000915090505481565b600260009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1681565b60016020528060005260406000206000915090508060000160009054906101000a900473ffffffffffffffffffffffffffffffffffffffff16908060010154905082565b6040518060400160405280600073ffffffffffffffffffffffffffffffffffffffff168152602001600081525090565b600073ffffffffffffffffffffffffffffffffffffffff82169050919050565b600061057e82610553565b9050919050565b61058e81610573565b82525050565b60006020820190506105a96000830184610585565b92915050565b600080fd5b6105bd81610573565b81146105c857600080fd5b50565b6000813590506105da816105b4565b92915050565b6000819050919050565b6105f3816105e0565b81146105fe57600080fd5b50565b600081359050610610816105ea565b92915050565b60008060006060848603121561062f5761062e6105af565b5b600061063d868287016105cb565b935050602061064e868287016105cb565b925050604061065f86828701610601565b9150509250925092565b60008115159050919050565b61067e81610669565b82525050565b60006020820190506106996000830184610675565b92915050565b6000602082840312156106b5576106b46105af565b5b60006106c384828501610601565b91505092915050565b6106d581610669565b81146106e057600080fd5b50565b6000813590506106f2816106cc565b92915050565b60006020828403121561070e5761070d6105af565b5b600061071c848285016106e3565b91505092915050565b60006020828403121561073b5761073a6105af565b5b6000610749848285016105cb565b91505092915050565b61075b816105e0565b82525050565b60006020820190506107766000830184610752565b92915050565b60008060408385031215610793576107926105af565b5b60006107a1858286016105cb565b92505060206107b285828601610601565b9150509250929050565b60006040820190506107d16000830185610585565b6107de6020830184610752565b939250505056fea2646970667358221220d495933bd305839e209dc4fb8538bf249c6d5ab6e98ed342ca9d62079f3ba70164736f6c634300080d0033"
 
 // DeployAPWineToken deploys a new Ethereum contract, binding an instance of APWineToken to it.
 func DeployAPWineToken(auth *bind.TransactOpts, backend bind.ContractBackend) (common.Address, *types.Transaction, *APWineToken, error) {
-	parsed, err := APWineTokenMetaData.GetAbi()
+	parsed, err := abi.JSON(strings.NewReader(APWineTokenABI))
 	if err != nil {
 		return common.Address{}, nil, nil, err
 	}
-	if parsed == nil {
-		return common.Address{}, nil, nil, errors.New("GetABI returned nil")
-	}
 
-	address, tx, contract, err := bind.DeployContract(auth, *parsed, common.FromHex(APWineTokenBin), backend)
+	address, tx, contract, err := bind.DeployContract(auth, parsed, common.FromHex(APWineTokenBin), backend)
 	if err != nil {
 		return common.Address{}, nil, nil, err
 	}
@@ -201,6 +188,37 @@ func (_APWineToken *APWineTokenTransactorRaw) Transact(opts *bind.TransactOpts, 
 	return _APWineToken.Contract.contract.Transact(opts, method, params...)
 }
 
+// BalanceOfCalled is a free data retrieval call binding the contract method 0xdea1a7e2.
+//
+// Solidity: function balanceOfCalled() view returns(address)
+func (_APWineToken *APWineTokenCaller) BalanceOfCalled(opts *bind.CallOpts) (common.Address, error) {
+	var out []interface{}
+	err := _APWineToken.contract.Call(opts, &out, "balanceOfCalled")
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
+}
+
+// BalanceOfCalled is a free data retrieval call binding the contract method 0xdea1a7e2.
+//
+// Solidity: function balanceOfCalled() view returns(address)
+func (_APWineToken *APWineTokenSession) BalanceOfCalled() (common.Address, error) {
+	return _APWineToken.Contract.BalanceOfCalled(&_APWineToken.CallOpts)
+}
+
+// BalanceOfCalled is a free data retrieval call binding the contract method 0xdea1a7e2.
+//
+// Solidity: function balanceOfCalled() view returns(address)
+func (_APWineToken *APWineTokenCallerSession) BalanceOfCalled() (common.Address, error) {
+	return _APWineToken.Contract.BalanceOfCalled(&_APWineToken.CallOpts)
+}
+
 // GetPTAddress is a free data retrieval call binding the contract method 0x1e5f74a1.
 //
 // Solidity: function getPTAddress() view returns(address)
@@ -232,6 +250,121 @@ func (_APWineToken *APWineTokenCallerSession) GetPTAddress() (common.Address, er
 	return _APWineToken.Contract.GetPTAddress(&_APWineToken.CallOpts)
 }
 
+// TransferCalled is a free data retrieval call binding the contract method 0xc1d2e9a1.
+//
+// Solidity: function transferCalled(address ) view returns(uint256)
+func (_APWineToken *APWineTokenCaller) TransferCalled(opts *bind.CallOpts, arg0 common.Address) (*big.Int, error) {
+	var out []interface{}
+	err := _APWineToken.contract.Call(opts, &out, "transferCalled", arg0)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
+}
+
+// TransferCalled is a free data retrieval call binding the contract method 0xc1d2e9a1.
+//
+// Solidity: function transferCalled(address ) view returns(uint256)
+func (_APWineToken *APWineTokenSession) TransferCalled(arg0 common.Address) (*big.Int, error) {
+	return _APWineToken.Contract.TransferCalled(&_APWineToken.CallOpts, arg0)
+}
+
+// TransferCalled is a free data retrieval call binding the contract method 0xc1d2e9a1.
+//
+// Solidity: function transferCalled(address ) view returns(uint256)
+func (_APWineToken *APWineTokenCallerSession) TransferCalled(arg0 common.Address) (*big.Int, error) {
+	return _APWineToken.Contract.TransferCalled(&_APWineToken.CallOpts, arg0)
+}
+
+// TransferFromCalled is a free data retrieval call binding the contract method 0xe541efa2.
+//
+// Solidity: function transferFromCalled(address ) view returns(address to, uint256 amount)
+func (_APWineToken *APWineTokenCaller) TransferFromCalled(opts *bind.CallOpts, arg0 common.Address) (struct {
+	To     common.Address
+	Amount *big.Int
+}, error) {
+	var out []interface{}
+	err := _APWineToken.contract.Call(opts, &out, "transferFromCalled", arg0)
+
+	outstruct := new(struct {
+		To     common.Address
+		Amount *big.Int
+	})
+
+	outstruct.To = out[0].(common.Address)
+	outstruct.Amount = out[1].(*big.Int)
+
+	return *outstruct, err
+
+}
+
+// TransferFromCalled is a free data retrieval call binding the contract method 0xe541efa2.
+//
+// Solidity: function transferFromCalled(address ) view returns(address to, uint256 amount)
+func (_APWineToken *APWineTokenSession) TransferFromCalled(arg0 common.Address) (struct {
+	To     common.Address
+	Amount *big.Int
+}, error) {
+	return _APWineToken.Contract.TransferFromCalled(&_APWineToken.CallOpts, arg0)
+}
+
+// TransferFromCalled is a free data retrieval call binding the contract method 0xe541efa2.
+//
+// Solidity: function transferFromCalled(address ) view returns(address to, uint256 amount)
+func (_APWineToken *APWineTokenCallerSession) TransferFromCalled(arg0 common.Address) (struct {
+	To     common.Address
+	Amount *big.Int
+}, error) {
+	return _APWineToken.Contract.TransferFromCalled(&_APWineToken.CallOpts, arg0)
+}
+
+// BalanceOf is a paid mutator transaction binding the contract method 0x70a08231.
+//
+// Solidity: function balanceOf(address t) returns(uint256)
+func (_APWineToken *APWineTokenTransactor) BalanceOf(opts *bind.TransactOpts, t common.Address) (*types.Transaction, error) {
+	return _APWineToken.contract.Transact(opts, "balanceOf", t)
+}
+
+// BalanceOf is a paid mutator transaction binding the contract method 0x70a08231.
+//
+// Solidity: function balanceOf(address t) returns(uint256)
+func (_APWineToken *APWineTokenSession) BalanceOf(t common.Address) (*types.Transaction, error) {
+	return _APWineToken.Contract.BalanceOf(&_APWineToken.TransactOpts, t)
+}
+
+// BalanceOf is a paid mutator transaction binding the contract method 0x70a08231.
+//
+// Solidity: function balanceOf(address t) returns(uint256)
+func (_APWineToken *APWineTokenTransactorSession) BalanceOf(t common.Address) (*types.Transaction, error) {
+	return _APWineToken.Contract.BalanceOf(&_APWineToken.TransactOpts, t)
+}
+
+// BalanceOfReturns is a paid mutator transaction binding the contract method 0x39100838.
+//
+// Solidity: function balanceOfReturns(uint256 b) returns()
+func (_APWineToken *APWineTokenTransactor) BalanceOfReturns(opts *bind.TransactOpts, b *big.Int) (*types.Transaction, error) {
+	return _APWineToken.contract.Transact(opts, "balanceOfReturns", b)
+}
+
+// BalanceOfReturns is a paid mutator transaction binding the contract method 0x39100838.
+//
+// Solidity: function balanceOfReturns(uint256 b) returns()
+func (_APWineToken *APWineTokenSession) BalanceOfReturns(b *big.Int) (*types.Transaction, error) {
+	return _APWineToken.Contract.BalanceOfReturns(&_APWineToken.TransactOpts, b)
+}
+
+// BalanceOfReturns is a paid mutator transaction binding the contract method 0x39100838.
+//
+// Solidity: function balanceOfReturns(uint256 b) returns()
+func (_APWineToken *APWineTokenTransactorSession) BalanceOfReturns(b *big.Int) (*types.Transaction, error) {
+	return _APWineToken.Contract.BalanceOfReturns(&_APWineToken.TransactOpts, b)
+}
+
 // GetPTAddressReturns is a paid mutator transaction binding the contract method 0x9a8cb8f3.
 //
 // Solidity: function getPTAddressReturns(address a) returns()
@@ -251,4 +384,88 @@ func (_APWineToken *APWineTokenSession) GetPTAddressReturns(a common.Address) (*
 // Solidity: function getPTAddressReturns(address a) returns()
 func (_APWineToken *APWineTokenTransactorSession) GetPTAddressReturns(a common.Address) (*types.Transaction, error) {
 	return _APWineToken.Contract.GetPTAddressReturns(&_APWineToken.TransactOpts, a)
+}
+
+// Transfer is a paid mutator transaction binding the contract method 0xa9059cbb.
+//
+// Solidity: function transfer(address t, uint256 a) returns(bool)
+func (_APWineToken *APWineTokenTransactor) Transfer(opts *bind.TransactOpts, t common.Address, a *big.Int) (*types.Transaction, error) {
+	return _APWineToken.contract.Transact(opts, "transfer", t, a)
+}
+
+// Transfer is a paid mutator transaction binding the contract method 0xa9059cbb.
+//
+// Solidity: function transfer(address t, uint256 a) returns(bool)
+func (_APWineToken *APWineTokenSession) Transfer(t common.Address, a *big.Int) (*types.Transaction, error) {
+	return _APWineToken.Contract.Transfer(&_APWineToken.TransactOpts, t, a)
+}
+
+// Transfer is a paid mutator transaction binding the contract method 0xa9059cbb.
+//
+// Solidity: function transfer(address t, uint256 a) returns(bool)
+func (_APWineToken *APWineTokenTransactorSession) Transfer(t common.Address, a *big.Int) (*types.Transaction, error) {
+	return _APWineToken.Contract.Transfer(&_APWineToken.TransactOpts, t, a)
+}
+
+// TransferFrom is a paid mutator transaction binding the contract method 0x23b872dd.
+//
+// Solidity: function transferFrom(address f, address t, uint256 a) returns(bool)
+func (_APWineToken *APWineTokenTransactor) TransferFrom(opts *bind.TransactOpts, f common.Address, t common.Address, a *big.Int) (*types.Transaction, error) {
+	return _APWineToken.contract.Transact(opts, "transferFrom", f, t, a)
+}
+
+// TransferFrom is a paid mutator transaction binding the contract method 0x23b872dd.
+//
+// Solidity: function transferFrom(address f, address t, uint256 a) returns(bool)
+func (_APWineToken *APWineTokenSession) TransferFrom(f common.Address, t common.Address, a *big.Int) (*types.Transaction, error) {
+	return _APWineToken.Contract.TransferFrom(&_APWineToken.TransactOpts, f, t, a)
+}
+
+// TransferFrom is a paid mutator transaction binding the contract method 0x23b872dd.
+//
+// Solidity: function transferFrom(address f, address t, uint256 a) returns(bool)
+func (_APWineToken *APWineTokenTransactorSession) TransferFrom(f common.Address, t common.Address, a *big.Int) (*types.Transaction, error) {
+	return _APWineToken.Contract.TransferFrom(&_APWineToken.TransactOpts, f, t, a)
+}
+
+// TransferFromReturns is a paid mutator transaction binding the contract method 0x6521b96a.
+//
+// Solidity: function transferFromReturns(bool b) returns()
+func (_APWineToken *APWineTokenTransactor) TransferFromReturns(opts *bind.TransactOpts, b bool) (*types.Transaction, error) {
+	return _APWineToken.contract.Transact(opts, "transferFromReturns", b)
+}
+
+// TransferFromReturns is a paid mutator transaction binding the contract method 0x6521b96a.
+//
+// Solidity: function transferFromReturns(bool b) returns()
+func (_APWineToken *APWineTokenSession) TransferFromReturns(b bool) (*types.Transaction, error) {
+	return _APWineToken.Contract.TransferFromReturns(&_APWineToken.TransactOpts, b)
+}
+
+// TransferFromReturns is a paid mutator transaction binding the contract method 0x6521b96a.
+//
+// Solidity: function transferFromReturns(bool b) returns()
+func (_APWineToken *APWineTokenTransactorSession) TransferFromReturns(b bool) (*types.Transaction, error) {
+	return _APWineToken.Contract.TransferFromReturns(&_APWineToken.TransactOpts, b)
+}
+
+// TransferReturns is a paid mutator transaction binding the contract method 0x42b6cdbc.
+//
+// Solidity: function transferReturns(bool b) returns()
+func (_APWineToken *APWineTokenTransactor) TransferReturns(opts *bind.TransactOpts, b bool) (*types.Transaction, error) {
+	return _APWineToken.contract.Transact(opts, "transferReturns", b)
+}
+
+// TransferReturns is a paid mutator transaction binding the contract method 0x42b6cdbc.
+//
+// Solidity: function transferReturns(bool b) returns()
+func (_APWineToken *APWineTokenSession) TransferReturns(b bool) (*types.Transaction, error) {
+	return _APWineToken.Contract.TransferReturns(&_APWineToken.TransactOpts, b)
+}
+
+// TransferReturns is a paid mutator transaction binding the contract method 0x42b6cdbc.
+//
+// Solidity: function transferReturns(bool b) returns()
+func (_APWineToken *APWineTokenTransactorSession) TransferReturns(b bool) (*types.Transaction, error) {
+	return _APWineToken.Contract.TransferReturns(&_APWineToken.TransactOpts, b)
 }

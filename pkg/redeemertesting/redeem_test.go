@@ -5,6 +5,8 @@ import (
 	test "testing"
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 	"github.com/swivel-finance/gost/test/mocks"
 	"github.com/swivel-finance/gost/test/redeemer"
@@ -12,14 +14,16 @@ import (
 
 type redeemTestSuite struct {
 	suite.Suite
-	Env        *Env
-	Dep        *Dep
-	Erc20      *mocks.Erc20Session
-	Illuminate *mocks.IlluminateSession
-	Yield      *mocks.YieldSession
-	ZcToken    *mocks.ZcTokenSession
-	Swivel     *mocks.SwivelSession
-	Redeemer   *redeemer.RedeemerSession
+	Env         *Env
+	Dep         *Dep
+	Erc20       *mocks.Erc20Session
+	Illuminate  *mocks.IlluminateSession
+	Yield       *mocks.YieldSession
+	ZcToken     *mocks.ZcTokenSession
+	Swivel      *mocks.SwivelSession
+	APWine      *mocks.APWineSession
+	APWineToken *mocks.APWineTokenSession
+	Redeemer    *redeemer.RedeemerSession
 }
 
 func (s *redeemTestSuite) SetupSuite() {
@@ -78,6 +82,24 @@ func (s *redeemTestSuite) SetupSuite() {
 		},
 	}
 
+	s.APWine = &mocks.APWineSession{
+		Contract: s.Dep.APWine,
+		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
+		TransactOpts: bind.TransactOpts{
+			From:   s.Env.Owner.Opts.From,
+			Signer: s.Env.Owner.Opts.Signer,
+		},
+	}
+
+	s.APWineToken = &mocks.APWineTokenSession{
+		Contract: s.Dep.APWineToken,
+		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
+		TransactOpts: bind.TransactOpts{
+			From:   s.Env.Owner.Opts.From,
+			Signer: s.Env.Owner.Opts.Signer,
+		},
+	}
+
 	s.Redeemer = &redeemer.RedeemerSession{
 		Contract: s.Dep.Redeemer,
 		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
@@ -86,6 +108,62 @@ func (s *redeemTestSuite) SetupSuite() {
 			Signer: s.Env.Owner.Opts.Signer,
 		},
 	}
+}
+
+func (s *redeemTestSuite) TestAPWineRedeem() {
+	assert := assert.New(s.T())
+
+	amount := big.NewInt(1000)
+	maturity := big.NewInt(9999999)
+	vault := common.HexToAddress("0x0000000000000000000000000000000000000002")
+	apwinePrincipal := uint8(7)
+
+	s.Illuminate.MarketsReturns([8]common.Address{
+		s.Dep.APWineTokenAddress,
+		s.Dep.APWineTokenAddress,
+		s.Dep.APWineTokenAddress,
+		s.Dep.APWineTokenAddress,
+		s.Dep.APWineTokenAddress,
+		s.Dep.APWineTokenAddress,
+		s.Dep.APWineTokenAddress,
+		s.Dep.APWineTokenAddress,
+	})
+	s.Env.Blockchain.Commit()
+
+	s.APWineToken.TransferFromReturns(true)
+	s.Env.Blockchain.Commit()
+
+	s.APWineToken.BalanceOfReturns(amount)
+	s.Env.Blockchain.Commit()
+
+	s.Erc20.TransferReturns(true)
+	s.Env.Blockchain.Commit()
+
+	tx, err := s.Redeemer.Redeem0(apwinePrincipal, s.Dep.Erc20Address, maturity, vault)
+	assert.NoError(err)
+	assert.NotNil(tx)
+	s.Env.Blockchain.Commit()
+
+	// verify that the mocked functions were called as expected
+	amountCalled, err := s.APWine.WithdrawCalled(vault)
+	assert.NoError(err)
+	assert.Equal(amount, amountCalled)
+
+	vaultCalled, err := s.APWineToken.BalanceOfCalled()
+	assert.NoError(err)
+	assert.Equal(vault, vaultCalled)
+
+	underlyingTransfer, err := s.Erc20.TransferCalled(vault)
+	assert.NoError(err)
+	assert.Equal(amount, underlyingTransfer)
+}
+
+func (s *redeemTestSuite) TestTempusRedeem() {
+
+}
+
+func (s *redeemTestSuite) TestIlluminateRedeem() {
+
 }
 
 func TestRedeemSuite(t *test.T) {

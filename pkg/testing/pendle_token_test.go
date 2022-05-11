@@ -67,6 +67,6 @@ func (s *pendleTokenTestSuite) TestYieldToken() {
 	assert.Equal(yieldToken, pendleUnderlying)
 }
 
-func TestPendleSuite(t *test.T) {
+func TestPendleTokenSuite(t *test.T) {
 	suite.Run(t, &pendleTokenTestSuite{})
 }
