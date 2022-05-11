@@ -153,7 +153,7 @@ func Deploy(e *Env) (*Dep, error) {
 
 	e.Blockchain.Commit()
 
-	lenderAddress, _, lender, lenderErr := lender.DeployLender(e.Owner.Opts, e.Blockchain, mpAddress, swAddress, peAddress, tAddress, senseTokenAddress)
+	lenderAddress, _, lender, lenderErr := lender.DeployLender(e.Owner.Opts, e.Blockchain, mpAddress, swAddress, peAddress, tAddress)
 	if lenderErr != nil {
 		return nil, lenderErr
 	}
