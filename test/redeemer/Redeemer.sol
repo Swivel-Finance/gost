@@ -50,6 +50,7 @@ contract Redeemer {
     uint256 amount = token.balanceOf(illuminate);
 
     token.transferFrom(illuminate, address(this), amount);
+    require(1 == 2, "made it here");
 
     router.redeemToBacking(o, amount, 0, address(this));
 
