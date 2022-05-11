@@ -14,15 +14,16 @@ import (
 
 type redeemTestSuite struct {
 	suite.Suite
-	Env        *Env
-	Dep        *Dep
-	Erc20      *mocks.Erc20Session
-	Illuminate *mocks.IlluminateSession
-	Yield      *mocks.YieldSession
-	ZcToken    *mocks.ZcTokenSession
-	Swivel     *mocks.SwivelSession
-	Router     *mocks.RouterSession
-	Redeemer   *redeemer.RedeemerSession
+	Env          *Env
+	Dep          *Dep
+	Erc20        *mocks.Erc20Session
+	Illuminate   *mocks.IlluminateSession
+	Yield        *mocks.YieldSession
+	ZcToken      *mocks.ZcTokenSession
+	Swivel       *mocks.SwivelSession
+	ElementToken *mocks.ElementTokenSession
+	Router       *mocks.RouterSession
+	Redeemer     *redeemer.RedeemerSession
 }
 
 func (s *redeemTestSuite) SetupSuite() {
@@ -74,6 +75,15 @@ func (s *redeemTestSuite) SetupSuite() {
 
 	s.Swivel = &mocks.SwivelSession{
 		Contract: s.Dep.Swivel,
+		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
+		TransactOpts: bind.TransactOpts{
+			From:   s.Env.Owner.Opts.From,
+			Signer: s.Env.Owner.Opts.Signer,
+		},
+	}
+
+	s.ElementToken = &mocks.ElementTokenSession{
+		Contract: s.Dep.ElementToken,
 		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
 		TransactOpts: bind.TransactOpts{
 			From:   s.Env.Owner.Opts.From,
@@ -151,6 +161,43 @@ func (s *redeemTestSuite) TestRedeemIlluminateTempusApwine() {
 	calledRecipient, err := s.Router.RecipientCalled()
 	assert.NoError(err)
 	assert.Equal(s.Dep.RedeemerAddress, calledRecipient)
+}
+
+func (s *redeemTestSuite) TestRedeemSwivelYieldElement() {
+	assert := assert.New(s.T())
+
+	amount := big.NewInt(1000)
+	maturity := big.NewInt(9999999)
+
+	markets := [8]common.Address{
+		s.Dep.ElementTokenAddress,
+		s.Dep.ElementTokenAddress,
+		s.Dep.ElementTokenAddress,
+		s.Dep.ElementTokenAddress,
+		s.Dep.ElementTokenAddress,
+		s.Dep.ElementTokenAddress,
+		s.Dep.ElementTokenAddress,
+		s.Dep.ElementTokenAddress,
+	}
+	s.Illuminate.MarketsReturns(markets)
+	s.Env.Blockchain.Commit()
+
+	s.ElementToken.BalanceOfReturns(amount)
+	s.Env.Blockchain.Commit()
+
+	s.ElementToken.TransferFromReturns(true)
+	s.Env.Blockchain.Commit()
+
+	tx, err := s.Redeemer.Redeem(0, s.Dep.Erc20Address, maturity)
+	assert.NoError(err)
+	assert.NotNil(tx)
+	s.Env.Blockchain.Commit()
+
+	// verify mocks were called as expected
+	transfer, err := s.Erc20.TransferFromCalled(s.Dep.SwivelAddress)
+	assert.NoError(err)
+	assert.Equal(amount, transfer.Amount)
+	assert.True(transfer.To == s.Dep.RedeemerAddress)
 }
 
 func TestRedeemSuite(t *test.T) {

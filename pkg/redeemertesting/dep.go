@@ -7,20 +7,22 @@ import (
 )
 
 type Dep struct {
-	Erc20Address      common.Address
-	Erc20             *mocks.Erc20
-	YieldAddress      common.Address
-	Yield             *mocks.Yield
-	ZcTokenAddress    common.Address
-	ZcToken           *mocks.ZcToken
-	SwivelAddress     common.Address
-	Swivel            *mocks.Swivel
-	IlluminateAddress common.Address
-	Illuminate        *mocks.Illuminate
-	Router            *mocks.Router
-	RouterAddress     common.Address
-	RedeemerAddress   common.Address
-	Redeemer          *redeemer.Redeemer
+	Erc20Address        common.Address
+	Erc20               *mocks.Erc20
+	YieldAddress        common.Address
+	Yield               *mocks.Yield
+	ZcTokenAddress      common.Address
+	ZcToken             *mocks.ZcToken
+	SwivelAddress       common.Address
+	Swivel              *mocks.Swivel
+	IlluminateAddress   common.Address
+	Illuminate          *mocks.Illuminate
+	Router              *mocks.Router
+	RouterAddress       common.Address
+	ElementToken        *mocks.ElementToken
+	ElementTokenAddress common.Address
+	Redeemer            *redeemer.Redeemer
+	RedeemerAddress     common.Address
 }
 
 func Deploy(e *Env) (*Dep, error) {
@@ -73,6 +75,14 @@ func Deploy(e *Env) (*Dep, error) {
 
 	e.Blockchain.Commit()
 
+	eAddress, _, eContract, eErr := mocks.DeployElementToken(e.Owner.Opts, e.Blockchain)
+
+	if eErr != nil {
+		return nil, eErr
+	}
+
+	e.Blockchain.Commit()
+
 	redeemerAddress, _, redeemerContract, redeemerErr := redeemer.DeployRedeemer(e.Owner.Opts, e.Blockchain, mpAddress, rAddress, rAddress, rAddress, rAddress)
 
 	if redeemerErr != nil {
@@ -82,19 +92,21 @@ func Deploy(e *Env) (*Dep, error) {
 	e.Blockchain.Commit()
 
 	return &Dep{
-		Erc20Address:      ercAddress,
-		Erc20:             ercContract,
-		YieldAddress:      ytAddress,
-		Yield:             ytContract,
-		ZcTokenAddress:    zcAddress,
-		ZcToken:           zcContract,
-		SwivelAddress:     swivelAddress,
-		Swivel:            swivelContract,
-		IlluminateAddress: mpAddress,
-		Illuminate:        mpContract,
-		RouterAddress:     rAddress,
-		Router:            rContract,
-		RedeemerAddress:   redeemerAddress,
-		Redeemer:          redeemerContract,
+		Erc20Address:        ercAddress,
+		Erc20:               ercContract,
+		YieldAddress:        ytAddress,
+		Yield:               ytContract,
+		ZcTokenAddress:      zcAddress,
+		ZcToken:             zcContract,
+		SwivelAddress:       swivelAddress,
+		Swivel:              swivelContract,
+		IlluminateAddress:   mpAddress,
+		Illuminate:          mpContract,
+		RouterAddress:       rAddress,
+		Router:              rContract,
+		ElementTokenAddress: eAddress,
+		ElementToken:        eContract,
+		RedeemerAddress:     redeemerAddress,
+		Redeemer:            redeemerContract,
 	}, nil
 }

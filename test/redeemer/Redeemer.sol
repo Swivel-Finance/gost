@@ -6,12 +6,6 @@ import "./Illuminate.sol";
 import "./Interfaces.sol";
 
 contract Redeemer {
-
-  // NOTE: the imported interfaces don't need to be named anything other than what they are:
-  // ISwivel
-  // IYield
-  // etc...
-
   address public admin;
   address public illuminate;
   address public pendleRouter;
@@ -30,6 +24,7 @@ contract Redeemer {
     apRouter = a;
     illuminateRouter = i;
   }
+
   /// @dev redeem method signature for illuminate, tempus, apwine
   /// @param p value of a specific principal according to the Illuminate Principals Enum
   /// @param u underlying token being redeemed
@@ -63,14 +58,13 @@ contract Redeemer {
   /// @param u underlying token being redeemed
   /// @param m maturity of the market being redeemed
   function redeem(uint8 p, address u, uint256 m) public returns (bool) {
-    
     IRedeemable token = IRedeemable(IIlluminate(illuminate).markets(u, m)[p]);
 
     uint256 amount = token.balanceOf(illuminate);
 
     token.transferFrom(illuminate, address(this), amount);
 
-    token.redeem(address(this), address(this), amount);
+    token.redeem(address(this), amount);
 
     emit Redeem(p, u, m, amount);
 

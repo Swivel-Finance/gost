@@ -16,7 +16,7 @@ interface IRedeemable {
 	function transfer(address, uint256) external returns (bool);
 	function balanceOf(address) external returns (uint256);
 	function transferFrom(address, address, uint256) external returns (bool);
-	function redeem(address, address, uint256) external;
+	function redeem(address, uint256) external;
 }
 
 interface IIlluminate {
