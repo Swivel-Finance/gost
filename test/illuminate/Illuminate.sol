@@ -25,21 +25,15 @@ contract Illuminate {
   mapping (address => mapping (uint256 => address[8])) public markets;
 
   address public admin;
-  /// @notice address of the deployed lender contract
-  address public immutable lender;
   /// @notice address of the deployed redeemer contract
   address public immutable redeemer;
 
   event CreateMarket(address indexed underlying, uint256 indexed maturity);
 
-  // TODO move to lender.sol
-  // event Mint(uint8 principal, address indexed underlying, uint256 indexed maturity, uint256 amount);
-
-  /// @param l address of the deployed lender contract 
   /// @param r address of the deployed redeemer contract 
-  constructor(address l, address r) {
+  constructor(address r) {
     admin = msg.sender;
-    lender = l;
+    // lender = l;
     redeemer = r;
   }
 

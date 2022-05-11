@@ -2,14 +2,16 @@ package illuminatetesting
 
 import (
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/swivel-finance/gost/test/illuminate"
 	"github.com/swivel-finance/gost/test/mocks"
 )
 
 type Dep struct {
 	Erc20Address      common.Address
 	Erc20             *mocks.Erc20
+	RedeemerAddress   common.Address
 	IlluminateAddress common.Address
-	Illuminate        *mocks.Illuminate
+	Illuminate        *illuminate.Illuminate
 }
 
 func Deploy(e *Env) (*Dep, error) {
@@ -22,7 +24,9 @@ func Deploy(e *Env) (*Dep, error) {
 
 	e.Blockchain.Commit()
 
-	illAddress, _, illContract, illErr := mocks.DeployIlluminate(e.Owner.Opts, e.Blockchain)
+	rAddr := common.HexToAddress("0x123")
+
+	illAddress, _, illContract, illErr := illuminate.DeployIlluminate(e.Owner.Opts, e.Blockchain, rAddr)
 	if illErr != nil {
 		return nil, illErr
 	}
@@ -32,6 +36,7 @@ func Deploy(e *Env) (*Dep, error) {
 	return &Dep{
 		Erc20Address:      ercAddress,
 		Erc20:             ercContract,
+		RedeemerAddress:   rAddr,
 		IlluminateAddress: illAddress,
 		Illuminate:        illContract,
 	}, nil
