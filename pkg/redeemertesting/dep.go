@@ -23,10 +23,10 @@ type Dep struct {
 	APWineToken        *mocks.APWineToken
 	TempusAddress      common.Address
 	Tempus             *mocks.Tempus
-	// TempusTokenAddress common.Address
-	// TempusToken        *mocks.TempusToken
-	RedeemerAddress common.Address
-	Redeemer        *redeemer.Redeemer
+	TempusTokenAddress common.Address
+	TempusToken        *mocks.TempusToken
+	RedeemerAddress    common.Address
+	Redeemer           *redeemer.Redeemer
 }
 
 func Deploy(e *Env) (*Dep, error) {
@@ -87,24 +87,23 @@ func Deploy(e *Env) (*Dep, error) {
 
 	e.Blockchain.Commit()
 
-	// tAddress, _, tContract, tErr := mocks.DeployTempus(e.Owner.Opts, e.Blockchain)
+	tAddress, _, tContract, tErr := mocks.DeployTempus(e.Owner.Opts, e.Blockchain)
 
-	// if tErr != nil {
-	// 	return nil, tErr
-	// }
+	if tErr != nil {
+		return nil, tErr
+	}
 
-	// e.Blockchain.Commit()
+	e.Blockchain.Commit()
 
-	// ttAddress, _, ttContract, ttErr := mocks.DeployErc20(e.Owner.Opts, e.Blockchain)
+	ttAddress, _, ttContract, ttErr := mocks.DeployTempusToken(e.Owner.Opts, e.Blockchain)
 
-	// if ttErr != nil {
-	// 	return nil, ttErr
-	// }
+	if ttErr != nil {
+		return nil, ttErr
+	}
 
-	// e.Blockchain.Commit()
-	// Update DeployRedeemer when tempus token is added
+	e.Blockchain.Commit()
 
-	redeemerAddress, _, redeemerContract, redeemerErr := redeemer.DeployRedeemer(e.Owner.Opts, e.Blockchain, mpAddress, apAddress, apAddress)
+	redeemerAddress, _, redeemerContract, redeemerErr := redeemer.DeployRedeemer(e.Owner.Opts, e.Blockchain, mpAddress, apAddress, ttAddress)
 
 	if redeemerErr != nil {
 		return nil, redeemerErr
@@ -128,10 +127,10 @@ func Deploy(e *Env) (*Dep, error) {
 		APWineAddress:      apAddress,
 		APWineToken:        aptContract,
 		APWineTokenAddress: aptAddress,
-		// Tempus:             tContract,
-		// TempusAddress:      tAddress,
-		// TempusToken:        ttContract,
-		// TempusTokenAddress: ttAddress,
-		Redeemer: redeemerContract,
+		Tempus:             tContract,
+		TempusAddress:      tAddress,
+		TempusToken:        ttContract,
+		TempusTokenAddress: ttAddress,
+		Redeemer:           redeemerContract,
 	}, nil
 }
