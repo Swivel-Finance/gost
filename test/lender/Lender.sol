@@ -143,15 +143,14 @@ contract Lender {
     // safe transfer from uToken is uniform
     Safe.transferFrom(IErc20(u), msg.sender, address(this), a);
 
-
-    IElementToken eToken = IElementToken(IIlluminate(illuminate).markets(u, m)[p]);
+    IElementToken token = IElementToken(IIlluminate(illuminate).markets(u, m)[p]);
 
     // the element token must match the market pair
-    require(eToken.underlying() == u, '');
-    require(eToken.unlockTimestamp() == m, '');
+    require(token.underlying() == u, '');
+    require(token.unlockTimestamp() == m, '');
 
 
-    // safe transfer... self...
+    // TODO:  safe transfer... self...
     
     // TODO: userData should be set to address(0) in bytes form
     Element.SingleSwap memory swap = Element.SingleSwap({
@@ -174,7 +173,7 @@ contract Lender {
     return IElement(e).swap(swap, fund, r, d);
   }
 
-  /// @dev lend method signature for pendleAddr
+  /// @dev lend method signature for pendle
   /// @notice Can be called before maturity to lend to Pendle while minting Illuminate tokens
   /// @param p value of a specific principal according to the MarketPlace Principals Enum
   /// @param u address of an underlying asset
@@ -184,12 +183,12 @@ contract Lender {
   /// @param d the maximum timestamp at which the transaction can be executed
   function lend(uint8 p, address u, uint256 m, uint256 a, uint256 mb, uint256 d) public returns (uint256) {
       // Instantiate market and tokens
-      address market = IIlluminate(illuminate).markets(u, m)[p];
-      IPendleToken pendleToken = IPendleToken(market); // rename to pendletoken
+      address principal = IIlluminate(illuminate).markets(u, m)[p];
+      IPendleToken token = IPendleToken(principal); // rename to pendletoken
 
       // confirm that we are in the correct market
-      require(pendleToken.yieldToken() == u, 'pendle underlying != underlying');
-      require(pendleToken.expiry() == m, 'pendle maturity != maturity');
+      require(token.yieldToken() == u, 'pendle underlying != underlying');
+      require(token.expiry() == m, 'pendle maturity != maturity');
 
       // Transfer funds from user to Illuminate
       Safe.transferFrom(IErc20(u), msg.sender, address(this), a);
@@ -197,7 +196,7 @@ contract Lender {
 
       address[] memory path = new address[](2);
       path[0] = u;
-      path[1] = market;
+      path[1] = principal;
 
       // Swap on the Pendle Router using the provided market and params
                                 // PendleRouter == IPendle
@@ -224,9 +223,9 @@ contract Lender {
   /// @param d deadline ?
   function lend(uint8 p, address u, uint256 m, uint256 a, uint256 r, address x, address t, uint256 d) public returns (uint256) {
       // Instantiate market and tokens
-      address tempusToken = IIlluminate(illuminate).markets(u, m)[p];
-      require(ITempus(tempusToken).yieldBearingToken() == IErc20Metadata(u), 'tempus underlying != underlying');
-      require(ITempus(tempusToken).maturityTime() == m, 'tempus maturity != maturity');
+      address principal = IIlluminate(illuminate).markets(u, m)[p];
+      require(ITempus(principal).yieldBearingToken() == IErc20Metadata(u), 'tempus underlying != underlying');
+      require(ITempus(principal).maturityTime() == m, 'tempus maturity != maturity');
 
       // Transfer funds from user to Illuminate, Scope to avoid stack limit
       IErc20 underlyingToken = IErc20(u);
@@ -258,8 +257,8 @@ contract Lender {
         // TODO: Check that we have the right underlying and maturity
 
         // Transfer funds from user to Illuminate
-        IErc20 underlyingToken = IErc20(u);
-        Safe.transferFrom(underlyingToken, msg.sender, address(this), a);
+        IErc20 token = IErc20(u);
+        Safe.transferFrom(token, msg.sender, address(this), a);
         uint256 returned = ISense(x).swapUnderlyingForPTs(sa, m, a, mb);
 
         address[8] memory markets = IIlluminate(illuminate).markets(u, m);
