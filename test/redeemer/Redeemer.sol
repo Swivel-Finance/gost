@@ -2,6 +2,9 @@
 
 pragma solidity 0.8.13;
 
+import "./Interfaces.sol";
+import "./Safe.sol";
+
 contract Redeemer {
 
   // NOTE: the imported interfaces don't need to be named anything other than what they are:
@@ -19,6 +22,25 @@ contract Redeemer {
     admin = msg.sender;
     illuminate = m; // TODO add an authorized setter for this?
   }
+
+    /// @notice Can be called after maturity and after tokens have been redeemed to Illuminate to redeem underlying tokens 
+    /// @param u the underlying token being redeemed
+    /// @param m the maturity of the market being redeemed
+    /// @param o the owner of the zcTokens being redeemed
+    function redeem(address u, uint256 m, address o) public returns (bool) {
+        IZcToken token = IZcToken(IIlluminate(illuminate).markets(u, m)[0]);
+
+        uint256 amount = token.balanceOf(o);
+
+        token.burn(o, amount);
+
+        Safe.transfer(IErc20(u), o, amount);
+
+        emit Redeem(0, u, m, amount);
+
+        return true;
+    }
+
   /// @dev redeem method signature for illuminate, tempus, apwine
   /// @param p value of a specific principal according to the Illuminate Principals Enum
   /// @param u underlying token being redeemed
