@@ -402,13 +402,11 @@ func (s *lendTestSuite) TestLendElement() {
 	assert.Nil(err)
 	assert.Equal(s.Dep.Erc20Address, elementTokenUnderlying)
 
-	elementDeadline, err := s.Element.Deadline()
-	assert.Nil(err)
-	assert.Equal(deadline, elementDeadline)
-
-	elementReturn, err := s.Element.Return()
-	assert.Nil(err)
-	assert.Equal(returnAmount, elementReturn)
+	swap, err := s.Element.SwapCalled(s.Dep.LenderAddress)
+	assert.Equal(deadline, swap.Deadline)
+	assert.Equal(returnAmount, swap.Return)
+	assert.Equal(s.Dep.LenderAddress, swap.Recipient)
+	assert.Equal(amount, swap.SwapAmount)
 }
 
 func (s *lendTestSuite) TestLendPendle() {
@@ -502,29 +500,13 @@ func (s *lendTestSuite) TestLendTempus() {
 	s.Env.Blockchain.Commit()
 
 	// verify that mocks were called as expected
-	ammCalled, err := s.Tempus.TempusAMMCalled()
-	assert.NoError(err)
-	assert.Equal(amm, ammCalled)
-
-	poolCalled, err := s.Tempus.TempusPoolCalled()
-	assert.NoError(err)
-	assert.Equal(pool, poolCalled)
-
-	amountCalled, err := s.Tempus.AmountCalled()
-	assert.NoError(err)
-	assert.Equal(amount, amountCalled)
-
-	isTokenBacking, err := s.Tempus.IsBackingTokenCalled()
-	assert.NoError(err)
-	assert.True(isTokenBacking)
-
-	minimumReturnCalled, err := s.Tempus.MinimumReturnCalled()
-	assert.NoError(err)
-	assert.Equal(minimumReturn, minimumReturnCalled)
-
-	deadlineCalled, err := s.Tempus.DeadlineCalled()
-	assert.NoError(err)
-	assert.Equal(deadline, deadlineCalled)
+	deposit, err := s.Tempus.DepositAndFixCalled(amount)
+	assert.Nil(err)
+	assert.Equal(amm, deposit.Amm)
+	assert.Equal(pool, deposit.Pool)
+	assert.Equal(deadline, deposit.Deadline)
+	assert.True(deposit.Bt)
+	assert.Equal(minimumReturn, deposit.MinimumReturned)
 }
 
 func (s *lendTestSuite) TestLendSense() {
@@ -612,7 +594,7 @@ func (s *lendTestSuite) TestAPWineSense() {
 	assert.Equal(id, swap.Id)
 	assert.Equal(big.NewInt(1), swap.TokenIn)
 	assert.Equal(amount, swap.Amount)
-	assert.Equal(big.NewInt(0), swap.TokenOut)
+	assert.True(swap.TokenOut.Cmp(big.NewInt(0)) == 0)
 	assert.Equal(minimumAmount, swap.MinimumAmount)
 }
 

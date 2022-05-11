@@ -59,21 +59,12 @@ func (s *elementTestSuite) TestDeploy() {
 	s.Element.Swap(singleSwap, fundManagement, returnValue, deadline)
 	s.Env.Blockchain.Commit()
 
-	returned, err := s.Element.Return()
-	assert.Nil(err)
-	assert.Equal(returnValue, returned)
-
-	deadlineReturned, err := s.Element.Deadline()
-	assert.Nil(err)
-	assert.Equal(deadline, deadlineReturned)
-
-	fundManagementReturned, err := s.Element.FundManagementSender()
-	assert.Nil(err)
-	assert.Equal(fundManagement.Sender, fundManagementReturned)
-
-	singleSwapAmount, err := s.Element.SingleSwapAmount()
-	assert.Nil(err)
-	assert.Equal(singleSwap.Amount, singleSwapAmount)
+	swap, err := s.Element.SwapCalled(fundManagement.Sender)
+	assert.NoError(err)
+	assert.Equal(deadline, swap.Deadline)
+	assert.Equal(returnValue, swap.Return)
+	assert.Equal(fundManagement.Recipient, swap.Recipient)
+	assert.Equal(singleSwap.Amount, swap.SwapAmount)
 }
 
 func TestElementSuite(t *test.T) {

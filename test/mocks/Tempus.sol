@@ -36,12 +36,6 @@ contract Tempus {
     uint256 private maturityTimeReturn;
     IErc20Metadata private yieldBearingTokenReturn;
 
-    Any public tempusAMMCalled;
-    Any public tempusPoolCalled;
-    uint256 public amountCalled;
-    bool public isBackingTokenCalled;
-    uint256 public minimumReturnCalled;
-    uint256 public deadlineCalled;
     mapping (address => RedeemToBackingArgs) public redeemToBackingCalled;
     mapping (uint256 => DepositAndFixArgs) public depositAndFixCalled;
 

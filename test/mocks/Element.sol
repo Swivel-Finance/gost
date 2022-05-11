@@ -25,54 +25,22 @@ struct FundManagement {
 
 contract Element {
     struct SwapArgs {
-        FundManagement fundManagement;
-        SingleSwap swap;
+        address recipient;
+        uint256 swapAmount;
         uint256 _return;
         uint256 deadline;
     }
 
     uint256 private swapReturn;
-    uint256 private deadlineReturn;
-    uint256 private return_Return;
-    address private fundManagementSenderReturn;
-    uint256 private singleSwapAmountReturn;
 
     mapping (address => SwapArgs) public swapCalled;
 
-    function deadline() external view returns (uint256) {
-        return deadlineReturn;
-    }
-
-    function deadlineReturns(uint256 d) external {
-        deadlineReturn = d;
-    }
-
-    function return_() external view returns (uint256) {
-        return return_Return;
-    }
-
-    function returnReturns(uint256 r) external {
-        return_Return = r;
-    }
-
-    function fundManagementSender() external view returns (address) {
-        return fundManagementSenderReturn;
-    }
-
-    function fundManagementSenderReturns(address s) external {
-        fundManagementSenderReturn = s;
-    }
-    
-    function singleSwapAmount() external view returns (uint256) {
-        return singleSwapAmountReturn;
-    }
-
-    function singleSwapAmountReturns(uint256 a) external {
-        singleSwapAmountReturn = a;
+    function swapReturns(uint256 s) external {
+        swapReturn = s;
     }
 
     function swap(SingleSwap memory s, FundManagement memory f, uint256 r, uint256 d) external returns (uint256) {
-        swapCalled[f.sender] = SwapArgs(f, s, r, d);
+        swapCalled[f.sender] = SwapArgs(f.recipient, s.amount, r, d);
         return swapReturn;
     }
 }
