@@ -107,14 +107,14 @@ func (s *redeemTestSuite) TestRedeemIlluminateTempusApwine() {
 	maturity := big.NewInt(9999999)
 
 	markets := [8]common.Address{
-		s.Dep.ZcTokenAddress,
-		s.Dep.ZcTokenAddress,
-		s.Dep.ZcTokenAddress,
-		s.Dep.ZcTokenAddress,
-		s.Dep.ZcTokenAddress,
-		s.Dep.ZcTokenAddress,
-		s.Dep.ZcTokenAddress,
-		s.Dep.ZcTokenAddress,
+		s.Dep.Erc20Address,
+		s.Dep.Erc20Address,
+		s.Dep.Erc20Address,
+		s.Dep.Erc20Address,
+		s.Dep.Erc20Address,
+		s.Dep.Erc20Address,
+		s.Dep.Erc20Address,
+		s.Dep.Erc20Address,
 	}
 	s.Illuminate.MarketsReturns(markets)
 	s.Env.Blockchain.Commit()
@@ -131,21 +131,26 @@ func (s *redeemTestSuite) TestRedeemIlluminateTempusApwine() {
 	s.Env.Blockchain.Commit()
 
 	// verify mocks were called as expected
-	// calledAmount, err := s.Router.AmountCalled()
-	// assert.NoError(err)
-	// assert.Equal(amount, calledAmount)
+	transfer, err := s.Erc20.TransferFromCalled(s.Dep.IlluminateAddress)
+	assert.NoError(err)
+	assert.Equal(amount, transfer.Amount)
+	assert.True(transfer.To == s.Dep.RedeemerAddress)
 
-	// calledYieldAmount, err := s.Router.YieldAmountCalled()
-	// assert.NoError(err)
-	// assert.Equal(amount, calledYieldAmount)
+	calledAmount, err := s.Router.AmountCalled()
+	assert.NoError(err)
+	assert.Equal(amount, calledAmount)
 
-	// calledOwner, err := s.Router.OwnerCalled()
-	// assert.NoError(err)
-	// assert.Equal(s.Dep.IlluminateAddress, calledOwner)
+	calledYieldAmount, err := s.Router.YieldAmountCalled()
+	assert.NoError(err)
+	assert.Equal(calledYieldAmount.Cmp(big.NewInt(0)), 0)
 
-	// calledRecipient, err := s.Router.RecipientCalled()
-	// assert.NoError(err)
-	// assert.Equal(s.Dep.RedeemerAddress, calledRecipient)
+	calledOwner, err := s.Router.OwnerCalled()
+	assert.NoError(err)
+	assert.Equal(s.Dep.IlluminateAddress, calledOwner)
+
+	calledRecipient, err := s.Router.RecipientCalled()
+	assert.NoError(err)
+	assert.Equal(s.Dep.RedeemerAddress, calledRecipient)
 }
 
 func TestRedeemSuite(t *test.T) {
