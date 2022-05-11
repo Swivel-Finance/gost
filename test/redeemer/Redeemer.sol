@@ -34,6 +34,9 @@ contract Redeemer {
   /// @param u the underlying token being redeemed
   /// @param m the maturity of the market being redeemed
   /// @param o the owner of the underlying tokens being redeemed
+  /// TODO: owner is a bad name for the 4th parameter. For illuminate, it makes
+  /// sense, but for Tempus/APWine, it should be something like router. Ask
+  /// Julian for clarification.
   function redeem(uint8 p, address u, uint256 m, address o) public returns (bool) {
     address principal = IIlluminate(illuminate).markets(u, m)[p];
 
