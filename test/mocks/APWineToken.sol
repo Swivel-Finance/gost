@@ -8,12 +8,21 @@ contract APWineToken {
         address to;
         uint256 amount;
     }
-
-    mapping (address => uint256) public balances;
-    address private getPTAddressReturn;
-    bool private transferFromReturn;
-
+    // mapping of arguments sent to transfer. key is the passed in address.
+    mapping (address => uint256) public transferCalled;
+    // mapping of arguments sent to transferFrom. key is passed from address.
     mapping (address => TransferFromArgs) public transferFromCalled;
+
+    // balanceOf does not require a mapping.
+    address public balanceOfCalled;
+
+    address private getPTAddressReturn;
+    // a uint to return for balanceOf calls
+    uint256 private balanceOfReturn;
+    // a boolean flag which allows us to dictate the return of transfer().
+    bool private transferReturn;
+    // a boolean flag which allows us to dictate the return of transferFrom().
+    bool private transferFromReturn;
 
     function getPTAddressReturns(address a) external {
         getPTAddressReturn = a;
@@ -23,17 +32,22 @@ contract APWineToken {
         return getPTAddressReturn;
     }
 
-    function balanceOfReturns(address a, uint256 b) external {
-        balances[a] = b;
+    function balanceOfReturns(uint256 b) public {
+        balanceOfReturn = b;
     }
 
-    function balanceOf(address a) external view returns (uint256) {
-        return balances[a];
+    function balanceOf(address t) public returns (uint256) {
+        balanceOfCalled = t;
+        return balanceOfReturn;
     }
 
+    function transfer(address t, uint256 a) public returns (bool) {
+        transferCalled[t] = a;
+        return transferReturn;
+    }
 
-    function transferFromReturns(bool b) public {
-        transferFromReturn = b;
+    function transferReturns(bool b) public {
+        transferReturn = b;
     }
 
     function transferFrom(address f, address t, uint256 a) public returns (bool) {
@@ -44,4 +58,7 @@ contract APWineToken {
         return transferFromReturn;
     }
 
+    function transferFromReturns(bool b) public {
+        transferFromReturn = b;
+    }
 }
