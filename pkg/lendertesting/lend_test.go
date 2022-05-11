@@ -23,13 +23,13 @@ type lendTestSuite struct {
 	Swivel       *mocks.SwivelSession
 	ElementToken *mocks.ElementTokenSession
 	Element      *mocks.ElementSession
+	PendleToken  *mocks.PendleTokenSession
 	Pendle       *mocks.PendleSession
-	Sushi        *mocks.SushiSession
 	Tempus       *mocks.TempusSession
 	Sense        *mocks.SenseSession
-	SenseAdapter *mocks.SenseAdapterSession
+	SenseToken   *mocks.SenseTokenSession
+	APWineToken  *mocks.APWineTokenSession
 	APWine       *mocks.APWineSession
-	APWineRouter *mocks.APWineRouterSession
 	Lender       *lender.LenderSession
 }
 
@@ -107,8 +107,8 @@ func (s *lendTestSuite) SetupSuite() {
 		},
 	}
 
-	s.Pendle = &mocks.PendleSession{
-		Contract: s.Dep.Pendle,
+	s.PendleToken = &mocks.PendleTokenSession{
+		Contract: s.Dep.PendleToken,
 		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
 		TransactOpts: bind.TransactOpts{
 			From:   s.Env.Owner.Opts.From,
@@ -116,8 +116,8 @@ func (s *lendTestSuite) SetupSuite() {
 		},
 	}
 
-	s.Sushi = &mocks.SushiSession{
-		Contract: s.Dep.Sushi,
+	s.Pendle = &mocks.PendleSession{
+		Contract: s.Dep.Pendle,
 		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
 		TransactOpts: bind.TransactOpts{
 			From:   s.Env.Owner.Opts.From,
@@ -143,8 +143,17 @@ func (s *lendTestSuite) SetupSuite() {
 		},
 	}
 
-	s.SenseAdapter = &mocks.SenseAdapterSession{
-		Contract: s.Dep.SenseAdapter,
+	s.SenseToken = &mocks.SenseTokenSession{
+		Contract: s.Dep.SenseToken,
+		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
+		TransactOpts: bind.TransactOpts{
+			From:   s.Env.Owner.Opts.From,
+			Signer: s.Env.Owner.Opts.Signer,
+		},
+	}
+
+	s.APWineToken = &mocks.APWineTokenSession{
+		Contract: s.Dep.APWineToken,
 		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
 		TransactOpts: bind.TransactOpts{
 			From:   s.Env.Owner.Opts.From,
@@ -154,15 +163,6 @@ func (s *lendTestSuite) SetupSuite() {
 
 	s.APWine = &mocks.APWineSession{
 		Contract: s.Dep.APWine,
-		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
-		TransactOpts: bind.TransactOpts{
-			From:   s.Env.Owner.Opts.From,
-			Signer: s.Env.Owner.Opts.Signer,
-		},
-	}
-
-	s.APWineRouter = &mocks.APWineRouterSession{
-		Contract: s.Dep.APWineRouter,
 		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
 		TransactOpts: bind.TransactOpts{
 			From:   s.Env.Owner.Opts.From,
@@ -415,13 +415,13 @@ func (s *lendTestSuite) TestLendPendle() {
 	assert := assert.New(s.T())
 	maturity := big.NewInt(100000)
 
-	s.Sushi.SwapExactTokensForTokensReturns([]*big.Int{big.NewInt(1), big.NewInt(2)})
+	s.Pendle.SwapExactTokensForTokensReturns([]*big.Int{big.NewInt(1), big.NewInt(2)})
 	s.Env.Blockchain.Commit()
 
-	s.Pendle.ExpiryReturns(maturity)
+	s.PendleToken.ExpiryReturns(maturity)
 	s.Env.Blockchain.Commit()
 
-	s.Pendle.YieldTokenReturns(s.Dep.Erc20Address)
+	s.PendleToken.YieldTokenReturns(s.Dep.Erc20Address)
 	s.Env.Blockchain.Commit()
 
 	s.ZcToken.MintReturns(true)
@@ -430,13 +430,13 @@ func (s *lendTestSuite) TestLendPendle() {
 	// TODO: This should be a helper that always returns a given address
 	s.Illuminate.MarketsReturns([8]common.Address{
 		s.Dep.ZcTokenAddress,
-		s.Dep.PendleAddress,
-		s.Dep.PendleAddress,
-		s.Dep.PendleAddress,
-		s.Dep.PendleAddress,
-		s.Dep.PendleAddress,
-		s.Dep.PendleAddress,
-		s.Dep.PendleAddress,
+		s.Dep.PendleTokenAddress,
+		s.Dep.PendleTokenAddress,
+		s.Dep.PendleTokenAddress,
+		s.Dep.PendleTokenAddress,
+		s.Dep.PendleTokenAddress,
+		s.Dep.PendleTokenAddress,
+		s.Dep.PendleTokenAddress,
 	})
 
 	amount := big.NewInt(100)
@@ -449,27 +449,27 @@ func (s *lendTestSuite) TestLendPendle() {
 	s.Env.Blockchain.Commit()
 
 	// verify that mocks were called as expected
-	in, err := s.Sushi.InCalled()
+	in, err := s.Pendle.InCalled()
 	assert.NoError(err)
 	assert.Equal(amount, in)
 
-	out, err := s.Sushi.OutMinimumCalled()
+	out, err := s.Pendle.OutMinimumCalled()
 	assert.NoError(err)
 	assert.Equal(minimumBought, out)
 
-	address, err := s.Sushi.PathCalled(big.NewInt(0))
+	address, err := s.Pendle.PathCalled(big.NewInt(0))
 	assert.NoError(err)
 	assert.Equal(s.Dep.Erc20Address, address)
 
-	address, err = s.Sushi.PathCalled(big.NewInt(1))
+	address, err = s.Pendle.PathCalled(big.NewInt(1))
 	assert.NoError(err)
-	assert.Equal(s.Dep.PendleAddress, address)
+	assert.Equal(s.Dep.PendleTokenAddress, address)
 
-	to, err := s.Sushi.ToCalled()
+	to, err := s.Pendle.ToCalled()
 	assert.NoError(err)
 	assert.Equal(s.Dep.LenderAddress, to)
 
-	calledDeadline, err := s.Sushi.DeadlineCalled()
+	calledDeadline, err := s.Pendle.DeadlineCalled()
 	assert.NoError(err)
 	assert.Equal(deadline, calledDeadline)
 }
@@ -559,7 +559,7 @@ func (s *lendTestSuite) TestLendSense() {
 	})
 	s.Env.Blockchain.Commit()
 
-	s.SenseAdapter.UnderlyingReturns(s.Dep.Erc20Address)
+	s.SenseToken.UnderlyingReturns(s.Dep.Erc20Address)
 	s.Env.Blockchain.Commit()
 
 	s.Erc20.TransferFromReturns(true)
@@ -582,7 +582,7 @@ func (s *lendTestSuite) TestLendSense() {
 	s.Env.Blockchain.Commit()
 
 	// verify that mocks were called as expected
-	adapterCalled, err := s.Sense.SenseAdapterCalled()
+	adapterCalled, err := s.Sense.SenseTokenCalled()
 	assert.NoError(err)
 	assert.Equal(adapter, adapterCalled)
 
@@ -603,23 +603,23 @@ func (s *lendTestSuite) TestAPWineSense() {
 	assert := assert.New(s.T())
 	s.Illuminate.MarketsReturns([8]common.Address{
 		s.Dep.ZcTokenAddress,
-		s.Dep.APWineAddress,
-		s.Dep.APWineAddress,
-		s.Dep.APWineAddress,
-		s.Dep.APWineAddress,
-		s.Dep.APWineAddress,
-		s.Dep.APWineAddress,
-		s.Dep.APWineAddress,
+		s.Dep.APWineTokenAddress,
+		s.Dep.APWineTokenAddress,
+		s.Dep.APWineTokenAddress,
+		s.Dep.APWineTokenAddress,
+		s.Dep.APWineTokenAddress,
+		s.Dep.APWineTokenAddress,
+		s.Dep.APWineTokenAddress,
 	})
 	s.Env.Blockchain.Commit()
 
-	s.APWine.GetPTAddressReturns(s.Dep.Erc20Address)
+	s.APWineToken.GetPTAddressReturns(s.Dep.Erc20Address)
 	s.Env.Blockchain.Commit()
 
 	s.Erc20.TransferFromReturns(true)
 	s.Env.Blockchain.Commit()
 
-	s.APWineRouter.SwapExactAmountInReturns(big.NewInt(12345))
+	s.APWine.SwapExactAmountInReturns(big.NewInt(12345))
 	s.Env.Blockchain.Commit()
 
 	s.ZcToken.MintReturns(true)
@@ -630,33 +630,33 @@ func (s *lendTestSuite) TestAPWineSense() {
 	minimumAmount := big.NewInt(34)
 	id := big.NewInt(1000)
 
-	tx, err := s.Lender.Lend(7, s.Dep.Erc20Address, maturity, amount, minimumAmount, s.Dep.APWineRouterAddress, id)
+	tx, err := s.Lender.Lend(7, s.Dep.Erc20Address, maturity, amount, minimumAmount, s.Dep.APWineAddress, id)
 	assert.NoError(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
 
 	// verify that mocks were called as expected
-	idCalled, err := s.APWineRouter.IdCalled()
+	idCalled, err := s.APWine.IdCalled()
 	assert.NoError(err)
 	assert.Equal(id, idCalled)
 
-	tokenInCalled, err := s.APWineRouter.TokenInCalled()
+	tokenInCalled, err := s.APWine.TokenInCalled()
 	assert.NoError(err)
 	assert.Equal(big.NewInt(1), tokenInCalled)
 
-	amountCalled, err := s.APWineRouter.AmountCalled()
+	amountCalled, err := s.APWine.AmountCalled()
 	assert.NoError(err)
 	assert.Equal(amount, amountCalled)
 
-	tokenOutCalled, err := s.APWineRouter.TokenOutCalled()
+	tokenOutCalled, err := s.APWine.TokenOutCalled()
 	assert.NoError(err)
 	assert.True(big.NewInt(0).Cmp(tokenOutCalled) == 0)
 
-	minimumAmountCalled, err := s.APWineRouter.MinimumAmountCalled()
+	minimumAmountCalled, err := s.APWine.MinimumAmountCalled()
 	assert.NoError(err)
 	assert.Equal(minimumAmount, minimumAmountCalled)
 
-	toCalled, err := s.APWineRouter.ToCalled()
+	toCalled, err := s.APWine.ToCalled()
 	assert.NoError(err)
 	assert.Equal(s.Dep.LenderAddress, toCalled)
 }

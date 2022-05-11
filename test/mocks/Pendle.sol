@@ -3,22 +3,25 @@
 pragma solidity 0.8.13;
 
 contract Pendle {
-    address private yieldTokenReturn;
-    uint256 private expiryReturn;
+    uint[] private swapExactTokensForTokensReturn;
 
-    function yieldTokenReturns(address a) external {
-        yieldTokenReturn = a;
+    uint256 public inCalled;
+    uint256 public outMinimumCalled;
+    address[] public pathCalled;
+    address public toCalled;
+    uint256 public deadlineCalled;
+
+    function swapExactTokensForTokensReturns(uint[] memory r) external {
+        swapExactTokensForTokensReturn = r;
     }
+    
+    function swapExactTokensForTokens(uint256 i, uint256 o, address[] calldata p, address t, uint256 d) external returns (uint[] memory) {
+        inCalled = i;
+        outMinimumCalled = o;
+        pathCalled = p;
+        toCalled = t;
+        deadlineCalled = d;
 
-    function expiryReturns(uint256 m) external {
-        expiryReturn = m;
-    }
-
-    function yieldToken() external view returns (address) {
-        return yieldTokenReturn;
-    }
-
-    function expiry() external view returns (uint256) {
-        return expiryReturn;
+        return swapExactTokensForTokensReturn;
     }
 }
