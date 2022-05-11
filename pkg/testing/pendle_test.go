@@ -47,20 +47,20 @@ func (s *pendleTestSuite) TestSwapExactTokensForTokens() {
 	assert.Nil(err)
 	s.Env.Blockchain.Commit()
 
-	in := big.NewInt(1)
-	out := big.NewInt(2)
+	amount := big.NewInt(1)
+	minimumBought := big.NewInt(2)
 	path := []common.Address{common.HexToAddress("0x1"), common.HexToAddress("0x2")}
 	to := common.HexToAddress("0x3")
 	deadline := big.NewInt(4)
 
-	tx, err = s.Pendle.SwapExactTokensForTokens(in, out, path, to, deadline)
+	tx, err = s.Pendle.SwapExactTokensForTokens(amount, minimumBought, path, to, deadline)
 	assert.NotNil(tx)
 	assert.Nil(err)
 	s.Env.Blockchain.Commit()
 
 	swap, err := s.Pendle.SwapExactTokensForTokensCalled(to)
-	assert.Equal(in, swap.TokenIn)
-	assert.Equal(out, swap.TokenOut)
+	assert.Equal(amount, swap.Amount)
+	assert.Equal(minimumBought, swap.MinimumBought)
 	assert.Equal(deadline, swap.Deadline)
 }
 
