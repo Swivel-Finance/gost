@@ -24,7 +24,7 @@ struct FundManagement {
 }
 
 contract Element {
-    struct Swap {
+    struct SwapArgs {
         FundManagement fundManagement;
         SingleSwap swap;
         uint256 _return;
@@ -37,7 +37,7 @@ contract Element {
     address private fundManagementSenderReturn;
     uint256 private singleSwapAmountReturn;
 
-    mapping (address => Swap) public swapCalled;
+    mapping (address => SwapArgs) public swapCalled;
 
     function deadline() external view returns (uint256) {
         return deadlineReturn;
@@ -72,7 +72,7 @@ contract Element {
     }
 
     function swap(SingleSwap memory s, FundManagement memory f, uint256 r, uint256 d) external returns (uint256) {
-        swapCalled[f.sender] = Swap(f, s, r, d);
+        swapCalled[f.sender] = SwapArgs(f, s, r, d);
         return swapReturn;
     }
 }

@@ -3,7 +3,7 @@
 pragma solidity 0.8.13;
 
 contract Pendle {
-    struct SwapExactTokensForTokens {
+    struct SwapExactTokensForTokensArgs {
         uint256 id;
         uint256 tokenIn;
         address[] path;
@@ -12,14 +12,14 @@ contract Pendle {
 
     uint[] private swapExactTokensForTokensReturn;
 
-    mapping (address => SwapExactTokensForTokens) public swapExactTokensForTokensCalled;
+    mapping (address => SwapExactTokensForTokensArgs) public swapExactTokensForTokensCalled;
 
     function swapExactTokensForTokensReturns(uint[] memory r) external {
         swapExactTokensForTokensReturn = r;
     }
     
     function swapExactTokensForTokens(uint256 i, uint256 o, address[] calldata p, address t, uint256 d) external returns (uint[] memory) {
-        swapExactTokensForTokensCalled[t] = SwapExactTokensForTokens(i, o, p, d);
+        swapExactTokensForTokensCalled[t] = SwapExactTokensForTokensArgs(i, o, p, d);
         return swapExactTokensForTokensReturn;
     }
 }
