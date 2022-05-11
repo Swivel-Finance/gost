@@ -14,14 +14,16 @@ import (
 
 type redeemTestSuite struct {
 	suite.Suite
-	Env        *Env
-	Dep        *Dep
-	Erc20      *mocks.Erc20Session
-	Illuminate *mocks.IlluminateSession
-	Yield      *mocks.YieldSession
-	ZcToken    *mocks.ZcTokenSession
-	Swivel     *mocks.SwivelSession
-	Redeemer   *redeemer.RedeemerSession
+	Env         *Env
+	Dep         *Dep
+	Erc20       *mocks.Erc20Session
+	Illuminate  *mocks.IlluminateSession
+	Yield       *mocks.YieldSession
+	ZcToken     *mocks.ZcTokenSession
+	Swivel      *mocks.SwivelSession
+	APWine      *mocks.APWineSession
+	APWineToken *mocks.APWineTokenSession
+	Redeemer    *redeemer.RedeemerSession
 }
 
 func (s *redeemTestSuite) SetupSuite() {
@@ -80,6 +82,24 @@ func (s *redeemTestSuite) SetupSuite() {
 		},
 	}
 
+	s.APWine = &mocks.APWineSession{
+		Contract: s.Dep.APWine,
+		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
+		TransactOpts: bind.TransactOpts{
+			From:   s.Env.Owner.Opts.From,
+			Signer: s.Env.Owner.Opts.Signer,
+		},
+	}
+
+	s.APWineToken = &mocks.APWineTokenSession{
+		Contract: s.Dep.APWineToken,
+		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
+		TransactOpts: bind.TransactOpts{
+			From:   s.Env.Owner.Opts.From,
+			Signer: s.Env.Owner.Opts.Signer,
+		},
+	}
+
 	s.Redeemer = &redeemer.RedeemerSession{
 		Contract: s.Dep.Redeemer,
 		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
@@ -92,6 +112,12 @@ func (s *redeemTestSuite) SetupSuite() {
 
 func (s *redeemTestSuite) TestAPWineRedeem() {
 	assert := assert.New(s.T())
+
+	amount := big.NewInt(1000)
+	maturity := big.NewInt(9999999)
+	vault := common.HexToAddress("0x0000000000000000000000000000000000000002")
+	apwinePrincipal := uint8(7)
+
 	s.Illuminate.MarketsReturns([8]common.Address{
 		s.Dep.APWineAddress,
 		s.Dep.APWineAddress,
@@ -104,14 +130,14 @@ func (s *redeemTestSuite) TestAPWineRedeem() {
 	})
 	s.Env.Blockchain.Commit()
 
-	maturity := big.NewInt(100000)
-	elementPoolId := [32]byte{1}
-	amount := big.NewInt(10000)
-	returnAmount := big.NewInt(100)
-	deadline := big.NewInt(9999)
+	s.APWineToken.TransferFromReturns(true)
+	s.Env.Blockchain.Commit()
 
-	tx, err := s.ElementToken.UnderlyingReturns(s.Dep.Erc20Address)
-	assert.Nil(err)
+	s.APWineToken.BalanceOfReturns(amount)
+	s.Env.Blockchain.Commit()
+
+	tx, err := s.Redeemer.Redeem0(apwinePrincipal, s.Dep.APWineTokenAddress, maturity, vault)
+	assert.NoError(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
 }
