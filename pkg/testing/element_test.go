@@ -43,7 +43,7 @@ func (s *elementTestSuite) TestDeploy() {
 	assert := assert.New(s.T())
 
 	deadline := big.NewInt(1000)
-	returnValue := big.NewInt(2000)
+	minimumBought := big.NewInt(2000)
 	fundManagement := mocks.FundManagement{
 		Sender:              s.Env.Owner.Opts.From,
 		Recipient:           common.HexToAddress("0x0000000000000000000000000000000000000001"),
@@ -56,13 +56,13 @@ func (s *elementTestSuite) TestDeploy() {
 		AssetOut: common.BigToAddress(big.NewInt(2)),
 	}
 
-	s.Element.Swap(singleSwap, fundManagement, returnValue, deadline)
+	s.Element.Swap(singleSwap, fundManagement, minimumBought, deadline)
 	s.Env.Blockchain.Commit()
 
 	swap, err := s.Element.SwapCalled(fundManagement.Sender)
 	assert.NoError(err)
 	assert.Equal(deadline, swap.Deadline)
-	assert.Equal(returnValue, swap.Return)
+	assert.Equal(minimumBought, swap.MinimumBought)
 	assert.Equal(fundManagement.Recipient, swap.Recipient)
 	assert.Equal(singleSwap.Amount, swap.SwapAmount)
 }

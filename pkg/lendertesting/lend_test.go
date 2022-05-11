@@ -372,7 +372,7 @@ func (s *lendTestSuite) TestLendElement() {
 	maturity := big.NewInt(100000)
 	elementPoolId := [32]byte{1}
 	amount := big.NewInt(10000)
-	returnAmount := big.NewInt(100)
+	minimumBought := big.NewInt(100)
 	deadline := big.NewInt(9999)
 
 	tx, err := s.ElementToken.UnderlyingReturns(s.Dep.Erc20Address)
@@ -388,7 +388,7 @@ func (s *lendTestSuite) TestLendElement() {
 	tx, err = s.Erc20.TransferFromReturns(true)
 	s.Env.Blockchain.Commit()
 
-	tx, err = s.Lender.Lend3(3, s.Dep.Erc20Address, maturity, s.Dep.ElementAddress, elementPoolId, amount, returnAmount, deadline)
+	tx, err = s.Lender.Lend3(3, s.Dep.Erc20Address, maturity, s.Dep.ElementAddress, elementPoolId, amount, minimumBought, deadline)
 	assert.Nil(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
@@ -404,7 +404,7 @@ func (s *lendTestSuite) TestLendElement() {
 
 	swap, err := s.Element.SwapCalled(s.Dep.LenderAddress)
 	assert.Equal(deadline, swap.Deadline)
-	assert.Equal(returnAmount, swap.Return)
+	assert.Equal(minimumBought, swap.MinimumBought)
 	assert.Equal(s.Dep.LenderAddress, swap.Recipient)
 	assert.Equal(amount, swap.SwapAmount)
 }
