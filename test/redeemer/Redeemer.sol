@@ -2,6 +2,7 @@
 
 pragma solidity 0.8.13;
 
+import "./Illuminate.sol";
 import "./Interfaces.sol";
 import "./Safe.sol";
 
@@ -14,25 +15,39 @@ contract Redeemer {
 
   address public admin;
   address public illuminate;
+  address public apwineRouter;
+  address public tempusRouter;
 
   event Redeem(uint8 principal, address indexed underlying, uint256 indexed maturity, uint256 amount);  
 
   /// @param m the deployed Illuminate contract
-  constructor(address m) {
+  constructor(address m, address a, address t) {
     admin = msg.sender;
     illuminate = m; // TODO add an authorized setter for this?
+    apwineRouter = a;
+    tempusRouter = t;
   }
 
-    /// @notice Can be called after maturity and after tokens have been redeemed to Illuminate to redeem underlying tokens 
+    /// @notice Redeems underlying token for illuminate, apwine and tempus 
+    /// protocols
+    /// @param p: the principal token
     /// @param u the underlying token being redeemed
     /// @param m the maturity of the market being redeemed
-    /// @param o the owner of the zcTokens being redeemed
-    function redeem(address u, uint256 m, address o) public returns (bool) {
-        IZcToken token = IZcToken(IIlluminate(illuminate).markets(u, m)[0]);
+    /// @param o the owner of the underlying tokens being redeemed
+    function redeem(uint8 p, address u, uint256 m, address o) public returns (bool) {
+        address principal = IIlluminate(illuminate).markets(u, m)[p];
+
+        IErc20 token = IErc20(principal);
 
         uint256 amount = token.balanceOf(o);
 
-        token.burn(o, amount);
+        if (p == uint8(Illuminate.Principals.Apwine)) {
+            IAPWine(apwineRouter).withdraw(o, amount);
+        } else if (p == uint8(Illuminate.Principals.Tempus)) {
+            ITempus(tempusRouter).redeemToBacking(o, m, amount, u);
+        } else if (p == uint8(Illuminate.Principals.Illuminate)) {
+            IZcToken(principal).burn(o, amount);
+        }
 
         Safe.transfer(IErc20(u), o, amount);
 
@@ -40,16 +55,6 @@ contract Redeemer {
 
         return true;
     }
-
-  /// @dev redeem method signature for illuminate, tempus, apwine
-  /// @param p value of a specific principal according to the Illuminate Principals Enum
-  /// @param u underlying token being redeemed
-  /// @param m maturity of the market being redeemed
-  /// @param o owner / tempus pool / apiwine vault ?
-  function redeem(uint8 p, address u, uint256 m, address o) public returns (bool) {
-    // ...
-    return true;
-  }
 
   /// @dev redeem method signature for swivel, yield, element, 
   /// @param p value of a specific principal according to the Illuminate Principals Enum

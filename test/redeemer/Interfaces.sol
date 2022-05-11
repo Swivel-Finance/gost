@@ -21,6 +21,14 @@ interface IZcToken {
 	function burn(address, uint256) external;
 }
 
+interface IAPWine {
+	function withdraw(address, uint256) external;
+}
+
+interface ITempus {
+	function redeemToBacking(address, uint256, uint256, address) external;
+}
+
 interface ISwivel {
 	function redeemZcToken(address u, uint256 m, uint256 a) external returns (bool);
 }
