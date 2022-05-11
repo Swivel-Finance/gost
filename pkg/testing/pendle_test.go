@@ -85,6 +85,6 @@ func (s *pendleTestSuite) TestSwapExactTokensForTokens() {
 	assert.Equal(deadline, deadlineCalled)
 }
 
-func TestSushiSuite(t *test.T) {
+func TestPendleSuite(t *test.T) {
 	suite.Run(t, &pendleTestSuite{})
 }
