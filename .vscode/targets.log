@@ -1,0 +1,740 @@
+
+# Make data base, printed on Wed May 11 15:57:12 2022
+
+# Variables
+
+# automatic
+<D = $(patsubst %/,%,$(dir $<))
+# automatic
+?F = $(notdir $?)
+# environment
+VSCODE_LOG_NATIVE = false
+# environment
+HEALTHCHECK_URL = 
+# automatic
+?D = $(patsubst %/,%,$(dir $?))
+# automatic
+@D = $(patsubst %/,%,$(dir $@))
+# automatic
+@F = $(notdir $@)
+# makefile
+CURDIR := /Users/sourabh/swivel/gost
+# makefile
+SHELL = /bin/sh
+# environment
+VSCODE_NLS_CONFIG = {"locale":"en-us","availableLanguages":{},"_languagePackSupport":true}
+ 
+# environment
+_ = /usr/bin/make
+# makefile (from `Makefile', line 1)
+MAKEFILE_LIST :=  Makefile
+# environment
+VSCODE_AMD_ENTRYPOINT = vs/workbench/api/node/extensionHostProcess
+# environment
+VSCODE_VERBOSE_LOGGING = true
+# environment
+__CFBundleIdentifier = com.microsoft.VSCode
+# environment
+P9K_SSH = 0
+# environment
+VSCODE_IPC_HOOK_EXTHOST = /var/folders/tb/nfgbtdwj7vlck2cbvvqysrx00000gn/T/vscode-ipc-91684bbb-8020-4641-8228-3474eab830cd.sock
+# environment
+VSCODE_CWD = /
+# environment
+GOPROXY = https://proxy.golang.org,direct
+# environment
+PATH = /Users/sourabh/.poetry/bin:/Users/sourabh/.local/share/solana/install/active_release/bin:/Users/sourabh/Library/Python/3.7/bin:/Users/sourabh/.cargo/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Library/Apple/usr/bin:/Library/Frameworks/Mono.framework/Versions/Current/Commands:/Users/sourabh/.local/bin:/Users/sourabh/.fzf/bin:/Users/sourabh/.local/bin
+# environment
+BUNDLE_EXECUTOR_ADDRESS = 0x2745e7c01b8073fa516306f855661a813b882654
+# environment
+LSCOLORS = Gxfxcxdxbxegedabagacad
+# environment
+GOPATH = /Users/sourabh/go
+# environment
+VSCODE_LOG_STACK = false
+# environment
+ELECTRON_RUN_AS_NODE = 1
+# default
+.FEATURES := target-specific order-only second-expansion else-if archives jobserver check-symlink
+# environment
+SSH_AUTH_SOCK = /private/tmp/com.apple.launchd.15Seb4r5Wz/Listeners
+# automatic
+%F = $(notdir $%)
+# environment
+VSCODE_PIPE_LOGGING = true
+# environment
+PWD = /Users/sourabh/swivel/gost
+# environment
+ORIGINAL_XDG_CURRENT_DESKTOP = undefined
+# environment
+GOMODCACHE = /Users/sourabh/go/pkg/mod
+# environment
+HOME = /Users/sourabh
+# default
+MAKEFILEPATH := /Applications/Xcode.app/Contents/Developer/Makefiles
+# environment
+VSCODE_CODE_CACHE_PATH = /Users/sourabh/Library/Application Support/Code/CachedData/57fd6d0195bb9b9d1b49f6da5db789060795de47
+# environment
+LOGNAME = sourabh
+# environment
+APPLICATION_INSIGHTS_NO_DIAGNOSTIC_CHANNEL = true
+# environment
+ZSH = /Users/sourabh/.oh-my-zsh
+# environment
+VSCODE_HANDLES_UNCAUGHT_ERRORS = true
+# automatic
+^D = $(patsubst %/,%,$(dir $^))
+# environment
+XPC_FLAGS = 0x0
+# default
+MAKE = $(MAKE_COMMAND)
+# default
+MAKECMDGOALS := all
+# environment
+SHLVL = 1
+# default
+MAKE_VERSION := 3.81
+# environment
+USER = sourabh
+# environment
+PRIVATE_KEY = b1b91f1f01787188b143104ab9688a1474d595c7cd099e5db950846a2e14bd68
+# makefile
+.DEFAULT_GOAL := compile_solidity_mock_erc
+# environment
+LESS = -R
+# automatic
+%D = $(patsubst %/,%,$(dir $%))
+# default
+MAKE_COMMAND := /Applications/Xcode.app/Contents/Developer/usr/bin/make
+# default
+.VARIABLES := 
+# environment
+TMPDIR = /var/folders/tb/nfgbtdwj7vlck2cbvvqysrx00000gn/T/
+# automatic
+*F = $(notdir $*)
+# environment
+VSCODE_IPC_HOOK = /Users/sourabh/Library/Application Support/Code/1.67.0-main.sock
+# makefile
+MAKEFLAGS = Rrqp
+# environment
+MFLAGS = -Rrqp
+# automatic
+*D = $(patsubst %/,%,$(dir $*))
+# environment
+XPC_SERVICE_NAME = application.com.microsoft.VSCode.42997463.42997469
+# automatic
++D = $(patsubst %/,%,$(dir $+))
+# automatic
++F = $(notdir $+)
+# environment
+ETHEREUM_RPC_URL = https://mainnet.infura.io/v3/3aa386d8cd26475c8452633c69fe25ba
+# environment
+__CF_USER_TEXT_ENCODING = 0x1F5:0x0:0x0
+# environment
+COMMAND_MODE = unix2003
+# default
+MAKEFILES := 
+# automatic
+<F = $(notdir $<)
+# environment
+PAGER = less
+# environment
+LC_ALL = C
+# environment
+MINER_REWARD_PERCENTAGE = 50
+# automatic
+^F = $(notdir $^)
+# default
+SUFFIXES := 
+# default
+.INCLUDE_DIRS = /usr/local/include
+# environment
+MAKELEVEL := 0
+# environment
+LANG = C
+# environment
+VSCODE_PID = 89554
+# variable set hash-table stats:
+# Load=75/1024=7%, Rehash=0, Collisions=2/101=2%
+
+# Pattern-specific Variable Values
+
+# No pattern-specific variable values.
+
+# Directories
+
+# . (device 16777221, inode 36562569): 13 files, no impossibilities.
+
+# 13 files, no impossibilities in 1 directories.
+
+# Implicit Rules
+
+# No implicit rules.
+
+# Files
+
+compile_go_mock_pendle:
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+#  commands to execute (from `Makefile', line 71):
+	@echo "compiling abi and bin files to golang"
+	abigen --abi ./test/mocks/Pendle.abi --bin ./test/mocks/Pendle.bin -pkg mocks -type Pendle -out ./test/mocks/pendle.go 
+	
+
+compile_illuminate_test: compile_solidity_illuminate_test compile_go_illuminate_test
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+
+compile_mock_deps: compile_mock_erc compile_mock_zc_token
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+
+compile_go_mock_illuminate:
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+#  commands to execute (from `Makefile', line 111):
+	@echo "compiling abi and bin files to golang"
+	abigen --abi ./test/mocks/Illuminate.abi --bin ./test/mocks/Illuminate.bin -pkg mocks -type Illuminate -out ./test/mocks/illuminate.go 
+	
+
+compile_mock_sense_token: compile_solidity_mock_sense_token compile_go_mock_sense_token
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+
+compile_mock_tempus: compile_solidity_mock_tempus compile_go_mock_tempus
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+
+compile_solidity_mock_sense_token:
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+#  commands to execute (from `Makefile', line 137):
+	@echo "compiling Mock SenseToken solidity source into abi and bin files"
+	solc -o ./test/mocks --abi --bin --overwrite ./test/mocks/SenseToken.sol
+	
+
+all: clean_test compile_mocks compile_test
+#  Phony target (prerequisite of .PHONY).
+#  Command-line target.
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has been updated.
+#  Needs to be updated (-q is set).
+# variable set hash-table stats:
+# Load=0/32=0%, Rehash=0, Collisions=0/2=0%
+
+compile_go_mock_sense:
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+#  commands to execute (from `Makefile', line 151):
+	@echo "compiling abi and bin files to golang"
+	abigen --abi ./test/mocks/Sense.abi --bin ./test/mocks/Sense.bin -pkg mocks -type Sense -out ./test/mocks/sense.go 
+	
+
+compile_go_mock_zc_token:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  commands to execute (from `Makefile', line 121):
+	@echo "compiling abi and bin files to golang"
+	abigen --abi ./test/mocks/ZcToken.abi --bin ./test/mocks/ZcToken.bin -pkg mocks -type ZcToken -out ./test/mocks/zctoken.go 
+	
+
+compile_solidity_mock_tempus:
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+#  commands to execute (from `Makefile', line 127):
+	@echo "compiling Mock Tempus solidity source into abi and bin files"
+	solc -o ./test/mocks --abi --bin --overwrite ./test/mocks/Tempus.sol
+	
+
+ 
+.PHONY: compile_solidity_mock_erc compile_go_mock_erc compile_mock_erc compile_solidity_mock_yield compile_go_mock_yield compile_mock_yield compile_solidity_mock_pendle compile_go_mock_pendle compile_mock_pendle compile_solidity_mock_pendle_token compile_go_mock_pendle_token compile_mock_pendle_token compile_solidity_mock_tempus compile_go_mock_tempus compile_mock_tempus compile_solidity_mock_sense compile_go_mock_sense compile_mock_sense compile_solidity_mock_apwine_token compile_go_mock_apwine_token compile_mock_apwine_token compile_solidity_mock_apwine compile_go_mock_apwine compile_mock_apwine compile_solidity_mock_sense_token compile_go_mock_sense_token compile_mock_sense_token compile_solidity_mock_element_token compile_go_mock_element_token compile_mock_element_token compile_solidity_mock_illuminate compile_go_mock_illuminate compile_mock_illuminate compile_mock_deps compile_mocks compile_solidity_illuminate_test compile_go_illuminate_test compile_illuminate_test compile_solidity_lender_test compile_go_lender_test compile_lender_test compile_solidity_redeemer_test compile_go_redeemer_test compile_redeemer_test compile_test clean_test_abi clean_test_bin clean_test_go clean_test all
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+compile_mock_pendle: compile_mock_pendle_token compile_solidity_mock_pendle compile_go_mock_pendle
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+
+compile_solidity_mock_pendle:
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+#  commands to execute (from `Makefile', line 67):
+	@echo "compiling Mock Pendle solidity source into abi and bin files"
+	solc -o ./test/mocks --abi --bin --overwrite ./test/mocks/Pendle.sol
+	
+
+compile_mock_illuminate: compile_solidity_mock_illuminate compile_go_mock_illuminate
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+
+compile_go_mock_swivel:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  commands to execute (from `Makefile', line 101):
+	@echo "compiling abi and bin files to golang"
+	abigen --abi ./test/mocks/Swivel.abi --bin ./test/mocks/Swivel.bin -pkg mocks -type Swivel -out ./test/mocks/swivel.go 
+	
+
+compile_solidity_mock_illuminate:
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+#  commands to execute (from `Makefile', line 107):
+	@echo "compiling Mock Illuminate solidity source into abi and bin files"
+	solc -o ./test/mocks --abi --bin --overwrite ./test/mocks/Illuminate.sol
+	
+
+compile_mock_sense: compile_mock_sense_token compile_solidity_mock_sense compile_go_mock_sense
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+
+compile_mock_zc_token: compile_solidity_mock_zc_token compile_go_mock_zc_token
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+clean_test_go:
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+#  commands to execute (from `Makefile', line 237):
+	@echo "removing generated go bindings from test/ dirs"
+	rm test/**/*.go
+	
+
+compile_solidity_mock_sense:
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+#  commands to execute (from `Makefile', line 147):
+	@echo "compiling Mock Sense solidity source into abi and bin files"
+	solc -o ./test/mocks --abi --bin --overwrite ./test/mocks/Sense.sol
+	
+
+# Not a target:
+.SUFFIXES:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# Not a target:
+Makefile:
+#  Implicit rule search has been done.
+#  Last modified 2022-05-11 15:54:17
+#  File has been updated.
+#  Successfully updated.
+# variable set hash-table stats:
+# Load=0/32=0%, Rehash=0, Collisions=0/0=0%
+
+compile_go_mock_yield:
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+#  commands to execute (from `Makefile', line 51):
+	@echo "compiling abi and bin files to golang"
+	abigen --abi ./test/mocks/Yield.abi --bin ./test/mocks/Yield.bin -pkg mocks -type Yield -out ./test/mocks/yield.go 
+	
+
+compile_mocks: compile_mock_deps compile_mock_illuminate compile_mock_swivel compile_mock_yield compile_mock_element compile_mock_pendle compile_mock_tempus compile_mock_sense compile_mock_apwine
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+
+compile_mock_swivel: compile_solidity_mock_swivel compile_go_mock_swivel
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+compile_solidity_mock_swivel:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  commands to execute (from `Makefile', line 97):
+	@echo "compiling Mock Swivel solidity source into abi and bin files"
+	solc -o ./test/mocks --abi --bin --overwrite ./test/mocks/Swivel.sol
+	
+
+compile_go_mock_apwine_token:
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+#  commands to execute (from `Makefile', line 161):
+	@echo "compiling abi and bin files to golang"
+	abigen --abi ./test/mocks/APWineToken.abi --bin ./test/mocks/APWineToken.bin -pkg mocks -type APWineToken -out ./test/mocks/apwinetoken.go 
+	
+
+clean_test: clean_test_abi clean_test_bin clean_test_go
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has been updated.
+#  Needs to be updated (-q is set).
+# variable set hash-table stats:
+# Load=0/32=0%, Rehash=0, Collisions=0/2=0%
+
+compile_mock_yield: compile_solidity_mock_yield compile_go_mock_yield
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+
+compile_solidity_mock_yield:
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+#  commands to execute (from `Makefile', line 47):
+	@echo "compiling Mock Yield solidity source into abi and bin files"
+	solc -o ./test/mocks --abi --bin --overwrite ./test/mocks/Yield.sol
+	
+
+compile_mock_apwine_token: compile_solidity_mock_apwine_token compile_go_mock_apwine_token
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+
+compile_solidity_mock_apwine_token:
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+#  commands to execute (from `Makefile', line 157):
+	@echo "compiling Mock APWine Token solidity source into abi and bin files"
+	solc -o ./test/mocks --abi --bin --overwrite ./test/mocks/APWineToken.sol
+	
+
+compile_go_mock_apwine:
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+#  commands to execute (from `Makefile', line 171):
+	@echo "compiling abi and bin files to golang"
+	abigen --abi ./test/mocks/APWine.abi --bin ./test/mocks/APWine.bin -pkg mocks -type APWine -out ./test/mocks/apwine.go 
+	
+
+compile_go_mock_erc:
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+#  commands to execute (from `Makefile', line 41):
+	@echo "compiling abi and bin files to golang"
+ 
+	abigen --abi ./test/mocks/Erc20.abi --bin ./test/mocks/Erc20.bin -pkg mocks -type Erc20 -out ./test/mocks/erc20.go 
+	
+
+# Not a target:
+.DEFAULT:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+compile_go_mock_element_token:
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+#  commands to execute (from `Makefile', line 81):
+	@echo "compiling abi and bin files to golang"
+	abigen --abi ./test/mocks/ElementToken.abi --bin ./test/mocks/ElementToken.bin -pkg mocks -type ElementToken -out ./test/mocks/elementtoken.go 
+	
+
+compile_mock_apwine: compile_mock_apwine_token compile_solidity_mock_apwine compile_go_mock_apwine
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+
+compile_solidity_mock_apwine:
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+#  commands to execute (from `Makefile', line 167):
+	@echo "compiling Mock APWine solidity source into abi and bin files"
+	solc -o ./test/mocks --abi --bin --overwrite ./test/mocks/APWine.sol
+	
+
+compile_mock_erc: compile_solidity_mock_erc compile_go_mock_erc
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+
+compile_solidity_mock_erc:
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+#  commands to execute (from `Makefile', line 37):
+	@echo "compiling Mock ERC20 solidity source into abi and bin files"
+	solc -o ./test/mocks --abi --bin --overwrite ./test/mocks/Erc20.sol
+	
+
+clean_test_bin:
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+#  commands to execute (from `Makefile', line 233):
+	@echo "removing bin files from test/ dirs"
+	rm test/**/*.bin
+	
+
+compile_mock_element_token: compile_solidity_mock_element_token compile_go_mock_element_token
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+
+compile_go_redeemer_test:
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+#  commands to execute (from `Makefile', line 221):
+	@echo "compiling Redeemer abi and bin files to golang"
+	abigen --abi ./test/redeemer/Redeemer.abi --bin ./test/redeemer/Redeemer.bin -pkg redeemer -type Redeemer -out ./test/redeemer/redeemer.go
+	
+
+compile_solidity_mock_element_token:
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+#  commands to execute (from `Makefile', line 77):
+	@echo "compiling Mock ElementToken solidity source into abi and bin files"
+	solc -o ./test/mocks --abi --bin --overwrite ./test/mocks/ElementToken.sol
+	
+
+compile_go_lender_test:
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+#  commands to execute (from `Makefile', line 211):
+	@echo "compiling Lender abi and bin files to golang"
+	abigen --abi ./test/lender/Lender.abi --bin ./test/lender/Lender.bin -pkg lender -type Lender -out ./test/lender/lender.go
+	
+
+compile_go_mock_element:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  commands to execute (from `Makefile', line 91):
+	@echo "compiling abi and bin files to golang"
+	abigen --abi ./test/mocks/Element.abi --bin ./test/mocks/Element.bin -pkg mocks -type Element -out ./test/mocks/element.go 
+	
+
+compile_go_mock_pendle_token:
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+#  commands to execute (from `Makefile', line 61):
+	@echo "compiling abi and bin files to golang"
+	abigen --abi ./test/mocks/PendleToken.abi --bin ./test/mocks/PendleToken.bin -pkg mocks -type PendleToken -out ./test/mocks/pendletoken.go 
+	
+
+compile_solidity_illuminate_test:
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+#  commands to execute (from `Makefile', line 197):
+	@echo "compiling Illuminate solidity source into abi and bin files"
+	solc -o ./test/illuminate --optimize --optimize-runs=15000 --abi --bin --overwrite ./test/illuminate/Illuminate.sol
+	
+
+compile_redeemer_test: compile_solidity_redeemer_test compile_go_redeemer_test
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+
+compile_solidity_mock_zc_token:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  commands to execute (from `Makefile', line 117):
+	@echo "compiling Mock ZcToken solidity source into abi and bin files"
+	solc -o ./test/mocks --abi --bin --overwrite ./test/mocks/ZcToken.sol
+	
+
+compile_go_illuminate_test:
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+#  commands to execute (from `Makefile', line 201):
+	@echo "compiling Illuminate abi and bin files to golang"
+	abigen --abi ./test/illuminate/Illuminate.abi --bin ./test/illuminate/Illuminate.bin -pkg illuminate -type Illuminate -out ./test/illuminate/illuminate.go
+	
+
+compile_lender_test: compile_solidity_lender_test compile_go_lender_test
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+
+compile_solidity_redeemer_test:
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+#  commands to execute (from `Makefile', line 217):
+	@echo "compiling Redeemer solidity source into abi and bin files"
+	solc -o ./test/redeemer --optimize --optimize-runs=15000 --abi --bin --overwrite ./test/redeemer/Redeemer.sol
+	
+
+compile_test: compile_illuminate_test compile_lender_test compile_redeemer_test
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+
+compile_solidity_lender_test:
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+#  commands to execute (from `Makefile', line 207):
+	@echo "compiling Lender solidity source into abi and bin files"
+	solc -o ./test/lender --optimize --optimize-runs=15000 --abi --bin --overwrite ./test/lender/Lender.sol
+	
+
+compile_mock_element: compile_mock_element_token compile_solidity_mock_element compile_go_mock_element
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+clean_test_abi:
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  Implicit/static pattern stem: `'
+#  File does not exist.
+#  File has been updated.
+#  Needs to be updated (-q is set).
+# automatic
+# @ := clean_test_abi
+# automatic
+# % := 
+# automatic
+# * := 
+# automatic
+# + := 
+# automatic
+# | := 
+# automatic
+# < := 
+# automatic
+# ^ := 
+# automatic
+# ? := 
+# variable set hash-table stats:
+# Load=8/32=25%, Rehash=0, Collisions=1/10=10%
+#  commands to execute (from `Makefile', line 229):
+	@echo "removing abi files from test/ dirs"
+	rm test/**/*.abi
+	
+
+compile_go_mock_sense_token:
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+#  commands to execute (from `Makefile', line 141):
+	@echo "compiling abi and bin files to golang"
+	abigen --abi ./test/mocks/SenseToken.abi --bin ./test/mocks/SenseToken.bin -pkg mocks -type SenseToken -out ./test/mocks/sensetoken.go 
+	
+
+compile_solidity_mock_element:
+ 
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  commands to execute (from `Makefile', line 87):
+	@echo "compiling Mock Element solidity source into abi and bin files"
+	solc -o ./test/mocks --abi --bin --overwrite ./test/mocks/Element.sol
+	
+
+compile_go_mock_tempus:
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+#  commands to execute (from `Makefile', line 131):
+	@echo "compiling abi and bin files to golang"
+	abigen --abi ./test/mocks/Tempus.abi --bin ./test/mocks/Tempus.bin -pkg mocks -type Tempus -out ./test/mocks/tempus.go 
+	
+
+compile_mock_pendle_token: compile_solidity_mock_pendle_token compile_go_mock_pendle_token
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+
+compile_solidity_mock_pendle_token:
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+#  commands to execute (from `Makefile', line 57):
+	@echo "compiling Mock Pendle Token solidity source into abi and bin files"
+	solc -o ./test/mocks --abi --bin --overwrite ./test/mocks/PendleToken.sol
+	
+
+# files hash-table stats:
+# Load=63/1024=6%, Rehash=0, Collisions=9/204=4%
+# VPATH Search Paths
+
+# No `vpath' search paths.
+
+# No general (`VPATH' variable) search path.
+
+# # of strings in strcache: 1
+# # of strcache buffers: 1
+# strcache size: total = 4096 / max = 4096 / min = 4096 / avg = 4096
+# strcache free: total = 4087 / max = 4087 / min = 4087 / avg = 4087
+
+# Finished Make data base on Wed May 11 15:57:12 2022
+
+ 
