@@ -143,6 +143,23 @@ func (s *redeemTestSuite) TestAPWineRedeem() {
 	assert.NoError(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
+
+	// verify that the mocked functions were called as expected
+	ownerCalled, err := s.APWine.OwnerCalled()
+	assert.NoError(err)
+	assert.Equal(vault, ownerCalled)
+
+	amountCalled, err := s.APWine.AmountCalled()
+	assert.NoError(err)
+	assert.Equal(amount, amountCalled)
+
+	balance, err := s.APWineToken.Balances(vault)
+	assert.NoError(err)
+	assert.Equal(amount, balance)
+
+	underlyingTransfer, err := s.Erc20.TransferCalled(vault)
+	assert.NoError(err)
+	assert.Equal(amount, underlyingTransfer)
 }
 
 func (s *redeemTestSuite) TestTempusRedeem() {
