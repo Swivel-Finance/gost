@@ -4,10 +4,10 @@ pragma solidity 0.8.13;
 
 contract Pendle {
     struct SwapExactTokensForTokensArgs {
-        uint256 id;
         uint256 tokenIn;
+        uint256 tokenOut;
         address[] path;
-        uint256 amount;
+        uint256 deadline;
     }
 
     uint[] private swapExactTokensForTokensReturn;
