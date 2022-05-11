@@ -27,10 +27,10 @@ var (
 )
 
 // TempusABI is the input ABI used to generate the binding from.
-const TempusABI = "[{\"inputs\":[],\"name\":\"amountCalled\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"deadlineCalled\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"contractAny\",\"name\":\"x\",\"type\":\"address\"},{\"internalType\":\"contractAny\",\"name\":\"p\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"a\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"bt\",\"type\":\"bool\"},{\"internalType\":\"uint256\",\"name\":\"mr\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"d\",\"type\":\"uint256\"}],\"name\":\"depositAndFix\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"r\",\"type\":\"uint256\"}],\"name\":\"depositAndFixReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"isBackingTokenCalled\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"maturityCalled\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"maturityTime\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"m\",\"type\":\"uint256\"}],\"name\":\"maturityTimeReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"minimumReturnCalled\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"ownerCalled\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"o\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"m\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"a\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"u\",\"type\":\"address\"}],\"name\":\"redeemToBacking\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"tempusAMMCalled\",\"outputs\":[{\"internalType\":\"contractAny\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"tempusPoolCalled\",\"outputs\":[{\"internalType\":\"contractAny\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"underlyingCalled\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"yieldBearingToken\",\"outputs\":[{\"internalType\":\"contractIErc20Metadata\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"contractIErc20Metadata\",\"name\":\"t\",\"type\":\"address\"}],\"name\":\"yieldBearingTokenReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]"
+const TempusABI = "[{\"inputs\":[],\"name\":\"amountCalled\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"deadlineCalled\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"contractAny\",\"name\":\"x\",\"type\":\"address\"},{\"internalType\":\"contractAny\",\"name\":\"p\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"a\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"bt\",\"type\":\"bool\"},{\"internalType\":\"uint256\",\"name\":\"mr\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"d\",\"type\":\"uint256\"}],\"name\":\"depositAndFix\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"depositAndFixCalled\",\"outputs\":[{\"internalType\":\"contractAny\",\"name\":\"amm\",\"type\":\"address\"},{\"internalType\":\"contractAny\",\"name\":\"pool\",\"type\":\"address\"},{\"internalType\":\"bool\",\"name\":\"bt\",\"type\":\"bool\"},{\"internalType\":\"uint256\",\"name\":\"minimumReturned\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"deadline\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"r\",\"type\":\"uint256\"}],\"name\":\"depositAndFixReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"isBackingTokenCalled\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"maturityTime\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"m\",\"type\":\"uint256\"}],\"name\":\"maturityTimeReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"minimumReturnCalled\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"o\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"m\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"a\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"u\",\"type\":\"address\"}],\"name\":\"redeemToBacking\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"redeemToBackingCalled\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"maturity\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"underlying\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"tempusAMMCalled\",\"outputs\":[{\"internalType\":\"contractAny\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"tempusPoolCalled\",\"outputs\":[{\"internalType\":\"contractAny\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"yieldBearingToken\",\"outputs\":[{\"internalType\":\"contractIErc20Metadata\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"contractIErc20Metadata\",\"name\":\"t\",\"type\":\"address\"}],\"name\":\"yieldBearingTokenReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]"
 
 // TempusBin is the compiled bytecode used for deploying new contracts.
-var TempusBin = "0x608060405234801561001057600080fd5b5061099b806100206000396000f3fe608060405234801561001057600080fd5b50600436106101005760003560e01c80635d61761f11610097578063a2f428f711610066578063a2f428f714610279578063c203bd6b14610297578063d08dd24b146102b5578063f189b337146102d157610100565b80635d61761f146102075780636c8d4fa1146102235780637822212d1461023f578063968398281461025d57610100565b80634cf1cca7116100d35780634cf1cca71461017d5780634e8bfdaa1461019b5780634f255a1f146101b957806357e5b682146101e957610100565b806302d103c014610105578063229204d9146101235780632d81f838146101415780633ef943bb1461015f575b600080fd5b61010d6102ef565b60405161011a91906105b1565b60405180910390f35b61012b610302565b60405161013891906105e5565b60405180910390f35b610149610308565b604051610156919061067f565b60405180910390f35b610167610332565b60405161017491906105e5565b60405180910390f35b610185610338565b60405161019291906105e5565b60405180910390f35b6101a361033e565b6040516101b091906105e5565b60405180910390f35b6101d360048036038101906101ce9190610747565b610348565b6040516101e091906105e5565b60405180910390f35b6101f161040a565b6040516101fe91906105e5565b60405180910390f35b610221600480360381019061021c91906107d4565b610410565b005b61023d6004803603810190610238919061082d565b61041a565b005b6102476104b0565b60405161025491906108b5565b60405180910390f35b610277600480360381019061027291906107d4565b6104d6565b005b6102816104e0565b60405161028e91906108df565b60405180910390f35b61029f610506565b6040516102ac91906108b5565b60405180910390f35b6102cf60048036038101906102ca9190610938565b61052c565b005b6102d9610570565b6040516102e691906108df565b60405180910390f35b600660009054906101000a900460ff1681565b60075481565b6000600260009054906101000a900473ffffffffffffffffffffffffffffffffffffffff16905090565b60055481565b60085481565b6000600154905090565b600086600360006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555085600460006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff1602179055508460058190555083600660006101000a81548160ff021916908315150217905550826007819055508160088190555060005490509695505050505050565b600a5481565b8060018190555050565b83600960006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555082600a819055508160058190555080600b60006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555050505050565b600460009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1681565b8060008190555050565b600960009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1681565b600360009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1681565b80600260006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555050565b600b60009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1681565b60008115159050919050565b6105ab81610596565b82525050565b60006020820190506105c660008301846105a2565b92915050565b6000819050919050565b6105df816105cc565b82525050565b60006020820190506105fa60008301846105d6565b92915050565b600073ffffffffffffffffffffffffffffffffffffffff82169050919050565b6000819050919050565b600061064561064061063b84610600565b610620565b610600565b9050919050565b60006106578261062a565b9050919050565b60006106698261064c565b9050919050565b6106798161065e565b82525050565b60006020820190506106946000830184610670565b92915050565b600080fd5b60006106aa82610600565b9050919050565b60006106bc8261069f565b9050919050565b6106cc816106b1565b81146106d757600080fd5b50565b6000813590506106e9816106c3565b92915050565b6106f8816105cc565b811461070357600080fd5b50565b600081359050610715816106ef565b92915050565b61072481610596565b811461072f57600080fd5b50565b6000813590506107418161071b565b92915050565b60008060008060008060c087890312156107645761076361069a565b5b600061077289828a016106da565b965050602061078389828a016106da565b955050604061079489828a01610706565b94505060606107a589828a01610732565b93505060806107b689828a01610706565b92505060a06107c789828a01610706565b9150509295509295509295565b6000602082840312156107ea576107e961069a565b5b60006107f884828501610706565b91505092915050565b61080a8161069f565b811461081557600080fd5b50565b60008135905061082781610801565b92915050565b600080600080608085870312156108475761084661069a565b5b600061085587828801610818565b945050602061086687828801610706565b935050604061087787828801610706565b925050606061088887828801610818565b91505092959194509250565b600061089f8261064c565b9050919050565b6108af81610894565b82525050565b60006020820190506108ca60008301846108a6565b92915050565b6108d98161069f565b82525050565b60006020820190506108f460008301846108d0565b92915050565b60006109058261069f565b9050919050565b610915816108fa565b811461092057600080fd5b50565b6000813590506109328161090c565b92915050565b60006020828403121561094e5761094d61069a565b5b600061095c84828501610923565b9150509291505056fea2646970667358221220afaf1d0d9ca199670e7be997c798180189a39f309fbe421357d5102016a162b464736f6c634300080d0033"
+var TempusBin = "0x608060405234801561001057600080fd5b50610b6d806100206000396000f3fe608060405234801561001057600080fd5b50600436106100f55760003560e01c80634f255a1f1161009757806396839828116100665780639683982814610268578063c203bd6b14610284578063d08dd24b146102a2578063e77638cb146102be576100f5565b80634f255a1f146101e25780635d61761f146102125780636c8d4fa11461022e5780637822212d1461024a576100f5565b80632d81f838116100d35780632d81f8381461016a5780633ef943bb146101885780634cf1cca7146101a65780634e8bfdaa146101c4576100f5565b806302d103c0146100fa57806308123d8614610118578063229204d91461014c575b600080fd5b6101026102f0565b60405161010f91906106e7565b60405180910390f35b610132600480360381019061012d919061073d565b610303565b6040516101439594939291906107f8565b60405180910390f35b610154610386565b604051610161919061084b565b60405180910390f35b61017261038c565b60405161017f9190610887565b60405180910390f35b6101906103b6565b60405161019d919061084b565b60405180910390f35b6101ae6103bc565b6040516101bb919061084b565b60405180910390f35b6101cc6103c2565b6040516101d9919061084b565b60405180910390f35b6101fc60048036038101906101f7919061091e565b6103cc565b604051610209919061084b565b60405180910390f35b61022c6004803603810190610227919061073d565b61050a565b005b610248600480360381019061024391906109d7565b610514565b005b6102526105e8565b60405161025f9190610a3e565b60405180910390f35b610282600480360381019061027d919061073d565b61060e565b005b61028c610618565b6040516102999190610a3e565b60405180910390f35b6102bc60048036038101906102b79190610a97565b61063e565b005b6102d860048036038101906102d39190610ac4565b610682565b6040516102e793929190610b00565b60405180910390f35b600660009054906101000a900460ff1681565b600a6020528060005260406000206000915090508060000160009054906101000a900473ffffffffffffffffffffffffffffffffffffffff16908060010160009054906101000a900473ffffffffffffffffffffffffffffffffffffffff16908060010160149054906101000a900460ff16908060020154908060030154905085565b60075481565b6000600260009054906101000a900473ffffffffffffffffffffffffffffffffffffffff16905090565b60055481565b60085481565b6000600154905090565b60006040518060a001604052808873ffffffffffffffffffffffffffffffffffffffff1681526020018773ffffffffffffffffffffffffffffffffffffffff168152602001851515815260200184815260200183815250600a600087815260200190815260200160002060008201518160000160006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555060208201518160010160006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555060408201518160010160146101000a81548160ff021916908315150217905550606082015181600201556080820151816003015590505060005490509695505050505050565b8060018190555050565b60405180606001604052808381526020018481526020018273ffffffffffffffffffffffffffffffffffffffff16815250600960008673ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020600082015181600001556020820151816001015560408201518160020160006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555090505050505050565b600460009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1681565b8060008190555050565b600360009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1681565b80600260006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555050565b60096020528060005260406000206000915090508060000154908060010154908060020160009054906101000a900473ffffffffffffffffffffffffffffffffffffffff16905083565b60008115159050919050565b6106e1816106cc565b82525050565b60006020820190506106fc60008301846106d8565b92915050565b600080fd5b6000819050919050565b61071a81610707565b811461072557600080fd5b50565b60008135905061073781610711565b92915050565b60006020828403121561075357610752610702565b5b600061076184828501610728565b91505092915050565b600073ffffffffffffffffffffffffffffffffffffffff82169050919050565b6000819050919050565b60006107af6107aa6107a58461076a565b61078a565b61076a565b9050919050565b60006107c182610794565b9050919050565b60006107d3826107b6565b9050919050565b6107e3816107c8565b82525050565b6107f281610707565b82525050565b600060a08201905061080d60008301886107da565b61081a60208301876107da565b61082760408301866106d8565b61083460608301856107e9565b61084160808301846107e9565b9695505050505050565b600060208201905061086060008301846107e9565b92915050565b6000610871826107b6565b9050919050565b61088181610866565b82525050565b600060208201905061089c6000830184610878565b92915050565b60006108ad8261076a565b9050919050565b60006108bf826108a2565b9050919050565b6108cf816108b4565b81146108da57600080fd5b50565b6000813590506108ec816108c6565b92915050565b6108fb816106cc565b811461090657600080fd5b50565b600081359050610918816108f2565b92915050565b60008060008060008060c0878903121561093b5761093a610702565b5b600061094989828a016108dd565b965050602061095a89828a016108dd565b955050604061096b89828a01610728565b945050606061097c89828a01610909565b935050608061098d89828a01610728565b92505060a061099e89828a01610728565b9150509295509295509295565b6109b4816108a2565b81146109bf57600080fd5b50565b6000813590506109d1816109ab565b92915050565b600080600080608085870312156109f1576109f0610702565b5b60006109ff878288016109c2565b9450506020610a1087828801610728565b9350506040610a2187828801610728565b9250506060610a32878288016109c2565b91505092959194509250565b6000602082019050610a5360008301846107da565b92915050565b6000610a64826108a2565b9050919050565b610a7481610a59565b8114610a7f57600080fd5b50565b600081359050610a9181610a6b565b92915050565b600060208284031215610aad57610aac610702565b5b6000610abb84828501610a82565b91505092915050565b600060208284031215610ada57610ad9610702565b5b6000610ae8848285016109c2565b91505092915050565b610afa816108a2565b82525050565b6000606082019050610b1560008301866107e9565b610b2260208301856107e9565b610b2f6040830184610af1565b94935050505056fea2646970667358221220df023a3a5a1e67ebef6975b2b29cc573b05fa30ebd58b5f8db52037246dfa4e964736f6c634300080d0033"
 
 // DeployTempus deploys a new Ethereum contract, binding an instance of Tempus to it.
 func DeployTempus(auth *bind.TransactOpts, backend bind.ContractBackend) (common.Address, *types.Transaction, *Tempus, error) {
@@ -250,6 +250,63 @@ func (_Tempus *TempusCallerSession) DeadlineCalled() (*big.Int, error) {
 	return _Tempus.Contract.DeadlineCalled(&_Tempus.CallOpts)
 }
 
+// DepositAndFixCalled is a free data retrieval call binding the contract method 0x08123d86.
+//
+// Solidity: function depositAndFixCalled(uint256 ) view returns(address amm, address pool, bool bt, uint256 minimumReturned, uint256 deadline)
+func (_Tempus *TempusCaller) DepositAndFixCalled(opts *bind.CallOpts, arg0 *big.Int) (struct {
+	Amm             common.Address
+	Pool            common.Address
+	Bt              bool
+	MinimumReturned *big.Int
+	Deadline        *big.Int
+}, error) {
+	var out []interface{}
+	err := _Tempus.contract.Call(opts, &out, "depositAndFixCalled", arg0)
+
+	outstruct := new(struct {
+		Amm             common.Address
+		Pool            common.Address
+		Bt              bool
+		MinimumReturned *big.Int
+		Deadline        *big.Int
+	})
+
+	outstruct.Amm = out[0].(common.Address)
+	outstruct.Pool = out[1].(common.Address)
+	outstruct.Bt = out[2].(bool)
+	outstruct.MinimumReturned = out[3].(*big.Int)
+	outstruct.Deadline = out[4].(*big.Int)
+
+	return *outstruct, err
+
+}
+
+// DepositAndFixCalled is a free data retrieval call binding the contract method 0x08123d86.
+//
+// Solidity: function depositAndFixCalled(uint256 ) view returns(address amm, address pool, bool bt, uint256 minimumReturned, uint256 deadline)
+func (_Tempus *TempusSession) DepositAndFixCalled(arg0 *big.Int) (struct {
+	Amm             common.Address
+	Pool            common.Address
+	Bt              bool
+	MinimumReturned *big.Int
+	Deadline        *big.Int
+}, error) {
+	return _Tempus.Contract.DepositAndFixCalled(&_Tempus.CallOpts, arg0)
+}
+
+// DepositAndFixCalled is a free data retrieval call binding the contract method 0x08123d86.
+//
+// Solidity: function depositAndFixCalled(uint256 ) view returns(address amm, address pool, bool bt, uint256 minimumReturned, uint256 deadline)
+func (_Tempus *TempusCallerSession) DepositAndFixCalled(arg0 *big.Int) (struct {
+	Amm             common.Address
+	Pool            common.Address
+	Bt              bool
+	MinimumReturned *big.Int
+	Deadline        *big.Int
+}, error) {
+	return _Tempus.Contract.DepositAndFixCalled(&_Tempus.CallOpts, arg0)
+}
+
 // IsBackingTokenCalled is a free data retrieval call binding the contract method 0x02d103c0.
 //
 // Solidity: function isBackingTokenCalled() view returns(bool)
@@ -279,37 +336,6 @@ func (_Tempus *TempusSession) IsBackingTokenCalled() (bool, error) {
 // Solidity: function isBackingTokenCalled() view returns(bool)
 func (_Tempus *TempusCallerSession) IsBackingTokenCalled() (bool, error) {
 	return _Tempus.Contract.IsBackingTokenCalled(&_Tempus.CallOpts)
-}
-
-// MaturityCalled is a free data retrieval call binding the contract method 0x57e5b682.
-//
-// Solidity: function maturityCalled() view returns(uint256)
-func (_Tempus *TempusCaller) MaturityCalled(opts *bind.CallOpts) (*big.Int, error) {
-	var out []interface{}
-	err := _Tempus.contract.Call(opts, &out, "maturityCalled")
-
-	if err != nil {
-		return *new(*big.Int), err
-	}
-
-	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
-
-	return out0, err
-
-}
-
-// MaturityCalled is a free data retrieval call binding the contract method 0x57e5b682.
-//
-// Solidity: function maturityCalled() view returns(uint256)
-func (_Tempus *TempusSession) MaturityCalled() (*big.Int, error) {
-	return _Tempus.Contract.MaturityCalled(&_Tempus.CallOpts)
-}
-
-// MaturityCalled is a free data retrieval call binding the contract method 0x57e5b682.
-//
-// Solidity: function maturityCalled() view returns(uint256)
-func (_Tempus *TempusCallerSession) MaturityCalled() (*big.Int, error) {
-	return _Tempus.Contract.MaturityCalled(&_Tempus.CallOpts)
 }
 
 // MaturityTime is a free data retrieval call binding the contract method 0x4e8bfdaa.
@@ -374,35 +400,51 @@ func (_Tempus *TempusCallerSession) MinimumReturnCalled() (*big.Int, error) {
 	return _Tempus.Contract.MinimumReturnCalled(&_Tempus.CallOpts)
 }
 
-// OwnerCalled is a free data retrieval call binding the contract method 0xa2f428f7.
+// RedeemToBackingCalled is a free data retrieval call binding the contract method 0xe77638cb.
 //
-// Solidity: function ownerCalled() view returns(address)
-func (_Tempus *TempusCaller) OwnerCalled(opts *bind.CallOpts) (common.Address, error) {
+// Solidity: function redeemToBackingCalled(address ) view returns(uint256 amount, uint256 maturity, address underlying)
+func (_Tempus *TempusCaller) RedeemToBackingCalled(opts *bind.CallOpts, arg0 common.Address) (struct {
+	Amount     *big.Int
+	Maturity   *big.Int
+	Underlying common.Address
+}, error) {
 	var out []interface{}
-	err := _Tempus.contract.Call(opts, &out, "ownerCalled")
+	err := _Tempus.contract.Call(opts, &out, "redeemToBackingCalled", arg0)
 
-	if err != nil {
-		return *new(common.Address), err
-	}
+	outstruct := new(struct {
+		Amount     *big.Int
+		Maturity   *big.Int
+		Underlying common.Address
+	})
 
-	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+	outstruct.Amount = out[0].(*big.Int)
+	outstruct.Maturity = out[1].(*big.Int)
+	outstruct.Underlying = out[2].(common.Address)
 
-	return out0, err
+	return *outstruct, err
 
 }
 
-// OwnerCalled is a free data retrieval call binding the contract method 0xa2f428f7.
+// RedeemToBackingCalled is a free data retrieval call binding the contract method 0xe77638cb.
 //
-// Solidity: function ownerCalled() view returns(address)
-func (_Tempus *TempusSession) OwnerCalled() (common.Address, error) {
-	return _Tempus.Contract.OwnerCalled(&_Tempus.CallOpts)
+// Solidity: function redeemToBackingCalled(address ) view returns(uint256 amount, uint256 maturity, address underlying)
+func (_Tempus *TempusSession) RedeemToBackingCalled(arg0 common.Address) (struct {
+	Amount     *big.Int
+	Maturity   *big.Int
+	Underlying common.Address
+}, error) {
+	return _Tempus.Contract.RedeemToBackingCalled(&_Tempus.CallOpts, arg0)
 }
 
-// OwnerCalled is a free data retrieval call binding the contract method 0xa2f428f7.
+// RedeemToBackingCalled is a free data retrieval call binding the contract method 0xe77638cb.
 //
-// Solidity: function ownerCalled() view returns(address)
-func (_Tempus *TempusCallerSession) OwnerCalled() (common.Address, error) {
-	return _Tempus.Contract.OwnerCalled(&_Tempus.CallOpts)
+// Solidity: function redeemToBackingCalled(address ) view returns(uint256 amount, uint256 maturity, address underlying)
+func (_Tempus *TempusCallerSession) RedeemToBackingCalled(arg0 common.Address) (struct {
+	Amount     *big.Int
+	Maturity   *big.Int
+	Underlying common.Address
+}, error) {
+	return _Tempus.Contract.RedeemToBackingCalled(&_Tempus.CallOpts, arg0)
 }
 
 // TempusAMMCalled is a free data retrieval call binding the contract method 0xc203bd6b.
@@ -465,37 +507,6 @@ func (_Tempus *TempusSession) TempusPoolCalled() (common.Address, error) {
 // Solidity: function tempusPoolCalled() view returns(address)
 func (_Tempus *TempusCallerSession) TempusPoolCalled() (common.Address, error) {
 	return _Tempus.Contract.TempusPoolCalled(&_Tempus.CallOpts)
-}
-
-// UnderlyingCalled is a free data retrieval call binding the contract method 0xf189b337.
-//
-// Solidity: function underlyingCalled() view returns(address)
-func (_Tempus *TempusCaller) UnderlyingCalled(opts *bind.CallOpts) (common.Address, error) {
-	var out []interface{}
-	err := _Tempus.contract.Call(opts, &out, "underlyingCalled")
-
-	if err != nil {
-		return *new(common.Address), err
-	}
-
-	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
-
-	return out0, err
-
-}
-
-// UnderlyingCalled is a free data retrieval call binding the contract method 0xf189b337.
-//
-// Solidity: function underlyingCalled() view returns(address)
-func (_Tempus *TempusSession) UnderlyingCalled() (common.Address, error) {
-	return _Tempus.Contract.UnderlyingCalled(&_Tempus.CallOpts)
-}
-
-// UnderlyingCalled is a free data retrieval call binding the contract method 0xf189b337.
-//
-// Solidity: function underlyingCalled() view returns(address)
-func (_Tempus *TempusCallerSession) UnderlyingCalled() (common.Address, error) {
-	return _Tempus.Contract.UnderlyingCalled(&_Tempus.CallOpts)
 }
 
 // YieldBearingToken is a free data retrieval call binding the contract method 0x2d81f838.

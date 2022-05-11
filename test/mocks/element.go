@@ -45,10 +45,10 @@ type SingleSwap struct {
 }
 
 // ElementABI is the input ABI used to generate the binding from.
-const ElementABI = "[{\"inputs\":[],\"name\":\"deadline\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"fundManagementSender\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"return_\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"singleSwapAmount\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"components\":[{\"internalType\":\"bytes\",\"name\":\"userData\",\"type\":\"bytes\"},{\"internalType\":\"bytes32\",\"name\":\"poolId\",\"type\":\"bytes32\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"internalType\":\"enumSwapKind\",\"name\":\"kind\",\"type\":\"uint8\"},{\"internalType\":\"contractAny\",\"name\":\"assetIn\",\"type\":\"address\"},{\"internalType\":\"contractAny\",\"name\":\"assetOut\",\"type\":\"address\"}],\"internalType\":\"structSingleSwap\",\"name\":\"s\",\"type\":\"tuple\"},{\"components\":[{\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"},{\"internalType\":\"addresspayable\",\"name\":\"recipient\",\"type\":\"address\"},{\"internalType\":\"bool\",\"name\":\"fromInternalBalance\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"toInternalBalance\",\"type\":\"bool\"}],\"internalType\":\"structFundManagement\",\"name\":\"f\",\"type\":\"tuple\"},{\"internalType\":\"uint256\",\"name\":\"r\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"d\",\"type\":\"uint256\"}],\"name\":\"swap\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]"
+const ElementABI = "[{\"inputs\":[],\"name\":\"deadline\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"d\",\"type\":\"uint256\"}],\"name\":\"deadlineReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"fundManagementSender\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"s\",\"type\":\"address\"}],\"name\":\"fundManagementSenderReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"r\",\"type\":\"uint256\"}],\"name\":\"returnReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"return_\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"singleSwapAmount\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"a\",\"type\":\"uint256\"}],\"name\":\"singleSwapAmountReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"components\":[{\"internalType\":\"bytes\",\"name\":\"userData\",\"type\":\"bytes\"},{\"internalType\":\"bytes32\",\"name\":\"poolId\",\"type\":\"bytes32\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"internalType\":\"enumSwapKind\",\"name\":\"kind\",\"type\":\"uint8\"},{\"internalType\":\"contractAny\",\"name\":\"assetIn\",\"type\":\"address\"},{\"internalType\":\"contractAny\",\"name\":\"assetOut\",\"type\":\"address\"}],\"internalType\":\"structSingleSwap\",\"name\":\"s\",\"type\":\"tuple\"},{\"components\":[{\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"},{\"internalType\":\"addresspayable\",\"name\":\"recipient\",\"type\":\"address\"},{\"internalType\":\"bool\",\"name\":\"fromInternalBalance\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"toInternalBalance\",\"type\":\"bool\"}],\"internalType\":\"structFundManagement\",\"name\":\"f\",\"type\":\"tuple\"},{\"internalType\":\"uint256\",\"name\":\"r\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"d\",\"type\":\"uint256\"}],\"name\":\"swap\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"swapCalled\",\"outputs\":[{\"components\":[{\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"},{\"internalType\":\"addresspayable\",\"name\":\"recipient\",\"type\":\"address\"},{\"internalType\":\"bool\",\"name\":\"fromInternalBalance\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"toInternalBalance\",\"type\":\"bool\"}],\"internalType\":\"structFundManagement\",\"name\":\"fundManagement\",\"type\":\"tuple\"},{\"components\":[{\"internalType\":\"bytes\",\"name\":\"userData\",\"type\":\"bytes\"},{\"internalType\":\"bytes32\",\"name\":\"poolId\",\"type\":\"bytes32\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"internalType\":\"enumSwapKind\",\"name\":\"kind\",\"type\":\"uint8\"},{\"internalType\":\"contractAny\",\"name\":\"assetIn\",\"type\":\"address\"},{\"internalType\":\"contractAny\",\"name\":\"assetOut\",\"type\":\"address\"}],\"internalType\":\"structSingleSwap\",\"name\":\"swap\",\"type\":\"tuple\"},{\"internalType\":\"uint256\",\"name\":\"_return\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"deadline\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"}]"
 
 // ElementBin is the compiled bytecode used for deploying new contracts.
-var ElementBin = "0x608060405234801561001057600080fd5b506106ff806100206000396000f3fe608060405234801561001057600080fd5b50600436106100575760003560e01c806328386b831461005c57806329dcb0cf1461007a57806369bbd8cd1461009857806391d51144146100c8578063a4b15a5d146100e6575b600080fd5b610064610104565b60405161007191906101f8565b60405180910390f35b61008261012e565b60405161008f919061022c565b60405180910390f35b6100b260048036038101906100ad9190610646565b610137565b6040516100bf919061022c565b60405180910390f35b6100d06101a3565b6040516100dd919061022c565b60405180910390f35b6100ee6101ad565b6040516100fb919061022c565b60405180910390f35b6000600260009054906101000a900473ffffffffffffffffffffffffffffffffffffffff16905090565b60008054905090565b600082600181905550816000819055508360000151600260006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff160217905550846040015160038190555060009050949350505050565b6000600154905090565b6000600354905090565b600073ffffffffffffffffffffffffffffffffffffffff82169050919050565b60006101e2826101b7565b9050919050565b6101f2816101d7565b82525050565b600060208201905061020d60008301846101e9565b92915050565b6000819050919050565b61022681610213565b82525050565b6000602082019050610241600083018461021d565b92915050565b6000604051905090565b600080fd5b600080fd5b600080fd5b6000601f19601f8301169050919050565b7f4e487b7100000000000000000000000000000000000000000000000000000000600052604160045260246000fd5b6102a982610260565b810181811067ffffffffffffffff821117156102c8576102c7610271565b5b80604052505050565b60006102db610247565b90506102e782826102a0565b919050565b600080fd5b600080fd5b600080fd5b600067ffffffffffffffff82111561031657610315610271565b5b61031f82610260565b9050602081019050919050565b82818337600083830152505050565b600061034e610349846102fb565b6102d1565b90508281526020810184848401111561036a576103696102f6565b5b61037584828561032c565b509392505050565b600082601f830112610392576103916102f1565b5b81356103a284826020860161033b565b91505092915050565b6000819050919050565b6103be816103ab565b81146103c957600080fd5b50565b6000813590506103db816103b5565b92915050565b6103ea81610213565b81146103f557600080fd5b50565b600081359050610407816103e1565b92915050565b6002811061041a57600080fd5b50565b60008135905061042c8161040d565b92915050565b600061043d826101d7565b9050919050565b61044d81610432565b811461045857600080fd5b50565b60008135905061046a81610444565b92915050565b600060c082840312156104865761048561025b565b5b61049060c06102d1565b9050600082013567ffffffffffffffff8111156104b0576104af6102ec565b5b6104bc8482850161037d565b60008301525060206104d0848285016103cc565b60208301525060406104e4848285016103f8565b60408301525060606104f88482850161041d565b606083015250608061050c8482850161045b565b60808301525060a06105208482850161045b565b60a08301525092915050565b610535816101d7565b811461054057600080fd5b50565b6000813590506105528161052c565b92915050565b6000610563826101b7565b9050919050565b61057381610558565b811461057e57600080fd5b50565b6000813590506105908161056a565b92915050565b60008115159050919050565b6105ab81610596565b81146105b657600080fd5b50565b6000813590506105c8816105a2565b92915050565b6000608082840312156105e4576105e361025b565b5b6105ee60806102d1565b905060006105fe84828501610543565b600083015250602061061284828501610581565b6020830152506040610626848285016105b9565b604083015250606061063a848285016105b9565b60608301525092915050565b60008060008060e085870312156106605761065f610251565b5b600085013567ffffffffffffffff81111561067e5761067d610256565b5b61068a87828801610470565b945050602061069b878288016105ce565b93505060a06106ac878288016103f8565b92505060c06106bd878288016103f8565b9150509295919450925056fea26469706673582212205a9ceaf596980dd58f9d9486f0aa3f1b4f5d1a3f8eb54b05283de554586f6e7564736f6c634300080d0033"
+var ElementBin = "0x608060405234801561001057600080fd5b50611120806100206000396000f3fe608060405234801561001057600080fd5b506004361061009e5760003560e01c80635f65334c116100665780635f65334c1461014a57806369bbd8cd1461016657806384ea21c81461019657806391d51144146101b2578063a4b15a5d146101d05761009e565b8063127f0f26146100a357806328386b83146100bf57806329dcb0cf146100dd5780633b09e714146100fb5780635658724f14610117575b600080fd5b6100bd60048036038101906100b89190610895565b6101ee565b005b6100c76101f8565b6040516100d49190610903565b60405180910390f35b6100e5610222565b6040516100f2919061092d565b60405180910390f35b61011560048036038101906101109190610895565b61022c565b005b610131600480360381019061012c9190610974565b610236565b6040516101419493929190610c61565b60405180910390f35b610164600480360381019061015f9190610974565b6104e9565b005b610180600480360381019061017b9190611007565b61052d565b60405161018d919061092d565b60405180910390f35b6101b060048036038101906101ab9190610895565b61078a565b005b6101ba610794565b6040516101c7919061092d565b60405180910390f35b6101d861079e565b6040516101e5919061092d565b60405180910390f35b8060028190555050565b6000600360009054906101000a900473ffffffffffffffffffffffffffffffffffffffff16905090565b6000600154905090565b8060048190555050565b6005602052806000526040600020600091509050806000016040518060800160405290816000820160009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1681526020016001820160009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1681526020016001820160149054906101000a900460ff161515151581526020016001820160159054906101000a900460ff16151515158152505090806002016040518060c001604052908160008201805461035b906110b9565b80601f0160208091040260200160405190810160405280929190818152602001828054610387906110b9565b80156103d45780601f106103a9576101008083540402835291602001916103d4565b820191906000526020600020905b8154815290600101906020018083116103b757829003601f168201915b5050505050815260200160018201548152602001600282015481526020016003820160009054906101000a900460ff16600181111561041657610415610b02565b5b600181111561042857610427610b02565b5b81526020016003820160019054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1681526020016004820160009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1681525050908060070154908060080154905084565b80600360006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555050565b600060405180608001604052808581526020018681526020018481526020018381525060056000866000015173ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060008201518160000160008201518160000160006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555060208201518160010160006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555060408201518160010160146101000a81548160ff02191690831515021790555060608201518160010160156101000a81548160ff021916908315150217905550505060208201518160020160008201518160000190805190602001906106919291906107a8565b50602082015181600101556040820151816002015560608201518160030160006101000a81548160ff021916908360018111156106d1576106d0610b02565b5b021790555060808201518160030160016101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555060a08201518160040160006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff160217905550505060408201518160070155606082015181600801559050506000549050949350505050565b8060018190555050565b6000600254905090565b6000600454905090565b8280546107b4906110b9565b90600052602060002090601f0160209004810192826107d6576000855561081d565b82601f106107ef57805160ff191683800117855561081d565b8280016001018555821561081d579182015b8281111561081c578251825591602001919060010190610801565b5b50905061082a919061082e565b5090565b5b8082111561084757600081600090555060010161082f565b5090565b6000604051905090565b600080fd5b600080fd5b6000819050919050565b6108728161085f565b811461087d57600080fd5b50565b60008135905061088f81610869565b92915050565b6000602082840312156108ab576108aa610855565b5b60006108b984828501610880565b91505092915050565b600073ffffffffffffffffffffffffffffffffffffffff82169050919050565b60006108ed826108c2565b9050919050565b6108fd816108e2565b82525050565b600060208201905061091860008301846108f4565b92915050565b6109278161085f565b82525050565b6000602082019050610942600083018461091e565b92915050565b610951816108e2565b811461095c57600080fd5b50565b60008135905061096e81610948565b92915050565b60006020828403121561098a57610989610855565b5b60006109988482850161095f565b91505092915050565b6109aa816108e2565b82525050565b60006109bb826108c2565b9050919050565b6109cb816109b0565b82525050565b60008115159050919050565b6109e6816109d1565b82525050565b608082016000820151610a0260008501826109a1565b506020820151610a1560208501826109c2565b506040820151610a2860408501826109dd565b506060820151610a3b60608501826109dd565b50505050565b600081519050919050565b600082825260208201905092915050565b60005b83811015610a7b578082015181840152602081019050610a60565b83811115610a8a576000848401525b50505050565b6000601f19601f8301169050919050565b6000610aac82610a41565b610ab68185610a4c565b9350610ac6818560208601610a5d565b610acf81610a90565b840191505092915050565b6000819050919050565b610aed81610ada565b82525050565b610afc8161085f565b82525050565b7f4e487b7100000000000000000000000000000000000000000000000000000000600052602160045260246000fd5b60028110610b4257610b41610b02565b5b50565b6000819050610b5382610b31565b919050565b6000610b6382610b45565b9050919050565b610b7381610b58565b82525050565b6000819050919050565b6000610b9e610b99610b94846108c2565b610b79565b6108c2565b9050919050565b6000610bb082610b83565b9050919050565b6000610bc282610ba5565b9050919050565b610bd281610bb7565b82525050565b600060c0830160008301518482036000860152610bf58282610aa1565b9150506020830151610c0a6020860182610ae4565b506040830151610c1d6040860182610af3565b506060830151610c306060860182610b6a565b506080830151610c436080860182610bc9565b5060a0830151610c5660a0860182610bc9565b508091505092915050565b600060e082019050610c7660008301876109ec565b8181036080830152610c888186610bd8565b9050610c9760a083018561091e565b610ca460c083018461091e565b95945050505050565b600080fd5b7f4e487b7100000000000000000000000000000000000000000000000000000000600052604160045260246000fd5b610cea82610a90565b810181811067ffffffffffffffff82111715610d0957610d08610cb2565b5b80604052505050565b6000610d1c61084b565b9050610d288282610ce1565b919050565b600080fd5b600080fd5b600080fd5b600067ffffffffffffffff821115610d5757610d56610cb2565b5b610d6082610a90565b9050602081019050919050565b82818337600083830152505050565b6000610d8f610d8a84610d3c565b610d12565b905082815260208101848484011115610dab57610daa610d37565b5b610db6848285610d6d565b509392505050565b600082601f830112610dd357610dd2610d32565b5b8135610de3848260208601610d7c565b91505092915050565b610df581610ada565b8114610e0057600080fd5b50565b600081359050610e1281610dec565b92915050565b60028110610e2557600080fd5b50565b600081359050610e3781610e18565b92915050565b6000610e48826108e2565b9050919050565b610e5881610e3d565b8114610e6357600080fd5b50565b600081359050610e7581610e4f565b92915050565b600060c08284031215610e9157610e90610cad565b5b610e9b60c0610d12565b9050600082013567ffffffffffffffff811115610ebb57610eba610d2d565b5b610ec784828501610dbe565b6000830152506020610edb84828501610e03565b6020830152506040610eef84828501610880565b6040830152506060610f0384828501610e28565b6060830152506080610f1784828501610e66565b60808301525060a0610f2b84828501610e66565b60a08301525092915050565b610f40816109b0565b8114610f4b57600080fd5b50565b600081359050610f5d81610f37565b92915050565b610f6c816109d1565b8114610f7757600080fd5b50565b600081359050610f8981610f63565b92915050565b600060808284031215610fa557610fa4610cad565b5b610faf6080610d12565b90506000610fbf8482850161095f565b6000830152506020610fd384828501610f4e565b6020830152506040610fe784828501610f7a565b6040830152506060610ffb84828501610f7a565b60608301525092915050565b60008060008060e0858703121561102157611020610855565b5b600085013567ffffffffffffffff81111561103f5761103e61085a565b5b61104b87828801610e7b565b945050602061105c87828801610f8f565b93505060a061106d87828801610880565b92505060c061107e87828801610880565b91505092959194509250565b7f4e487b7100000000000000000000000000000000000000000000000000000000600052602260045260246000fd5b600060028204905060018216806110d157607f821691505b6020821081036110e4576110e361108a565b5b5091905056fea2646970667358221220283d67945d96cb6251f420534aabf699d25d739b920c32b7ab8c5964cfb92f6f64736f6c634300080d0033"
 
 // DeployElement deploys a new Ethereum contract, binding an instance of Element to it.
 func DeployElement(auth *bind.TransactOpts, backend bind.ContractBackend) (common.Address, *types.Transaction, *Element, error) {
@@ -328,6 +328,142 @@ func (_Element *ElementSession) SingleSwapAmount() (*big.Int, error) {
 // Solidity: function singleSwapAmount() view returns(uint256)
 func (_Element *ElementCallerSession) SingleSwapAmount() (*big.Int, error) {
 	return _Element.Contract.SingleSwapAmount(&_Element.CallOpts)
+}
+
+// SwapCalled is a free data retrieval call binding the contract method 0x5658724f.
+//
+// Solidity: function swapCalled(address ) view returns((address,address,bool,bool) fundManagement, (bytes,bytes32,uint256,uint8,address,address) swap, uint256 _return, uint256 deadline)
+func (_Element *ElementCaller) SwapCalled(opts *bind.CallOpts, arg0 common.Address) (struct {
+	FundManagement FundManagement
+	Swap           SingleSwap
+	Return         *big.Int
+	Deadline       *big.Int
+}, error) {
+	var out []interface{}
+	err := _Element.contract.Call(opts, &out, "swapCalled", arg0)
+
+	outstruct := new(struct {
+		FundManagement FundManagement
+		Swap           SingleSwap
+		Return         *big.Int
+		Deadline       *big.Int
+	})
+
+	outstruct.FundManagement = out[0].(FundManagement)
+	outstruct.Swap = out[1].(SingleSwap)
+	outstruct.Return = out[2].(*big.Int)
+	outstruct.Deadline = out[3].(*big.Int)
+
+	return *outstruct, err
+
+}
+
+// SwapCalled is a free data retrieval call binding the contract method 0x5658724f.
+//
+// Solidity: function swapCalled(address ) view returns((address,address,bool,bool) fundManagement, (bytes,bytes32,uint256,uint8,address,address) swap, uint256 _return, uint256 deadline)
+func (_Element *ElementSession) SwapCalled(arg0 common.Address) (struct {
+	FundManagement FundManagement
+	Swap           SingleSwap
+	Return         *big.Int
+	Deadline       *big.Int
+}, error) {
+	return _Element.Contract.SwapCalled(&_Element.CallOpts, arg0)
+}
+
+// SwapCalled is a free data retrieval call binding the contract method 0x5658724f.
+//
+// Solidity: function swapCalled(address ) view returns((address,address,bool,bool) fundManagement, (bytes,bytes32,uint256,uint8,address,address) swap, uint256 _return, uint256 deadline)
+func (_Element *ElementCallerSession) SwapCalled(arg0 common.Address) (struct {
+	FundManagement FundManagement
+	Swap           SingleSwap
+	Return         *big.Int
+	Deadline       *big.Int
+}, error) {
+	return _Element.Contract.SwapCalled(&_Element.CallOpts, arg0)
+}
+
+// DeadlineReturns is a paid mutator transaction binding the contract method 0x84ea21c8.
+//
+// Solidity: function deadlineReturns(uint256 d) returns()
+func (_Element *ElementTransactor) DeadlineReturns(opts *bind.TransactOpts, d *big.Int) (*types.Transaction, error) {
+	return _Element.contract.Transact(opts, "deadlineReturns", d)
+}
+
+// DeadlineReturns is a paid mutator transaction binding the contract method 0x84ea21c8.
+//
+// Solidity: function deadlineReturns(uint256 d) returns()
+func (_Element *ElementSession) DeadlineReturns(d *big.Int) (*types.Transaction, error) {
+	return _Element.Contract.DeadlineReturns(&_Element.TransactOpts, d)
+}
+
+// DeadlineReturns is a paid mutator transaction binding the contract method 0x84ea21c8.
+//
+// Solidity: function deadlineReturns(uint256 d) returns()
+func (_Element *ElementTransactorSession) DeadlineReturns(d *big.Int) (*types.Transaction, error) {
+	return _Element.Contract.DeadlineReturns(&_Element.TransactOpts, d)
+}
+
+// FundManagementSenderReturns is a paid mutator transaction binding the contract method 0x5f65334c.
+//
+// Solidity: function fundManagementSenderReturns(address s) returns()
+func (_Element *ElementTransactor) FundManagementSenderReturns(opts *bind.TransactOpts, s common.Address) (*types.Transaction, error) {
+	return _Element.contract.Transact(opts, "fundManagementSenderReturns", s)
+}
+
+// FundManagementSenderReturns is a paid mutator transaction binding the contract method 0x5f65334c.
+//
+// Solidity: function fundManagementSenderReturns(address s) returns()
+func (_Element *ElementSession) FundManagementSenderReturns(s common.Address) (*types.Transaction, error) {
+	return _Element.Contract.FundManagementSenderReturns(&_Element.TransactOpts, s)
+}
+
+// FundManagementSenderReturns is a paid mutator transaction binding the contract method 0x5f65334c.
+//
+// Solidity: function fundManagementSenderReturns(address s) returns()
+func (_Element *ElementTransactorSession) FundManagementSenderReturns(s common.Address) (*types.Transaction, error) {
+	return _Element.Contract.FundManagementSenderReturns(&_Element.TransactOpts, s)
+}
+
+// ReturnReturns is a paid mutator transaction binding the contract method 0x127f0f26.
+//
+// Solidity: function returnReturns(uint256 r) returns()
+func (_Element *ElementTransactor) ReturnReturns(opts *bind.TransactOpts, r *big.Int) (*types.Transaction, error) {
+	return _Element.contract.Transact(opts, "returnReturns", r)
+}
+
+// ReturnReturns is a paid mutator transaction binding the contract method 0x127f0f26.
+//
+// Solidity: function returnReturns(uint256 r) returns()
+func (_Element *ElementSession) ReturnReturns(r *big.Int) (*types.Transaction, error) {
+	return _Element.Contract.ReturnReturns(&_Element.TransactOpts, r)
+}
+
+// ReturnReturns is a paid mutator transaction binding the contract method 0x127f0f26.
+//
+// Solidity: function returnReturns(uint256 r) returns()
+func (_Element *ElementTransactorSession) ReturnReturns(r *big.Int) (*types.Transaction, error) {
+	return _Element.Contract.ReturnReturns(&_Element.TransactOpts, r)
+}
+
+// SingleSwapAmountReturns is a paid mutator transaction binding the contract method 0x3b09e714.
+//
+// Solidity: function singleSwapAmountReturns(uint256 a) returns()
+func (_Element *ElementTransactor) SingleSwapAmountReturns(opts *bind.TransactOpts, a *big.Int) (*types.Transaction, error) {
+	return _Element.contract.Transact(opts, "singleSwapAmountReturns", a)
+}
+
+// SingleSwapAmountReturns is a paid mutator transaction binding the contract method 0x3b09e714.
+//
+// Solidity: function singleSwapAmountReturns(uint256 a) returns()
+func (_Element *ElementSession) SingleSwapAmountReturns(a *big.Int) (*types.Transaction, error) {
+	return _Element.Contract.SingleSwapAmountReturns(&_Element.TransactOpts, a)
+}
+
+// SingleSwapAmountReturns is a paid mutator transaction binding the contract method 0x3b09e714.
+//
+// Solidity: function singleSwapAmountReturns(uint256 a) returns()
+func (_Element *ElementTransactorSession) SingleSwapAmountReturns(a *big.Int) (*types.Transaction, error) {
+	return _Element.Contract.SingleSwapAmountReturns(&_Element.TransactOpts, a)
 }
 
 // Swap is a paid mutator transaction binding the contract method 0x69bbd8cd.

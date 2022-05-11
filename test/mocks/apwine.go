@@ -27,10 +27,10 @@ var (
 )
 
 // APWineABI is the input ABI used to generate the binding from.
-const APWineABI = "[{\"inputs\":[],\"name\":\"amountCalled\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"idCalled\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"minimumAmountCalled\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"id\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"tokenIn\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"tokenOut\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"minimumAmount\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"}],\"name\":\"swapExactAmountIn\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"s\",\"type\":\"uint256\"}],\"name\":\"swapExactAmountInReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"toCalled\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"tokenInCalled\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"tokenOutCalled\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"o\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"a\",\"type\":\"uint256\"}],\"name\":\"withdraw\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"withdrawCalled\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"}]"
+const APWineABI = "[{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"i\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"tokenIn\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"a\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"tokenOut\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"m\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"}],\"name\":\"swapExactAmountIn\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"swapExactAmountInCalled\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"id\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"tokenIn\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"tokenOut\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"minimumAmount\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"s\",\"type\":\"uint256\"}],\"name\":\"swapExactAmountInReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"o\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"a\",\"type\":\"uint256\"}],\"name\":\"withdraw\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"withdrawCalled\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"}]"
 
 // APWineBin is the compiled bytecode used for deploying new contracts.
-var APWineBin = "0x608060405234801561001057600080fd5b5061055c806100206000396000f3fe608060405234801561001057600080fd5b506004361061009e5760003560e01c8063b79c449b11610066578063b79c449b14610149578063cb2df34614610179578063cdd4255f14610197578063d179c9c5146101b5578063f3fef3a3146101d35761009e565b80633ef943bb146100a35780635275215b146100c15780635dde4ba6146100dd57806362a01c1f1461010d5780639eedc5b01461012b575b600080fd5b6100ab6101ef565b6040516100b8919061032b565b60405180910390f35b6100db60048036038101906100d69190610377565b6101f5565b005b6100f760048036038101906100f29190610402565b6101ff565b604051610104919061032b565b60405180910390f35b610115610274565b604051610122919061032b565b60405180910390f35b61013361027a565b604051610140919061032b565b60405180910390f35b610163600480360381019061015e919061048f565b610280565b604051610170919061032b565b60405180910390f35b610181610298565b60405161018e919061032b565b60405180910390f35b61019f61029e565b6040516101ac91906104cb565b60405180910390f35b6101bd6102c4565b6040516101ca919061032b565b60405180910390f35b6101ed60048036038101906101e891906104e6565b6102ca565b005b60035481565b8060008190555050565b6000866001819055508560028190555084600381905550836004819055508260058190555081600660006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555060005490509695505050505050565b60045481565b60055481565b60076020528060005260406000206000915090505481565b60025481565b600660009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1681565b60015481565b80600760008473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020819055505050565b6000819050919050565b61032581610312565b82525050565b6000602082019050610340600083018461031c565b92915050565b600080fd5b61035481610312565b811461035f57600080fd5b50565b6000813590506103718161034b565b92915050565b60006020828403121561038d5761038c610346565b5b600061039b84828501610362565b91505092915050565b600073ffffffffffffffffffffffffffffffffffffffff82169050919050565b60006103cf826103a4565b9050919050565b6103df816103c4565b81146103ea57600080fd5b50565b6000813590506103fc816103d6565b92915050565b60008060008060008060c0878903121561041f5761041e610346565b5b600061042d89828a01610362565b965050602061043e89828a01610362565b955050604061044f89828a01610362565b945050606061046089828a01610362565b935050608061047189828a01610362565b92505060a061048289828a016103ed565b9150509295509295509295565b6000602082840312156104a5576104a4610346565b5b60006104b3848285016103ed565b91505092915050565b6104c5816103c4565b82525050565b60006020820190506104e060008301846104bc565b92915050565b600080604083850312156104fd576104fc610346565b5b600061050b858286016103ed565b925050602061051c85828601610362565b915050925092905056fea2646970667358221220fa77e17b13e6d43909d4a3fada6fe04421a562c212f7e598d1553c07f83e205f64736f6c634300080d0033"
+var APWineBin = "0x608060405234801561001057600080fd5b506104e7806100206000396000f3fe608060405234801561001057600080fd5b50600436106100575760003560e01c80634308b5b31461005c5780635275215b146100905780635dde4ba6146100ac578063b79c449b146100dc578063f3fef3a31461010c575b600080fd5b610076600480360381019061007191906102d7565b610128565b60405161008795949392919061031d565b60405180910390f35b6100aa60048036038101906100a5919061039c565b61015e565b005b6100c660048036038101906100c191906103c9565b610168565b6040516100d39190610456565b60405180910390f35b6100f660048036038101906100f191906102d7565b610214565b6040516101039190610456565b60405180910390f35b61012660048036038101906101219190610471565b61022c565b005b60026020528060005260406000206000915090508060000154908060010154908060020154908060030154908060040154905085565b8060008190555050565b60006040518060a0016040528088815260200187815260200185815260200186815260200184815250600260008473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020600082015181600001556020820151816001015560408201518160020155606082015181600301556080820151816004015590505060005490509695505050505050565b60016020528060005260406000206000915090505481565b80600160008473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020819055505050565b600080fd5b600073ffffffffffffffffffffffffffffffffffffffff82169050919050565b60006102a482610279565b9050919050565b6102b481610299565b81146102bf57600080fd5b50565b6000813590506102d1816102ab565b92915050565b6000602082840312156102ed576102ec610274565b5b60006102fb848285016102c2565b91505092915050565b6000819050919050565b61031781610304565b82525050565b600060a082019050610332600083018861030e565b61033f602083018761030e565b61034c604083018661030e565b610359606083018561030e565b610366608083018461030e565b9695505050505050565b61037981610304565b811461038457600080fd5b50565b60008135905061039681610370565b92915050565b6000602082840312156103b2576103b1610274565b5b60006103c084828501610387565b91505092915050565b60008060008060008060c087890312156103e6576103e5610274565b5b60006103f489828a01610387565b965050602061040589828a01610387565b955050604061041689828a01610387565b945050606061042789828a01610387565b935050608061043889828a01610387565b92505060a061044989828a016102c2565b9150509295509295509295565b600060208201905061046b600083018461030e565b92915050565b6000806040838503121561048857610487610274565b5b6000610496858286016102c2565b92505060206104a785828601610387565b915050925092905056fea264697066735822122097dd702a426b251b330b32b4c6b81e676c6831c29c52bfbf9f3469491ddc60e064736f6c634300080d0033"
 
 // DeployAPWine deploys a new Ethereum contract, binding an instance of APWine to it.
 func DeployAPWine(auth *bind.TransactOpts, backend bind.ContractBackend) (common.Address, *types.Transaction, *APWine, error) {
@@ -188,190 +188,61 @@ func (_APWine *APWineTransactorRaw) Transact(opts *bind.TransactOpts, method str
 	return _APWine.Contract.contract.Transact(opts, method, params...)
 }
 
-// AmountCalled is a free data retrieval call binding the contract method 0x3ef943bb.
+// SwapExactAmountInCalled is a free data retrieval call binding the contract method 0x4308b5b3.
 //
-// Solidity: function amountCalled() view returns(uint256)
-func (_APWine *APWineCaller) AmountCalled(opts *bind.CallOpts) (*big.Int, error) {
+// Solidity: function swapExactAmountInCalled(address ) view returns(uint256 id, uint256 tokenIn, uint256 tokenOut, uint256 amount, uint256 minimumAmount)
+func (_APWine *APWineCaller) SwapExactAmountInCalled(opts *bind.CallOpts, arg0 common.Address) (struct {
+	Id            *big.Int
+	TokenIn       *big.Int
+	TokenOut      *big.Int
+	Amount        *big.Int
+	MinimumAmount *big.Int
+}, error) {
 	var out []interface{}
-	err := _APWine.contract.Call(opts, &out, "amountCalled")
+	err := _APWine.contract.Call(opts, &out, "swapExactAmountInCalled", arg0)
 
-	if err != nil {
-		return *new(*big.Int), err
-	}
+	outstruct := new(struct {
+		Id            *big.Int
+		TokenIn       *big.Int
+		TokenOut      *big.Int
+		Amount        *big.Int
+		MinimumAmount *big.Int
+	})
 
-	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+	outstruct.Id = out[0].(*big.Int)
+	outstruct.TokenIn = out[1].(*big.Int)
+	outstruct.TokenOut = out[2].(*big.Int)
+	outstruct.Amount = out[3].(*big.Int)
+	outstruct.MinimumAmount = out[4].(*big.Int)
 
-	return out0, err
-
-}
-
-// AmountCalled is a free data retrieval call binding the contract method 0x3ef943bb.
-//
-// Solidity: function amountCalled() view returns(uint256)
-func (_APWine *APWineSession) AmountCalled() (*big.Int, error) {
-	return _APWine.Contract.AmountCalled(&_APWine.CallOpts)
-}
-
-// AmountCalled is a free data retrieval call binding the contract method 0x3ef943bb.
-//
-// Solidity: function amountCalled() view returns(uint256)
-func (_APWine *APWineCallerSession) AmountCalled() (*big.Int, error) {
-	return _APWine.Contract.AmountCalled(&_APWine.CallOpts)
-}
-
-// IdCalled is a free data retrieval call binding the contract method 0xd179c9c5.
-//
-// Solidity: function idCalled() view returns(uint256)
-func (_APWine *APWineCaller) IdCalled(opts *bind.CallOpts) (*big.Int, error) {
-	var out []interface{}
-	err := _APWine.contract.Call(opts, &out, "idCalled")
-
-	if err != nil {
-		return *new(*big.Int), err
-	}
-
-	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
-
-	return out0, err
+	return *outstruct, err
 
 }
 
-// IdCalled is a free data retrieval call binding the contract method 0xd179c9c5.
+// SwapExactAmountInCalled is a free data retrieval call binding the contract method 0x4308b5b3.
 //
-// Solidity: function idCalled() view returns(uint256)
-func (_APWine *APWineSession) IdCalled() (*big.Int, error) {
-	return _APWine.Contract.IdCalled(&_APWine.CallOpts)
+// Solidity: function swapExactAmountInCalled(address ) view returns(uint256 id, uint256 tokenIn, uint256 tokenOut, uint256 amount, uint256 minimumAmount)
+func (_APWine *APWineSession) SwapExactAmountInCalled(arg0 common.Address) (struct {
+	Id            *big.Int
+	TokenIn       *big.Int
+	TokenOut      *big.Int
+	Amount        *big.Int
+	MinimumAmount *big.Int
+}, error) {
+	return _APWine.Contract.SwapExactAmountInCalled(&_APWine.CallOpts, arg0)
 }
 
-// IdCalled is a free data retrieval call binding the contract method 0xd179c9c5.
+// SwapExactAmountInCalled is a free data retrieval call binding the contract method 0x4308b5b3.
 //
-// Solidity: function idCalled() view returns(uint256)
-func (_APWine *APWineCallerSession) IdCalled() (*big.Int, error) {
-	return _APWine.Contract.IdCalled(&_APWine.CallOpts)
-}
-
-// MinimumAmountCalled is a free data retrieval call binding the contract method 0x9eedc5b0.
-//
-// Solidity: function minimumAmountCalled() view returns(uint256)
-func (_APWine *APWineCaller) MinimumAmountCalled(opts *bind.CallOpts) (*big.Int, error) {
-	var out []interface{}
-	err := _APWine.contract.Call(opts, &out, "minimumAmountCalled")
-
-	if err != nil {
-		return *new(*big.Int), err
-	}
-
-	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
-
-	return out0, err
-
-}
-
-// MinimumAmountCalled is a free data retrieval call binding the contract method 0x9eedc5b0.
-//
-// Solidity: function minimumAmountCalled() view returns(uint256)
-func (_APWine *APWineSession) MinimumAmountCalled() (*big.Int, error) {
-	return _APWine.Contract.MinimumAmountCalled(&_APWine.CallOpts)
-}
-
-// MinimumAmountCalled is a free data retrieval call binding the contract method 0x9eedc5b0.
-//
-// Solidity: function minimumAmountCalled() view returns(uint256)
-func (_APWine *APWineCallerSession) MinimumAmountCalled() (*big.Int, error) {
-	return _APWine.Contract.MinimumAmountCalled(&_APWine.CallOpts)
-}
-
-// ToCalled is a free data retrieval call binding the contract method 0xcdd4255f.
-//
-// Solidity: function toCalled() view returns(address)
-func (_APWine *APWineCaller) ToCalled(opts *bind.CallOpts) (common.Address, error) {
-	var out []interface{}
-	err := _APWine.contract.Call(opts, &out, "toCalled")
-
-	if err != nil {
-		return *new(common.Address), err
-	}
-
-	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
-
-	return out0, err
-
-}
-
-// ToCalled is a free data retrieval call binding the contract method 0xcdd4255f.
-//
-// Solidity: function toCalled() view returns(address)
-func (_APWine *APWineSession) ToCalled() (common.Address, error) {
-	return _APWine.Contract.ToCalled(&_APWine.CallOpts)
-}
-
-// ToCalled is a free data retrieval call binding the contract method 0xcdd4255f.
-//
-// Solidity: function toCalled() view returns(address)
-func (_APWine *APWineCallerSession) ToCalled() (common.Address, error) {
-	return _APWine.Contract.ToCalled(&_APWine.CallOpts)
-}
-
-// TokenInCalled is a free data retrieval call binding the contract method 0xcb2df346.
-//
-// Solidity: function tokenInCalled() view returns(uint256)
-func (_APWine *APWineCaller) TokenInCalled(opts *bind.CallOpts) (*big.Int, error) {
-	var out []interface{}
-	err := _APWine.contract.Call(opts, &out, "tokenInCalled")
-
-	if err != nil {
-		return *new(*big.Int), err
-	}
-
-	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
-
-	return out0, err
-
-}
-
-// TokenInCalled is a free data retrieval call binding the contract method 0xcb2df346.
-//
-// Solidity: function tokenInCalled() view returns(uint256)
-func (_APWine *APWineSession) TokenInCalled() (*big.Int, error) {
-	return _APWine.Contract.TokenInCalled(&_APWine.CallOpts)
-}
-
-// TokenInCalled is a free data retrieval call binding the contract method 0xcb2df346.
-//
-// Solidity: function tokenInCalled() view returns(uint256)
-func (_APWine *APWineCallerSession) TokenInCalled() (*big.Int, error) {
-	return _APWine.Contract.TokenInCalled(&_APWine.CallOpts)
-}
-
-// TokenOutCalled is a free data retrieval call binding the contract method 0x62a01c1f.
-//
-// Solidity: function tokenOutCalled() view returns(uint256)
-func (_APWine *APWineCaller) TokenOutCalled(opts *bind.CallOpts) (*big.Int, error) {
-	var out []interface{}
-	err := _APWine.contract.Call(opts, &out, "tokenOutCalled")
-
-	if err != nil {
-		return *new(*big.Int), err
-	}
-
-	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
-
-	return out0, err
-
-}
-
-// TokenOutCalled is a free data retrieval call binding the contract method 0x62a01c1f.
-//
-// Solidity: function tokenOutCalled() view returns(uint256)
-func (_APWine *APWineSession) TokenOutCalled() (*big.Int, error) {
-	return _APWine.Contract.TokenOutCalled(&_APWine.CallOpts)
-}
-
-// TokenOutCalled is a free data retrieval call binding the contract method 0x62a01c1f.
-//
-// Solidity: function tokenOutCalled() view returns(uint256)
-func (_APWine *APWineCallerSession) TokenOutCalled() (*big.Int, error) {
-	return _APWine.Contract.TokenOutCalled(&_APWine.CallOpts)
+// Solidity: function swapExactAmountInCalled(address ) view returns(uint256 id, uint256 tokenIn, uint256 tokenOut, uint256 amount, uint256 minimumAmount)
+func (_APWine *APWineCallerSession) SwapExactAmountInCalled(arg0 common.Address) (struct {
+	Id            *big.Int
+	TokenIn       *big.Int
+	TokenOut      *big.Int
+	Amount        *big.Int
+	MinimumAmount *big.Int
+}, error) {
+	return _APWine.Contract.SwapExactAmountInCalled(&_APWine.CallOpts, arg0)
 }
 
 // WithdrawCalled is a free data retrieval call binding the contract method 0xb79c449b.
@@ -407,23 +278,23 @@ func (_APWine *APWineCallerSession) WithdrawCalled(arg0 common.Address) (*big.In
 
 // SwapExactAmountIn is a paid mutator transaction binding the contract method 0x5dde4ba6.
 //
-// Solidity: function swapExactAmountIn(uint256 id, uint256 tokenIn, uint256 amount, uint256 tokenOut, uint256 minimumAmount, address to) returns(uint256)
-func (_APWine *APWineTransactor) SwapExactAmountIn(opts *bind.TransactOpts, id *big.Int, tokenIn *big.Int, amount *big.Int, tokenOut *big.Int, minimumAmount *big.Int, to common.Address) (*types.Transaction, error) {
-	return _APWine.contract.Transact(opts, "swapExactAmountIn", id, tokenIn, amount, tokenOut, minimumAmount, to)
+// Solidity: function swapExactAmountIn(uint256 i, uint256 tokenIn, uint256 a, uint256 tokenOut, uint256 m, address to) returns(uint256)
+func (_APWine *APWineTransactor) SwapExactAmountIn(opts *bind.TransactOpts, i *big.Int, tokenIn *big.Int, a *big.Int, tokenOut *big.Int, m *big.Int, to common.Address) (*types.Transaction, error) {
+	return _APWine.contract.Transact(opts, "swapExactAmountIn", i, tokenIn, a, tokenOut, m, to)
 }
 
 // SwapExactAmountIn is a paid mutator transaction binding the contract method 0x5dde4ba6.
 //
-// Solidity: function swapExactAmountIn(uint256 id, uint256 tokenIn, uint256 amount, uint256 tokenOut, uint256 minimumAmount, address to) returns(uint256)
-func (_APWine *APWineSession) SwapExactAmountIn(id *big.Int, tokenIn *big.Int, amount *big.Int, tokenOut *big.Int, minimumAmount *big.Int, to common.Address) (*types.Transaction, error) {
-	return _APWine.Contract.SwapExactAmountIn(&_APWine.TransactOpts, id, tokenIn, amount, tokenOut, minimumAmount, to)
+// Solidity: function swapExactAmountIn(uint256 i, uint256 tokenIn, uint256 a, uint256 tokenOut, uint256 m, address to) returns(uint256)
+func (_APWine *APWineSession) SwapExactAmountIn(i *big.Int, tokenIn *big.Int, a *big.Int, tokenOut *big.Int, m *big.Int, to common.Address) (*types.Transaction, error) {
+	return _APWine.Contract.SwapExactAmountIn(&_APWine.TransactOpts, i, tokenIn, a, tokenOut, m, to)
 }
 
 // SwapExactAmountIn is a paid mutator transaction binding the contract method 0x5dde4ba6.
 //
-// Solidity: function swapExactAmountIn(uint256 id, uint256 tokenIn, uint256 amount, uint256 tokenOut, uint256 minimumAmount, address to) returns(uint256)
-func (_APWine *APWineTransactorSession) SwapExactAmountIn(id *big.Int, tokenIn *big.Int, amount *big.Int, tokenOut *big.Int, minimumAmount *big.Int, to common.Address) (*types.Transaction, error) {
-	return _APWine.Contract.SwapExactAmountIn(&_APWine.TransactOpts, id, tokenIn, amount, tokenOut, minimumAmount, to)
+// Solidity: function swapExactAmountIn(uint256 i, uint256 tokenIn, uint256 a, uint256 tokenOut, uint256 m, address to) returns(uint256)
+func (_APWine *APWineTransactorSession) SwapExactAmountIn(i *big.Int, tokenIn *big.Int, a *big.Int, tokenOut *big.Int, m *big.Int, to common.Address) (*types.Transaction, error) {
+	return _APWine.Contract.SwapExactAmountIn(&_APWine.TransactOpts, i, tokenIn, a, tokenOut, m, to)
 }
 
 // SwapExactAmountInReturns is a paid mutator transaction binding the contract method 0x5275215b.
