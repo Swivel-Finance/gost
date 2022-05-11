@@ -26,17 +26,21 @@ contract Illuminate {
 
   address public admin;
   /// @notice address of the deployed lender contract
-  address public lender; // TODO add authorized methods to set these
+  address public immutable lender;
   /// @notice address of the deployed redeemer contract
-  address public redeemer;
+  address public immutable redeemer;
 
   event CreateMarket(address indexed underlying, uint256 indexed maturity);
 
   // TODO move to lender.sol
   // event Mint(uint8 principal, address indexed underlying, uint256 indexed maturity, uint256 amount);
 
-  constructor() {
+  /// @param l address of the deployed lender contract 
+  /// @param r address of the deployed redeemer contract 
+  constructor(address l, address r) {
     admin = msg.sender;
+    lender = l;
+    redeemer = r;
   }
 
   /// @param u underlying
