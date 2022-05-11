@@ -17,19 +17,17 @@ contract Lender {
   address public swivelAddr; // addresses of the 3rd party protocol contracts
   address public pendleAddr;
   address public tempusAddr;
-  address public senseToken;
 
   event Lend(uint8 principal, address indexed underlying, uint256 indexed maturity, uint256 returned);
   event Mint(uint8 principal, address indexed underlying, uint256 indexed maturity, uint256 amount);
 
   /// @param i the deployed Illuminate contract
-  constructor(address i, address s, address pr, address t, address st) {
+  constructor(address i, address s, address p, address t) {
     admin = msg.sender;
     illuminate = i; // TODO add an authorized setter for this?
     swivelAddr = s;
-    pendleAddr = pr;
+    pendleAddr = p;
     tempusAddr = t;
-    senseToken = st;
   }
 
   /// @dev mint is uniform across all principals, thus there is no need for a 'minter'
@@ -258,7 +256,6 @@ contract Lender {
   function lend(uint8 p, address u, uint256 m, address x, address sa, uint128 a, uint256 mb) public returns (uint256){
         // Instantiate market and tokens
         // TODO: Check that we have the right underlying and maturity
-        require(ISenseToken(senseToken).underlying() == u, 'sense underlying != underlying');
 
         // Transfer funds from user to Illuminate
         IErc20 underlyingToken = IErc20(u);
