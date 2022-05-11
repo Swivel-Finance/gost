@@ -28,33 +28,33 @@ contract Redeemer {
     tempusRouter = t;
   }
 
-    /// @notice Redeems underlying token for illuminate, apwine and tempus 
-    /// protocols
-    /// @param p: the principal token
-    /// @param u the underlying token being redeemed
-    /// @param m the maturity of the market being redeemed
-    /// @param o the owner of the underlying tokens being redeemed
-    function redeem(uint8 p, address u, uint256 m, address o) public returns (bool) {
-        address principal = IIlluminate(illuminate).markets(u, m)[p];
+  /// @notice Redeems underlying token for illuminate, apwine and tempus 
+  /// protocols
+  /// @param p: the principal token
+  /// @param u the underlying token being redeemed
+  /// @param m the maturity of the market being redeemed
+  /// @param o the owner of the underlying tokens being redeemed
+  function redeem(uint8 p, address u, uint256 m, address o) public returns (bool) {
+    address principal = IIlluminate(illuminate).markets(u, m)[p];
 
-        IErc20 token = IErc20(principal);
+    IErc20 token = IErc20(principal);
 
-        uint256 amount = token.balanceOf(o);
+    uint256 amount = token.balanceOf(o);
 
-        if (p == uint8(Illuminate.Principals.Apwine)) {
-            IAPWine(apwineRouter).withdraw(o, amount);
-        } else if (p == uint8(Illuminate.Principals.Tempus)) {
-            ITempus(tempusRouter).redeemToBacking(o, m, amount, u);
-        } else if (p == uint8(Illuminate.Principals.Illuminate)) {
-            IZcToken(principal).burn(o, amount);
-        }
-
-        Safe.transfer(IErc20(u), o, amount);
-
-        emit Redeem(0, u, m, amount);
-
-        return true;
+    if (p == uint8(Illuminate.Principals.Apwine)) {
+        IAPWine(apwineRouter).withdraw(o, amount);
+    } else if (p == uint8(Illuminate.Principals.Tempus)) {
+        ITempus(tempusRouter).redeemToBacking(o, m, amount, u);
+    } else if (p == uint8(Illuminate.Principals.Illuminate)) {
+        IZcToken(principal).burn(o, amount);
     }
+
+    Safe.transfer(IErc20(u), o, amount);
+
+    emit Redeem(0, u, m, amount);
+
+    return true;
+  }
 
   /// @dev redeem method signature for swivel, yield, element, 
   /// @param p value of a specific principal according to the Illuminate Principals Enum
