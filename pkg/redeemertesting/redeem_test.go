@@ -5,6 +5,8 @@ import (
 	test "testing"
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 	"github.com/swivel-finance/gost/test/mocks"
 	"github.com/swivel-finance/gost/test/redeemer"
@@ -86,6 +88,32 @@ func (s *redeemTestSuite) SetupSuite() {
 			Signer: s.Env.Owner.Opts.Signer,
 		},
 	}
+}
+
+func (s *redeemTestSuite) TestRedeemIlluminateTempusApwine() {
+	assert := assert.New(s.T())
+
+	amount := big.NewInt(1000)
+
+	markets := [8]common.Address{
+		s.Dep.ZcTokenAddress,
+		s.Dep.IlluminateAddress,
+		s.Dep.IlluminateAddress,
+		s.Dep.IlluminateAddress,
+		s.Dep.IlluminateAddress,
+		s.Dep.IlluminateAddress,
+		s.Dep.IlluminateAddress,
+		s.Dep.IlluminateAddress,
+	}
+	s.Illuminate.MarketsReturns(markets)
+	s.Env.Blockchain.Commit()
+
+	s.Erc20.BalanceOfReturns(amount)
+	s.Env.Blockchain.Commit()
+
+	s.Illuminate.TransferFromReturns(true)
+	s.Env.Blockchain.Commit()
+
 }
 
 func TestRedeemSuite(t *test.T) {
