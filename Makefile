@@ -172,7 +172,17 @@ compile_go_mock_apwine:
 
 compile_mock_apwine: compile_solidity_mock_apwine compile_go_mock_apwine
 
-compile_mocks: compile_mock_erc compile_mock_yield compile_mock_pendle compile_mock_pendle_token compile_mock_element_token compile_mock_element compile_mock_illuminate compile_mock_zc_token compile_mock_swivel compile_mock_tempus compile_mock_sense compile_mock_sense_token compile_go_mock_apwine_token compile_mock_apwine compile_mock_apwine_token
+compile_solidity_mock_router:
+	@echo "compiling Mock Router solidity source into abi and bin files"
+	solc -o ./test/mocks --abi --bin --overwrite ./test/mocks/Router.sol
+
+compile_go_mock_router:
+	@echo "compiling abi and bin files to golang"
+	abigen --abi ./test/mocks/Router.abi --bin ./test/mocks/Router.bin -pkg mocks -type Router -out ./test/mocks/router.go 
+
+compile_mock_router: compile_solidity_mock_router compile_go_mock_router
+
+compile_mocks: compile_mock_erc compile_mock_yield compile_mock_pendle compile_mock_pendle_token compile_mock_element_token compile_mock_element compile_mock_illuminate compile_mock_zc_token compile_mock_swivel compile_mock_tempus compile_mock_sense compile_mock_sense_token compile_go_mock_apwine_token compile_mock_apwine compile_mock_apwine_token compile_mock_router
 
 
 # Real Tokens

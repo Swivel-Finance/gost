@@ -17,6 +17,8 @@ type Dep struct {
 	Swivel            *mocks.Swivel
 	IlluminateAddress common.Address
 	Illuminate        *mocks.Illuminate
+	Router            *mocks.Router
+	RouterAddress     common.Address
 	RedeemerAddress   common.Address
 	Redeemer          *redeemer.Redeemer
 }
@@ -63,7 +65,15 @@ func Deploy(e *Env) (*Dep, error) {
 
 	e.Blockchain.Commit()
 
-	redeemerAddress, _, redeemerContract, redeemerErr := redeemer.DeployRedeemer(e.Owner.Opts, e.Blockchain, mpAddress)
+	rAddress, _, rContract, rErr := mocks.DeployRouter(e.Owner.Opts, e.Blockchain)
+
+	if rErr != nil {
+		return nil, rErr
+	}
+
+	e.Blockchain.Commit()
+
+	redeemerAddress, _, redeemerContract, redeemerErr := redeemer.DeployRedeemer(e.Owner.Opts, e.Blockchain, mpAddress, rAddress, rAddress, rAddress, rAddress)
 
 	if redeemerErr != nil {
 		return nil, redeemerErr
@@ -82,6 +92,8 @@ func Deploy(e *Env) (*Dep, error) {
 		Swivel:            swivelContract,
 		IlluminateAddress: mpAddress,
 		Illuminate:        mpContract,
+		RouterAddress:     rAddress,
+		Router:            rContract,
 		RedeemerAddress:   redeemerAddress,
 		Redeemer:          redeemerContract,
 	}, nil

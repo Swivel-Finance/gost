@@ -21,6 +21,7 @@ type redeemTestSuite struct {
 	Yield      *mocks.YieldSession
 	ZcToken    *mocks.ZcTokenSession
 	Swivel     *mocks.SwivelSession
+	Router     *mocks.RouterSession
 	Redeemer   *redeemer.RedeemerSession
 }
 
@@ -80,6 +81,15 @@ func (s *redeemTestSuite) SetupSuite() {
 		},
 	}
 
+	s.Router = &mocks.RouterSession{
+		Contract: s.Dep.Router,
+		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
+		TransactOpts: bind.TransactOpts{
+			From:   s.Env.Owner.Opts.From,
+			Signer: s.Env.Owner.Opts.Signer,
+		},
+	}
+
 	s.Redeemer = &redeemer.RedeemerSession{
 		Contract: s.Dep.Redeemer,
 		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
@@ -94,6 +104,7 @@ func (s *redeemTestSuite) TestRedeemIlluminateTempusApwine() {
 	assert := assert.New(s.T())
 
 	amount := big.NewInt(1000)
+	maturity := big.NewInt(9999999)
 
 	markets := [8]common.Address{
 		s.Dep.ZcTokenAddress,
@@ -111,9 +122,30 @@ func (s *redeemTestSuite) TestRedeemIlluminateTempusApwine() {
 	s.Erc20.BalanceOfReturns(amount)
 	s.Env.Blockchain.Commit()
 
-	s.Illuminate.TransferFromReturns(true)
+	s.Illuminate.TranferFromReturns(true)
 	s.Env.Blockchain.Commit()
 
+	tx, err := s.Redeemer.Redeem0(0, s.Dep.Erc20Address, maturity, s.Dep.IlluminateAddress)
+	assert.NoError(err)
+	assert.NotNil(tx)
+	s.Env.Blockchain.Commit()
+
+	// verify mocks were called as expected
+	calledAmount, err := s.Router.AmountCalled()
+	assert.NoError(err)
+	assert.Equal(amount, calledAmount)
+
+	calledYieldAmount, err := s.Router.YieldAmountCalled()
+	assert.NoError(err)
+	assert.Equal(amount, calledYieldAmount)
+
+	calledOwner, err := s.Router.OwnerCalled()
+	assert.NoError(err)
+	assert.Equal(s.Dep.IlluminateAddress, calledOwner)
+
+	calledRecipient, err := s.Router.RecipientCalled()
+	assert.NoError(err)
+	assert.Equal(s.Dep.RedeemerAddress, calledRecipient)
 }
 
 func TestRedeemSuite(t *test.T) {
