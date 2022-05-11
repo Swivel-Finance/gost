@@ -58,31 +58,10 @@ func (s *pendleTestSuite) TestSwapExactTokensForTokens() {
 	assert.Nil(err)
 	s.Env.Blockchain.Commit()
 
-	inCalled, err := s.Pendle.InCalled()
-	assert.Nil(err)
-	assert.Equal(in, inCalled)
-
-	outCalled, err := s.Pendle.OutMinimumCalled()
-	assert.Nil(err)
-	assert.Equal(out, outCalled)
-
-	var pathCalled [2]common.Address
-	path0, err := s.Pendle.PathCalled(big.NewInt(0))
-	pathCalled[0] = path0
-	path1, err := s.Pendle.PathCalled(big.NewInt(1))
-	pathCalled[1] = path1
-	assert.Nil(err)
-	assert.Equal(path[0], pathCalled[0])
-	assert.Equal(path[1], pathCalled[1])
-	assert.Equal(len(path), len(pathCalled))
-
-	toCalled, err := s.Pendle.ToCalled()
-	assert.Nil(err)
-	assert.Equal(to, toCalled)
-
-	deadlineCalled, err := s.Pendle.DeadlineCalled()
-	assert.Nil(err)
-	assert.Equal(deadline, deadlineCalled)
+	swap, err := s.Pendle.SwapExactTokensForTokensCalled(to)
+	assert.Equal(in, swap.TokenIn)
+	assert.Equal(out, swap.TokenOut)
+	assert.Equal(deadline, swap.Deadline)
 }
 
 func TestPendleSuite(t *test.T) {
