@@ -37,9 +37,7 @@ contract Redeemer {
   function redeem(uint8 p, address u, uint256 m, address o) public returns (bool) {
     address principal = IIlluminate(illuminate).markets(u, m)[p];
 
-    IErc20 token = IErc20(principal);
-
-    uint256 amount = token.balanceOf(o);
+    uint256 amount = IErc20(principal).balanceOf(o);
 
     if (p == uint8(Illuminate.Principals.Apwine)) {
         IAPWine(apwineRouter).withdraw(o, amount);

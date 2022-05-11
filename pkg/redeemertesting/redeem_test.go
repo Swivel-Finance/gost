@@ -119,24 +119,27 @@ func (s *redeemTestSuite) TestAPWineRedeem() {
 	apwinePrincipal := uint8(7)
 
 	s.Illuminate.MarketsReturns([8]common.Address{
-		s.Dep.APWineAddress,
-		s.Dep.APWineAddress,
-		s.Dep.APWineAddress,
-		s.Dep.APWineAddress,
-		s.Dep.APWineAddress,
-		s.Dep.APWineAddress,
-		s.Dep.APWineAddress,
-		s.Dep.APWineAddress,
+		s.Dep.APWineTokenAddress,
+		s.Dep.APWineTokenAddress,
+		s.Dep.APWineTokenAddress,
+		s.Dep.APWineTokenAddress,
+		s.Dep.APWineTokenAddress,
+		s.Dep.APWineTokenAddress,
+		s.Dep.APWineTokenAddress,
+		s.Dep.APWineTokenAddress,
 	})
 	s.Env.Blockchain.Commit()
 
 	s.APWineToken.TransferFromReturns(true)
 	s.Env.Blockchain.Commit()
 
-	s.APWineToken.BalanceOfReturns(amount)
+	s.APWineToken.BalanceOfReturns(vault, amount)
 	s.Env.Blockchain.Commit()
 
-	tx, err := s.Redeemer.Redeem0(apwinePrincipal, s.Dep.APWineTokenAddress, maturity, vault)
+	s.Erc20.TransferReturns(true)
+	s.Env.Blockchain.Commit()
+
+	tx, err := s.Redeemer.Redeem0(apwinePrincipal, s.Dep.Erc20Address, maturity, vault)
 	assert.NoError(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
