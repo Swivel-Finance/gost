@@ -8,31 +8,32 @@ contract ZcToken {
         uint256 amount;
     }
 
-    mapping (address => uint256) public balances;
     bool private mintReturn;
     bool private transferFromReturn;
+    uint256 private balanceOfReturn;
 
     mapping (address => TransferFromArgs) public transferFromCalled;
     mapping (address => uint256) public mintCalled;
     mapping (address => uint256) public burnCalled;
     uint256 public amountCalled;
+    address public balanceOfCalled;
 
     function mintReturns(bool r) external {
         mintReturn = r;
     }
 
-    function balanceOfReturns(address a, uint256 b) external {
-        balances[a] = b;
-    }
-
     function mint(address a, uint256 u) external returns (bool) {
-        balances[a] = u;
         mintCalled[a] = u;
         return mintReturn;
     }
 
-    function balanceOf(address a) external view returns (uint256) {
-        return balances[a];
+    function balanceOfReturns(uint256 b) public {
+        balanceOfReturn = b;
+    }
+
+    function balanceOf(address b) public returns (uint256) {
+        balanceOfCalled = b;
+        return balanceOfReturn;
     }
 
     function burn(address o, uint256 a) external {

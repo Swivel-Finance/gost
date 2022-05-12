@@ -5,7 +5,6 @@ import (
 	test "testing"
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
-	"github.com/ethereum/go-ethereum/common"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 	"github.com/swivel-finance/gost/test/mocks"
@@ -63,28 +62,26 @@ func (s *zcTokenTestSuite) TestMint() {
 
 func (s *zcTokenTestSuite) TestBalanceOf() {
 	assert := assert.New(s.T())
-	address := common.BigToAddress(big.NewInt(12432))
 	amount := big.NewInt(ONE_ETH)
 
-	tx, err := s.ZcToken.BalanceOfReturns(address, amount)
+	tx, err := s.ZcToken.BalanceOfReturns(amount)
 	assert.NotNil(tx)
 	assert.Nil(err)
 	s.Env.Blockchain.Commit()
 
 	// fake user1 mint ONE_ETH
-	tx, err = s.ZcToken.Mint(
+	tx, err = s.ZcToken.BalanceOf(
 		s.Env.User1.Opts.From,
-		amount,
 	)
 	assert.NotNil(tx)
 	assert.Nil(err)
 	s.Env.Blockchain.Commit()
 
-	balance, err := s.ZcToken.Balances(s.Env.User1.Opts.From)
+	address, err := s.ZcToken.BalanceOfCalled()
 	s.Env.Blockchain.Commit()
 
 	assert.Nil(err)
-	assert.Equal(amount, balance)
+	assert.Equal(s.Env.User1.Opts.From, address)
 }
 
 func TestZcTokenSuite(t *test.T) {

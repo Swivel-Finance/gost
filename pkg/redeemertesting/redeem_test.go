@@ -247,7 +247,7 @@ func (s *redeemTestSuite) TestIlluminateRedeem() {
 	s.ZcToken.TransferFromReturns(true)
 	s.Env.Blockchain.Commit()
 
-	s.TempusToken.BalanceOfReturns(amount)
+	s.ZcToken.BalanceOfReturns(amount)
 	s.Env.Blockchain.Commit()
 
 	s.Erc20.TransferReturns(true)
