@@ -135,7 +135,7 @@ func (s *redeemTestSuite) TestAPWineRedeem() {
 
 	amount := big.NewInt(1000)
 	maturity := big.NewInt(9999999)
-	owner := common.HexToAddress("0x0000000000000000000000000000000000000002")
+	owner := s.Env.User1.Opts.From
 	principal := uint8(7)
 
 	s.Illuminate.MarketsReturns([8]common.Address{
@@ -183,7 +183,7 @@ func (s *redeemTestSuite) TestTempusRedeem() {
 
 	amount := big.NewInt(1000)
 	maturity := big.NewInt(9999999)
-	owner := common.HexToAddress("0x0000000000000000000000000000000000000002")
+	owner := s.Env.User1.Opts.From
 	prinicipal := uint8(5)
 
 	s.Illuminate.MarketsReturns([8]common.Address{
@@ -229,7 +229,7 @@ func (s *redeemTestSuite) TestIlluminateRedeem() {
 
 	amount := big.NewInt(1000)
 	maturity := big.NewInt(9999999)
-	owner := common.HexToAddress("0x0000000000000000000000000000000000000002")
+	owner := s.Env.User1.Opts.From
 	principal := uint8(0)
 
 	s.Illuminate.MarketsReturns([8]common.Address{
