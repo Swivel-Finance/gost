@@ -11,17 +11,19 @@ contract TempusToken {
 
     mapping (address => uint256) public balances;
     bool private transferFromReturn;
+    uint256 private balanceOfReturn;
 
     mapping (address => TransferFromArgs) public transferFromCalled;
+    address public balanceOfCalled;
 
-    function balanceOfReturns(address a, uint256 b) external {
-        balances[a] = b;
+    function balanceOfReturns(uint256 b) public {
+        balanceOfReturn = b;
     }
 
-    function balanceOf(address a) external view returns (uint256) {
-        return balances[a];
+    function balanceOf(address b) public returns (uint256) {
+        balanceOfCalled = b;
+        return balanceOfReturn;
     }
-
 
     function transferFromReturns(bool b) public {
         transferFromReturn = b;

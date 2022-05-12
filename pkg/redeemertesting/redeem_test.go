@@ -23,6 +23,8 @@ type redeemTestSuite struct {
 	Swivel      *mocks.SwivelSession
 	APWine      *mocks.APWineSession
 	APWineToken *mocks.APWineTokenSession
+	Tempus      *mocks.TempusSession
+	TempusToken *mocks.TempusTokenSession
 	Redeemer    *redeemer.RedeemerSession
 }
 
@@ -100,6 +102,24 @@ func (s *redeemTestSuite) SetupSuite() {
 		},
 	}
 
+	s.Tempus = &mocks.TempusSession{
+		Contract: s.Dep.Tempus,
+		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
+		TransactOpts: bind.TransactOpts{
+			From:   s.Env.Owner.Opts.From,
+			Signer: s.Env.Owner.Opts.Signer,
+		},
+	}
+
+	s.TempusToken = &mocks.TempusTokenSession{
+		Contract: s.Dep.TempusToken,
+		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
+		TransactOpts: bind.TransactOpts{
+			From:   s.Env.Owner.Opts.From,
+			Signer: s.Env.Owner.Opts.Signer,
+		},
+	}
+
 	s.Redeemer = &redeemer.RedeemerSession{
 		Contract: s.Dep.Redeemer,
 		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
@@ -159,7 +179,49 @@ func (s *redeemTestSuite) TestAPWineRedeem() {
 }
 
 func (s *redeemTestSuite) TestTempusRedeem() {
+	assert := assert.New(s.T())
 
+	amount := big.NewInt(1000)
+	maturity := big.NewInt(9999999)
+	adapter := common.HexToAddress("0x0000000000000000000000000000000000000002")
+	tempusPrincipal := uint8(5)
+
+	s.Illuminate.MarketsReturns([8]common.Address{
+		s.Dep.TempusTokenAddress,
+		s.Dep.TempusTokenAddress,
+		s.Dep.TempusTokenAddress,
+		s.Dep.TempusTokenAddress,
+		s.Dep.TempusTokenAddress,
+		s.Dep.TempusTokenAddress,
+		s.Dep.TempusTokenAddress,
+		s.Dep.TempusTokenAddress,
+	})
+	s.Env.Blockchain.Commit()
+
+	s.TempusToken.TransferFromReturns(true)
+	s.Env.Blockchain.Commit()
+
+	s.TempusToken.BalanceOfReturns(amount)
+	s.Env.Blockchain.Commit()
+
+	s.Erc20.TransferReturns(true)
+	s.Env.Blockchain.Commit()
+
+	tx, err := s.Redeemer.Redeem0(tempusPrincipal, s.Dep.Erc20Address, maturity, adapter)
+	assert.NoError(err)
+	assert.NotNil(tx)
+	s.Env.Blockchain.Commit()
+
+	// verify that the mocked functions were called as expected
+	redeemCall, err := s.Tempus.RedeemToBackingCalled(adapter)
+	assert.NoError(err)
+	assert.Equal(amount, redeemCall.Amount)
+	assert.Equal(maturity, redeemCall.Maturity)
+	assert.Equal(s.Dep.Erc20Address, redeemCall.Underlying)
+
+	underlyingTransfer, err := s.Erc20.TransferCalled(adapter)
+	assert.NoError(err)
+	assert.Equal(amount, underlyingTransfer)
 }
 
 func (s *redeemTestSuite) TestIlluminateRedeem() {
