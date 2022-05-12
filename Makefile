@@ -3,6 +3,7 @@
 .PHONY: compile_solidity_mock_pendle compile_go_mock_pendle compile_mock_pendle
 .PHONY: compile_solidity_mock_pendle_token compile_go_mock_pendle_token compile_mock_pendle_token
 .PHONY: compile_solidity_mock_tempus compile_go_mock_tempus compile_mock_tempus
+.PHONY: compile_solidity_mock_tempus_token compile_go_mock_tempus_token compile_mock_tempus_token
 .PHONY: compile_solidity_mock_sense compile_go_mock_sense compile_mock_sense
 .PHONY: compile_solidity_mock_apwine_token compile_go_mock_apwine_token compile_mock_apwine_token
 .PHONY: compile_solidity_mock_apwine compile_go_mock_apwine compile_mock_apwine
@@ -133,6 +134,26 @@ compile_go_mock_tempus:
 
 compile_mock_tempus: compile_solidity_mock_tempus compile_go_mock_tempus
 
+compile_solidity_mock_tempus_token:
+	@echo "compiling Mock Tempus Token solidity source into abi and bin files"
+	solc -o ./test/mocks --abi --bin --overwrite ./test/mocks/TempusToken.sol
+
+compile_go_mock_tempus_token:
+	@echo "compiling abi and bin files to golang"
+	abigen --abi ./test/mocks/TempusToken.abi --bin ./test/mocks/TempusToken.bin -pkg mocks -type TempusToken -out ./test/mocks/tempustoken.go 
+
+compile_mock_tempus_token: compile_solidity_mock_tempus_token compile_go_mock_tempus_token
+
+compile_solidity_mock_sense:
+	@echo "compiling Mock Sense solidity source into abi and bin files"
+	solc -o ./test/mocks --abi --bin --overwrite ./test/mocks/Sense.sol
+
+compile_go_mock_sense:
+	@echo "compiling abi and bin files to golang"
+	abigen --abi ./test/mocks/Sense.abi --bin ./test/mocks/Sense.bin -pkg mocks -type Sense -out ./test/mocks/sense.go 
+
+compile_mock_sense: compile_solidity_mock_sense compile_go_mock_sense
+
 compile_solidity_mock_sense_token:
 	@echo "compiling Mock SenseToken solidity source into abi and bin files"
 	solc -o ./test/mocks --abi --bin --overwrite ./test/mocks/SenseToken.sol
@@ -175,7 +196,7 @@ compile_mock_apwine: compile_mock_apwine_token compile_solidity_mock_apwine comp
 
 compile_mock_deps: compile_mock_erc compile_mock_zc_token
 
-compile_mocks: compile_mock_deps compile_mock_illuminate compile_mock_swivel compile_mock_yield compile_mock_element compile_mock_pendle compile_mock_tempus compile_mock_sense compile_mock_apwine
+compile_mocks: compile_mock_deps compile_mock_illuminate compile_mock_swivel compile_mock_yield compile_mock_element compile_mock_pendle compile_mock_tempus compile_mock_sense compile_mock_apwine compile_mock_tempus_token
 
 # Real Tokens
 # compile_solidity_zct:
