@@ -47,42 +47,21 @@ func (s *pendleTestSuite) TestSwapExactTokensForTokens() {
 	assert.Nil(err)
 	s.Env.Blockchain.Commit()
 
-	in := big.NewInt(1)
-	out := big.NewInt(2)
+	amount := big.NewInt(1)
+	minimumBought := big.NewInt(2)
 	path := []common.Address{common.HexToAddress("0x1"), common.HexToAddress("0x2")}
 	to := common.HexToAddress("0x3")
 	deadline := big.NewInt(4)
 
-	tx, err = s.Pendle.SwapExactTokensForTokens(in, out, path, to, deadline)
+	tx, err = s.Pendle.SwapExactTokensForTokens(amount, minimumBought, path, to, deadline)
 	assert.NotNil(tx)
 	assert.Nil(err)
 	s.Env.Blockchain.Commit()
 
-	inCalled, err := s.Pendle.InCalled()
-	assert.Nil(err)
-	assert.Equal(in, inCalled)
-
-	outCalled, err := s.Pendle.OutMinimumCalled()
-	assert.Nil(err)
-	assert.Equal(out, outCalled)
-
-	var pathCalled [2]common.Address
-	path0, err := s.Pendle.PathCalled(big.NewInt(0))
-	pathCalled[0] = path0
-	path1, err := s.Pendle.PathCalled(big.NewInt(1))
-	pathCalled[1] = path1
-	assert.Nil(err)
-	assert.Equal(path[0], pathCalled[0])
-	assert.Equal(path[1], pathCalled[1])
-	assert.Equal(len(path), len(pathCalled))
-
-	toCalled, err := s.Pendle.ToCalled()
-	assert.Nil(err)
-	assert.Equal(to, toCalled)
-
-	deadlineCalled, err := s.Pendle.DeadlineCalled()
-	assert.Nil(err)
-	assert.Equal(deadline, deadlineCalled)
+	swap, err := s.Pendle.SwapExactTokensForTokensCalled(to)
+	assert.Equal(amount, swap.Amount)
+	assert.Equal(minimumBought, swap.MinimumBought)
+	assert.Equal(deadline, swap.Deadline)
 }
 
 func TestPendleSuite(t *test.T) {

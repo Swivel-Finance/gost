@@ -45,39 +45,24 @@ func (s *apWineTestSuite) TestSwapExactAmountIn() {
 	s.APWine.SwapExactAmountInReturns(big.NewInt(1000))
 	s.Env.Blockchain.Commit()
 
+	to := common.HexToAddress("0x0000000000000000000000000000000000000002")
 	s.APWine.SwapExactAmountIn(
 		big.NewInt(1000),
 		big.NewInt(2000),
 		big.NewInt(3000),
 		big.NewInt(4000),
 		big.NewInt(5000),
-		common.HexToAddress("0x0000000000000000000000000000000000000002"),
+		to,
 	)
 	s.Env.Blockchain.Commit()
 
-	id, err := s.APWine.IdCalled()
-	assert.Nil(err)
-	assert.Equal(big.NewInt(1000), id)
-
-	tokenIn, err := s.APWine.TokenInCalled()
-	assert.Nil(err)
-	assert.Equal(big.NewInt(2000), tokenIn)
-
-	amount, err := s.APWine.AmountCalled()
-	assert.Nil(err)
-	assert.Equal(big.NewInt(3000), amount)
-
-	tokenOut, err := s.APWine.TokenOutCalled()
-	assert.Nil(err)
-	assert.Equal(big.NewInt(4000), tokenOut)
-
-	minimumAmount, err := s.APWine.MinimumAmountCalled()
-	assert.Nil(err)
-	assert.Equal(big.NewInt(5000), minimumAmount)
-
-	to, err := s.APWine.ToCalled()
-	assert.Nil(err)
-	assert.Equal(common.HexToAddress("0x0000000000000000000000000000000000000002"), to)
+	swap, err := s.APWine.SwapExactAmountInCalled(to)
+	assert.NoError(err)
+	assert.Equal(big.NewInt(1000), swap.Id)
+	assert.Equal(big.NewInt(2000), swap.TokenIn)
+	assert.Equal(big.NewInt(3000), swap.Amount)
+	assert.Equal(big.NewInt(4000), swap.TokenOut)
+	assert.Equal(big.NewInt(5000), swap.MinimumAmount)
 }
 
 func TestAPWineSuite(t *test.T) {

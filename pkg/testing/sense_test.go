@@ -44,8 +44,9 @@ func (s *senseTestSuite) TestSwapUnderlyingForPTs() {
 	s.Sense.SwapUnderlyingForPTsReturns(big.NewInt(1000))
 	s.Env.Blockchain.Commit()
 
+	adapter := common.BigToAddress(big.NewInt(1))
 	tx, err := s.Sense.SwapUnderlyingForPTs(
-		common.BigToAddress(big.NewInt(1)),
+		adapter,
 		big.NewInt(1000),
 		big.NewInt(2000),
 		big.NewInt(3000),
@@ -54,21 +55,12 @@ func (s *senseTestSuite) TestSwapUnderlyingForPTs() {
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
 
-	adapter, err := s.Sense.SenseTokenCalled()
-	assert.NoError(err)
-	assert.Equal(common.BigToAddress(big.NewInt(1)), adapter)
+	swapUnderlying, err := s.Sense.SwapUnderlyingForPTsCalled(adapter)
 
-	maturity, err := s.Sense.MaturityCalled()
 	assert.NoError(err)
-	assert.Equal(big.NewInt(1000), maturity)
-
-	amount, err := s.Sense.AmountCalled()
-	assert.NoError(err)
-	assert.Equal(big.NewInt(2000), amount)
-
-	minimumBought, err := s.Sense.MinimumBoughtCalled()
-	assert.NoError(err)
-	assert.Equal(big.NewInt(3000), minimumBought)
+	assert.Equal(big.NewInt(1000), swapUnderlying.Maturity)
+	assert.Equal(big.NewInt(2000), swapUnderlying.Amount)
+	assert.Equal(big.NewInt(3000), swapUnderlying.MinimumBought)
 }
 
 func TestSenseSuite(t *test.T) {

@@ -27,10 +27,10 @@ var (
 )
 
 // SenseABI is the input ABI used to generate the binding from.
-const SenseABI = "[{\"inputs\":[],\"name\":\"amountCalled\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"maturityCalled\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"minimumBoughtCalled\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"senseTokenCalled\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"sa\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"m\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"a\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"mb\",\"type\":\"uint256\"}],\"name\":\"swapUnderlyingForPTs\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"s\",\"type\":\"uint256\"}],\"name\":\"swapUnderlyingForPTsReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]"
+const SenseABI = "[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"sa\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"m\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"a\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"mb\",\"type\":\"uint256\"}],\"name\":\"swapUnderlyingForPTs\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"swapUnderlyingForPTsCalled\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"maturity\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"minimumBought\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"s\",\"type\":\"uint256\"}],\"name\":\"swapUnderlyingForPTsReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]"
 
 // SenseBin is the compiled bytecode used for deploying new contracts.
-var SenseBin = "0x608060405234801561001057600080fd5b50610389806100206000396000f3fe608060405234801561001057600080fd5b50600436106100625760003560e01c80633ef943bb1461006757806357e5b682146100855780638f1f30f0146100a357806393824eca146100d3578063cbf6a44c146100f1578063f9d40f0b1461010d575b600080fd5b61006f61012b565b60405161007c91906101eb565b60405180910390f35b61008d610131565b60405161009a91906101eb565b60405180910390f35b6100bd60048036038101906100b89190610295565b610137565b6040516100ca91906101eb565b60405180910390f35b6100db61019c565b6040516100e891906101eb565b60405180910390f35b61010b600480360381019061010691906102fc565b6101a2565b005b6101156101ac565b6040516101229190610338565b60405180910390f35b60035481565b60025481565b600084600160006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff1602179055508360028190555082600381905550816004819055506000549050949350505050565b60045481565b8060008190555050565b600160009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1681565b6000819050919050565b6101e5816101d2565b82525050565b600060208201905061020060008301846101dc565b92915050565b600080fd5b600073ffffffffffffffffffffffffffffffffffffffff82169050919050565b60006102368261020b565b9050919050565b6102468161022b565b811461025157600080fd5b50565b6000813590506102638161023d565b92915050565b610272816101d2565b811461027d57600080fd5b50565b60008135905061028f81610269565b92915050565b600080600080608085870312156102af576102ae610206565b5b60006102bd87828801610254565b94505060206102ce87828801610280565b93505060406102df87828801610280565b92505060606102f087828801610280565b91505092959194509250565b60006020828403121561031257610311610206565b5b600061032084828501610280565b91505092915050565b6103328161022b565b82525050565b600060208201905061034d6000830184610329565b9291505056fea2646970667358221220f4d1400ffd118fe87dcfb6e26813317085dc5b5e782c180b69ef3fab26d3624964736f6c634300080d0033"
+var SenseBin = "0x608060405234801561001057600080fd5b50610373806100206000396000f3fe608060405234801561001057600080fd5b50600436106100415760003560e01c8063534ce00f146100465780638f1f30f014610078578063cbf6a44c146100a8575b600080fd5b610060600480360381019061005b91906101e5565b6100c4565b60405161006f9392919061022b565b60405180910390f35b610092600480360381019061008d919061028e565b6100ee565b60405161009f91906102f5565b60405180910390f35b6100c260048036038101906100bd9190610310565b610178565b005b60016020528060005260406000206000915090508060000154908060010154908060020154905083565b6000604051806060016040528085815260200184815260200183815250600160008773ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1681526020019081526020016000206000820151816000015560208201518160010155604082015181600201559050506000549050949350505050565b8060008190555050565b600080fd5b600073ffffffffffffffffffffffffffffffffffffffff82169050919050565b60006101b282610187565b9050919050565b6101c2816101a7565b81146101cd57600080fd5b50565b6000813590506101df816101b9565b92915050565b6000602082840312156101fb576101fa610182565b5b6000610209848285016101d0565b91505092915050565b6000819050919050565b61022581610212565b82525050565b6000606082019050610240600083018661021c565b61024d602083018561021c565b61025a604083018461021c565b949350505050565b61026b81610212565b811461027657600080fd5b50565b60008135905061028881610262565b92915050565b600080600080608085870312156102a8576102a7610182565b5b60006102b6878288016101d0565b94505060206102c787828801610279565b93505060406102d887828801610279565b92505060606102e987828801610279565b91505092959194509250565b600060208201905061030a600083018461021c565b92915050565b60006020828403121561032657610325610182565b5b600061033484828501610279565b9150509291505056fea2646970667358221220b87a20ad801ced6679012fb303e19d05f242001b2d72713ef99b7c559e96437164736f6c634300080d0033"
 
 // DeploySense deploys a new Ethereum contract, binding an instance of Sense to it.
 func DeploySense(auth *bind.TransactOpts, backend bind.ContractBackend) (common.Address, *types.Transaction, *Sense, error) {
@@ -188,128 +188,51 @@ func (_Sense *SenseTransactorRaw) Transact(opts *bind.TransactOpts, method strin
 	return _Sense.Contract.contract.Transact(opts, method, params...)
 }
 
-// AmountCalled is a free data retrieval call binding the contract method 0x3ef943bb.
+// SwapUnderlyingForPTsCalled is a free data retrieval call binding the contract method 0x534ce00f.
 //
-// Solidity: function amountCalled() view returns(uint256)
-func (_Sense *SenseCaller) AmountCalled(opts *bind.CallOpts) (*big.Int, error) {
+// Solidity: function swapUnderlyingForPTsCalled(address ) view returns(uint256 maturity, uint256 amount, uint256 minimumBought)
+func (_Sense *SenseCaller) SwapUnderlyingForPTsCalled(opts *bind.CallOpts, arg0 common.Address) (struct {
+	Maturity      *big.Int
+	Amount        *big.Int
+	MinimumBought *big.Int
+}, error) {
 	var out []interface{}
-	err := _Sense.contract.Call(opts, &out, "amountCalled")
+	err := _Sense.contract.Call(opts, &out, "swapUnderlyingForPTsCalled", arg0)
 
-	if err != nil {
-		return *new(*big.Int), err
-	}
+	outstruct := new(struct {
+		Maturity      *big.Int
+		Amount        *big.Int
+		MinimumBought *big.Int
+	})
 
-	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+	outstruct.Maturity = out[0].(*big.Int)
+	outstruct.Amount = out[1].(*big.Int)
+	outstruct.MinimumBought = out[2].(*big.Int)
 
-	return out0, err
-
-}
-
-// AmountCalled is a free data retrieval call binding the contract method 0x3ef943bb.
-//
-// Solidity: function amountCalled() view returns(uint256)
-func (_Sense *SenseSession) AmountCalled() (*big.Int, error) {
-	return _Sense.Contract.AmountCalled(&_Sense.CallOpts)
-}
-
-// AmountCalled is a free data retrieval call binding the contract method 0x3ef943bb.
-//
-// Solidity: function amountCalled() view returns(uint256)
-func (_Sense *SenseCallerSession) AmountCalled() (*big.Int, error) {
-	return _Sense.Contract.AmountCalled(&_Sense.CallOpts)
-}
-
-// MaturityCalled is a free data retrieval call binding the contract method 0x57e5b682.
-//
-// Solidity: function maturityCalled() view returns(uint256)
-func (_Sense *SenseCaller) MaturityCalled(opts *bind.CallOpts) (*big.Int, error) {
-	var out []interface{}
-	err := _Sense.contract.Call(opts, &out, "maturityCalled")
-
-	if err != nil {
-		return *new(*big.Int), err
-	}
-
-	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
-
-	return out0, err
+	return *outstruct, err
 
 }
 
-// MaturityCalled is a free data retrieval call binding the contract method 0x57e5b682.
+// SwapUnderlyingForPTsCalled is a free data retrieval call binding the contract method 0x534ce00f.
 //
-// Solidity: function maturityCalled() view returns(uint256)
-func (_Sense *SenseSession) MaturityCalled() (*big.Int, error) {
-	return _Sense.Contract.MaturityCalled(&_Sense.CallOpts)
+// Solidity: function swapUnderlyingForPTsCalled(address ) view returns(uint256 maturity, uint256 amount, uint256 minimumBought)
+func (_Sense *SenseSession) SwapUnderlyingForPTsCalled(arg0 common.Address) (struct {
+	Maturity      *big.Int
+	Amount        *big.Int
+	MinimumBought *big.Int
+}, error) {
+	return _Sense.Contract.SwapUnderlyingForPTsCalled(&_Sense.CallOpts, arg0)
 }
 
-// MaturityCalled is a free data retrieval call binding the contract method 0x57e5b682.
+// SwapUnderlyingForPTsCalled is a free data retrieval call binding the contract method 0x534ce00f.
 //
-// Solidity: function maturityCalled() view returns(uint256)
-func (_Sense *SenseCallerSession) MaturityCalled() (*big.Int, error) {
-	return _Sense.Contract.MaturityCalled(&_Sense.CallOpts)
-}
-
-// MinimumBoughtCalled is a free data retrieval call binding the contract method 0x93824eca.
-//
-// Solidity: function minimumBoughtCalled() view returns(uint256)
-func (_Sense *SenseCaller) MinimumBoughtCalled(opts *bind.CallOpts) (*big.Int, error) {
-	var out []interface{}
-	err := _Sense.contract.Call(opts, &out, "minimumBoughtCalled")
-
-	if err != nil {
-		return *new(*big.Int), err
-	}
-
-	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
-
-	return out0, err
-
-}
-
-// MinimumBoughtCalled is a free data retrieval call binding the contract method 0x93824eca.
-//
-// Solidity: function minimumBoughtCalled() view returns(uint256)
-func (_Sense *SenseSession) MinimumBoughtCalled() (*big.Int, error) {
-	return _Sense.Contract.MinimumBoughtCalled(&_Sense.CallOpts)
-}
-
-// MinimumBoughtCalled is a free data retrieval call binding the contract method 0x93824eca.
-//
-// Solidity: function minimumBoughtCalled() view returns(uint256)
-func (_Sense *SenseCallerSession) MinimumBoughtCalled() (*big.Int, error) {
-	return _Sense.Contract.MinimumBoughtCalled(&_Sense.CallOpts)
-}
-
-// SenseTokenCalled is a free data retrieval call binding the contract method 0xf9d40f0b.
-//
-// Solidity: function senseTokenCalled() view returns(address)
-func (_Sense *SenseCaller) SenseTokenCalled(opts *bind.CallOpts) (common.Address, error) {
-	var out []interface{}
-	err := _Sense.contract.Call(opts, &out, "senseTokenCalled")
-
-	if err != nil {
-		return *new(common.Address), err
-	}
-
-	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
-
-	return out0, err
-
-}
-
-// SenseTokenCalled is a free data retrieval call binding the contract method 0xf9d40f0b.
-//
-// Solidity: function senseTokenCalled() view returns(address)
-func (_Sense *SenseSession) SenseTokenCalled() (common.Address, error) {
-	return _Sense.Contract.SenseTokenCalled(&_Sense.CallOpts)
-}
-
-// SenseTokenCalled is a free data retrieval call binding the contract method 0xf9d40f0b.
-//
-// Solidity: function senseTokenCalled() view returns(address)
-func (_Sense *SenseCallerSession) SenseTokenCalled() (common.Address, error) {
-	return _Sense.Contract.SenseTokenCalled(&_Sense.CallOpts)
+// Solidity: function swapUnderlyingForPTsCalled(address ) view returns(uint256 maturity, uint256 amount, uint256 minimumBought)
+func (_Sense *SenseCallerSession) SwapUnderlyingForPTsCalled(arg0 common.Address) (struct {
+	Maturity      *big.Int
+	Amount        *big.Int
+	MinimumBought *big.Int
+}, error) {
+	return _Sense.Contract.SwapUnderlyingForPTsCalled(&_Sense.CallOpts, arg0)
 }
 
 // SwapUnderlyingForPTs is a paid mutator transaction binding the contract method 0x8f1f30f0.
