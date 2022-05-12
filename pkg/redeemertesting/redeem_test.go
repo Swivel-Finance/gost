@@ -135,7 +135,7 @@ func (s *redeemTestSuite) TestAPWineRedeem() {
 
 	amount := big.NewInt(1000)
 	maturity := big.NewInt(9999999)
-	vault := common.HexToAddress("0x0000000000000000000000000000000000000002")
+	owner := common.HexToAddress("0x0000000000000000000000000000000000000002")
 	apwinePrincipal := uint8(7)
 
 	s.Illuminate.MarketsReturns([8]common.Address{
@@ -159,21 +159,21 @@ func (s *redeemTestSuite) TestAPWineRedeem() {
 	s.Erc20.TransferReturns(true)
 	s.Env.Blockchain.Commit()
 
-	tx, err := s.Redeemer.Redeem0(apwinePrincipal, s.Dep.Erc20Address, maturity, vault)
+	tx, err := s.Redeemer.Redeem0(apwinePrincipal, s.Dep.Erc20Address, maturity, owner)
 	assert.NoError(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
 
 	// verify that the mocked functions were called as expected
-	amountCalled, err := s.APWine.WithdrawCalled(vault)
+	amountCalled, err := s.APWine.WithdrawCalled(owner)
 	assert.NoError(err)
 	assert.Equal(amount, amountCalled)
 
 	vaultCalled, err := s.APWineToken.BalanceOfCalled()
 	assert.NoError(err)
-	assert.Equal(vault, vaultCalled)
+	assert.Equal(owner, vaultCalled)
 
-	underlyingTransfer, err := s.Erc20.TransferCalled(vault)
+	underlyingTransfer, err := s.Erc20.TransferCalled(owner)
 	assert.NoError(err)
 	assert.Equal(amount, underlyingTransfer)
 }
@@ -183,7 +183,7 @@ func (s *redeemTestSuite) TestTempusRedeem() {
 
 	amount := big.NewInt(1000)
 	maturity := big.NewInt(9999999)
-	adapter := common.HexToAddress("0x0000000000000000000000000000000000000002")
+	owner := common.HexToAddress("0x0000000000000000000000000000000000000002")
 	tempusPrincipal := uint8(5)
 
 	s.Illuminate.MarketsReturns([8]common.Address{
@@ -207,19 +207,19 @@ func (s *redeemTestSuite) TestTempusRedeem() {
 	s.Erc20.TransferReturns(true)
 	s.Env.Blockchain.Commit()
 
-	tx, err := s.Redeemer.Redeem0(tempusPrincipal, s.Dep.Erc20Address, maturity, adapter)
+	tx, err := s.Redeemer.Redeem0(tempusPrincipal, s.Dep.Erc20Address, maturity, owner)
 	assert.NoError(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
 
 	// verify that the mocked functions were called as expected
-	redeemCall, err := s.Tempus.RedeemToBackingCalled(adapter)
+	redeemCall, err := s.Tempus.RedeemToBackingCalled(owner)
 	assert.NoError(err)
 	assert.Equal(amount, redeemCall.Amount)
 	assert.Equal(maturity, redeemCall.Maturity)
 	assert.Equal(s.Dep.Erc20Address, redeemCall.Underlying)
 
-	underlyingTransfer, err := s.Erc20.TransferCalled(adapter)
+	underlyingTransfer, err := s.Erc20.TransferCalled(owner)
 	assert.NoError(err)
 	assert.Equal(amount, underlyingTransfer)
 }
