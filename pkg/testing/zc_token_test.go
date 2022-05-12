@@ -56,35 +56,33 @@ func (s *zcTokenTestSuite) TestMint() {
 	assert.Nil(err)
 	s.Env.Blockchain.Commit()
 
-	amountMinted, err := s.ZcToken.BalanceOf(s.Env.User1.Opts.From)
+	amountMinted, err := s.ZcToken.MintCalled(s.Env.User1.Opts.From)
 	assert.Nil(err)
 	assert.Equal(amount, amountMinted)
 }
 
 func (s *zcTokenTestSuite) TestBalanceOf() {
 	assert := assert.New(s.T())
-	address := common.BigToAddress(big.NewInt(12432))
 	amount := big.NewInt(ONE_ETH)
 
-	tx, err := s.ZcToken.BalanceOfReturns(address, amount)
+	tx, err := s.ZcToken.BalanceOfReturns(amount)
 	assert.NotNil(tx)
 	assert.Nil(err)
 	s.Env.Blockchain.Commit()
 
 	// fake user1 mint ONE_ETH
-	tx, err = s.ZcToken.Mint(
-		s.Env.User1.Opts.From,
-		amount,
+	tx, err = s.ZcToken.BalanceOf(
+		common.HexToAddress("0x1234"),
 	)
 	assert.NotNil(tx)
 	assert.Nil(err)
 	s.Env.Blockchain.Commit()
 
-	balance, err := s.ZcToken.Balances(s.Env.User1.Opts.From)
+	address, err := s.ZcToken.BalanceOfCalled()
 	s.Env.Blockchain.Commit()
 
 	assert.Nil(err)
-	assert.Equal(amount, balance)
+	assert.Equal(common.HexToAddress("0x1234"), address)
 }
 
 func TestZcTokenSuite(t *test.T) {

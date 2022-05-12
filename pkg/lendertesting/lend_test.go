@@ -485,7 +485,7 @@ func (s *lendTestSuite) TestLendTempus() {
 	s.ZcToken.MintReturns(true)
 	s.Env.Blockchain.Commit()
 
-	s.ZcToken.BalanceOfReturns(s.Dep.LenderAddress, big.NewInt(100))
+	s.ZcToken.BalanceOfReturns(big.NewInt(100))
 	s.Env.Blockchain.Commit()
 
 	amount := big.NewInt(1032)
