@@ -7,7 +7,7 @@ contract ZcToken {
     bool private mintReturn;
 
     mapping (address => uint256) public mintCalled;
-    address public ownerCalled;
+    mapping (address => uint256) public burnCalled;
     uint256 public amountCalled;
 
     function mintReturns(bool r) external {
@@ -29,7 +29,6 @@ contract ZcToken {
     }
 
     function burn(address o, uint256 a) external {
-        ownerCalled = o;
-        amountCalled = a;
+        burnCalled[o] = a;
     }
 }

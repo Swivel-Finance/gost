@@ -11,7 +11,7 @@ contract APWine {
     uint256 public tokenOutCalled;
     uint256 public minimumAmountCalled;
     address public toCalled;
-    address public ownerCalled;
+    mapping (address => uint256) public withdrawCalled;
 
     function swapExactAmountInReturns(uint256 s) external {
         swapExactAmountInReturn = s;
@@ -29,7 +29,6 @@ contract APWine {
     }
 
     function withdraw(address o, uint256 a) external {
-        ownerCalled = o;
-        amountCalled = a;
+        withdrawCalled[o] = a;
     }
 }

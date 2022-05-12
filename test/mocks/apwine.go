@@ -27,10 +27,10 @@ var (
 )
 
 // APWineABI is the input ABI used to generate the binding from.
-const APWineABI = "[{\"inputs\":[],\"name\":\"amountCalled\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"idCalled\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"minimumAmountCalled\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"ownerCalled\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"id\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"tokenIn\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"tokenOut\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"minimumAmount\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"}],\"name\":\"swapExactAmountIn\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"s\",\"type\":\"uint256\"}],\"name\":\"swapExactAmountInReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"toCalled\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"tokenInCalled\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"tokenOutCalled\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"o\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"a\",\"type\":\"uint256\"}],\"name\":\"withdraw\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]"
+const APWineABI = "[{\"inputs\":[],\"name\":\"amountCalled\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"idCalled\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"minimumAmountCalled\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"id\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"tokenIn\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"tokenOut\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"minimumAmount\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"}],\"name\":\"swapExactAmountIn\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"s\",\"type\":\"uint256\"}],\"name\":\"swapExactAmountInReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"toCalled\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"tokenInCalled\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"tokenOutCalled\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"o\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"a\",\"type\":\"uint256\"}],\"name\":\"withdraw\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"withdrawCalled\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"}]"
 
 // APWineBin is the compiled bytecode used for deploying new contracts.
-var APWineBin = "0x608060405234801561001057600080fd5b5061052f806100206000396000f3fe608060405234801561001057600080fd5b506004361061009e5760003560e01c8063a2f428f711610066578063a2f428f714610149578063cb2df34614610167578063cdd4255f14610185578063d179c9c5146101a3578063f3fef3a3146101c15761009e565b80633ef943bb146100a35780635275215b146100c15780635dde4ba6146100dd57806362a01c1f1461010d5780639eedc5b01461012b575b600080fd5b6100ab6101dd565b6040516100b8919061032b565b60405180910390f35b6100db60048036038101906100d69190610377565b6101e3565b005b6100f760048036038101906100f29190610402565b6101ed565b604051610104919061032b565b60405180910390f35b610115610262565b604051610122919061032b565b60405180910390f35b610133610268565b604051610140919061032b565b60405180910390f35b61015161026e565b60405161015e919061049e565b60405180910390f35b61016f610294565b60405161017c919061032b565b60405180910390f35b61018d61029a565b60405161019a919061049e565b60405180910390f35b6101ab6102c0565b6040516101b8919061032b565b60405180910390f35b6101db60048036038101906101d691906104b9565b6102c6565b005b60035481565b8060008190555050565b6000866001819055508560028190555084600381905550836004819055508260058190555081600660006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555060005490509695505050505050565b60045481565b60055481565b600760009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1681565b60025481565b600660009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1681565b60015481565b81600760006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff160217905550806003819055505050565b6000819050919050565b61032581610312565b82525050565b6000602082019050610340600083018461031c565b92915050565b600080fd5b61035481610312565b811461035f57600080fd5b50565b6000813590506103718161034b565b92915050565b60006020828403121561038d5761038c610346565b5b600061039b84828501610362565b91505092915050565b600073ffffffffffffffffffffffffffffffffffffffff82169050919050565b60006103cf826103a4565b9050919050565b6103df816103c4565b81146103ea57600080fd5b50565b6000813590506103fc816103d6565b92915050565b60008060008060008060c0878903121561041f5761041e610346565b5b600061042d89828a01610362565b965050602061043e89828a01610362565b955050604061044f89828a01610362565b945050606061046089828a01610362565b935050608061047189828a01610362565b92505060a061048289828a016103ed565b9150509295509295509295565b610498816103c4565b82525050565b60006020820190506104b3600083018461048f565b92915050565b600080604083850312156104d0576104cf610346565b5b60006104de858286016103ed565b92505060206104ef85828601610362565b915050925092905056fea2646970667358221220125041ec18346daf1ef91be3d0d469accaefc63ce27ff551417dba8c3cdde40764736f6c634300080d0033"
+var APWineBin = "0x608060405234801561001057600080fd5b5061055c806100206000396000f3fe608060405234801561001057600080fd5b506004361061009e5760003560e01c8063b79c449b11610066578063b79c449b14610149578063cb2df34614610179578063cdd4255f14610197578063d179c9c5146101b5578063f3fef3a3146101d35761009e565b80633ef943bb146100a35780635275215b146100c15780635dde4ba6146100dd57806362a01c1f1461010d5780639eedc5b01461012b575b600080fd5b6100ab6101ef565b6040516100b8919061032b565b60405180910390f35b6100db60048036038101906100d69190610377565b6101f5565b005b6100f760048036038101906100f29190610402565b6101ff565b604051610104919061032b565b60405180910390f35b610115610274565b604051610122919061032b565b60405180910390f35b61013361027a565b604051610140919061032b565b60405180910390f35b610163600480360381019061015e919061048f565b610280565b604051610170919061032b565b60405180910390f35b610181610298565b60405161018e919061032b565b60405180910390f35b61019f61029e565b6040516101ac91906104cb565b60405180910390f35b6101bd6102c4565b6040516101ca919061032b565b60405180910390f35b6101ed60048036038101906101e891906104e6565b6102ca565b005b60035481565b8060008190555050565b6000866001819055508560028190555084600381905550836004819055508260058190555081600660006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555060005490509695505050505050565b60045481565b60055481565b60076020528060005260406000206000915090505481565b60025481565b600660009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1681565b60015481565b80600760008473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020819055505050565b6000819050919050565b61032581610312565b82525050565b6000602082019050610340600083018461031c565b92915050565b600080fd5b61035481610312565b811461035f57600080fd5b50565b6000813590506103718161034b565b92915050565b60006020828403121561038d5761038c610346565b5b600061039b84828501610362565b91505092915050565b600073ffffffffffffffffffffffffffffffffffffffff82169050919050565b60006103cf826103a4565b9050919050565b6103df816103c4565b81146103ea57600080fd5b50565b6000813590506103fc816103d6565b92915050565b60008060008060008060c0878903121561041f5761041e610346565b5b600061042d89828a01610362565b965050602061043e89828a01610362565b955050604061044f89828a01610362565b945050606061046089828a01610362565b935050608061047189828a01610362565b92505060a061048289828a016103ed565b9150509295509295509295565b6000602082840312156104a5576104a4610346565b5b60006104b3848285016103ed565b91505092915050565b6104c5816103c4565b82525050565b60006020820190506104e060008301846104bc565b92915050565b600080604083850312156104fd576104fc610346565b5b600061050b858286016103ed565b925050602061051c85828601610362565b915050925092905056fea2646970667358221220fa77e17b13e6d43909d4a3fada6fe04421a562c212f7e598d1553c07f83e205f64736f6c634300080d0033"
 
 // DeployAPWine deploys a new Ethereum contract, binding an instance of APWine to it.
 func DeployAPWine(auth *bind.TransactOpts, backend bind.ContractBackend) (common.Address, *types.Transaction, *APWine, error) {
@@ -281,37 +281,6 @@ func (_APWine *APWineCallerSession) MinimumAmountCalled() (*big.Int, error) {
 	return _APWine.Contract.MinimumAmountCalled(&_APWine.CallOpts)
 }
 
-// OwnerCalled is a free data retrieval call binding the contract method 0xa2f428f7.
-//
-// Solidity: function ownerCalled() view returns(address)
-func (_APWine *APWineCaller) OwnerCalled(opts *bind.CallOpts) (common.Address, error) {
-	var out []interface{}
-	err := _APWine.contract.Call(opts, &out, "ownerCalled")
-
-	if err != nil {
-		return *new(common.Address), err
-	}
-
-	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
-
-	return out0, err
-
-}
-
-// OwnerCalled is a free data retrieval call binding the contract method 0xa2f428f7.
-//
-// Solidity: function ownerCalled() view returns(address)
-func (_APWine *APWineSession) OwnerCalled() (common.Address, error) {
-	return _APWine.Contract.OwnerCalled(&_APWine.CallOpts)
-}
-
-// OwnerCalled is a free data retrieval call binding the contract method 0xa2f428f7.
-//
-// Solidity: function ownerCalled() view returns(address)
-func (_APWine *APWineCallerSession) OwnerCalled() (common.Address, error) {
-	return _APWine.Contract.OwnerCalled(&_APWine.CallOpts)
-}
-
 // ToCalled is a free data retrieval call binding the contract method 0xcdd4255f.
 //
 // Solidity: function toCalled() view returns(address)
@@ -403,6 +372,37 @@ func (_APWine *APWineSession) TokenOutCalled() (*big.Int, error) {
 // Solidity: function tokenOutCalled() view returns(uint256)
 func (_APWine *APWineCallerSession) TokenOutCalled() (*big.Int, error) {
 	return _APWine.Contract.TokenOutCalled(&_APWine.CallOpts)
+}
+
+// WithdrawCalled is a free data retrieval call binding the contract method 0xb79c449b.
+//
+// Solidity: function withdrawCalled(address ) view returns(uint256)
+func (_APWine *APWineCaller) WithdrawCalled(opts *bind.CallOpts, arg0 common.Address) (*big.Int, error) {
+	var out []interface{}
+	err := _APWine.contract.Call(opts, &out, "withdrawCalled", arg0)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
+}
+
+// WithdrawCalled is a free data retrieval call binding the contract method 0xb79c449b.
+//
+// Solidity: function withdrawCalled(address ) view returns(uint256)
+func (_APWine *APWineSession) WithdrawCalled(arg0 common.Address) (*big.Int, error) {
+	return _APWine.Contract.WithdrawCalled(&_APWine.CallOpts, arg0)
+}
+
+// WithdrawCalled is a free data retrieval call binding the contract method 0xb79c449b.
+//
+// Solidity: function withdrawCalled(address ) view returns(uint256)
+func (_APWine *APWineCallerSession) WithdrawCalled(arg0 common.Address) (*big.Int, error) {
+	return _APWine.Contract.WithdrawCalled(&_APWine.CallOpts, arg0)
 }
 
 // SwapExactAmountIn is a paid mutator transaction binding the contract method 0x5dde4ba6.

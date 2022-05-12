@@ -10,6 +10,7 @@
 .PHONY: compile_solidity_mock_sense_token compile_go_mock_sense_token compile_mock_sense_token
 .PHONY: compile_solidity_mock_element_token compile_go_mock_element_token compile_mock_element_token
 .PHONY: compile_solidity_mock_illuminate compile_go_mock_illuminate compile_mock_illuminate
+.PHONY: compile_mock_deps
 .PHONY: compile_mocks
 
 # TODO under? api-specific sol?
@@ -71,7 +72,7 @@ compile_go_mock_pendle:
 	@echo "compiling abi and bin files to golang"
 	abigen --abi ./test/mocks/Pendle.abi --bin ./test/mocks/Pendle.bin -pkg mocks -type Pendle -out ./test/mocks/pendle.go 
 
-compile_mock_pendle: compile_solidity_mock_pendle compile_go_mock_pendle
+compile_mock_pendle: compile_mock_pendle_token compile_solidity_mock_pendle compile_go_mock_pendle
 
 compile_solidity_mock_element_token:
 	@echo "compiling Mock ElementToken solidity source into abi and bin files"
@@ -91,7 +92,7 @@ compile_go_mock_element:
 	@echo "compiling abi and bin files to golang"
 	abigen --abi ./test/mocks/Element.abi --bin ./test/mocks/Element.bin -pkg mocks -type Element -out ./test/mocks/element.go 
 
-compile_mock_element: compile_solidity_mock_element compile_go_mock_element
+compile_mock_element: compile_mock_element_token compile_solidity_mock_element compile_go_mock_element
 
 compile_solidity_mock_swivel:
 	@echo "compiling Mock Swivel solidity source into abi and bin files"
@@ -163,6 +164,16 @@ compile_go_mock_sense_token:
 
 compile_mock_sense_token: compile_solidity_mock_sense_token compile_go_mock_sense_token
 
+compile_solidity_mock_sense:
+	@echo "compiling Mock Sense solidity source into abi and bin files"
+	solc -o ./test/mocks --abi --bin --overwrite ./test/mocks/Sense.sol
+
+compile_go_mock_sense:
+	@echo "compiling abi and bin files to golang"
+	abigen --abi ./test/mocks/Sense.abi --bin ./test/mocks/Sense.bin -pkg mocks -type Sense -out ./test/mocks/sense.go 
+
+compile_mock_sense: compile_mock_sense_token compile_solidity_mock_sense compile_go_mock_sense
+
 compile_solidity_mock_apwine_token:
 	@echo "compiling Mock APWine Token solidity source into abi and bin files"
 	solc -o ./test/mocks --abi --bin --overwrite ./test/mocks/APWineToken.sol
@@ -181,10 +192,11 @@ compile_go_mock_apwine:
 	@echo "compiling abi and bin files to golang"
 	abigen --abi ./test/mocks/APWine.abi --bin ./test/mocks/APWine.bin -pkg mocks -type APWine -out ./test/mocks/apwine.go 
 
-compile_mock_apwine: compile_solidity_mock_apwine compile_go_mock_apwine
+compile_mock_apwine: compile_mock_apwine_token compile_solidity_mock_apwine compile_go_mock_apwine
 
-compile_mocks: compile_mock_erc compile_mock_yield compile_mock_pendle compile_mock_pendle_token compile_mock_element_token compile_mock_element compile_mock_illuminate compile_mock_zc_token compile_mock_swivel compile_mock_tempus compile_mock_tempus_token compile_mock_sense compile_mock_sense_token compile_go_mock_apwine_token compile_mock_apwine 
+compile_mock_deps: compile_mock_erc compile_mock_zc_token
 
+compile_mocks: compile_mock_deps compile_mock_illuminate compile_mock_swivel compile_mock_yield compile_mock_element compile_mock_pendle compile_mock_tempus compile_mock_sense compile_mock_apwine compile_mock_tempus_token
 
 # Real Tokens
 # compile_solidity_zct:
@@ -266,4 +278,4 @@ clean_test: clean_test_abi clean_test_bin clean_test_go
 # 
 # clean_build: clean_build_sol clean_build_abi clean_build_bin clean_build_go
 
-all: clean_test compile_test
+all: clean_test compile_mocks compile_test
