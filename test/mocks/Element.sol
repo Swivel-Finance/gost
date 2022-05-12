@@ -27,7 +27,7 @@ contract Element {
     struct SwapArgs {
         address recipient;
         uint256 swapAmount;
-        uint256 minimumBought;
+        uint256 limit;
         uint256 deadline;
     }
 
@@ -39,8 +39,8 @@ contract Element {
         swapReturn = s;
     }
 
-    function swap(SingleSwap memory s, FundManagement memory f, uint256 m, uint256 d) external returns (uint256) {
-        swapCalled[f.sender] = SwapArgs(f.recipient, s.amount, m, d);
+    function swap(SingleSwap memory s, FundManagement memory f, uint256 l, uint256 d) external returns (uint256) {
+        swapCalled[f.sender] = SwapArgs(f.recipient, s.amount, l, d);
         return swapReturn;
     }
 }
