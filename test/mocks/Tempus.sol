@@ -24,17 +24,20 @@ contract Tempus {
         address underlying;
     }
 
+    struct DepositAndFixArgs {
+        Any amm;
+        Any pool; 
+        bool bt; 
+        uint256 minimumReturned;
+        uint256 deadline;
+    }
+
     uint256 private depositAndFixReturn;
     uint256 private maturityTimeReturn;
     IErc20Metadata private yieldBearingTokenReturn;
 
-    Any public tempusAMMCalled;
-    Any public tempusPoolCalled;
-    uint256 public amountCalled;
-    bool public isBackingTokenCalled;
-    uint256 public minimumReturnCalled;
-    uint256 public deadlineCalled;
     mapping (address => RedeemToBackingArgs) public redeemToBackingCalled;
+    mapping (uint256 => DepositAndFixArgs) public depositAndFixCalled;
 
     function depositAndFixReturns(uint256 r) external {
         depositAndFixReturn = r;
@@ -57,12 +60,7 @@ contract Tempus {
     }
 
     function depositAndFix(Any x, Any p, uint256 a, bool bt, uint256 mr, uint256 d) external returns (uint256) {
-        tempusAMMCalled = x;
-        tempusPoolCalled = p;
-        amountCalled = a;
-        isBackingTokenCalled = bt;
-        minimumReturnCalled = mr;
-        deadlineCalled = d;
+        depositAndFixCalled[a] = DepositAndFixArgs(x, p, bt, mr, d);
 
         return depositAndFixReturn;
     }

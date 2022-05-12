@@ -68,11 +68,12 @@ func (s *tempusTestSuite) TestYieldBearingToken() {
 func (s *tempusTestSuite) TestDepositAndFix() {
 	assert := assert.New(s.T())
 	s.Tempus.DepositAndFixReturns(big.NewInt(1000))
+	amount := big.NewInt(100)
 
 	tx, err := s.Tempus.DepositAndFix(
 		common.BigToAddress(big.NewInt(1)),
 		common.BigToAddress(big.NewInt(2)),
-		big.NewInt(1000),
+		amount,
 		true,
 		big.NewInt(2000),
 		big.NewInt(1420),
@@ -81,29 +82,13 @@ func (s *tempusTestSuite) TestDepositAndFix() {
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
 
-	amm, err := s.Tempus.TempusAMMCalled()
-	assert.NoError(err)
-	assert.Equal(common.BigToAddress(big.NewInt(1)), amm)
+	deposit, err := s.Tempus.DepositAndFixCalled(amount)
 
-	pool, err := s.Tempus.TempusPoolCalled()
-	assert.NoError(err)
-	assert.Equal(common.BigToAddress(big.NewInt(2)), pool)
-
-	amount, err := s.Tempus.AmountCalled()
-	assert.NoError(err)
-	assert.Equal(big.NewInt(1000), amount)
-
-	isBackingToken, err := s.Tempus.IsBackingTokenCalled()
-	assert.NoError(err)
-	assert.Equal(true, isBackingToken)
-
-	minimumRate, err := s.Tempus.MinimumReturnCalled()
-	assert.NoError(err)
-	assert.Equal(big.NewInt(2000), minimumRate)
-
-	deadline, err := s.Tempus.DeadlineCalled()
-	assert.NoError(err)
-	assert.Equal(big.NewInt(1420), deadline)
+	assert.Equal(common.BigToAddress(big.NewInt(1)), deposit.Amm)
+	assert.Equal(common.BigToAddress(big.NewInt(2)), deposit.Pool)
+	assert.Equal(true, deposit.Bt)
+	assert.Equal(big.NewInt(2000), deposit.MinimumReturned)
+	assert.Equal(big.NewInt(1420), deposit.Deadline)
 }
 
 func TestTempusSuite(t *test.T) {

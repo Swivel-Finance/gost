@@ -372,7 +372,7 @@ func (s *lendTestSuite) TestLendElement() {
 	maturity := big.NewInt(100000)
 	elementPoolId := [32]byte{1}
 	amount := big.NewInt(10000)
-	returnAmount := big.NewInt(100)
+	limit := big.NewInt(100)
 	deadline := big.NewInt(9999)
 
 	tx, err := s.ElementToken.UnderlyingReturns(s.Dep.Erc20Address)
@@ -388,7 +388,7 @@ func (s *lendTestSuite) TestLendElement() {
 	tx, err = s.Erc20.TransferFromReturns(true)
 	s.Env.Blockchain.Commit()
 
-	tx, err = s.Lender.Lend3(3, s.Dep.Erc20Address, maturity, s.Dep.ElementAddress, elementPoolId, amount, returnAmount, deadline)
+	tx, err = s.Lender.Lend3(3, s.Dep.Erc20Address, maturity, s.Dep.ElementAddress, elementPoolId, amount, limit, deadline)
 	assert.Nil(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
@@ -402,13 +402,11 @@ func (s *lendTestSuite) TestLendElement() {
 	assert.Nil(err)
 	assert.Equal(s.Dep.Erc20Address, elementTokenUnderlying)
 
-	elementDeadline, err := s.Element.Deadline()
-	assert.Nil(err)
-	assert.Equal(deadline, elementDeadline)
-
-	elementReturn, err := s.Element.Return()
-	assert.Nil(err)
-	assert.Equal(returnAmount, elementReturn)
+	swap, err := s.Element.SwapCalled(s.Dep.LenderAddress)
+	assert.Equal(deadline, swap.Deadline)
+	assert.Equal(limit, swap.Limit)
+	assert.Equal(s.Dep.LenderAddress, swap.Recipient)
+	assert.Equal(amount, swap.SwapAmount)
 }
 
 func (s *lendTestSuite) TestLendPendle() {
@@ -449,29 +447,11 @@ func (s *lendTestSuite) TestLendPendle() {
 	s.Env.Blockchain.Commit()
 
 	// verify that mocks were called as expected
-	in, err := s.Pendle.InCalled()
-	assert.NoError(err)
-	assert.Equal(amount, in)
-
-	out, err := s.Pendle.OutMinimumCalled()
-	assert.NoError(err)
-	assert.Equal(minimumBought, out)
-
-	address, err := s.Pendle.PathCalled(big.NewInt(0))
-	assert.NoError(err)
-	assert.Equal(s.Dep.Erc20Address, address)
-
-	address, err = s.Pendle.PathCalled(big.NewInt(1))
-	assert.NoError(err)
-	assert.Equal(s.Dep.PendleTokenAddress, address)
-
-	to, err := s.Pendle.ToCalled()
-	assert.NoError(err)
-	assert.Equal(s.Dep.LenderAddress, to)
-
-	calledDeadline, err := s.Pendle.DeadlineCalled()
-	assert.NoError(err)
-	assert.Equal(deadline, calledDeadline)
+	swap, err := s.Pendle.SwapExactTokensForTokensCalled(s.Dep.LenderAddress)
+	assert.Nil(err)
+	assert.Equal(deadline, swap.Deadline)
+	assert.Equal(amount, swap.Amount)
+	assert.Equal(minimumBought, swap.MinimumBought)
 }
 
 func (s *lendTestSuite) TestLendTempus() {
@@ -520,29 +500,13 @@ func (s *lendTestSuite) TestLendTempus() {
 	s.Env.Blockchain.Commit()
 
 	// verify that mocks were called as expected
-	ammCalled, err := s.Tempus.TempusAMMCalled()
-	assert.NoError(err)
-	assert.Equal(amm, ammCalled)
-
-	poolCalled, err := s.Tempus.TempusPoolCalled()
-	assert.NoError(err)
-	assert.Equal(pool, poolCalled)
-
-	amountCalled, err := s.Tempus.AmountCalled()
-	assert.NoError(err)
-	assert.Equal(amount, amountCalled)
-
-	isTokenBacking, err := s.Tempus.IsBackingTokenCalled()
-	assert.NoError(err)
-	assert.True(isTokenBacking)
-
-	minimumReturnCalled, err := s.Tempus.MinimumReturnCalled()
-	assert.NoError(err)
-	assert.Equal(minimumReturn, minimumReturnCalled)
-
-	deadlineCalled, err := s.Tempus.DeadlineCalled()
-	assert.NoError(err)
-	assert.Equal(deadline, deadlineCalled)
+	deposit, err := s.Tempus.DepositAndFixCalled(amount)
+	assert.Nil(err)
+	assert.Equal(amm, deposit.Amm)
+	assert.Equal(pool, deposit.Pool)
+	assert.Equal(deadline, deposit.Deadline)
+	assert.True(deposit.Bt)
+	assert.Equal(minimumReturn, deposit.MinimumReturned)
 }
 
 func (s *lendTestSuite) TestLendSense() {
@@ -582,21 +546,11 @@ func (s *lendTestSuite) TestLendSense() {
 	s.Env.Blockchain.Commit()
 
 	// verify that mocks were called as expected
-	adapterCalled, err := s.Sense.SenseTokenCalled()
+	swap, err := s.Sense.SwapUnderlyingForPTsCalled(adapter)
 	assert.NoError(err)
-	assert.Equal(adapter, adapterCalled)
-
-	maturityCalled, err := s.Sense.MaturityCalled()
-	assert.NoError(err)
-	assert.Equal(maturity, maturityCalled)
-
-	amountCalled, err := s.Sense.AmountCalled()
-	assert.NoError(err)
-	assert.Equal(amount, amountCalled)
-
-	minimumBoughtCalled, err := s.Sense.MinimumBoughtCalled()
-	assert.NoError(err)
-	assert.Equal(minimumBought, minimumBoughtCalled)
+	assert.Equal(maturity, swap.Maturity)
+	assert.Equal(amount, swap.Amount)
+	assert.Equal(minimumBought, swap.MinimumBought)
 }
 
 func (s *lendTestSuite) TestAPWineSense() {
@@ -636,29 +590,12 @@ func (s *lendTestSuite) TestAPWineSense() {
 	s.Env.Blockchain.Commit()
 
 	// verify that mocks were called as expected
-	idCalled, err := s.APWine.IdCalled()
-	assert.NoError(err)
-	assert.Equal(id, idCalled)
-
-	tokenInCalled, err := s.APWine.TokenInCalled()
-	assert.NoError(err)
-	assert.Equal(big.NewInt(1), tokenInCalled)
-
-	amountCalled, err := s.APWine.AmountCalled()
-	assert.NoError(err)
-	assert.Equal(amount, amountCalled)
-
-	tokenOutCalled, err := s.APWine.TokenOutCalled()
-	assert.NoError(err)
-	assert.True(big.NewInt(0).Cmp(tokenOutCalled) == 0)
-
-	minimumAmountCalled, err := s.APWine.MinimumAmountCalled()
-	assert.NoError(err)
-	assert.Equal(minimumAmount, minimumAmountCalled)
-
-	toCalled, err := s.APWine.ToCalled()
-	assert.NoError(err)
-	assert.Equal(s.Dep.LenderAddress, toCalled)
+	swap, err := s.APWine.SwapExactAmountInCalled(s.Dep.LenderAddress)
+	assert.Equal(id, swap.Id)
+	assert.Equal(big.NewInt(1), swap.TokenIn)
+	assert.Equal(amount, swap.Amount)
+	assert.True(swap.TokenOut.Cmp(big.NewInt(0)) == 0)
+	assert.Equal(minimumAmount, swap.MinimumAmount)
 }
 
 func TestLendSuite(t *test.T) {

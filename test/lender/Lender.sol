@@ -199,7 +199,6 @@ contract Lender {
       path[1] = principal;
 
       // Swap on the Pendle Router using the provided market and params
-                                // PendleRouter == IPendle
       uint256 returned = IPendle(pendleAddr).swapExactTokensForTokens(a, mb, path, address(this), d)[0];
 
       // Mint Illuminate zero coupons

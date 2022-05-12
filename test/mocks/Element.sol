@@ -23,33 +23,24 @@ struct FundManagement {
     bool toInternalBalance;
 }
 
-contract Element {     
-    uint256 deadlineCalled;
-    uint256 returnCalled;
-    address fundManagementSenderCalled;
-    uint256 singleSwapAmountCalled;
-
-    function deadline() external view returns (uint256) {
-        return deadlineCalled;
+contract Element {
+    struct SwapArgs {
+        address recipient;
+        uint256 swapAmount;
+        uint256 limit;
+        uint256 deadline;
     }
 
-    function return_() external view returns (uint256) {
-        return returnCalled;
+    uint256 private swapReturn;
+
+    mapping (address => SwapArgs) public swapCalled;
+
+    function swapReturns(uint256 s) external {
+        swapReturn = s;
     }
 
-    function fundManagementSender() external view returns (address) {
-        return fundManagementSenderCalled;
-    }
-    
-    function singleSwapAmount() external view returns (uint256) {
-        return singleSwapAmountCalled;
-    }
-
-    function swap(SingleSwap memory s, FundManagement memory f, uint256 r, uint256 d) external returns (uint256) {
-        returnCalled = r;
-        deadlineCalled = d;
-        fundManagementSenderCalled = f.sender;
-        singleSwapAmountCalled = s.amount;
-        return 0;
+    function swap(SingleSwap memory s, FundManagement memory f, uint256 l, uint256 d) external returns (uint256) {
+        swapCalled[f.sender] = SwapArgs(f.recipient, s.amount, l, d);
+        return swapReturn;
     }
 }

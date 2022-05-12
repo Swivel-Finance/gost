@@ -17,6 +17,7 @@ contract ElementToken {
     function unlockTimestamp() external view returns (uint256) {
         return unlockTimestampReturn;
     }
+    
     function underlying() external view returns (address) {
         return underlyingReturn;
     }
