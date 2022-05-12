@@ -136,7 +136,7 @@ func (s *redeemTestSuite) TestAPWineRedeem() {
 	amount := big.NewInt(1000)
 	maturity := big.NewInt(9999999)
 	owner := common.HexToAddress("0x0000000000000000000000000000000000000002")
-	apwinePrincipal := uint8(7)
+	principal := uint8(7)
 
 	s.Illuminate.MarketsReturns([8]common.Address{
 		s.Dep.APWineTokenAddress,
@@ -159,7 +159,7 @@ func (s *redeemTestSuite) TestAPWineRedeem() {
 	s.Erc20.TransferReturns(true)
 	s.Env.Blockchain.Commit()
 
-	tx, err := s.Redeemer.Redeem0(apwinePrincipal, s.Dep.Erc20Address, maturity, owner)
+	tx, err := s.Redeemer.Redeem0(principal, s.Dep.Erc20Address, maturity, owner)
 	assert.NoError(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
@@ -184,7 +184,7 @@ func (s *redeemTestSuite) TestTempusRedeem() {
 	amount := big.NewInt(1000)
 	maturity := big.NewInt(9999999)
 	owner := common.HexToAddress("0x0000000000000000000000000000000000000002")
-	tempusPrincipal := uint8(5)
+	prinicipal := uint8(5)
 
 	s.Illuminate.MarketsReturns([8]common.Address{
 		s.Dep.TempusTokenAddress,
@@ -207,7 +207,7 @@ func (s *redeemTestSuite) TestTempusRedeem() {
 	s.Erc20.TransferReturns(true)
 	s.Env.Blockchain.Commit()
 
-	tx, err := s.Redeemer.Redeem0(tempusPrincipal, s.Dep.Erc20Address, maturity, owner)
+	tx, err := s.Redeemer.Redeem0(prinicipal, s.Dep.Erc20Address, maturity, owner)
 	assert.NoError(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
@@ -225,7 +225,47 @@ func (s *redeemTestSuite) TestTempusRedeem() {
 }
 
 func (s *redeemTestSuite) TestIlluminateRedeem() {
+	assert := assert.New(s.T())
 
+	amount := big.NewInt(1000)
+	maturity := big.NewInt(9999999)
+	owner := common.HexToAddress("0x0000000000000000000000000000000000000002")
+	principal := uint8(0)
+
+	s.Illuminate.MarketsReturns([8]common.Address{
+		s.Dep.ZcTokenAddress,
+		s.Dep.ZcTokenAddress,
+		s.Dep.ZcTokenAddress,
+		s.Dep.ZcTokenAddress,
+		s.Dep.ZcTokenAddress,
+		s.Dep.ZcTokenAddress,
+		s.Dep.ZcTokenAddress,
+		s.Dep.ZcTokenAddress,
+	})
+	s.Env.Blockchain.Commit()
+
+	s.ZcToken.TransferFromReturns(true)
+	s.Env.Blockchain.Commit()
+
+	s.TempusToken.BalanceOfReturns(amount)
+	s.Env.Blockchain.Commit()
+
+	s.Erc20.TransferReturns(true)
+	s.Env.Blockchain.Commit()
+
+	tx, err := s.Redeemer.Redeem0(principal, s.Dep.Erc20Address, maturity, owner)
+	assert.NoError(err)
+	assert.NotNil(tx)
+	s.Env.Blockchain.Commit()
+
+	// verify that the mocked functions were called as expected
+	burnCall, err := s.ZcToken.BurnCalled(owner)
+	assert.NoError(err)
+	assert.Equal(amount, burnCall)
+
+	underlyingTransfer, err := s.Erc20.TransferCalled(owner)
+	assert.NoError(err)
+	assert.Equal(amount, underlyingTransfer)
 }
 
 func TestRedeemSuite(t *test.T) {
