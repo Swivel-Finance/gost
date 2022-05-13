@@ -25,6 +25,8 @@ type redeemTestSuite struct {
 	APWineToken *mocks.APWineTokenSession
 	Tempus      *mocks.TempusSession
 	TempusToken *mocks.TempusTokenSession
+	Pendle      *mocks.PendleSession
+	PendleToken *mocks.PendleTokenSession
 	Redeemer    *redeemer.RedeemerSession
 }
 
@@ -113,6 +115,24 @@ func (s *redeemTestSuite) SetupSuite() {
 
 	s.TempusToken = &mocks.TempusTokenSession{
 		Contract: s.Dep.TempusToken,
+		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
+		TransactOpts: bind.TransactOpts{
+			From:   s.Env.Owner.Opts.From,
+			Signer: s.Env.Owner.Opts.Signer,
+		},
+	}
+
+	s.Pendle = &mocks.PendleSession{
+		Contract: s.Dep.Pendle,
+		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
+		TransactOpts: bind.TransactOpts{
+			From:   s.Env.Owner.Opts.From,
+			Signer: s.Env.Owner.Opts.Signer,
+		},
+	}
+
+	s.PendleToken = &mocks.PendleTokenSession{
+		Contract: s.Dep.PendleToken,
 		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
 		TransactOpts: bind.TransactOpts{
 			From:   s.Env.Owner.Opts.From,
@@ -266,6 +286,48 @@ func (s *redeemTestSuite) TestIlluminateRedeem() {
 	underlyingTransfer, err := s.Erc20.TransferCalled(owner)
 	assert.NoError(err)
 	assert.Equal(amount, underlyingTransfer)
+}
+
+func (s *redeemTestSuite) TestPendleRedeem() {
+	assert := assert.New(s.T())
+
+	amount := big.NewInt(1000)
+	forgeId := [32]byte{3, 3, 4, 2}
+	maturity := big.NewInt(9999999)
+	principal := uint8(4)
+
+	s.Illuminate.MarketsReturns([8]common.Address{
+		s.Dep.PendleTokenAddress,
+		s.Dep.PendleTokenAddress,
+		s.Dep.PendleTokenAddress,
+		s.Dep.PendleTokenAddress,
+		s.Dep.PendleTokenAddress,
+		s.Dep.PendleTokenAddress,
+		s.Dep.PendleTokenAddress,
+		s.Dep.PendleTokenAddress,
+	})
+
+	s.PendleToken.BalanceOfReturns(amount)
+	s.Env.Blockchain.Commit()
+
+	s.PendleToken.TransferFromReturns(true)
+	s.Env.Blockchain.Commit()
+
+	tx, err := s.Redeemer.Redeem1(principal, s.Dep.Erc20Address, maturity, forgeId)
+	assert.NoError(err)
+	assert.NotNil(tx)
+	s.Env.Blockchain.Commit()
+
+	// verify that the mocked functions were called as expected
+	redeemCall, err := s.Pendle.RedeemAfterExpiryCalled(s.Dep.Erc20Address)
+	assert.NoError(err)
+	assert.Equal(forgeId, redeemCall.ForgeId)
+	assert.Equal(maturity, redeemCall.Maturity)
+
+	underlyingTransfer, err := s.PendleToken.TransferFromCalled(s.Dep.IlluminateAddress)
+	assert.NoError(err)
+	assert.Equal(amount, underlyingTransfer.Amount)
+	assert.Equal(s.Dep.RedeemerAddress, underlyingTransfer.To)
 }
 
 func TestRedeemSuite(t *test.T) {

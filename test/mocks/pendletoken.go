@@ -4,7 +4,6 @@
 package mocks
 
 import (
-	"errors"
 	"math/big"
 	"strings"
 
@@ -18,7 +17,6 @@ import (
 
 // Reference imports to suppress errors if they are not otherwise used.
 var (
-	_ = errors.New
 	_ = big.NewInt
 	_ = strings.NewReader
 	_ = ethereum.NotFound
@@ -28,31 +26,20 @@ var (
 	_ = event.NewSubscription
 )
 
-// PendleTokenMetaData contains all meta data concerning the PendleToken contract.
-var PendleTokenMetaData = &bind.MetaData{
-	ABI: "[{\"inputs\":[],\"name\":\"expiry\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"m\",\"type\":\"uint256\"}],\"name\":\"expiryReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"yieldToken\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"a\",\"type\":\"address\"}],\"name\":\"yieldTokenReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]",
-	Bin: "0x608060405234801561001057600080fd5b506102c2806100206000396000f3fe608060405234801561001057600080fd5b506004361061004c5760003560e01c806345c0684b1461005157806376d5de851461006d578063e184c9be1461008b578063ffd71860146100a9575b600080fd5b61006b600480360381019061006691906101a8565b6100c5565b005b610075610108565b60405161008291906101e4565b60405180910390f35b610093610131565b6040516100a09190610218565b60405180910390f35b6100c360048036038101906100be919061025f565b61013b565b005b806000806101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555050565b60008060009054906101000a900473ffffffffffffffffffffffffffffffffffffffff16905090565b6000600154905090565b8060018190555050565b600080fd5b600073ffffffffffffffffffffffffffffffffffffffff82169050919050565b60006101758261014a565b9050919050565b6101858161016a565b811461019057600080fd5b50565b6000813590506101a28161017c565b92915050565b6000602082840312156101be576101bd610145565b5b60006101cc84828501610193565b91505092915050565b6101de8161016a565b82525050565b60006020820190506101f960008301846101d5565b92915050565b6000819050919050565b610212816101ff565b82525050565b600060208201905061022d6000830184610209565b92915050565b61023c816101ff565b811461024757600080fd5b50565b60008135905061025981610233565b92915050565b60006020828403121561027557610274610145565b5b60006102838482850161024a565b9150509291505056fea26469706673582212202d8ed28b79e7e90f5ba1158e590a9d75268a42dafc7bf6988fe7c40ec4f668d364736f6c634300080d0033",
-}
-
 // PendleTokenABI is the input ABI used to generate the binding from.
-// Deprecated: Use PendleTokenMetaData.ABI instead.
-var PendleTokenABI = PendleTokenMetaData.ABI
+const PendleTokenABI = "[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"b\",\"type\":\"address\"}],\"name\":\"balanceOf\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"balanceOfCalled\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"b\",\"type\":\"uint256\"}],\"name\":\"balanceOfReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"expiry\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"m\",\"type\":\"uint256\"}],\"name\":\"expiryReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"f\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"t\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"a\",\"type\":\"uint256\"}],\"name\":\"transferFrom\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"transferFromCalled\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bool\",\"name\":\"b\",\"type\":\"bool\"}],\"name\":\"transferFromReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"yieldToken\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"a\",\"type\":\"address\"}],\"name\":\"yieldTokenReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]"
 
 // PendleTokenBin is the compiled bytecode used for deploying new contracts.
-// Deprecated: Use PendleTokenMetaData.Bin instead.
-var PendleTokenBin = PendleTokenMetaData.Bin
+var PendleTokenBin = "0x608060405234801561001057600080fd5b5061070e806100206000396000f3fe608060405234801561001057600080fd5b506004361061009e5760003560e01c806376d5de851161006657806376d5de8514610157578063dea1a7e214610175578063e184c9be14610193578063e541efa2146101b1578063ffd71860146101e25761009e565b806323b872dd146100a357806339100838146100d357806345c0684b146100ef5780636521b96a1461010b57806370a0823114610127575b600080fd5b6100bd60048036038101906100b8919061051f565b6101fe565b6040516100ca919061058d565b60405180910390f35b6100ed60048036038101906100e891906105a8565b6102f8565b005b610109600480360381019061010491906105d5565b610302565b005b6101256004803603810190610120919061062e565b610345565b005b610141600480360381019061013c91906105d5565b610362565b60405161014e919061066a565b60405180910390f35b61015f6103af565b60405161016c9190610694565b60405180910390f35b61017d6103d8565b60405161018a9190610694565b60405180910390f35b61019b6103fe565b6040516101a8919061066a565b60405180910390f35b6101cb60048036038101906101c691906105d5565b610408565b6040516101d99291906106af565b60405180910390f35b6101fc60048036038101906101f791906105a8565b61044c565b005b6000610208610456565b83816000019073ffffffffffffffffffffffffffffffffffffffff16908173ffffffffffffffffffffffffffffffffffffffff16815250508281602001818152505080600460008773ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060008201518160000160006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555060208201518160010155905050600260009054906101000a900460ff169150509392505050565b8060038190555050565b806000806101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555050565b80600260006101000a81548160ff02191690831515021790555050565b600081600560006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff1602179055506003549050919050565b60008060009054906101000a900473ffffffffffffffffffffffffffffffffffffffff16905090565b600560009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1681565b6000600154905090565b60046020528060005260406000206000915090508060000160009054906101000a900473ffffffffffffffffffffffffffffffffffffffff16908060010154905082565b8060018190555050565b6040518060400160405280600073ffffffffffffffffffffffffffffffffffffffff168152602001600081525090565b600080fd5b600073ffffffffffffffffffffffffffffffffffffffff82169050919050565b60006104b68261048b565b9050919050565b6104c6816104ab565b81146104d157600080fd5b50565b6000813590506104e3816104bd565b92915050565b6000819050919050565b6104fc816104e9565b811461050757600080fd5b50565b600081359050610519816104f3565b92915050565b60008060006060848603121561053857610537610486565b5b6000610546868287016104d4565b9350506020610557868287016104d4565b92505060406105688682870161050a565b9150509250925092565b60008115159050919050565b61058781610572565b82525050565b60006020820190506105a2600083018461057e565b92915050565b6000602082840312156105be576105bd610486565b5b60006105cc8482850161050a565b91505092915050565b6000602082840312156105eb576105ea610486565b5b60006105f9848285016104d4565b91505092915050565b61060b81610572565b811461061657600080fd5b50565b60008135905061062881610602565b92915050565b60006020828403121561064457610643610486565b5b600061065284828501610619565b91505092915050565b610664816104e9565b82525050565b600060208201905061067f600083018461065b565b92915050565b61068e816104ab565b82525050565b60006020820190506106a96000830184610685565b92915050565b60006040820190506106c46000830185610685565b6106d1602083018461065b565b939250505056fea26469706673582212209eb99b6a971f107301d46f35c3a6148d51fc938bdb85c3ab9a308a343be2ec3464736f6c634300080d0033"
 
 // DeployPendleToken deploys a new Ethereum contract, binding an instance of PendleToken to it.
 func DeployPendleToken(auth *bind.TransactOpts, backend bind.ContractBackend) (common.Address, *types.Transaction, *PendleToken, error) {
-	parsed, err := PendleTokenMetaData.GetAbi()
+	parsed, err := abi.JSON(strings.NewReader(PendleTokenABI))
 	if err != nil {
 		return common.Address{}, nil, nil, err
 	}
-	if parsed == nil {
-		return common.Address{}, nil, nil, errors.New("GetABI returned nil")
-	}
 
-	address, tx, contract, err := bind.DeployContract(auth, *parsed, common.FromHex(PendleTokenBin), backend)
+	address, tx, contract, err := bind.DeployContract(auth, parsed, common.FromHex(PendleTokenBin), backend)
 	if err != nil {
 		return common.Address{}, nil, nil, err
 	}
@@ -201,6 +188,37 @@ func (_PendleToken *PendleTokenTransactorRaw) Transact(opts *bind.TransactOpts, 
 	return _PendleToken.Contract.contract.Transact(opts, method, params...)
 }
 
+// BalanceOfCalled is a free data retrieval call binding the contract method 0xdea1a7e2.
+//
+// Solidity: function balanceOfCalled() view returns(address)
+func (_PendleToken *PendleTokenCaller) BalanceOfCalled(opts *bind.CallOpts) (common.Address, error) {
+	var out []interface{}
+	err := _PendleToken.contract.Call(opts, &out, "balanceOfCalled")
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
+}
+
+// BalanceOfCalled is a free data retrieval call binding the contract method 0xdea1a7e2.
+//
+// Solidity: function balanceOfCalled() view returns(address)
+func (_PendleToken *PendleTokenSession) BalanceOfCalled() (common.Address, error) {
+	return _PendleToken.Contract.BalanceOfCalled(&_PendleToken.CallOpts)
+}
+
+// BalanceOfCalled is a free data retrieval call binding the contract method 0xdea1a7e2.
+//
+// Solidity: function balanceOfCalled() view returns(address)
+func (_PendleToken *PendleTokenCallerSession) BalanceOfCalled() (common.Address, error) {
+	return _PendleToken.Contract.BalanceOfCalled(&_PendleToken.CallOpts)
+}
+
 // Expiry is a free data retrieval call binding the contract method 0xe184c9be.
 //
 // Solidity: function expiry() view returns(uint256)
@@ -230,6 +248,48 @@ func (_PendleToken *PendleTokenSession) Expiry() (*big.Int, error) {
 // Solidity: function expiry() view returns(uint256)
 func (_PendleToken *PendleTokenCallerSession) Expiry() (*big.Int, error) {
 	return _PendleToken.Contract.Expiry(&_PendleToken.CallOpts)
+}
+
+// TransferFromCalled is a free data retrieval call binding the contract method 0xe541efa2.
+//
+// Solidity: function transferFromCalled(address ) view returns(address to, uint256 amount)
+func (_PendleToken *PendleTokenCaller) TransferFromCalled(opts *bind.CallOpts, arg0 common.Address) (struct {
+	To     common.Address
+	Amount *big.Int
+}, error) {
+	var out []interface{}
+	err := _PendleToken.contract.Call(opts, &out, "transferFromCalled", arg0)
+
+	outstruct := new(struct {
+		To     common.Address
+		Amount *big.Int
+	})
+
+	outstruct.To = out[0].(common.Address)
+	outstruct.Amount = out[1].(*big.Int)
+
+	return *outstruct, err
+
+}
+
+// TransferFromCalled is a free data retrieval call binding the contract method 0xe541efa2.
+//
+// Solidity: function transferFromCalled(address ) view returns(address to, uint256 amount)
+func (_PendleToken *PendleTokenSession) TransferFromCalled(arg0 common.Address) (struct {
+	To     common.Address
+	Amount *big.Int
+}, error) {
+	return _PendleToken.Contract.TransferFromCalled(&_PendleToken.CallOpts, arg0)
+}
+
+// TransferFromCalled is a free data retrieval call binding the contract method 0xe541efa2.
+//
+// Solidity: function transferFromCalled(address ) view returns(address to, uint256 amount)
+func (_PendleToken *PendleTokenCallerSession) TransferFromCalled(arg0 common.Address) (struct {
+	To     common.Address
+	Amount *big.Int
+}, error) {
+	return _PendleToken.Contract.TransferFromCalled(&_PendleToken.CallOpts, arg0)
 }
 
 // YieldToken is a free data retrieval call binding the contract method 0x76d5de85.
@@ -263,6 +323,48 @@ func (_PendleToken *PendleTokenCallerSession) YieldToken() (common.Address, erro
 	return _PendleToken.Contract.YieldToken(&_PendleToken.CallOpts)
 }
 
+// BalanceOf is a paid mutator transaction binding the contract method 0x70a08231.
+//
+// Solidity: function balanceOf(address b) returns(uint256)
+func (_PendleToken *PendleTokenTransactor) BalanceOf(opts *bind.TransactOpts, b common.Address) (*types.Transaction, error) {
+	return _PendleToken.contract.Transact(opts, "balanceOf", b)
+}
+
+// BalanceOf is a paid mutator transaction binding the contract method 0x70a08231.
+//
+// Solidity: function balanceOf(address b) returns(uint256)
+func (_PendleToken *PendleTokenSession) BalanceOf(b common.Address) (*types.Transaction, error) {
+	return _PendleToken.Contract.BalanceOf(&_PendleToken.TransactOpts, b)
+}
+
+// BalanceOf is a paid mutator transaction binding the contract method 0x70a08231.
+//
+// Solidity: function balanceOf(address b) returns(uint256)
+func (_PendleToken *PendleTokenTransactorSession) BalanceOf(b common.Address) (*types.Transaction, error) {
+	return _PendleToken.Contract.BalanceOf(&_PendleToken.TransactOpts, b)
+}
+
+// BalanceOfReturns is a paid mutator transaction binding the contract method 0x39100838.
+//
+// Solidity: function balanceOfReturns(uint256 b) returns()
+func (_PendleToken *PendleTokenTransactor) BalanceOfReturns(opts *bind.TransactOpts, b *big.Int) (*types.Transaction, error) {
+	return _PendleToken.contract.Transact(opts, "balanceOfReturns", b)
+}
+
+// BalanceOfReturns is a paid mutator transaction binding the contract method 0x39100838.
+//
+// Solidity: function balanceOfReturns(uint256 b) returns()
+func (_PendleToken *PendleTokenSession) BalanceOfReturns(b *big.Int) (*types.Transaction, error) {
+	return _PendleToken.Contract.BalanceOfReturns(&_PendleToken.TransactOpts, b)
+}
+
+// BalanceOfReturns is a paid mutator transaction binding the contract method 0x39100838.
+//
+// Solidity: function balanceOfReturns(uint256 b) returns()
+func (_PendleToken *PendleTokenTransactorSession) BalanceOfReturns(b *big.Int) (*types.Transaction, error) {
+	return _PendleToken.Contract.BalanceOfReturns(&_PendleToken.TransactOpts, b)
+}
+
 // ExpiryReturns is a paid mutator transaction binding the contract method 0xffd71860.
 //
 // Solidity: function expiryReturns(uint256 m) returns()
@@ -282,6 +384,48 @@ func (_PendleToken *PendleTokenSession) ExpiryReturns(m *big.Int) (*types.Transa
 // Solidity: function expiryReturns(uint256 m) returns()
 func (_PendleToken *PendleTokenTransactorSession) ExpiryReturns(m *big.Int) (*types.Transaction, error) {
 	return _PendleToken.Contract.ExpiryReturns(&_PendleToken.TransactOpts, m)
+}
+
+// TransferFrom is a paid mutator transaction binding the contract method 0x23b872dd.
+//
+// Solidity: function transferFrom(address f, address t, uint256 a) returns(bool)
+func (_PendleToken *PendleTokenTransactor) TransferFrom(opts *bind.TransactOpts, f common.Address, t common.Address, a *big.Int) (*types.Transaction, error) {
+	return _PendleToken.contract.Transact(opts, "transferFrom", f, t, a)
+}
+
+// TransferFrom is a paid mutator transaction binding the contract method 0x23b872dd.
+//
+// Solidity: function transferFrom(address f, address t, uint256 a) returns(bool)
+func (_PendleToken *PendleTokenSession) TransferFrom(f common.Address, t common.Address, a *big.Int) (*types.Transaction, error) {
+	return _PendleToken.Contract.TransferFrom(&_PendleToken.TransactOpts, f, t, a)
+}
+
+// TransferFrom is a paid mutator transaction binding the contract method 0x23b872dd.
+//
+// Solidity: function transferFrom(address f, address t, uint256 a) returns(bool)
+func (_PendleToken *PendleTokenTransactorSession) TransferFrom(f common.Address, t common.Address, a *big.Int) (*types.Transaction, error) {
+	return _PendleToken.Contract.TransferFrom(&_PendleToken.TransactOpts, f, t, a)
+}
+
+// TransferFromReturns is a paid mutator transaction binding the contract method 0x6521b96a.
+//
+// Solidity: function transferFromReturns(bool b) returns()
+func (_PendleToken *PendleTokenTransactor) TransferFromReturns(opts *bind.TransactOpts, b bool) (*types.Transaction, error) {
+	return _PendleToken.contract.Transact(opts, "transferFromReturns", b)
+}
+
+// TransferFromReturns is a paid mutator transaction binding the contract method 0x6521b96a.
+//
+// Solidity: function transferFromReturns(bool b) returns()
+func (_PendleToken *PendleTokenSession) TransferFromReturns(b bool) (*types.Transaction, error) {
+	return _PendleToken.Contract.TransferFromReturns(&_PendleToken.TransactOpts, b)
+}
+
+// TransferFromReturns is a paid mutator transaction binding the contract method 0x6521b96a.
+//
+// Solidity: function transferFromReturns(bool b) returns()
+func (_PendleToken *PendleTokenTransactorSession) TransferFromReturns(b bool) (*types.Transaction, error) {
+	return _PendleToken.Contract.TransferFromReturns(&_PendleToken.TransactOpts, b)
 }
 
 // YieldTokenReturns is a paid mutator transaction binding the contract method 0x45c0684b.

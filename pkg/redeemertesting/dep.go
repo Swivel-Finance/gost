@@ -27,6 +27,10 @@ type Dep struct {
 	TempusToken        *mocks.TempusToken
 	RedeemerAddress    common.Address
 	Redeemer           *redeemer.Redeemer
+	Pendle             *mocks.Pendle
+	PendleAddress      common.Address
+	PendleToken        *mocks.PendleToken
+	PendleTokenAddress common.Address
 }
 
 func Deploy(e *Env) (*Dep, error) {
@@ -103,7 +107,23 @@ func Deploy(e *Env) (*Dep, error) {
 
 	e.Blockchain.Commit()
 
-	redeemerAddress, _, redeemerContract, redeemerErr := redeemer.DeployRedeemer(e.Owner.Opts, e.Blockchain, mpAddress, apAddress, tAddress)
+	pAddress, _, pContract, pErr := mocks.DeployPendle(e.Owner.Opts, e.Blockchain)
+
+	if pErr != nil {
+		return nil, pErr
+	}
+
+	e.Blockchain.Commit()
+
+	ptAddress, _, ptContract, ptErr := mocks.DeployPendleToken(e.Owner.Opts, e.Blockchain)
+
+	if ptErr != nil {
+		return nil, ptErr
+	}
+
+	e.Blockchain.Commit()
+
+	redeemerAddress, _, redeemerContract, redeemerErr := redeemer.DeployRedeemer(e.Owner.Opts, e.Blockchain, mpAddress, apAddress, tAddress, pAddress)
 
 	if redeemerErr != nil {
 		return nil, redeemerErr
@@ -131,6 +151,10 @@ func Deploy(e *Env) (*Dep, error) {
 		TempusAddress:      tAddress,
 		TempusToken:        ttContract,
 		TempusTokenAddress: ttAddress,
+		Pendle:             pContract,
+		PendleAddress:      pAddress,
+		PendleToken:        ptContract,
+		PendleTokenAddress: ptAddress,
 		Redeemer:           redeemerContract,
 	}, nil
 }

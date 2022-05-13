@@ -37,3 +37,6 @@ interface IYield {
 	function redeem(address to, uint256 amount) external returns (uint256);
 }
 
+interface IPendle {
+	function redeemAfterExpiry(bytes32 forgeId, address underlying, uint256 maturity) external;
+}

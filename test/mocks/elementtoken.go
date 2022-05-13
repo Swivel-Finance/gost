@@ -4,7 +4,6 @@
 package mocks
 
 import (
-	"errors"
 	"math/big"
 	"strings"
 
@@ -18,7 +17,6 @@ import (
 
 // Reference imports to suppress errors if they are not otherwise used.
 var (
-	_ = errors.New
 	_ = big.NewInt
 	_ = strings.NewReader
 	_ = ethereum.NotFound
@@ -28,31 +26,20 @@ var (
 	_ = event.NewSubscription
 )
 
-// ElementTokenMetaData contains all meta data concerning the ElementToken contract.
-var ElementTokenMetaData = &bind.MetaData{
-	ABI: "[{\"inputs\":[],\"name\":\"underlying\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"a\",\"type\":\"address\"}],\"name\":\"underlyingReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"unlockTimestamp\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"u\",\"type\":\"uint256\"}],\"name\":\"unlockTimestampReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]",
-	Bin: "0x608060405234801561001057600080fd5b506102c3806100206000396000f3fe608060405234801561001057600080fd5b506004361061004c5760003560e01c80636f307dc314610051578063831e574f1461006f578063aa082a9d1461008b578063e7ba6774146100a9575b600080fd5b6100596100c5565b6040516100669190610187565b60405180910390f35b610089600480360381019061008491906101dd565b6100ef565b005b6100936100f9565b6040516100a09190610219565b60405180910390f35b6100c360048036038101906100be9190610260565b610102565b005b6000600160009054906101000a900473ffffffffffffffffffffffffffffffffffffffff16905090565b8060008190555050565b60008054905090565b80600160006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555050565b600073ffffffffffffffffffffffffffffffffffffffff82169050919050565b600061017182610146565b9050919050565b61018181610166565b82525050565b600060208201905061019c6000830184610178565b92915050565b600080fd5b6000819050919050565b6101ba816101a7565b81146101c557600080fd5b50565b6000813590506101d7816101b1565b92915050565b6000602082840312156101f3576101f26101a2565b5b6000610201848285016101c8565b91505092915050565b610213816101a7565b82525050565b600060208201905061022e600083018461020a565b92915050565b61023d81610166565b811461024857600080fd5b50565b60008135905061025a81610234565b92915050565b600060208284031215610276576102756101a2565b5b60006102848482850161024b565b9150509291505056fea2646970667358221220fe693b3f8bb7c3c5209257d7c47f78f3352b20df122397f58fc0b31bd225673464736f6c634300080d0033",
-}
-
 // ElementTokenABI is the input ABI used to generate the binding from.
-// Deprecated: Use ElementTokenMetaData.ABI instead.
-var ElementTokenABI = ElementTokenMetaData.ABI
+const ElementTokenABI = "[{\"inputs\":[],\"name\":\"underlying\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"a\",\"type\":\"address\"}],\"name\":\"underlyingReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"unlockTimestamp\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"u\",\"type\":\"uint256\"}],\"name\":\"unlockTimestampReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]"
 
 // ElementTokenBin is the compiled bytecode used for deploying new contracts.
-// Deprecated: Use ElementTokenMetaData.Bin instead.
-var ElementTokenBin = ElementTokenMetaData.Bin
+var ElementTokenBin = "0x608060405234801561001057600080fd5b506102c3806100206000396000f3fe608060405234801561001057600080fd5b506004361061004c5760003560e01c80636f307dc314610051578063831e574f1461006f578063aa082a9d1461008b578063e7ba6774146100a9575b600080fd5b6100596100c5565b6040516100669190610187565b60405180910390f35b610089600480360381019061008491906101dd565b6100ef565b005b6100936100f9565b6040516100a09190610219565b60405180910390f35b6100c360048036038101906100be9190610260565b610102565b005b6000600160009054906101000a900473ffffffffffffffffffffffffffffffffffffffff16905090565b8060008190555050565b60008054905090565b80600160006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555050565b600073ffffffffffffffffffffffffffffffffffffffff82169050919050565b600061017182610146565b9050919050565b61018181610166565b82525050565b600060208201905061019c6000830184610178565b92915050565b600080fd5b6000819050919050565b6101ba816101a7565b81146101c557600080fd5b50565b6000813590506101d7816101b1565b92915050565b6000602082840312156101f3576101f26101a2565b5b6000610201848285016101c8565b91505092915050565b610213816101a7565b82525050565b600060208201905061022e600083018461020a565b92915050565b61023d81610166565b811461024857600080fd5b50565b60008135905061025a81610234565b92915050565b600060208284031215610276576102756101a2565b5b60006102848482850161024b565b9150509291505056fea2646970667358221220fe693b3f8bb7c3c5209257d7c47f78f3352b20df122397f58fc0b31bd225673464736f6c634300080d0033"
 
 // DeployElementToken deploys a new Ethereum contract, binding an instance of ElementToken to it.
 func DeployElementToken(auth *bind.TransactOpts, backend bind.ContractBackend) (common.Address, *types.Transaction, *ElementToken, error) {
-	parsed, err := ElementTokenMetaData.GetAbi()
+	parsed, err := abi.JSON(strings.NewReader(ElementTokenABI))
 	if err != nil {
 		return common.Address{}, nil, nil, err
 	}
-	if parsed == nil {
-		return common.Address{}, nil, nil, errors.New("GetABI returned nil")
-	}
 
-	address, tx, contract, err := bind.DeployContract(auth, *parsed, common.FromHex(ElementTokenBin), backend)
+	address, tx, contract, err := bind.DeployContract(auth, parsed, common.FromHex(ElementTokenBin), backend)
 	if err != nil {
 		return common.Address{}, nil, nil, err
 	}
