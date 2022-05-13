@@ -26,6 +26,7 @@ type redeemTestSuite struct {
 	Tempus      *mocks.TempusSession
 	TempusToken *mocks.TempusTokenSession
 	Pendle      *mocks.PendleSession
+	PendleToken *mocks.PendleTokenSession
 	Redeemer    *redeemer.RedeemerSession
 }
 
@@ -123,6 +124,15 @@ func (s *redeemTestSuite) SetupSuite() {
 
 	s.Pendle = &mocks.PendleSession{
 		Contract: s.Dep.Pendle,
+		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
+		TransactOpts: bind.TransactOpts{
+			From:   s.Env.Owner.Opts.From,
+			Signer: s.Env.Owner.Opts.Signer,
+		},
+	}
+
+	s.PendleToken = &mocks.PendleTokenSession{
+		Contract: s.Dep.PendleToken,
 		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
 		TransactOpts: bind.TransactOpts{
 			From:   s.Env.Owner.Opts.From,
@@ -300,7 +310,7 @@ func (s *redeemTestSuite) TestPendleRedeem() {
 	s.Erc20.BalanceOfReturns(amount)
 	s.Env.Blockchain.Commit()
 
-	s.Erc20.TransferFromReturns(true)
+	s.PendleToken.TransferFromReturns(true)
 	s.Env.Blockchain.Commit()
 
 	tx, err := s.Redeemer.Redeem1(principal, s.Dep.Erc20Address, maturity, forgeId)
