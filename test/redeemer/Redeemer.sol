@@ -17,9 +17,9 @@ contract Redeemer {
   address public illuminate;
 
   // TODO: Rename Router to Addr
-  address public apwineRouter;
-  address public tempusRouter;
-  address public pendleRouter;
+  address public apwineAddr;
+  address public tempusAddr;
+  address public pendleAddr;
 
   event Redeem(uint8 principal, address indexed underlying, uint256 indexed maturity, uint256 amount);  
 
@@ -27,9 +27,9 @@ contract Redeemer {
   constructor(address m, address a, address t, address p) {
     admin = msg.sender;
     illuminate = m; // TODO add an authorized setter for this?
-    apwineRouter = a;
-    tempusRouter = t;
-    pendleRouter = p;
+    apwineAddr = a;
+    tempusAddr = t;
+    pendleAddr = p;
   }
 
   /// @notice Redeems underlying token for illuminate, apwine and tempus 
@@ -47,9 +47,9 @@ contract Redeemer {
     uint256 amount = IErc20(principal).balanceOf(o);
 
     if (p == uint8(Illuminate.Principals.Apwine)) {
-        IAPWine(apwineRouter).withdraw(o, amount);
+        IAPWine(apwineAddr).withdraw(o, amount);
     } else if (p == uint8(Illuminate.Principals.Tempus)) {
-        ITempus(tempusRouter).redeemToBacking(o, m, amount, u);
+        ITempus(tempusAddr).redeemToBacking(o, m, amount, u);
     } else if (p == uint8(Illuminate.Principals.Illuminate)) {
         IZcToken(principal).burn(o, amount);
     }
@@ -82,7 +82,7 @@ contract Redeemer {
 
     Safe.transferFrom(token, illuminate, address(this), amount);
 
-    IPendle(pendleRouter).redeemAfterExpiry(i, u, m);
+    IPendle(pendleAddr).redeemAfterExpiry(i, u, m);
 
     emit Redeem(p, u, m, amount);
 
