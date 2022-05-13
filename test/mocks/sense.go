@@ -4,6 +4,7 @@
 package mocks
 
 import (
+	"errors"
 	"math/big"
 	"strings"
 
@@ -17,6 +18,7 @@ import (
 
 // Reference imports to suppress errors if they are not otherwise used.
 var (
+	_ = errors.New
 	_ = big.NewInt
 	_ = strings.NewReader
 	_ = ethereum.NotFound
@@ -26,20 +28,31 @@ var (
 	_ = event.NewSubscription
 )
 
+// SenseMetaData contains all meta data concerning the Sense contract.
+var SenseMetaData = &bind.MetaData{
+	ABI: "[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"sa\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"m\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"a\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"mb\",\"type\":\"uint256\"}],\"name\":\"swapUnderlyingForPTs\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"swapUnderlyingForPTsCalled\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"maturity\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"minimumBought\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"s\",\"type\":\"uint256\"}],\"name\":\"swapUnderlyingForPTsReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]",
+	Bin: "0x608060405234801561001057600080fd5b50610373806100206000396000f3fe608060405234801561001057600080fd5b50600436106100415760003560e01c8063534ce00f146100465780638f1f30f014610078578063cbf6a44c146100a8575b600080fd5b610060600480360381019061005b91906101e5565b6100c4565b60405161006f9392919061022b565b60405180910390f35b610092600480360381019061008d919061028e565b6100ee565b60405161009f91906102f5565b60405180910390f35b6100c260048036038101906100bd9190610310565b610178565b005b60016020528060005260406000206000915090508060000154908060010154908060020154905083565b6000604051806060016040528085815260200184815260200183815250600160008773ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1681526020019081526020016000206000820151816000015560208201518160010155604082015181600201559050506000549050949350505050565b8060008190555050565b600080fd5b600073ffffffffffffffffffffffffffffffffffffffff82169050919050565b60006101b282610187565b9050919050565b6101c2816101a7565b81146101cd57600080fd5b50565b6000813590506101df816101b9565b92915050565b6000602082840312156101fb576101fa610182565b5b6000610209848285016101d0565b91505092915050565b6000819050919050565b61022581610212565b82525050565b6000606082019050610240600083018661021c565b61024d602083018561021c565b61025a604083018461021c565b949350505050565b61026b81610212565b811461027657600080fd5b50565b60008135905061028881610262565b92915050565b600080600080608085870312156102a8576102a7610182565b5b60006102b6878288016101d0565b94505060206102c787828801610279565b93505060406102d887828801610279565b92505060606102e987828801610279565b91505092959194509250565b600060208201905061030a600083018461021c565b92915050565b60006020828403121561032657610325610182565b5b600061033484828501610279565b9150509291505056fea2646970667358221220b87a20ad801ced6679012fb303e19d05f242001b2d72713ef99b7c559e96437164736f6c634300080d0033",
+}
+
 // SenseABI is the input ABI used to generate the binding from.
-const SenseABI = "[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"sa\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"m\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"a\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"mb\",\"type\":\"uint256\"}],\"name\":\"swapUnderlyingForPTs\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"swapUnderlyingForPTsCalled\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"maturity\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"minimumBought\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"s\",\"type\":\"uint256\"}],\"name\":\"swapUnderlyingForPTsReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]"
+// Deprecated: Use SenseMetaData.ABI instead.
+var SenseABI = SenseMetaData.ABI
 
 // SenseBin is the compiled bytecode used for deploying new contracts.
-var SenseBin = "0x608060405234801561001057600080fd5b50610373806100206000396000f3fe608060405234801561001057600080fd5b50600436106100415760003560e01c8063534ce00f146100465780638f1f30f014610078578063cbf6a44c146100a8575b600080fd5b610060600480360381019061005b91906101e5565b6100c4565b60405161006f9392919061022b565b60405180910390f35b610092600480360381019061008d919061028e565b6100ee565b60405161009f91906102f5565b60405180910390f35b6100c260048036038101906100bd9190610310565b610178565b005b60016020528060005260406000206000915090508060000154908060010154908060020154905083565b6000604051806060016040528085815260200184815260200183815250600160008773ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1681526020019081526020016000206000820151816000015560208201518160010155604082015181600201559050506000549050949350505050565b8060008190555050565b600080fd5b600073ffffffffffffffffffffffffffffffffffffffff82169050919050565b60006101b282610187565b9050919050565b6101c2816101a7565b81146101cd57600080fd5b50565b6000813590506101df816101b9565b92915050565b6000602082840312156101fb576101fa610182565b5b6000610209848285016101d0565b91505092915050565b6000819050919050565b61022581610212565b82525050565b6000606082019050610240600083018661021c565b61024d602083018561021c565b61025a604083018461021c565b949350505050565b61026b81610212565b811461027657600080fd5b50565b60008135905061028881610262565b92915050565b600080600080608085870312156102a8576102a7610182565b5b60006102b6878288016101d0565b94505060206102c787828801610279565b93505060406102d887828801610279565b92505060606102e987828801610279565b91505092959194509250565b600060208201905061030a600083018461021c565b92915050565b60006020828403121561032657610325610182565b5b600061033484828501610279565b9150509291505056fea2646970667358221220b87a20ad801ced6679012fb303e19d05f242001b2d72713ef99b7c559e96437164736f6c634300080d0033"
+// Deprecated: Use SenseMetaData.Bin instead.
+var SenseBin = SenseMetaData.Bin
 
 // DeploySense deploys a new Ethereum contract, binding an instance of Sense to it.
 func DeploySense(auth *bind.TransactOpts, backend bind.ContractBackend) (common.Address, *types.Transaction, *Sense, error) {
-	parsed, err := abi.JSON(strings.NewReader(SenseABI))
+	parsed, err := SenseMetaData.GetAbi()
 	if err != nil {
 		return common.Address{}, nil, nil, err
 	}
+	if parsed == nil {
+		return common.Address{}, nil, nil, errors.New("GetABI returned nil")
+	}
 
-	address, tx, contract, err := bind.DeployContract(auth, parsed, common.FromHex(SenseBin), backend)
+	address, tx, contract, err := bind.DeployContract(auth, *parsed, common.FromHex(SenseBin), backend)
 	if err != nil {
 		return common.Address{}, nil, nil, err
 	}
@@ -204,10 +217,13 @@ func (_Sense *SenseCaller) SwapUnderlyingForPTsCalled(opts *bind.CallOpts, arg0 
 		Amount        *big.Int
 		MinimumBought *big.Int
 	})
+	if err != nil {
+		return *outstruct, err
+	}
 
-	outstruct.Maturity = out[0].(*big.Int)
-	outstruct.Amount = out[1].(*big.Int)
-	outstruct.MinimumBought = out[2].(*big.Int)
+	outstruct.Maturity = *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+	outstruct.Amount = *abi.ConvertType(out[1], new(*big.Int)).(**big.Int)
+	outstruct.MinimumBought = *abi.ConvertType(out[2], new(*big.Int)).(**big.Int)
 
 	return *outstruct, err
 
