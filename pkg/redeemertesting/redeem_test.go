@@ -422,7 +422,7 @@ func (s *redeemTestSuite) TestSwivelRedeem() {
 	s.Env.Blockchain.Commit()
 
 	// verify that the mocked functions were called as expected
-	call, err := s.Sense.RedeemCalled(s.Dep.ZcTokenAddress)
+	call, err := s.Swivel.RedeemZcTokenCalled(s.Dep.Erc20Address)
 	assert.NoError(err)
 	assert.Equal(maturity, call.Maturity)
 	assert.Equal(amount, call.Amount)

@@ -22,7 +22,7 @@ struct Order {
 
 contract Swivel {
     struct RedeemZcTokenArgs {
-        uint256 underlying;
+        uint256 amount;
         uint256 maturity;
     }
 
@@ -49,6 +49,6 @@ contract Swivel {
     }
 
     function redeemZcToken(address u, uint256 m, uint256 a) external {
-        redeemZcTokenCalled[u] = RedeemZcTokenArgs(m, a);
+        redeemZcTokenCalled[u] = RedeemZcTokenArgs(a, m);
     }
 }

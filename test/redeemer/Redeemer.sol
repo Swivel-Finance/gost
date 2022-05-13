@@ -78,7 +78,7 @@ contract Redeemer {
 
     emit Redeem(p, u, m, amount);
 
-    return (true);
+    return true;
   }
 
   /// @dev redeem method signature for pendle 
