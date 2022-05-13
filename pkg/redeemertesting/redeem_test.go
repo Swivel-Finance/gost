@@ -297,17 +297,17 @@ func (s *redeemTestSuite) TestPendleRedeem() {
 	principal := uint8(4)
 
 	s.Illuminate.MarketsReturns([8]common.Address{
-		s.Dep.ZcTokenAddress,
-		s.Dep.ZcTokenAddress,
-		s.Dep.ZcTokenAddress,
-		s.Dep.ZcTokenAddress,
-		s.Dep.ZcTokenAddress,
-		s.Dep.ZcTokenAddress,
-		s.Dep.ZcTokenAddress,
-		s.Dep.ZcTokenAddress,
+		s.Dep.PendleTokenAddress,
+		s.Dep.PendleTokenAddress,
+		s.Dep.PendleTokenAddress,
+		s.Dep.PendleTokenAddress,
+		s.Dep.PendleTokenAddress,
+		s.Dep.PendleTokenAddress,
+		s.Dep.PendleTokenAddress,
+		s.Dep.PendleTokenAddress,
 	})
 
-	s.Erc20.BalanceOfReturns(amount)
+	s.PendleToken.BalanceOfReturns(amount)
 	s.Env.Blockchain.Commit()
 
 	s.PendleToken.TransferFromReturns(true)
@@ -319,15 +319,15 @@ func (s *redeemTestSuite) TestPendleRedeem() {
 	s.Env.Blockchain.Commit()
 
 	// verify that the mocked functions were called as expected
-	redeemCall, err := s.Pendle.RedeemAfterExpiryCalled(s.Dep.IlluminateAddress)
+	redeemCall, err := s.Pendle.RedeemAfterExpiryCalled(s.Dep.Erc20Address)
 	assert.NoError(err)
 	assert.Equal(forgeId, redeemCall.ForgeId)
 	assert.Equal(maturity, redeemCall.Maturity)
 
-	underlyingTransfer, err := s.Erc20.TransferFromCalled(s.Dep.PendleAddress)
+	underlyingTransfer, err := s.PendleToken.TransferFromCalled(s.Dep.IlluminateAddress)
 	assert.NoError(err)
 	assert.Equal(amount, underlyingTransfer.Amount)
-	assert.Equal(s.Dep.IlluminateAddress, underlyingTransfer.To)
+	assert.Equal(s.Dep.RedeemerAddress, underlyingTransfer.To)
 }
 
 func TestRedeemSuite(t *test.T) {

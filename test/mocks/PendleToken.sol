@@ -32,7 +32,7 @@ contract PendleToken {
         return expiryReturn;
     }
 
-        function balanceOfReturns(uint256 b) public {
+    function balanceOfReturns(uint256 b) public {
         balanceOfReturn = b;
     }
 
