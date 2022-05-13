@@ -392,6 +392,48 @@ func (s *redeemTestSuite) TestSenseRedeem() {
 	assert.Equal(s.Dep.RedeemerAddress, underlyingTransfer.To)
 }
 
+func (s *redeemTestSuite) TestSwivelRedeem() {
+	assert := assert.New(s.T())
+
+	amount := big.NewInt(1000)
+	adapter := s.Env.User1.Opts.From
+	maturity := big.NewInt(9999999)
+	principal := uint8(4)
+
+	s.Illuminate.MarketsReturns([8]common.Address{
+		s.Dep.SenseTokenAddress,
+		s.Dep.SenseTokenAddress,
+		s.Dep.SenseTokenAddress,
+		s.Dep.SenseTokenAddress,
+		s.Dep.SenseTokenAddress,
+		s.Dep.SenseTokenAddress,
+		s.Dep.SenseTokenAddress,
+		s.Dep.SenseTokenAddress,
+	})
+
+	s.SenseToken.BalanceOfReturns(amount)
+	s.Env.Blockchain.Commit()
+
+	s.SenseToken.TransferFromReturns(true)
+	s.Env.Blockchain.Commit()
+
+	tx, err := s.Redeemer.Redeem2(principal, s.Dep.Erc20Address, maturity, s.Dep.SenseAddress, adapter)
+	assert.NoError(err)
+	assert.NotNil(tx)
+	s.Env.Blockchain.Commit()
+
+	// verify that the mocked functions were called as expected
+	redeemCall, err := s.Sense.RedeemCalled(adapter)
+	assert.NoError(err)
+	assert.Equal(maturity, redeemCall.Maturity)
+	assert.Equal(amount, redeemCall.Amount)
+
+	underlyingTransfer, err := s.SenseToken.TransferFromCalled(s.Dep.IlluminateAddress)
+	assert.NoError(err)
+	assert.Equal(amount, underlyingTransfer.Amount)
+	assert.Equal(s.Dep.RedeemerAddress, underlyingTransfer.To)
+}
+
 func TestRedeemSuite(t *test.T) {
 	suite.Run(t, &redeemTestSuite{})
 }
