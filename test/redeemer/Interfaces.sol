@@ -40,3 +40,7 @@ interface IYield {
 interface IPendle {
 	function redeemAfterExpiry(bytes32 forgeId, address underlying, uint256 maturity) external;
 }
+
+interface ISense {
+	function redeem(address adapter, uint256 maturity, uint256 amount) external;
+}

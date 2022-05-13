@@ -27,6 +27,8 @@ type redeemTestSuite struct {
 	TempusToken *mocks.TempusTokenSession
 	Pendle      *mocks.PendleSession
 	PendleToken *mocks.PendleTokenSession
+	Sense       *mocks.SenseSession
+	SenseToken  *mocks.SenseTokenSession
 	Redeemer    *redeemer.RedeemerSession
 }
 
@@ -133,6 +135,24 @@ func (s *redeemTestSuite) SetupSuite() {
 
 	s.PendleToken = &mocks.PendleTokenSession{
 		Contract: s.Dep.PendleToken,
+		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
+		TransactOpts: bind.TransactOpts{
+			From:   s.Env.Owner.Opts.From,
+			Signer: s.Env.Owner.Opts.Signer,
+		},
+	}
+
+	s.Sense = &mocks.SenseSession{
+		Contract: s.Dep.Sense,
+		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
+		TransactOpts: bind.TransactOpts{
+			From:   s.Env.Owner.Opts.From,
+			Signer: s.Env.Owner.Opts.Signer,
+		},
+	}
+
+	s.SenseToken = &mocks.SenseTokenSession{
+		Contract: s.Dep.SenseToken,
 		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
 		TransactOpts: bind.TransactOpts{
 			From:   s.Env.Owner.Opts.From,
@@ -325,6 +345,48 @@ func (s *redeemTestSuite) TestPendleRedeem() {
 	assert.Equal(maturity, redeemCall.Maturity)
 
 	underlyingTransfer, err := s.PendleToken.TransferFromCalled(s.Dep.IlluminateAddress)
+	assert.NoError(err)
+	assert.Equal(amount, underlyingTransfer.Amount)
+	assert.Equal(s.Dep.RedeemerAddress, underlyingTransfer.To)
+}
+
+func (s *redeemTestSuite) TestSenseRedeem() {
+	assert := assert.New(s.T())
+
+	amount := big.NewInt(1000)
+	adapter := s.Env.User1.Opts.From
+	maturity := big.NewInt(9999999)
+	principal := uint8(4)
+
+	s.Illuminate.MarketsReturns([8]common.Address{
+		s.Dep.SenseTokenAddress,
+		s.Dep.SenseTokenAddress,
+		s.Dep.SenseTokenAddress,
+		s.Dep.SenseTokenAddress,
+		s.Dep.SenseTokenAddress,
+		s.Dep.SenseTokenAddress,
+		s.Dep.SenseTokenAddress,
+		s.Dep.SenseTokenAddress,
+	})
+
+	s.SenseToken.BalanceOfReturns(amount)
+	s.Env.Blockchain.Commit()
+
+	s.SenseToken.TransferFromReturns(true)
+	s.Env.Blockchain.Commit()
+
+	tx, err := s.Redeemer.Redeem2(principal, s.Dep.Erc20Address, maturity, s.Dep.SenseAddress, adapter)
+	assert.NoError(err)
+	assert.NotNil(tx)
+	s.Env.Blockchain.Commit()
+
+	// verify that the mocked functions were called as expected
+	redeemCall, err := s.Sense.RedeemCalled(adapter)
+	assert.NoError(err)
+	assert.Equal(maturity, redeemCall.Maturity)
+	assert.Equal(amount, redeemCall.Amount)
+
+	underlyingTransfer, err := s.SenseToken.TransferFromCalled(s.Dep.IlluminateAddress)
 	assert.NoError(err)
 	assert.Equal(amount, underlyingTransfer.Amount)
 	assert.Equal(s.Dep.RedeemerAddress, underlyingTransfer.To)

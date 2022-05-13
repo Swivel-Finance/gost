@@ -31,6 +31,10 @@ type Dep struct {
 	PendleAddress      common.Address
 	PendleToken        *mocks.PendleToken
 	PendleTokenAddress common.Address
+	Sense              *mocks.Sense
+	SenseAddress       common.Address
+	SenseToken         *mocks.SenseToken
+	SenseTokenAddress  common.Address
 }
 
 func Deploy(e *Env) (*Dep, error) {
@@ -123,6 +127,22 @@ func Deploy(e *Env) (*Dep, error) {
 
 	e.Blockchain.Commit()
 
+	sAddress, _, sContract, sErr := mocks.DeploySense(e.Owner.Opts, e.Blockchain)
+
+	if sErr != nil {
+		return nil, sErr
+	}
+
+	e.Blockchain.Commit()
+
+	stAddress, _, stContract, stErr := mocks.DeploySenseToken(e.Owner.Opts, e.Blockchain)
+
+	if stErr != nil {
+		return nil, stErr
+	}
+
+	e.Blockchain.Commit()
+
 	redeemerAddress, _, redeemerContract, redeemerErr := redeemer.DeployRedeemer(e.Owner.Opts, e.Blockchain, mpAddress, apAddress, tAddress, pAddress)
 
 	if redeemerErr != nil {
@@ -155,6 +175,10 @@ func Deploy(e *Env) (*Dep, error) {
 		PendleAddress:      pAddress,
 		PendleToken:        ptContract,
 		PendleTokenAddress: ptAddress,
+		Sense:              sContract,
+		SenseAddress:       sAddress,
+		SenseToken:         stContract,
+		SenseTokenAddress:  stAddress,
 		Redeemer:           redeemerContract,
 	}, nil
 }
