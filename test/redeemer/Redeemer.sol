@@ -18,18 +18,16 @@ contract Redeemer {
   address public apwineRouter;
   address public tempusRouter;
   address public pendleRouter;
-  address public senseRouter;
 
   event Redeem(uint8 principal, address indexed underlying, uint256 indexed maturity, uint256 amount);  
 
   /// @param m the deployed Illuminate contract
-  constructor(address m, address a, address t, address p, address s) {
+  constructor(address m, address a, address t, address p) {
     admin = msg.sender;
     illuminate = m; // TODO add an authorized setter for this?
     apwineRouter = a;
     tempusRouter = t;
     pendleRouter = p;
-    senseRouter = s;
   }
 
   /// @notice Redeems underlying token for illuminate, apwine and tempus 
@@ -102,8 +100,10 @@ contract Redeemer {
 
     Safe.transferFrom(token, illuminate, address(this), amount);
 
-    ISense(senseRouter).redeem(a, m, amount);
+    ISense(d).redeem(a, m, amount);
 
     emit Redeem(p, u, m, amount);
+
+    return true;
   }
 }
