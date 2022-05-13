@@ -17,15 +17,17 @@ contract Redeemer {
   address public illuminate;
   address public apwineRouter;
   address public tempusRouter;
+  address public pendleRouter;
 
   event Redeem(uint8 principal, address indexed underlying, uint256 indexed maturity, uint256 amount);  
 
   /// @param m the deployed Illuminate contract
-  constructor(address m, address a, address t) {
+  constructor(address m, address a, address t, address p) {
     admin = msg.sender;
     illuminate = m; // TODO add an authorized setter for this?
     apwineRouter = a;
     tempusRouter = t;
+    pendleRouter = p;
   }
 
   /// @notice Redeems underlying token for illuminate, apwine and tempus 
@@ -70,9 +72,18 @@ contract Redeemer {
   /// @param p value of a specific principal according to the Illuminate Principals Enum
   /// @param u underlying token being redeemed
   /// @param m maturity of the market being redeemed
-  /// @param i pendle id ?
-  function redeem(uint8 p, address u, uint256 m, bytes32 i) public returns (bool) {
-    // ...
+  /// @param i forge id ?
+  function redeem(uint8 p, address u, uint256 m, bytes32 i) public returns (bool) {    
+    IErc20 token = IErc20(IIlluminate(illuminate).markets(u, m)[p]);
+
+    uint256 amount = token.balanceOf(illuminate);
+
+    token.transferFrom(illuminate, address(this), amount);
+
+    IPendle(pendleRouter).redeemAfterExpiry(i, u, m);
+
+    emit Redeem(p, u, m, amount);
+
     return true;
   }
 
