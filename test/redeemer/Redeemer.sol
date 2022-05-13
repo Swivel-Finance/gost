@@ -78,7 +78,7 @@ contract Redeemer {
 
     uint256 amount = token.balanceOf(illuminate);
 
-    token.transferFrom(illuminate, address(this), amount);
+    Safe.transferFrom(token, illuminate, address(this), amount);
 
     IPendle(pendleRouter).redeemAfterExpiry(i, u, m);
 

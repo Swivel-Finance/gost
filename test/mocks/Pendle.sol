@@ -10,9 +10,15 @@ contract Pendle {
         uint256 deadline;
     }
 
+    struct RredeemAfterExpiryArgs {
+        bytes32 forgeId;
+        uint256 maturity;
+    }
+
     uint[] private swapExactTokensForTokensReturn;
 
     mapping (address => SwapExactTokensForTokensArgs) public swapExactTokensForTokensCalled;
+    mapping (address => RredeemAfterExpiryArgs) public redeemAfterExpiryCalled;
 
     function swapExactTokensForTokensReturns(uint[] memory r) external {
         swapExactTokensForTokensReturn = r;
@@ -21,5 +27,9 @@ contract Pendle {
     function swapExactTokensForTokens(uint256 a, uint256 m, address[] calldata p, address t, uint256 d) external returns (uint[] memory) {
         swapExactTokensForTokensCalled[t] = SwapExactTokensForTokensArgs(a, m, p, d);
         return swapExactTokensForTokensReturn;
+    }
+
+    function redeemAfterExpiry(bytes32 i, address u, uint256 m) external {
+        redeemAfterExpiryCalled[u] = RredeemAfterExpiryArgs(i, m);
     }
 }

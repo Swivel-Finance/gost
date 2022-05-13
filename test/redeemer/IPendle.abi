@@ -1,0 +1,1 @@
+[{"inputs":[{"internalType":"bytes32","name":"forgeId","type":"bytes32"},{"internalType":"address","name":"underlying","type":"address"},{"internalType":"uint256","name":"maturity","type":"uint256"}],"name":"redeemAfterExpiry","outputs":[],"stateMutability":"nonpayable","type":"function"}]
