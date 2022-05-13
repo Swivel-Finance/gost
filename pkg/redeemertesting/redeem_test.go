@@ -355,7 +355,6 @@ func (s *redeemTestSuite) TestSenseRedeem() {
 
 	amount := big.NewInt(1000)
 	adapter := s.Env.User1.Opts.From
-	divider := s.Env.User1.Opts.From
 	maturity := big.NewInt(9999999)
 	principal := uint8(4)
 
@@ -376,7 +375,7 @@ func (s *redeemTestSuite) TestSenseRedeem() {
 	s.SenseToken.TransferFromReturns(true)
 	s.Env.Blockchain.Commit()
 
-	tx, err := s.Redeemer.Redeem2(principal, s.Dep.Erc20Address, maturity, divider, adapter)
+	tx, err := s.Redeemer.Redeem2(principal, s.Dep.Erc20Address, maturity, s.Dep.SenseAddress, adapter)
 	assert.NoError(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
