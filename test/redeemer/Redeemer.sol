@@ -15,6 +15,8 @@ contract Redeemer {
 
   address public admin;
   address public illuminate;
+
+  // TODO: Rename Router to Addr
   address public apwineRouter;
   address public tempusRouter;
   address public pendleRouter;
