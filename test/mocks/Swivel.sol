@@ -21,7 +21,7 @@ struct Order {
 }
 
 contract Swivel {
-    struct RedeemZcTokenArg {
+    struct RedeemZcTokenArgs {
         uint256 underlying;
         uint256 maturity;
     }
@@ -30,7 +30,7 @@ contract Swivel {
 
     mapping (address => uint256) public initiateCalledAmount;
     mapping (address => uint8) public initiateCalledSignature;
-    mapping (address => RedeemZcTokenArg) public redeemZcTokenCalled;
+    mapping (address => RedeemZcTokenArgs) public redeemZcTokenCalled;
 
     function initiateReturns(bool i) external {
         initateReturn = i;
@@ -49,6 +49,6 @@ contract Swivel {
     }
 
     function redeemZcToken(address u, uint256 m, uint256 a) external {
-        redeemZcTokenCalled[u] = RedeemZcTokenArg(m, a);
+        redeemZcTokenCalled[u] = RedeemZcTokenArgs(m, a);
     }
 }

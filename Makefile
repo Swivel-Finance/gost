@@ -1,5 +1,6 @@
 .PHONY: compile_solidity_mock_erc compile_go_mock_erc compile_mock_erc
 .PHONY: compile_solidity_mock_yield compile_go_mock_yield compile_mock_yield
+.PHONY: compile_solidity_mock_swivel compile_go_mock_swivel compile_mock_swivel
 .PHONY: compile_solidity_mock_pendle compile_go_mock_pendle compile_mock_pendle
 .PHONY: compile_solidity_mock_pendle_token compile_go_mock_pendle_token compile_mock_pendle_token
 .PHONY: compile_solidity_mock_tempus compile_go_mock_tempus compile_mock_tempus
