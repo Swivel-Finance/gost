@@ -33,7 +33,6 @@ contract Illuminate {
   /// @param r address of the deployed redeemer contract 
   constructor(address r) {
     admin = msg.sender;
-    // lender = l;
     redeemer = r;
   }
 
@@ -56,7 +55,7 @@ contract Illuminate {
     uint256 max = 2**256 - 1;
     // approve the underlying for max per given principal
     for (uint8 i; i < 8; i++) {
-      Safe.approve(IErc20(t[i]), redeemer, max);
+      Safe.approve(IErc20(market[i]), redeemer, max);
     }
 
     markets[u][m] = market;

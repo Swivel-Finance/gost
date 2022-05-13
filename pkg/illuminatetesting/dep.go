@@ -15,7 +15,7 @@ type Dep struct {
 }
 
 func Deploy(e *Env) (*Dep, error) {
-	// deploy the two mock tokens.
+	// deploy mock tokens.
 	ercAddress, _, ercContract, ercErr := mocks.DeployErc20(e.Owner.Opts, e.Blockchain)
 
 	if ercErr != nil {
