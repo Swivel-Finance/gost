@@ -44,3 +44,7 @@ interface IPendle {
 interface ISense {
 	function redeem(address adapter, uint256 maturity, uint256 amount) external;
 }
+
+interface IElement {
+	function withdrawPrincipal(uint256 amount, address destination) external;
+}
