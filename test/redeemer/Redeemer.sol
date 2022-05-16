@@ -16,20 +16,21 @@ contract Redeemer {
   address public admin;
   address public illuminate;
 
-  // TODO: Rename Router to Addr
   address public apwineAddr;
   address public tempusAddr;
   address public pendleAddr;
+  address public swivelAddr;
 
   event Redeem(uint8 principal, address indexed underlying, uint256 indexed maturity, uint256 amount);  
 
   /// @param m the deployed Illuminate contract
-  constructor(address m, address a, address t, address p) {
+  constructor(address m, address a, address t, address p, address s) {
     admin = msg.sender;
     illuminate = m; // TODO add an authorized setter for this?
     apwineAddr = a;
     tempusAddr = t;
     pendleAddr = p;
+    swivelAddr = s;
   }
 
   /// @notice Redeems underlying token for illuminate, apwine and tempus 
@@ -66,7 +67,17 @@ contract Redeemer {
   /// @param u underlying token being redeemed
   /// @param m maturity of the market being redeemed
   function redeem(uint8 p, address u, uint256 m) public returns (bool) {
-    // ...
+    address principal = IIlluminate(illuminate).markets(u, m)[p];
+
+    uint256 amount = IErc20(principal).balanceOf(illuminate);
+
+    Safe.transferFrom(IErc20(principal), illuminate, address(this), amount);
+
+    // TODO: As we implement yield and element, this should be an if statement
+    ISwivel(swivelAddr).redeemZcToken(u, m, amount);
+
+    emit Redeem(p, u, m, amount);
+
     return true;
   }
 
