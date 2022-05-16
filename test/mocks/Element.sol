@@ -34,6 +34,7 @@ contract Element {
     uint256 private swapReturn;
 
     mapping (address => SwapArgs) public swapCalled;
+    mapping (address => uint256) public withdrawPrincipalCalled;
 
     function swapReturns(uint256 s) external {
         swapReturn = s;
@@ -42,5 +43,9 @@ contract Element {
     function swap(SingleSwap memory s, FundManagement memory f, uint256 l, uint256 d) external returns (uint256) {
         swapCalled[f.sender] = SwapArgs(f.recipient, s.amount, l, d);
         return swapReturn;
+    }
+
+    function withdrawPrincipal(uint256 a, address d) external {
+        withdrawPrincipalCalled[d] = a;
     }
 }
