@@ -73,11 +73,12 @@ contract Redeemer {
 
     Safe.transferFrom(IErc20(principal), illuminate, address(this), amount);
 
-    // TODO: As we implement yield and element, this should be an if statement
     if (p == uint8(Illuminate.Principals.Swivel)) {
       ISwivel(swivelAddr).redeemZcToken(u, m, amount);
     } else if (p == uint8(Illuminate.Principals.Element)) {
       IElementToken(principal).withdrawPrincipal(amount, illuminate);
+    } else if (p == uint8(Illuminate.Principals.Yield)) {
+      IYieldToken(principal).redeem(address(this), address(this), amount);
     }
 
     emit Redeem(p, u, m, amount);

@@ -19,6 +19,7 @@ type redeemTestSuite struct {
 	Erc20        *mocks.Erc20Session
 	Illuminate   *mocks.IlluminateSession
 	Yield        *mocks.YieldSession
+	YieldToken   *mocks.YieldTokenSession
 	ZcToken      *mocks.ZcTokenSession
 	Swivel       *mocks.SwivelSession
 	APWine       *mocks.APWineSession
@@ -173,6 +174,24 @@ func (s *redeemTestSuite) SetupSuite() {
 
 	s.ElementToken = &mocks.ElementTokenSession{
 		Contract: s.Dep.ElementToken,
+		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
+		TransactOpts: bind.TransactOpts{
+			From:   s.Env.Owner.Opts.From,
+			Signer: s.Env.Owner.Opts.Signer,
+		},
+	}
+
+	s.Yield = &mocks.YieldSession{
+		Contract: s.Dep.Yield,
+		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
+		TransactOpts: bind.TransactOpts{
+			From:   s.Env.Owner.Opts.From,
+			Signer: s.Env.Owner.Opts.Signer,
+		},
+	}
+
+	s.YieldToken = &mocks.YieldTokenSession{
+		Contract: s.Dep.YieldToken,
 		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
 		TransactOpts: bind.TransactOpts{
 			From:   s.Env.Owner.Opts.From,
@@ -488,6 +507,47 @@ func (s *redeemTestSuite) TestElementRedeem() {
 	assert.Equal(amount, withdrawnAmount)
 
 	underlyingTransfer, err := s.ElementToken.TransferFromCalled(s.Dep.IlluminateAddress)
+	assert.NoError(err)
+	assert.Equal(amount, underlyingTransfer.Amount)
+	assert.Equal(s.Dep.RedeemerAddress, underlyingTransfer.To)
+}
+
+func (s *redeemTestSuite) TestYieldRedeem() {
+	assert := assert.New(s.T())
+
+	amount := big.NewInt(1000)
+	maturity := big.NewInt(9999999)
+	principal := uint8(2)
+
+	s.Illuminate.MarketsReturns([8]common.Address{
+		s.Dep.YieldTokenAddress,
+		s.Dep.YieldTokenAddress,
+		s.Dep.YieldTokenAddress,
+		s.Dep.YieldTokenAddress,
+		s.Dep.YieldTokenAddress,
+		s.Dep.YieldTokenAddress,
+		s.Dep.YieldTokenAddress,
+		s.Dep.YieldTokenAddress,
+	})
+
+	s.YieldToken.BalanceOfReturns(amount)
+	s.Env.Blockchain.Commit()
+
+	s.YieldToken.TransferFromReturns(true)
+	s.Env.Blockchain.Commit()
+
+	tx, err := s.Redeemer.Redeem(principal, s.Dep.Erc20Address, maturity)
+	assert.NoError(err)
+	assert.NotNil(tx)
+	s.Env.Blockchain.Commit()
+
+	// verify that the mocked functions were called as expected
+	redeem, err := s.YieldToken.RedeemCalled(s.Dep.RedeemerAddress)
+	assert.NoError(err)
+	assert.Equal(amount, redeem.Amount)
+	assert.Equal(s.Dep.RedeemerAddress, redeem.From)
+
+	underlyingTransfer, err := s.YieldToken.TransferFromCalled(s.Dep.IlluminateAddress)
 	assert.NoError(err)
 	assert.Equal(amount, underlyingTransfer.Amount)
 	assert.Equal(s.Dep.RedeemerAddress, underlyingTransfer.To)

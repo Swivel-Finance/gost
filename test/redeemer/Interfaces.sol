@@ -50,3 +50,7 @@ interface IElementToken {
 	function underlying() external returns (address);
 	function withdrawPrincipal(uint256 amount, address destination) external;
 }
+
+interface IYieldToken {
+	function redeem(address from, address to, uint256 amount) external;
+}
