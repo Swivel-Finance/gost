@@ -452,6 +452,46 @@ func (s *redeemTestSuite) TestSwivelRedeem() {
 	assert.Equal(s.Dep.RedeemerAddress, underlyingTransfer.To)
 }
 
+func (s *redeemTestSuite) TestYieldRedeem() {
+	assert := assert.New(s.T())
+
+	amount := big.NewInt(1000)
+	maturity := big.NewInt(9999999)
+	principal := uint8(3)
+
+	s.Illuminate.MarketsReturns([8]common.Address{
+		s.Dep.ElementTokenAddress,
+		s.Dep.ElementTokenAddress,
+		s.Dep.ElementTokenAddress,
+		s.Dep.ElementTokenAddress,
+		s.Dep.ElementTokenAddress,
+		s.Dep.ElementTokenAddress,
+		s.Dep.ElementTokenAddress,
+		s.Dep.ElementTokenAddress,
+	})
+
+	s.ElementToken.BalanceOfReturns(amount)
+	s.Env.Blockchain.Commit()
+
+	s.ElementToken.TransferFromReturns(true)
+	s.Env.Blockchain.Commit()
+
+	tx, err := s.Redeemer.Redeem(principal, s.Dep.Erc20Address, maturity)
+	assert.NoError(err)
+	assert.NotNil(tx)
+	s.Env.Blockchain.Commit()
+
+	// verify that the mocked functions were called as expected
+	withdrawnAmount, err := s.ElementToken.WithdrawPrincipalCalled(s.Dep.IlluminateAddress)
+	assert.NoError(err)
+	assert.Equal(amount, withdrawnAmount)
+
+	underlyingTransfer, err := s.ElementToken.TransferFromCalled(s.Dep.IlluminateAddress)
+	assert.NoError(err)
+	assert.Equal(amount, underlyingTransfer.Amount)
+	assert.Equal(s.Dep.RedeemerAddress, underlyingTransfer.To)
+}
+
 func TestRedeemSuite(t *test.T) {
 	suite.Run(t, &redeemTestSuite{})
 }
