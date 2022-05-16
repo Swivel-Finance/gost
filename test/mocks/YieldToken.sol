@@ -4,7 +4,7 @@ pragma solidity 0.8.13;
 
 contract YieldToken {
     struct TransferFromArgs {
-        address from;
+        address to;
         uint256 amount;
     }
 
@@ -54,7 +54,7 @@ contract YieldToken {
 
     function transferFrom(address f, address t, uint256 a) public returns (bool) {
         TransferFromArgs memory args;
-        args.from = t;
+        args.to = t;
         args.amount = a;
         transferFromCalled[f] = args;
         return transferFromReturn;
