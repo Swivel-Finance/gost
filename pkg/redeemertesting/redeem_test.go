@@ -427,10 +427,10 @@ func (s *redeemTestSuite) TestSwivelRedeem() {
 	assert.Equal(maturity, call.Maturity)
 	assert.Equal(amount, call.Amount)
 
-	// underlyingTransfer, err := s.ZcToken.TransferFromCalled(s.Dep.IlluminateAddress)
-	// assert.NoError(err)
-	// assert.Equal(amount, underlyingTransfer.Amount)
-	// assert.Equal(s.Dep.RedeemerAddress, underlyingTransfer.To)
+	underlyingTransfer, err := s.ZcToken.TransferFromCalled(s.Dep.IlluminateAddress)
+	assert.NoError(err)
+	assert.Equal(amount, underlyingTransfer.Amount)
+	assert.Equal(s.Dep.RedeemerAddress, underlyingTransfer.To)
 }
 
 func TestRedeemSuite(t *test.T) {
