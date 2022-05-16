@@ -45,6 +45,8 @@ interface ISense {
 	function redeem(address adapter, uint256 maturity, uint256 amount) external;
 }
 
-interface IElement {
+interface IElementToken {
+	function unlockTimestamp() external returns (uint256);
+	function underlying() external returns (address);
 	function withdrawPrincipal(uint256 amount, address destination) external;
 }

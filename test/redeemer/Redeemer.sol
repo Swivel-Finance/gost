@@ -77,7 +77,7 @@ contract Redeemer {
     if (p == uint8(Illuminate.Principals.Swivel)) {
       ISwivel(swivelAddr).redeemZcToken(u, m, amount);
     } else if (p == uint8(Illuminate.Principals.Element)) {
-      IElement(principal).withdrawPrincipal(amount, illuminate);
+      IElementToken(principal).withdrawPrincipal(amount, illuminate);
     }
 
     emit Redeem(p, u, m, amount);

@@ -14,22 +14,24 @@ import (
 
 type redeemTestSuite struct {
 	suite.Suite
-	Env         *Env
-	Dep         *Dep
-	Erc20       *mocks.Erc20Session
-	Illuminate  *mocks.IlluminateSession
-	Yield       *mocks.YieldSession
-	ZcToken     *mocks.ZcTokenSession
-	Swivel      *mocks.SwivelSession
-	APWine      *mocks.APWineSession
-	APWineToken *mocks.APWineTokenSession
-	Tempus      *mocks.TempusSession
-	TempusToken *mocks.TempusTokenSession
-	Pendle      *mocks.PendleSession
-	PendleToken *mocks.PendleTokenSession
-	Sense       *mocks.SenseSession
-	SenseToken  *mocks.SenseTokenSession
-	Redeemer    *redeemer.RedeemerSession
+	Env          *Env
+	Dep          *Dep
+	Erc20        *mocks.Erc20Session
+	Illuminate   *mocks.IlluminateSession
+	Yield        *mocks.YieldSession
+	ZcToken      *mocks.ZcTokenSession
+	Swivel       *mocks.SwivelSession
+	APWine       *mocks.APWineSession
+	APWineToken  *mocks.APWineTokenSession
+	Tempus       *mocks.TempusSession
+	TempusToken  *mocks.TempusTokenSession
+	Pendle       *mocks.PendleSession
+	PendleToken  *mocks.PendleTokenSession
+	Sense        *mocks.SenseSession
+	SenseToken   *mocks.SenseTokenSession
+	Element      *mocks.ElementSession
+	ElementToken *mocks.ElementTokenSession
+	Redeemer     *redeemer.RedeemerSession
 }
 
 func (s *redeemTestSuite) SetupSuite() {
@@ -153,6 +155,24 @@ func (s *redeemTestSuite) SetupSuite() {
 
 	s.SenseToken = &mocks.SenseTokenSession{
 		Contract: s.Dep.SenseToken,
+		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
+		TransactOpts: bind.TransactOpts{
+			From:   s.Env.Owner.Opts.From,
+			Signer: s.Env.Owner.Opts.Signer,
+		},
+	}
+
+	s.Element = &mocks.ElementSession{
+		Contract: s.Dep.Element,
+		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
+		TransactOpts: bind.TransactOpts{
+			From:   s.Env.Owner.Opts.From,
+			Signer: s.Env.Owner.Opts.Signer,
+		},
+	}
+
+	s.ElementToken = &mocks.ElementTokenSession{
+		Contract: s.Dep.ElementToken,
 		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
 		TransactOpts: bind.TransactOpts{
 			From:   s.Env.Owner.Opts.From,
@@ -397,23 +417,23 @@ func (s *redeemTestSuite) TestSwivelRedeem() {
 
 	amount := big.NewInt(1000)
 	maturity := big.NewInt(9999999)
-	principal := uint8(4)
+	principal := uint8(3)
 
 	s.Illuminate.MarketsReturns([8]common.Address{
-		s.Dep.ZcTokenAddress,
-		s.Dep.ZcTokenAddress,
-		s.Dep.ZcTokenAddress,
-		s.Dep.ZcTokenAddress,
-		s.Dep.ZcTokenAddress,
-		s.Dep.ZcTokenAddress,
-		s.Dep.ZcTokenAddress,
-		s.Dep.ZcTokenAddress,
+		s.Dep.ElementTokenAddress,
+		s.Dep.ElementTokenAddress,
+		s.Dep.ElementTokenAddress,
+		s.Dep.ElementTokenAddress,
+		s.Dep.ElementTokenAddress,
+		s.Dep.ElementTokenAddress,
+		s.Dep.ElementTokenAddress,
+		s.Dep.ElementTokenAddress,
 	})
 
-	s.ZcToken.BalanceOfReturns(amount)
+	s.ElementToken.BalanceOfReturns(amount)
 	s.Env.Blockchain.Commit()
 
-	s.ZcToken.TransferFromReturns(true)
+	s.ElementToken.TransferFromReturns(true)
 	s.Env.Blockchain.Commit()
 
 	tx, err := s.Redeemer.Redeem(principal, s.Dep.Erc20Address, maturity)
@@ -422,12 +442,11 @@ func (s *redeemTestSuite) TestSwivelRedeem() {
 	s.Env.Blockchain.Commit()
 
 	// verify that the mocked functions were called as expected
-	call, err := s.Swivel.RedeemZcTokenCalled(s.Dep.Erc20Address)
+	withdrawnAmount, err := s.Element.WithdrawPrincipalCalled(s.Dep.ElementAddress)
 	assert.NoError(err)
-	assert.Equal(maturity, call.Maturity)
-	assert.Equal(amount, call.Amount)
+	assert.Equal(amount, withdrawnAmount)
 
-	underlyingTransfer, err := s.ZcToken.TransferFromCalled(s.Dep.IlluminateAddress)
+	underlyingTransfer, err := s.ElementToken.TransferFromCalled(s.Dep.IlluminateAddress)
 	assert.NoError(err)
 	assert.Equal(amount, underlyingTransfer.Amount)
 	assert.Equal(s.Dep.RedeemerAddress, underlyingTransfer.To)

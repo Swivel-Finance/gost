@@ -7,34 +7,38 @@ import (
 )
 
 type Dep struct {
-	Erc20Address       common.Address
-	Erc20              *mocks.Erc20
-	YieldAddress       common.Address
-	Yield              *mocks.Yield
-	ZcTokenAddress     common.Address
-	ZcToken            *mocks.ZcToken
-	SwivelAddress      common.Address
-	Swivel             *mocks.Swivel
-	IlluminateAddress  common.Address
-	Illuminate         *mocks.Illuminate
-	APWineAddress      common.Address
-	APWine             *mocks.APWine
-	APWineTokenAddress common.Address
-	APWineToken        *mocks.APWineToken
-	TempusAddress      common.Address
-	Tempus             *mocks.Tempus
-	TempusTokenAddress common.Address
-	TempusToken        *mocks.TempusToken
-	RedeemerAddress    common.Address
-	Redeemer           *redeemer.Redeemer
-	Pendle             *mocks.Pendle
-	PendleAddress      common.Address
-	PendleToken        *mocks.PendleToken
-	PendleTokenAddress common.Address
-	Sense              *mocks.Sense
-	SenseAddress       common.Address
-	SenseToken         *mocks.SenseToken
-	SenseTokenAddress  common.Address
+	Erc20Address        common.Address
+	Erc20               *mocks.Erc20
+	YieldAddress        common.Address
+	Yield               *mocks.Yield
+	ZcTokenAddress      common.Address
+	ZcToken             *mocks.ZcToken
+	SwivelAddress       common.Address
+	Swivel              *mocks.Swivel
+	IlluminateAddress   common.Address
+	Illuminate          *mocks.Illuminate
+	APWineAddress       common.Address
+	APWine              *mocks.APWine
+	APWineTokenAddress  common.Address
+	APWineToken         *mocks.APWineToken
+	TempusAddress       common.Address
+	Tempus              *mocks.Tempus
+	TempusTokenAddress  common.Address
+	TempusToken         *mocks.TempusToken
+	RedeemerAddress     common.Address
+	Redeemer            *redeemer.Redeemer
+	Pendle              *mocks.Pendle
+	PendleAddress       common.Address
+	PendleToken         *mocks.PendleToken
+	PendleTokenAddress  common.Address
+	Sense               *mocks.Sense
+	SenseAddress        common.Address
+	SenseToken          *mocks.SenseToken
+	SenseTokenAddress   common.Address
+	Element             *mocks.Element
+	ElementAddress      common.Address
+	ElementToken        *mocks.ElementToken
+	ElementTokenAddress common.Address
 }
 
 func Deploy(e *Env) (*Dep, error) {
@@ -143,6 +147,22 @@ func Deploy(e *Env) (*Dep, error) {
 
 	e.Blockchain.Commit()
 
+	eAddress, _, eContract, eErr := mocks.DeployElement(e.Owner.Opts, e.Blockchain)
+
+	if eErr != nil {
+		return nil, eErr
+	}
+
+	e.Blockchain.Commit()
+
+	etAddress, _, etContract, etErr := mocks.DeployElementToken(e.Owner.Opts, e.Blockchain)
+
+	if etErr != nil {
+		return nil, etErr
+	}
+
+	e.Blockchain.Commit()
+
 	redeemerAddress, _, redeemerContract, redeemerErr := redeemer.DeployRedeemer(e.Owner.Opts, e.Blockchain, mpAddress, apAddress, tAddress, pAddress, swivelAddress)
 
 	if redeemerErr != nil {
@@ -152,33 +172,37 @@ func Deploy(e *Env) (*Dep, error) {
 	e.Blockchain.Commit()
 
 	return &Dep{
-		Erc20Address:       ercAddress,
-		Erc20:              ercContract,
-		YieldAddress:       ytAddress,
-		Yield:              ytContract,
-		ZcTokenAddress:     zcAddress,
-		ZcToken:            zcContract,
-		SwivelAddress:      swivelAddress,
-		Swivel:             swivelContract,
-		IlluminateAddress:  mpAddress,
-		Illuminate:         mpContract,
-		RedeemerAddress:    redeemerAddress,
-		APWine:             apContract,
-		APWineAddress:      apAddress,
-		APWineToken:        aptContract,
-		APWineTokenAddress: aptAddress,
-		Tempus:             tContract,
-		TempusAddress:      tAddress,
-		TempusToken:        ttContract,
-		TempusTokenAddress: ttAddress,
-		Pendle:             pContract,
-		PendleAddress:      pAddress,
-		PendleToken:        ptContract,
-		PendleTokenAddress: ptAddress,
-		Sense:              sContract,
-		SenseAddress:       sAddress,
-		SenseToken:         stContract,
-		SenseTokenAddress:  stAddress,
-		Redeemer:           redeemerContract,
+		Erc20Address:        ercAddress,
+		Erc20:               ercContract,
+		YieldAddress:        ytAddress,
+		Yield:               ytContract,
+		ZcTokenAddress:      zcAddress,
+		ZcToken:             zcContract,
+		SwivelAddress:       swivelAddress,
+		Swivel:              swivelContract,
+		IlluminateAddress:   mpAddress,
+		Illuminate:          mpContract,
+		RedeemerAddress:     redeemerAddress,
+		APWine:              apContract,
+		APWineAddress:       apAddress,
+		APWineToken:         aptContract,
+		APWineTokenAddress:  aptAddress,
+		Tempus:              tContract,
+		TempusAddress:       tAddress,
+		TempusToken:         ttContract,
+		TempusTokenAddress:  ttAddress,
+		Pendle:              pContract,
+		PendleAddress:       pAddress,
+		PendleToken:         ptContract,
+		PendleTokenAddress:  ptAddress,
+		Sense:               sContract,
+		SenseAddress:        sAddress,
+		SenseToken:          stContract,
+		SenseTokenAddress:   stAddress,
+		Element:             eContract,
+		ElementAddress:      eAddress,
+		ElementToken:        etContract,
+		ElementTokenAddress: etAddress,
+		Redeemer:            redeemerContract,
 	}, nil
 }
