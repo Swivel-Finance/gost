@@ -442,7 +442,7 @@ func (s *redeemTestSuite) TestSwivelRedeem() {
 	s.Env.Blockchain.Commit()
 
 	// verify that the mocked functions were called as expected
-	withdrawnAmount, err := s.Element.WithdrawPrincipalCalled(s.Dep.ElementAddress)
+	withdrawnAmount, err := s.ElementToken.WithdrawPrincipalCalled(s.Dep.IlluminateAddress)
 	assert.NoError(err)
 	assert.Equal(amount, withdrawnAmount)
 
