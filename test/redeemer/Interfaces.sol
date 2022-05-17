@@ -30,7 +30,7 @@ interface ITempus {
 }
 
 interface ISwivel {
-	function redeemZcToken(address u, uint256 m, uint256 a) external;
+	function redeemZcToken(address u, uint256 m, uint256 a) external returns (bool);
 }
 
 interface IYield {

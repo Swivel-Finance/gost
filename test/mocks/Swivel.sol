@@ -26,7 +26,8 @@ contract Swivel {
         uint256 maturity;
     }
 
-    bool initateReturn;
+    bool private initateReturn;
+    bool private redeemZcTokenReturn;
 
     mapping (address => uint256) public initiateCalledAmount;
     mapping (address => uint8) public initiateCalledSignature;
@@ -48,7 +49,12 @@ contract Swivel {
         return initateReturn;
     }
 
-    function redeemZcToken(address u, uint256 m, uint256 a) external {
+    function redeemZcTokenReturns(bool a) external {
+        redeemZcTokenReturn = a;
+    }
+
+    function redeemZcToken(address u, uint256 m, uint256 a) external returns (bool) {
         redeemZcTokenCalled[u] = RedeemZcTokenArgs(a, m);
+        return redeemZcTokenReturn;
     }
 }
