@@ -331,6 +331,43 @@ func (s *lendTestSuite) TestLendSwivel() {
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
 
+	s.Erc20.TransferFromReturns(true)
+	s.Env.Blockchain.Commit()
+
+	s.Erc20.TransferReturns(true)
+	s.Env.Blockchain.Commit()
+
+	s.Erc20.ApproveReturns(true)
+	s.Env.Blockchain.Commit()
+
+	s.Yield.BaseReturns(s.Dep.Erc20Address)
+	s.Env.Blockchain.Commit()
+
+	markets := [8]common.Address{
+		s.Dep.ZcTokenAddress,
+		common.HexToAddress("0x1"),
+		common.HexToAddress("0x2"),
+		common.HexToAddress("0x3"),
+		common.HexToAddress("0x4"),
+		common.HexToAddress("0x5"),
+		common.HexToAddress("0x6"),
+		common.HexToAddress("0x7"),
+	}
+	s.Illuminate.MarketsReturns(markets)
+	s.Env.Blockchain.Commit()
+
+	s.Yield.MaturityReturns(uint32(TEST_MATURITY.Uint64()))
+	s.Env.Blockchain.Commit()
+
+	s.Yield.SellBasePreviewReturns(TOTAL_AMOUNT)
+	s.Env.Blockchain.Commit()
+
+	s.Yield.SellBaseReturns(new(big.Int).Div(TOTAL_AMOUNT, big.NewInt(2)))
+	s.Env.Blockchain.Commit()
+
+	s.ZcToken.MintReturns(true)
+	s.Env.Blockchain.Commit()
+
 	tx, err = s.Lender.Lend1(3, s.Dep.Erc20Address, TEST_MATURITY, s.Dep.YieldAddress, ORDERS, AMOUNTS, COMPONENTS)
 	assert.Nil(err)
 	assert.NotNil(tx)
