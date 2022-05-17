@@ -126,13 +126,13 @@ contract Lender {
     ISwivel(swivelAddr).initiate(o, a, s);
 
     // preview exact swap slippage on yield
-    uint128 preview = IYield(y).sellBasePreview(Cast.u128(returned));
+    uint128 slippage = IYield(y).sellBasePreview(Cast.u128(returned));
 
     // send the remaing amount to the given yield pool
-    Safe.transfer(IErc20(u), y, preview);
+    Safe.transfer(IErc20(u), y, slippage);
     
     // lend out the remaining tokens in the yield pool
-    IYield(y).sellBase(address(this), Cast.u128(preview));
+    IYield(y).sellBase(address(this), slippage);
 
     emit Lend(p, u, m, lent);
     return lent;

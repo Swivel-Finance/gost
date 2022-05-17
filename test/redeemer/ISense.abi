@@ -1,1 +1,0 @@
-[{"inputs":[{"internalType":"address","name":"adapter","type":"address"},{"internalType":"uint256","name":"maturity","type":"uint256"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"redeem","outputs":[],"stateMutability":"nonpayable","type":"function"}]
