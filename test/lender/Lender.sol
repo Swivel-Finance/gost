@@ -73,7 +73,7 @@ contract Lender {
 
     // transfer from user to illuminate
     Safe.transferFrom(uToken, msg.sender, self, a);
-    // priview exact swap slippage on yield
+    // preview exact swap slippage on yield
     uint128 returned = yToken.sellBasePreview(Cast.u128(a));
     // tranfer to yield
     Safe.transfer(uToken, y, a);
@@ -125,8 +125,14 @@ contract Lender {
     // fill the orders on swivel protocol
     ISwivel(swivelAddr).initiate(o, a, s);
 
-    // lend the remaing amount to the given yield pool
-    lend(p, u, m, y, Cast.u128(returned));
+    // preview exact swap slippage on yield
+    uint128 preview = IYield(y).sellBasePreview(Cast.u128(returned));
+
+    // send the remaing amount to the given yield pool
+    Safe.transfer(IErc20(u), y, preview);
+    
+    // lend out the remaining tokens in the yield pool
+    IYield(y).sellBase(address(this), Cast.u128(preview));
 
     emit Lend(p, u, m, lent);
     return lent;
