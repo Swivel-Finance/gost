@@ -103,9 +103,9 @@ contract Lender {
   /// @param s array of signatures for each order in the orders array
   function lend(uint8 p, address u, uint256 m, address y, Swivel.Order[] calldata o, uint256[] calldata a, Swivel.Components[] calldata s) public returns (uint256) {
     // lent represents the number of underlying tokens lent
-    uint256 lent = 0;
+    uint256 lent;
     // returned represents the number of underlying tokens to lend to yield
-    uint256 returned = 0;
+    uint256 returned;
 
     // iterate through each order a calculate the total lent and returned
     for (uint256 i = 0; i < o.length; i++) {
