@@ -3,11 +3,13 @@
 pragma solidity 0.8.13;
 
 import './Interfaces.sol';
+
 import './Illuminate.sol'; // library of market place specific constructs
 import './Swivel.sol'; // library of swivel specific constructs
+import './Element.sol'; // library of element specific constructs
+
 import './Safe.sol';
 import './Cast.sol';
-import './Element.sol';
 
 
 contract Lender {

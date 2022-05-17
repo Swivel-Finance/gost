@@ -2,8 +2,10 @@
 
 pragma solidity 0.8.13;
 
-import "./Illuminate.sol";
 import "./Interfaces.sol";
+
+import "./Illuminate.sol";
+
 import "./Safe.sol";
 
 contract Redeemer {
