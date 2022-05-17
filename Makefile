@@ -176,16 +176,6 @@ compile_go_mock_sense_token:
 
 compile_mock_sense_token: compile_solidity_mock_sense_token compile_go_mock_sense_token
 
-compile_solidity_mock_sense:
-	@echo "compiling Mock Sense solidity source into abi and bin files"
-	solc -o ./test/mocks --abi --bin --overwrite ./test/mocks/Sense.sol
-
-compile_go_mock_sense:
-	@echo "compiling abi and bin files to golang"
-	abigen --abi ./test/mocks/Sense.abi --bin ./test/mocks/Sense.bin -pkg mocks -type Sense -out ./test/mocks/sense.go 
-
-compile_mock_sense: compile_mock_sense_token compile_solidity_mock_sense compile_go_mock_sense
-
 compile_solidity_mock_apwine_token:
 	@echo "compiling Mock APWine Token solidity source into abi and bin files"
 	solc -o ./test/mocks --abi --bin --overwrite ./test/mocks/APWineToken.sol
