@@ -73,12 +73,8 @@ contract Lender {
 
     // transfer from user to illuminate
     Safe.transferFrom(uToken, msg.sender, self, a);
-    // preview exact swap slippage on yield
-    uint128 returned = yToken.sellBasePreview(Cast.u128(a));
-    // tranfer to yield
-    Safe.transfer(uToken, y, a);
-    // 'sell base' meaning purchase the zero coupons from yield
-    yToken.sellBase(self, returned);
+    
+    uint256 returned = yield(u, y, a);
 
     // this step is only needed when the lend is for yield
     if (p == uint8(Illuminate.Principals.Yield)) {
@@ -125,14 +121,7 @@ contract Lender {
     // fill the orders on swivel protocol
     ISwivel(swivelAddr).initiate(o, a, s);
 
-    // preview exact swap slippage on yield
-    uint128 slippage = IYield(y).sellBasePreview(Cast.u128(returned));
-
-    // send the remaing amount to the given yield pool
-    Safe.transfer(IErc20(u), y, slippage);
-    
-    // lend out the remaining tokens in the yield pool
-    IYield(y).sellBase(address(this), slippage);
+    yield(u, y, returned);
 
     emit Lend(p, u, m, lent);
     return lent;
@@ -304,4 +293,20 @@ contract Lender {
       return returned;
   }
 
+  /// @notice transfers funds to yield pool and executes a lend
+  /// @param u: the underlying asset
+  /// @param y: the yield pool to lend to
+  /// @param a: the amount of underlying tokens to lend
+  function yield(address u, address y, uint256 a) internal returns (uint256) {
+    // preview exact swap slippage on yield
+    uint128 returned = IYield(y).sellBasePreview(Cast.u128(a));
+
+    // send the remaing amount to the given yield pool
+    Safe.transfer(IErc20(u), y, returned);
+    
+    // lend out the remaining tokens in the yield pool
+    IYield(y).sellBase(address(this), returned);
+
+    return returned;
+  }
 }
