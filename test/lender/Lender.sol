@@ -70,11 +70,8 @@ contract Lender {
     require(address(yToken.base()) == u, 'yield base != underlying');
     require(yToken.maturity() == m, 'yield maturity != maturity');
 
-    IErc20 uToken = IErc20(u);
-    address self = address(this);
-
     // transfer from user to illuminate
-    Safe.transferFrom(uToken, msg.sender, self, a);
+    Safe.transferFrom(IErc20(u), msg.sender, address(this), a);
     
     uint256 returned = yield(u, y, a);
 
