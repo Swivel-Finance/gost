@@ -455,6 +455,9 @@ func (s *redeemTestSuite) TestSwivelRedeem() {
 	s.ZcToken.TransferFromReturns(true)
 	s.Env.Blockchain.Commit()
 
+	s.Swivel.RedeemZcTokenReturns(true)
+	s.Env.Blockchain.Commit()
+
 	tx, err := s.Redeemer.Redeem(principal, s.Dep.Erc20Address, maturity)
 	assert.NoError(err)
 	assert.NotNil(tx)

@@ -12,16 +12,16 @@ var ORDERS = []lender.SwivelOrder{
 	{
 		Vault:     true,
 		Exit:      false,
-		Principal: big.NewInt(11111),
-		Premium:   big.NewInt(22222),
+		Principal: big.NewInt(8),
+		Premium:   big.NewInt(4),
 		Maturity:  TEST_MATURITY,
 		Expiry:    big.NewInt(44444),
 	},
 	{
 		Vault:     false,
 		Exit:      true,
-		Principal: big.NewInt(99999),
-		Premium:   big.NewInt(88888),
+		Principal: big.NewInt(4),
+		Premium:   big.NewInt(2),
 		Maturity:  TEST_MATURITY,
 		Expiry:    big.NewInt(66666),
 	},
@@ -31,6 +31,8 @@ var AMOUNTS = []*big.Int{
 	big.NewInt(111),
 	big.NewInt(222),
 }
+
+var TOTAL_AMOUNT = big.NewInt(333)
 
 var COMPONENTS = []lender.SwivelComponents{
 	{

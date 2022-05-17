@@ -3,11 +3,13 @@
 pragma solidity 0.8.13;
 
 import './Interfaces.sol';
+
 import './Illuminate.sol'; // library of market place specific constructs
 import './Swivel.sol'; // library of swivel specific constructs
+import './Element.sol'; // library of element specific constructs
+
 import './Safe.sol';
 import './Cast.sol';
-import './Element.sol';
 
 
 contract Lender {
@@ -31,10 +33,10 @@ contract Lender {
   }
 
   /// @dev mint is uniform across all principals, thus there is no need for a 'minter'
-  // @param p value of a specific principal according to the Illuminate Principals Enum.
-  // @param u address of an underlying asset
-  // @param m maturity (timestamp) of the market
-  // @param a amount being minted
+  /// @param p value of a specific principal according to the Illuminate Principals Enum.
+  /// @param u address of an underlying asset
+  /// @param m maturity (timestamp) of the market
+  /// @param a amount being minted
   function mint(uint8 p, address u, uint256 m, uint256 a) public returns (bool) {
     //use market interface to fetch the market for the given market pair
     address[8] memory market = IIlluminate(illuminate).markets(u, m);
@@ -73,12 +75,8 @@ contract Lender {
 
     // transfer from user to illuminate
     Safe.transferFrom(uToken, msg.sender, self, a);
-    // priview exact swap slippage on yield
-    uint128 returned = yToken.sellBasePreview(Cast.u128(a));
-    // tranfer to yield
-    Safe.transfer(uToken, y, a);
-    // 'sell base' meaning purchase the zero coupons from yield
-    yToken.sellBase(self, returned);
+    
+    uint256 returned = yield(u, y, a);
 
     // this step is only needed when the lend is for yield
     if (p == uint8(Illuminate.Principals.Yield)) {
@@ -102,31 +100,33 @@ contract Lender {
   /// @param a array of amounts of underlying tokens lent to each order in the orders array
   /// @param s array of signatures for each order in the orders array
   function lend(uint8 p, address u, uint256 m, address y, Swivel.Order[] calldata o, uint256[] calldata a, Swivel.Components[] calldata s) public returns (uint256) {
+    // lent represents the number of underlying tokens lent
     uint256 lent;
+    // returned represents the number of underlying tokens to lend to yield
     uint256 returned;
 
+    // iterate through each order a calculate the total lent and returned
     for (uint256 i = 0; i < o.length; i++) {
       Swivel.Order memory order = o[i];
       // Require the Swivel order provided matches the underlying and maturity market provided    
       require(order.maturity == m, 'swivel maturity != maturity');
       require(order.underlying == u, 'swivel underlying != underlying');
-      // Sum the total amount lent to Swivel (amount of zcb to mint)
+      // Sum the total amount lent to Swivel (amount of zc tokens to mint)
       lent += a[i];
       // Sum the total amount of premium paid from Swivel (amount of underlying to lend to yield)
-      returned += a[i] * order.premium / order.principal; // TODO guard order of operation?
+      returned += a[i] * (order.premium / order.principal);
     }
 
-    // transfer from user to illuminate
+    // transfer underlying tokens from user to illuminate
     Safe.transferFrom(IErc20(u), msg.sender, address(this), lent);
 
-    // fill the orders on swivel protocol, TODO: require response?
+    // fill the orders on swivel protocol
     ISwivel(swivelAddr).initiate(o, a, s);
 
-    // TODO: lend the remaining amount to yield? (this is prob wrong)
-    Safe.transfer(IErc20(u), y, returned - lent);
+    yield(u, y, returned);
 
-    emit Lend(p, u, m, returned);
-    return returned;
+    emit Lend(p, u, m, lent);
+    return lent;
   }
 
   /// @dev lend method signature for element
@@ -295,4 +295,20 @@ contract Lender {
       return returned;
   }
 
+  /// @notice transfers funds to yield pool and executes a lend
+  /// @param u: the underlying asset
+  /// @param y: the yield pool to lend to
+  /// @param a: the amount of underlying tokens to lend
+  function yield(address u, address y, uint256 a) internal returns (uint256) {
+    // preview exact swap slippage on yield
+    uint128 returned = IYield(y).sellBasePreview(Cast.u128(a));
+
+    // send the remaing amount to the given yield pool
+    Safe.transfer(IErc20(u), y, returned);
+    
+    // lend out the remaining tokens in the yield pool
+    IYield(y).sellBase(address(this), returned);
+
+    return returned;
+  }
 }

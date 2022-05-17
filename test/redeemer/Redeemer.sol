@@ -2,17 +2,13 @@
 
 pragma solidity 0.8.13;
 
-import "./Illuminate.sol";
 import "./Interfaces.sol";
+
+import "./Illuminate.sol";
+
 import "./Safe.sol";
 
 contract Redeemer {
-
-  // NOTE: the imported interfaces don't need to be named anything other than what they are:
-  // ISwivel
-  // IYield
-  // etc...
-
   address public admin;
   address public illuminate;
 
@@ -62,19 +58,25 @@ contract Redeemer {
     return true;
   }
 
-  /// @dev redeem method signature for swivel, yield, element, 
+  /// @dev redeem method for swivel, yield, element. This method redeems all
+  /// prinicipal tokens to illuminate upon maturity
   /// @param p value of a specific principal according to the Illuminate Principals Enum
   /// @param u underlying token being redeemed
   /// @param m maturity of the market being redeemed
   function redeem(uint8 p, address u, uint256 m) public returns (bool) {
+    // Get the principal token that is being redeemed by the user
     address principal = IIlluminate(illuminate).markets(u, m)[p];
 
+    // The amount redeemed should be the balance of the principal token held by the illuminate contract
+    // TODO: Should we check if the principal token has matured?
     uint256 amount = IErc20(principal).balanceOf(illuminate);
 
+    // Transfer the principal token to the illuminate contract from here
     Safe.transferFrom(IErc20(principal), illuminate, address(this), amount);
 
     if (p == uint8(Illuminate.Principals.Swivel)) {
-      ISwivel(swivelAddr).redeemZcToken(u, m, amount);
+      // Redeems zc tokens to the sender's address
+      require((ISwivel(swivelAddr).redeemZcToken(u, m, amount)));
     } else if (p == uint8(Illuminate.Principals.Element)) {
       IElementToken(principal).withdrawPrincipal(amount, illuminate);
     } else if (p == uint8(Illuminate.Principals.Yield)) {
