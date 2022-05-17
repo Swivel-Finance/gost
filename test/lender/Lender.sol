@@ -54,19 +54,16 @@ contract Lender {
   // likely not if we just don't define it but... worth asking
 
   /// @dev lend method signature for both illuminate and yield
-  /// @notice Can be called before maturity to lend to Illuminate / Yield ?
   /// @param p value of a specific principal according to the Illuminate Principals Enum
   /// @param u address of an underlying asset
   /// @param m maturity (timestamp) of the market
-  /// @param y yield pool ?
-  /// @param a amount of underlying tokens to lend ?
+  /// @param y yield pool that will execute the swap for the principal token
+  /// @param a amount of underlying tokens to lend
   function lend(uint8 p, address u, uint256 m, address y, uint256 a) public returns (uint256) {
     // uses yield token interface...
     IYield yToken = IYield(y);
 
     // the yield token must match the market pair
-    // TODO this needs to be cast? the inteface says yToken.maturity() returns uint32
-    // TODO Use the base to get the address and compare that to the underlying
     require(address(yToken.base()) == u, 'yield base != underlying');
     require(yToken.maturity() == m, 'yield maturity != maturity');
 
