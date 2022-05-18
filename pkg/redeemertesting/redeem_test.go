@@ -296,8 +296,8 @@ func (s *redeemTestSuite) TestTempusRedeem() {
 	redeemCall, err := s.Tempus.RedeemToBackingCalled(owner)
 	assert.NoError(err)
 	assert.Equal(amount, redeemCall.Amount)
-	assert.Equal(maturity, redeemCall.Maturity)
-	assert.Equal(s.Dep.Erc20Address, redeemCall.Underlying)
+	assert.True(redeemCall.Yield.Cmp(big.NewInt(0)) == 0)
+	assert.Equal(s.Dep.RedeemerAddress, redeemCall.Recipient)
 
 	underlyingTransfer, err := s.Erc20.TransferFromCalled(s.Dep.IlluminateAddress)
 	assert.NoError(err)
@@ -331,7 +331,7 @@ func (s *redeemTestSuite) TestIlluminateRedeem() {
 	s.ZcToken.BalanceOfReturns(amount)
 	s.Env.Blockchain.Commit()
 
-	s.Erc20.TransferReturns(true)
+	s.Erc20.TransferFromReturns(true)
 	s.Env.Blockchain.Commit()
 
 	tx, err := s.Redeemer.Redeem0(principal, s.Dep.Erc20Address, maturity, owner)
@@ -344,9 +344,10 @@ func (s *redeemTestSuite) TestIlluminateRedeem() {
 	assert.NoError(err)
 	assert.Equal(amount, burnCall)
 
-	underlyingTransfer, err := s.Erc20.TransferCalled(owner)
+	underlyingTransfer, err := s.Erc20.TransferFromCalled(owner)
 	assert.NoError(err)
-	assert.Equal(amount, underlyingTransfer)
+	assert.Equal(amount, underlyingTransfer.Amount)
+	assert.Equal(s.Dep.RedeemerAddress, underlyingTransfer.To)
 }
 
 func (s *redeemTestSuite) TestPendleRedeem() {
