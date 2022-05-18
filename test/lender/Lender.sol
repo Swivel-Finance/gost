@@ -211,11 +211,12 @@ contract Lender {
   /// @param p value of a specific principal according to the Illuminate Principals Enum
   /// @param u address of an underlying asset
   /// @param m maturity (timestamp) of the market
-  /// @param a amount ?
-  /// @param r minimum amount to return ?
-  /// @param x tempus amm ?
-  /// @param t tempus pool ?
-  /// @param d deadline ?
+  /// @param a amount of underlying tokens to swap for
+  /// @param r minimum amount to return when executing the swap (sets a limit to slippage)
+  /// @param x tempus amm that executes the swap
+  /// @param t tempus pool that houses the underlying principal tokens
+  /// @param d timestamp by which the swap must occur otherwise the lend is reverted
+  /// @return returned number amount of underlying tokens that were lent
   function lend(uint8 p, address u, uint256 m, uint256 a, uint256 r, address x, address t, uint256 d) public returns (uint256) {
       // Instantiate market and tokens
       address principal = IIlluminate(illuminate).markets(u, m)[p];

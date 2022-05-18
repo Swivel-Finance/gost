@@ -20,8 +20,9 @@ interface IErc20Metadata is IErc20 {
 contract Tempus {
     struct RedeemToBackingArgs {
         uint256 amount;
-        uint256 maturity;
-        address underlying;
+        uint256 yield;
+        address recipient;
+
     }
 
     struct DepositAndFixArgs {
@@ -65,7 +66,7 @@ contract Tempus {
         return depositAndFixReturn;
     }
 
-    function redeemToBacking(address o, uint256 m, uint256 a, address u) external {
-        redeemToBackingCalled[o] = RedeemToBackingArgs(a, m, u);
+    function redeemToBacking(address o, uint256 a, uint256 y, address r) external {
+        redeemToBackingCalled[o] = RedeemToBackingArgs(a, y, r);
     }
 }

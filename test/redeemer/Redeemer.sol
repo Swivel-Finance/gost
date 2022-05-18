@@ -31,27 +31,34 @@ contract Redeemer {
 
   /// @notice Redeems underlying token for illuminate, apwine and tempus 
   /// protocols
+  /// @notice Illuminate burns its tokens prior to redemption, unlike APWine and
+  /// Tempus, which withdraw their tokens after transferring the underlying to 
+  /// the redeem contract
   /// @param p value of a specific principal according to the Illuminate Principals Enum
   /// @param u the underlying token being redeemed
   /// @param m the maturity of the market being redeemed
-  /// @param o the owner of the underlying tokens being redeemed
-  /// TODO: owner is a bad name for the 4th parameter. For illuminate, it makes
-  /// sense, but for Tempus/APWine, it should be something like router. Ask
-  /// Julian for clarification.
+  /// @param o address of the controller or contract that manages the underlying token
   function redeem(uint8 p, address u, uint256 m, address o) public returns (bool) {
+    // Get the address of the principal token being redeemed
     address principal = IIlluminate(illuminate).markets(u, m)[p];
 
+    // Get the amount of tokens to be redeemed from the principal token
     uint256 amount = IErc20(principal).balanceOf(o);
+
+    // Transfer the underlying token to the redeem contract if it is not illuminate
+    if (p != uint8(Illuminate.Principals.Illuminate)) {
+        Safe.transferFrom(IErc20(u), illuminate, address(this), amount);
+    }
 
     if (p == uint8(Illuminate.Principals.Apwine)) {
         IAPWine(apwineAddr).withdraw(o, amount);
     } else if (p == uint8(Illuminate.Principals.Tempus)) {
-        ITempus(tempusAddr).redeemToBacking(o, m, amount, u);
+        // Redeem the tokens from the tempus contract to illuminate
+        ITempus(tempusAddr).redeemToBacking(o, amount, 0, address(this));
     } else if (p == uint8(Illuminate.Principals.Illuminate)) {
         IZcToken(principal).burn(o, amount);
+        Safe.transferFrom(IErc20(u), illuminate, address(this), amount);
     }
-
-    Safe.transfer(IErc20(u), o, amount);
 
     emit Redeem(0, u, m, amount);
 
@@ -105,9 +112,6 @@ contract Redeemer {
 
     // Redeem the tokens from the pendle contract
     IPendle(pendleAddr).redeemAfterExpiry(i, u, m);
-
-    emit Redeem(p, u, m, amount);
-
     return true;
   }
 
