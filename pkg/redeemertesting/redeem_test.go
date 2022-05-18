@@ -235,7 +235,7 @@ func (s *redeemTestSuite) TestAPWineRedeem() {
 	s.APWineToken.BalanceOfReturns(amount)
 	s.Env.Blockchain.Commit()
 
-	s.Erc20.TransferReturns(true)
+	s.Erc20.TransferFromReturns(true)
 	s.Env.Blockchain.Commit()
 
 	tx, err := s.Redeemer.Redeem0(principal, s.Dep.Erc20Address, maturity, owner)
@@ -252,9 +252,10 @@ func (s *redeemTestSuite) TestAPWineRedeem() {
 	assert.NoError(err)
 	assert.Equal(owner, vaultCalled)
 
-	underlyingTransfer, err := s.Erc20.TransferCalled(owner)
+	underlyingTransfer, err := s.Erc20.TransferFromCalled(s.Dep.IlluminateAddress)
 	assert.NoError(err)
-	assert.Equal(amount, underlyingTransfer)
+	assert.Equal(amount, underlyingTransfer.Amount)
+	assert.Equal(s.Dep.RedeemerAddress, underlyingTransfer.To)
 }
 
 func (s *redeemTestSuite) TestTempusRedeem() {
@@ -283,7 +284,7 @@ func (s *redeemTestSuite) TestTempusRedeem() {
 	s.TempusToken.BalanceOfReturns(amount)
 	s.Env.Blockchain.Commit()
 
-	s.Erc20.TransferReturns(true)
+	s.Erc20.TransferFromReturns(true)
 	s.Env.Blockchain.Commit()
 
 	tx, err := s.Redeemer.Redeem0(prinicipal, s.Dep.Erc20Address, maturity, owner)
@@ -298,9 +299,10 @@ func (s *redeemTestSuite) TestTempusRedeem() {
 	assert.Equal(maturity, redeemCall.Maturity)
 	assert.Equal(s.Dep.Erc20Address, redeemCall.Underlying)
 
-	underlyingTransfer, err := s.Erc20.TransferCalled(owner)
+	underlyingTransfer, err := s.Erc20.TransferFromCalled(s.Dep.IlluminateAddress)
 	assert.NoError(err)
-	assert.Equal(amount, underlyingTransfer)
+	assert.Equal(amount, underlyingTransfer.Amount)
+	assert.Equal(s.Dep.RedeemerAddress, underlyingTransfer.To)
 }
 
 func (s *redeemTestSuite) TestIlluminateRedeem() {
