@@ -51,6 +51,7 @@ contract Redeemer {
     }
 
     if (p == uint8(Illuminate.Principals.Apwine)) {
+        // Redeem the underlying token from APWine to illuminate
         IAPWine(apwineAddr).withdraw(o, amount);
     } else if (p == uint8(Illuminate.Principals.Tempus)) {
         // Redeem the tokens from the tempus contract to illuminate
