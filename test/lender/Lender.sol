@@ -279,6 +279,7 @@ contract Lender {
   /// @param ma the minimum amount of zero-coupon tokens to return accounting for slippage
   /// @param po the address of a given APWine pool
   /// @param i the id of the pool
+  /// @return returned the amount of underlying tokens that were lent
   function lend(uint8 p, address u, uint256 m, uint256 a, uint256 ma, address po, uint256 i) public returns (uint256) {
       // Instantiate market and tokens
       address[8] memory markets = IIlluminate(illuminate).markets(u, m);
