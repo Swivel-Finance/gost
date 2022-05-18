@@ -164,7 +164,7 @@ contract Lender {
 
     uint256 purchased = IElement(e).swap(swap, fund, r, d);
 
-    emit Lend(p, u, m, IElement(e).swap(swap, fund, r, d));
+    emit Lend(p, u, m, purchased);
     return purchased;
   }
 
