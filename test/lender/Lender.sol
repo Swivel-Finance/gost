@@ -133,9 +133,7 @@ contract Lender {
   /// @param r minimum amount to return 
   /// @param d deadline ?
   function lend(uint8 p, address u, uint256 m, address e, bytes32 i, uint256 a, uint256 r, uint256 d) public returns (uint256) {
-    // safe transfer from uToken is uniform
-    Safe.transferFrom(IErc20(u), msg.sender, address(this), a);
-
+    // Get the principal token for this market for element
     IElementToken token = IElementToken(IIlluminate(illuminate).markets(u, m)[p]);
 
     // the element token must match the market pair
@@ -145,6 +143,7 @@ contract Lender {
     // Transfer underlying token from user to illuminate
     Safe.transferFrom(IErc20(u), msg.sender, address(this), a);
     
+    // Create the variables needed to execute an element swap
     Element.FundManagement memory fund = Element.FundManagement({
       sender: address(this),
       recipient: payable(address(this)),
@@ -162,6 +161,7 @@ contract Lender {
     });
 
 
+    // Conduct the swap on element
     uint256 purchased = IElement(e).swap(swap, fund, r, d);
 
     emit Lend(p, u, m, purchased);
