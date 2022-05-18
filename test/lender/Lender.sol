@@ -174,11 +174,12 @@ contract Lender {
   /// @param u address of an underlying asset
   /// @param m maturity (timestamp) of the market
   /// @param a the amount of underlying tokens to lend
-  /// @param mb the minimum amount of zero-coupon tokens to return accounting for slippage
+  /// @param r the minimum amount of zero-coupon tokens to return accounting for slippage
   /// @param d the maximum timestamp at which the transaction can be executed
-  function lend(uint8 p, address u, uint256 m, uint256 a, uint256 mb, uint256 d) public returns (uint256) {
+  function lend(uint8 p, address u, uint256 m, uint256 a, uint256 r, uint256 d) public returns (uint256) {
       // Instantiate market and tokens
-      address principal = IIlluminate(illuminate).markets(u, m)[p];
+      address[8] memory markets = IIlluminate(illuminate).markets(u, m); 
+      address principal = markets[p];
       IPendleToken token = IPendleToken(principal); // rename to pendletoken
 
       // confirm that we are in the correct market
@@ -194,11 +195,11 @@ contract Lender {
       path[1] = principal;
 
       // Swap on the Pendle Router using the provided market and params
-      uint256 returned = IPendle(pendleAddr).swapExactTokensForTokens(a, mb, path, address(this), d)[0];
+      uint256 returned = IPendle(pendleAddr).swapExactTokensForTokens(a, r, path, address(this), d)[0];
 
       // Mint Illuminate zero coupons
-      address[8] memory markets = IIlluminate(illuminate).markets(u, m); 
-      IZcToken(markets[uint256(Illuminate.Principals.Illuminate)]).mint(msg.sender, returned);
+      address illuminateToken = markets[uint8(Illuminate.Principals.Illuminate)];
+      IZcToken(illuminateToken).mint(msg.sender, returned);
 
       emit Lend(p, u, m, returned);
 
