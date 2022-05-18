@@ -92,18 +92,19 @@ contract Redeemer {
   /// @param p value of a specific principal according to the Illuminate Principals Enum
   /// @param u underlying token being redeemed
   /// @param m maturity of the market being redeemed
-  /// @param i forge id ?
-  function redeem(uint8 p, address u, uint256 m, bytes32 i) public returns (bool) {    
+  /// @param i forge id used by pendle to redeem the underlying token
+  function redeem(uint8 p, address u, uint256 m, bytes32 i) public returns (bool) {
+    // Get the principal token that is being redeemed by the user
     IErc20 token = IErc20(IIlluminate(illuminate).markets(u, m)[p]);
 
+    // Get the balance of tokens to be redeemed by the user
     uint256 amount = token.balanceOf(illuminate);
 
+    // Transfer the user's tokens to the redeem contract
     Safe.transferFrom(token, illuminate, address(this), amount);
 
+    // Redeem the tokens from the pendle contract
     IPendle(pendleAddr).redeemAfterExpiry(i, u, m);
-
-    emit Redeem(p, u, m, amount);
-
     return true;
   }
 
