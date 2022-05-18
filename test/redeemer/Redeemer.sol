@@ -123,9 +123,8 @@ contract Redeemer {
   /// @param u underlying token being redeemed
   /// @param m maturity of the market being redeemed
   /// @param d sense contract that splits the loan's prinicpal and yield
-  /// @param a sense contract that holds special logic for managing the underlying 
-  /// token before and after it is sent to its respective Sense divider contract
-  function redeem(uint8 p, address u, uint256 m, address d, address a) public returns (bool) {
+  /// @param o sense contract that [d] calls into to adapt the underlying to sense
+  function redeem(uint8 p, address u, uint256 m, address d, address o) public returns (bool) {
     // Get the principal token for the given market
     IErc20 token = IErc20(IIlluminate(illuminate).markets(u, m)[p]);
 
@@ -139,7 +138,7 @@ contract Redeemer {
     Safe.transferFrom(token, illuminate, self, amount);
 
     // Redeem the tokens from the sense contract
-    ISense(d).redeem(a, m, amount);
+    ISense(d).redeem(o, m, amount);
 
     emit Redeem(p, u, m, amount);
 
