@@ -124,38 +124,26 @@ contract Lender {
   }
 
   /// @dev lend method signature for element
-  /// @notice can be called before maturity to lend to Element / Sense ?
   /// @param p value of a specific principal according to the Illuminate Principals Enum
   /// @param u address of an underlying asset
   /// @param m maturity (timestamp) of the market
-  /// @param e element pool ?
-  /// @param i element pool id ?
-  /// @param a amount ?
-  /// @param r minimum amount to return ?
+  /// @param e element pool that is lent to
+  /// @param i element pool id 
+  /// @param a amount of principal tokens to lend
+  /// @param r minimum amount to return 
   /// @param d deadline ?
   function lend(uint8 p, address u, uint256 m, address e, bytes32 i, uint256 a, uint256 r, uint256 d) public returns (uint256) {
-    // safe transfer from uToken is uniform
-    Safe.transferFrom(IErc20(u), msg.sender, address(this), a);
-
+    // Get the principal token for this market for element
     IElementToken token = IElementToken(IIlluminate(illuminate).markets(u, m)[p]);
 
     // the element token must match the market pair
     require(token.underlying() == u, '');
     require(token.unlockTimestamp() == m, '');
 
-
-    // TODO:  safe transfer... self...
+    // Transfer underlying token from user to illuminate
+    Safe.transferFrom(IErc20(u), msg.sender, address(this), a);
     
-    // TODO: userData should be set to address(0) in bytes form
-    Element.SingleSwap memory swap = Element.SingleSwap({
-      userData: "",
-      poolId: i, 
-      amount: a,
-      kind: Element.SwapKind.In, // TODO OG cantract has foo.Enum(0) ?
-      assetIn: Any(u),
-      assetOut: Any(e)
-    });
-
+    // Create the variables needed to execute an element swap
     Element.FundManagement memory fund = Element.FundManagement({
       sender: address(this),
       recipient: payable(address(this)),
@@ -163,8 +151,21 @@ contract Lender {
       toInternalBalance: false
     });
 
-    emit Lend(p, u, m, IElement(e).swap(swap, fund, r, d));
-    return IElement(e).swap(swap, fund, r, d);
+    Element.SingleSwap memory swap = Element.SingleSwap({
+      userData: "0x00000000000000000000000000000000000000000000000000000000000000",
+      poolId: i, 
+      amount: a,
+      kind: Element.SwapKind.In,
+      assetIn: Any(u),
+      assetOut: Any(IIlluminate(illuminate).markets(u, m)[p])
+    });
+
+
+    // Conduct the swap on element
+    uint256 purchased = IElement(e).swap(swap, fund, r, d);
+
+    emit Lend(p, u, m, purchased);
+    return purchased;
   }
 
   /// @dev lend method signature for pendle

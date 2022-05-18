@@ -31,7 +31,7 @@ contract Redeemer {
 
   /// @notice Redeems underlying token for illuminate, apwine and tempus 
   /// protocols
-  /// @param p: the principal token
+  /// @param p value of a specific principal according to the Illuminate Principals Enum
   /// @param u the underlying token being redeemed
   /// @param m the maturity of the market being redeemed
   /// @param o the owner of the underlying tokens being redeemed
@@ -59,8 +59,8 @@ contract Redeemer {
   }
 
   /// @dev redeem method for swivel, yield, element. This method redeems all
-  /// prinicipal tokens to illuminate upon maturity
-  /// @param p value of a specific principal according to the Illuminate Principals Enum
+  /// @param p prinicipal tokens to illuminate upon maturity
+  /// @param p the protocol being used to redeem
   /// @param u underlying token being redeemed
   /// @param m maturity of the market being redeemed
   function redeem(uint8 p, address u, uint256 m) public returns (bool) {
