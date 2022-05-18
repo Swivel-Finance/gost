@@ -344,7 +344,7 @@ func (s *redeemTestSuite) TestIlluminateRedeem() {
 	assert.NoError(err)
 	assert.Equal(amount, burnCall)
 
-	underlyingTransfer, err := s.Erc20.TransferFromCalled(owner)
+	underlyingTransfer, err := s.Erc20.TransferFromCalled(s.Dep.IlluminateAddress)
 	assert.NoError(err)
 	assert.Equal(amount, underlyingTransfer.Amount)
 	assert.Equal(s.Dep.RedeemerAddress, underlyingTransfer.To)
