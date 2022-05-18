@@ -57,7 +57,9 @@ contract Redeemer {
         // Redeem the tokens from the tempus contract to illuminate
         ITempus(tempusAddr).redeemToBacking(o, amount, 0, address(this));
     } else if (p == uint8(Illuminate.Principals.Illuminate)) {
+        // Burn the prinicipal token from illuminate
         IZcToken(principal).burn(o, amount);
+        // Transfer the original underlying token back to the user
         Safe.transferFrom(IErc20(u), illuminate, address(this), amount);
     }
 
