@@ -119,15 +119,19 @@ contract Redeemer {
   /// @param p value of a specific principal according to the Illuminate Principals Enum
   /// @param u underlying token being redeemed
   /// @param m maturity of the market being redeemed
-  /// @param d sense wut (divider?) ?
-  /// @param a sense wut (adapter?) ?
+  /// @param d sense contract that splits the loan's prinicpal and yield
+  /// @param a sense adapter contract that controls the underlying token
   function redeem(uint8 p, address u, uint256 m, address d, address a) public returns (bool) {
+    // Get the principal token for the given market
     IErc20 token = IErc20(IIlluminate(illuminate).markets(u, m)[p]);
 
+    // Get the balance of tokens to be redeemed by the user
     uint256 amount = token.balanceOf(address(this));
 
+    // Transfer the user's tokens to the redeem contract
     Safe.transferFrom(token, illuminate, address(this), amount);
 
+    // Redeem the tokens from the sense contract
     ISense(d).redeem(a, m, amount);
 
     emit Redeem(p, u, m, amount);
