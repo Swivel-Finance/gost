@@ -209,27 +209,31 @@ contract Lender {
   /// @param p value of a specific principal according to the Illuminate Principals Enum
   /// @param u address of an underlying asset
   /// @param m maturity (timestamp) of the market
-  /// @param a amount ?
-  /// @param r minimum amount to return ?
-  /// @param x tempus amm ?
-  /// @param t tempus pool ?
-  /// @param d deadline ?
+  /// @param a amount of underlying tokens to lend
+  /// @param r minimum amount to return
+  /// @param x amm that will execute the swap for the prinipal tokens
+  /// @param t pool that stores the yield bearing token for a given maturity
+  /// @param d timestamp by which the transaction must execute
   function lend(uint8 p, address u, uint256 m, uint256 a, uint256 r, address x, address t, uint256 d) public returns (uint256) {
       // Instantiate market and tokens
-      address principal = IIlluminate(illuminate).markets(u, m)[p];
+      address[8] memory markets = IIlluminate(illuminate).markets(u, m);
+      address principal = markets[p];
+
+      // verify that the underlying and maturity match the market
       require(ITempus(principal).yieldBearingToken() == IErc20Metadata(u), 'tempus underlying != underlying');
       require(ITempus(principal).maturityTime() == m, 'tempus maturity != maturity');
 
-      // Transfer funds from user to Illuminate, Scope to avoid stack limit
-      IErc20 underlyingToken = IErc20(u);
-      Safe.transferFrom(underlyingToken, msg.sender, address(this), a);
+      // transfer funds from user to Illuminate
+      Safe.transferFrom(IErc20(u), msg.sender, address(this), a);
 
-      // Swap on the Tempus Router using the provided market and params
-      IZcToken illuminateToken = IZcToken(IIlluminate(illuminate).markets(u, m)[uint256(Illuminate.Principals.Illuminate)]);
-      uint256 returned = ITempus(tempusAddr).depositAndFix(Any(x), Any(t), a, true, r, d) - illuminateToken.balanceOf(address(this));
+      // Read balance before swap to calculate difference
+      uint256 starting = IZcToken(principal).balanceOf(address(this));
 
-      // Mint Illuminate zero coupons
-      illuminateToken.mint(msg.sender, returned);
+      // swap on the Tempus Router using the provided market and params
+      uint256 returned = ITempus(tempusAddr).depositAndFix(Any(x), Any(t), a, true, r, d) - starting;
+
+      // mint Illuminate zero coupons
+      IZcToken(markets[uint256(Illuminate.Principals.Illuminate)]).mint(msg.sender, returned);
 
       emit Lend(p, u, m, returned);
 
