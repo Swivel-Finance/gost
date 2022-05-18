@@ -105,6 +105,9 @@ contract Redeemer {
 
     // Redeem the tokens from the pendle contract
     IPendle(pendleAddr).redeemAfterExpiry(i, u, m);
+
+    emit Redeem(p, u, m, amount);
+
     return true;
   }
 
