@@ -51,12 +51,15 @@ contract Redeemer {
     }
 
     if (p == uint8(Illuminate.Principals.Apwine)) {
+        // Redeem the underlying token from APWine to illuminate
         IAPWine(apwineAddr).withdraw(o, amount);
     } else if (p == uint8(Illuminate.Principals.Tempus)) {
         // Redeem the tokens from the tempus contract to illuminate
         ITempus(tempusAddr).redeemToBacking(o, amount, 0, address(this));
     } else if (p == uint8(Illuminate.Principals.Illuminate)) {
+        // Burn the prinicipal token from illuminate
         IZcToken(principal).burn(o, amount);
+        // Transfer the original underlying token back to the user
         Safe.transferFrom(IErc20(u), illuminate, address(this), amount);
     }
 
@@ -119,16 +122,23 @@ contract Redeemer {
   /// @param p value of a specific principal according to the Illuminate Principals Enum
   /// @param u underlying token being redeemed
   /// @param m maturity of the market being redeemed
-  /// @param d sense wut (divider?) ?
-  /// @param a sense wut (adapter?) ?
-  function redeem(uint8 p, address u, uint256 m, address d, address a) public returns (bool) {
+  /// @param d sense contract that splits the loan's prinicpal and yield
+  /// @param o sense contract that [d] calls into to adapt the underlying to sense
+  function redeem(uint8 p, address u, uint256 m, address d, address o) public returns (bool) {
+    // Get the principal token for the given market
     IErc20 token = IErc20(IIlluminate(illuminate).markets(u, m)[p]);
 
-    uint256 amount = token.balanceOf(address(this));
+    // Set the redeemer contract address
+    address self = address(this);
 
-    Safe.transferFrom(token, illuminate, address(this), amount);
+    // Get the balance of tokens to be redeemed by the user
+    uint256 amount = token.balanceOf(self);
 
-    ISense(d).redeem(a, m, amount);
+    // Transfer the user's tokens to the redeem contract
+    Safe.transferFrom(token, illuminate, self, amount);
+
+    // Redeem the tokens from the sense contract
+    ISense(d).redeem(o, m, amount);
 
     emit Redeem(p, u, m, amount);
 

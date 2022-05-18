@@ -244,36 +244,43 @@ contract Lender {
   /// @param p value of a specific principal according to the Illuminate Principals Enum
   /// @param u address of an underlying asset
   /// @param m maturity (timestamp) of the market
-  /// @param x sense wut ?
-  /// @param sa sense adapter?
-  /// @param a amount ?
-  /// @param mb amount ?
-  function lend(uint8 p, address u, uint256 m, address x, address sa, uint128 a, uint256 mb) public returns (uint256){
-        // Instantiate market and tokens
-        // TODO: Check that we have the right underlying and maturity
+  /// @param x amm that is used to conduct the swap
+  /// @param s contract that holds the principal token for this market
+  /// @param a amount of underlying tokens to lend
+  /// @param r minimum number of tokens to lend (sets a limit on the order)
+  function lend(uint8 p, address u, uint256 m, address x, address s, uint128 a, uint256 r) public returns (uint256){
+    // Get the principal token for this market for this market
+    ISenseToken token = ISenseToken(IIlluminate(illuminate).markets(u, m)[p]);
 
-        // Transfer funds from user to Illuminate
-        IErc20 token = IErc20(u);
-        Safe.transferFrom(token, msg.sender, address(this), a);
-        uint256 returned = ISense(x).swapUnderlyingForPTs(sa, m, a, mb);
+    // Verify that the underlying matches up
+    require(token.underlying() == u, "sense underlying != underlying");
+    
+    // Transfer funds from user to Illuminate
+    Safe.transferFrom(IErc20(u), msg.sender, address(this), a);
+    
+    // Swap those tokens for the principal tokens
+    uint256 returned = ISense(x).swapUnderlyingForPTs(s, m, a, r);
 
-        address[8] memory markets = IIlluminate(illuminate).markets(u, m);
-        IZcToken illuminateToken = IZcToken(markets[uint256(Illuminate.Principals.Illuminate)]);
-        illuminateToken.mint(msg.sender, returned);
+    // Get the address of the ZC token for this market
+    IZcToken illuminateToken = IZcToken(IIlluminate(illuminate).markets(u, m)[uint256(Illuminate.Principals.Illuminate)]);
+    
+    // Mint the illuminate tokens based on the returned amount
+    illuminateToken.mint(msg.sender, returned);
 
-        emit Lend(p, u, m, returned);
+    emit Lend(p, u, m, returned);
 
-        return (returned);
+    return returned;
   }
 
-    /// @notice Can be called before maturity to lend to APWine while minting Illuminate tokens
+  /// @notice Can be called before maturity to lend to APWine while minting Illuminate tokens
   /// @param u the underlying token being redeemed
   /// @param m the maturity of the market being redeemed
   /// @param a the amount of underlying tokens to lend
-  /// @param ma the minimum amount of zero-coupon tokens to return accounting for slippage
-  /// @param po the address of a given APWine pool
+  /// @param r the minimum amount of zero-coupon tokens to return accounting for slippage
+  /// @param pool the address of a given APWine pool
   /// @param i the id of the pool
-  function lend(uint8 p, address u, uint256 m, uint256 a, uint256 ma, address po, uint256 i) public returns (uint256) {
+  /// @return returned the amount of underlying tokens that were lent
+  function lend(uint8 p, address u, uint256 m, uint256 a, uint256 r, address pool, uint256 i) public returns (uint256) {
       // Instantiate market and tokens
       address[8] memory markets = IIlluminate(illuminate).markets(u, m);
       require(IAPWineToken(markets[p]).getPTAddress() == u, "apwine principle != principle");
@@ -282,7 +289,7 @@ contract Lender {
       Safe.transferFrom(IErc20(u), msg.sender, address(this), a);   
 
       // Swap on the APWine Pool using the provided market and params
-      uint256 returned = IAPWineRouter(po).swapExactAmountIn(i, 1, a, 0, ma, address(this));
+      uint256 returned = IAPWineRouter(pool).swapExactAmountIn(i, 1, a, 0, r, address(this));
 
       // Mint Illuminate zero coupons
       IZcToken(markets[uint256(Illuminate.Principals.Illuminate)]).mint(msg.sender, returned);

@@ -550,14 +550,17 @@ func (s *lendTestSuite) TestLendSense() {
 	assert := assert.New(s.T())
 	s.Illuminate.MarketsReturns([8]common.Address{
 		s.Dep.ZcTokenAddress,
-		s.Dep.SenseAddress,
-		s.Dep.SenseAddress,
-		s.Dep.SenseAddress,
-		s.Dep.SenseAddress,
-		s.Dep.SenseAddress,
-		s.Dep.SenseAddress,
-		s.Dep.SenseAddress,
+		s.Dep.SenseTokenAddress,
+		s.Dep.SenseTokenAddress,
+		s.Dep.SenseTokenAddress,
+		s.Dep.SenseTokenAddress,
+		s.Dep.SenseTokenAddress,
+		s.Dep.SenseTokenAddress,
+		s.Dep.SenseTokenAddress,
 	})
+	s.Env.Blockchain.Commit()
+
+	s.SenseToken.UnderlyingReturns(s.Dep.Erc20Address)
 	s.Env.Blockchain.Commit()
 
 	s.SenseToken.UnderlyingReturns(s.Dep.Erc20Address)
