@@ -15,10 +15,8 @@
 .PHONY: compile_mock_deps
 .PHONY: compile_mocks
 
-# TODO under? api-specific sol?
-
-# .PHONY: compile_solidity_zct compile_go_zct compile_zct
-# .PHONY: compile_tokens
+.PHONY: compile_solidity_zct compile_go_zct compile_zct
+.PHONY: compile_tokens
 
 .PHONY: compile_solidity_illuminate_test compile_go_illuminate_test compile_illuminate_test
 .PHONY: compile_solidity_lender_test compile_go_lender_test compile_lender_test
@@ -28,10 +26,13 @@
 .PHONY: clean_test_abi clean_test_bin clean_test_go
 .PHONY: clean_test
 
-# .PHONY: clean_build_sol clean_build_abi clean_build_bin clean_build_go
-# .PHONY: clean_build
+.PHONY: clean_build_sol clean_build_abi clean_build_bin clean_build_go
+.PHONY: clean_build
 
-# .PHONY: copy_to_build
+.PHONY: copy_to_build
+
+.PHONY: compile_illuminate_build compile_lender_build compile_redeemer_build
+.PHONY: compile_build
 
 .PHONY: all
 
@@ -201,21 +202,21 @@ compile_mock_deps: compile_mock_erc compile_mock_zc_token
 compile_mocks: compile_mock_deps compile_mock_illuminate compile_mock_swivel compile_mock_yield compile_mock_yield_token compile_mock_element compile_mock_pendle compile_mock_tempus compile_mock_sense compile_mock_sense_token compile_mock_apwine compile_mock_tempus_token
 
 # Real Tokens
-# compile_solidity_zct:
-# 	@echo "compiling ZCT solidity source into abi and bin files"
-# 	solc -o ./test/tokens --abi --bin --overwrite ./test/tokens/ZcToken.sol
+compile_solidity_zct:
+	@echo "compiling ZCT solidity source into abi and bin files"
+	solc -o ./test/tokens --abi --bin --overwrite ./test/tokens/ZcToken.sol
 
-# compile_go_zct:
-# 	@echo "compiling abi and bin files to golang"
-# 	abigen --abi ./test/tokens/ZcToken.abi --bin ./test/tokens/ZcToken.bin -pkg tokens -type ZcToken -out ./test/tokens/zctoken.go 
+compile_go_zct:
+	@echo "compiling abi and bin files to golang"
+	abigen --abi ./test/tokens/ZcToken.abi --bin ./test/tokens/ZcToken.bin -pkg tokens -type ZcToken -out ./test/tokens/zctoken.go 
 
-# compile_zct: compile_solidity_zct compile_go_zct
+compile_zct: compile_solidity_zct compile_go_zct
 
-# compile_tokens: compile_zct
+compile_tokens: compile_zct
 
 # Fakes
 
-# Contracts
+# Contracts for unit testing (with mocks)
 compile_solidity_illuminate_test:
 	@echo "compiling Illuminate solidity source into abi and bin files"
 	solc -o ./test/illuminate --optimize --optimize-runs=15000 --abi --bin --overwrite ./test/illuminate/Illuminate.sol
@@ -262,22 +263,70 @@ clean_test_go:
 
 clean_test: clean_test_abi clean_test_bin clean_test_go
 
-# clean_build_sol:
-# 	@echo "removing sol files from build/ dirs"
-# 	rm build/**/*.sol
-# 
-# clean_build_abi:
-# 	@echo "removing abi files from build/ dirs"
-# 	rm build/**/*.abi
-# 
-# clean_build_bin:
-# 	@echo "removing bin files from build/ dirs"
-# 	rm build/**/*.bin
-# 
-# clean_build_go:
-# 	@echo "removing go files from build/ dirs"
-# 	rm build/**/*.go
-# 
-# clean_build: clean_build_sol clean_build_abi clean_build_bin clean_build_go
+clean_build_sol:
+	@echo "removing sol files from build/ dirs"
+	rm build/**/*.sol
 
-all: clean_test compile_mocks compile_test
+clean_build_abi:
+	@echo "removing abi files from build/ dirs"
+	rm build/**/*.abi
+
+clean_build_bin:
+	@echo "removing bin files from build/ dirs"
+	rm build/**/*.bin
+
+clean_build_go:
+	@echo "removing go files from build/ dirs"
+	rm build/**/*.go
+
+clean_build: clean_build_sol clean_build_abi clean_build_bin clean_build_go
+
+# Copying to build, prepare for compiling build assets
+copy_illuminate_to_build:
+	@echo "copying Illuminate files to build"
+	cp test/illuminate/Illuminate.sol build/illuminate
+	cp test/illuminate/Interfaces.sol build/illuminate
+	cp test/illuminate/Safe.sol build/illuminate
+	cp test/tokens/Hash.sol build/illuminate
+	cp test/tokens/PErc20.sol build/illuminate
+	cp test/tokens/IPErc20.sol build/illuminate
+	cp test/tokens/Erc2612.sol build/illuminate
+	cp test/tokens/IErc2612.sol build/illuminate
+	cp test/tokens/ZcToken.sol build/illuminate
+	cp test/tokens/IZcToken.sol build/illuminate
+
+copy_lender_to_build:
+	@echo "copying Lender files to build"
+	cp test/lender/Lender.sol build/lender
+	cp test/lender/Interfaces.sol build/lender
+	cp test/lender/Illuminate.sol build/lender
+	cp test/lender/Swivel.sol build/lender
+	cp test/lender/Element.sol build/lender
+	cp test/lender/Safe.sol build/lender
+	cp test/lender/Cast.sol build/lender
+
+copy_redeemer_to_build:
+	@echo "copying Redeemer files to build"
+	cp test/redeemer/Redeemer.sol build/redeemer
+	cp test/redeemer/Interfaces.sol build/redeemer
+	cp test/redeemer/Illuminate.sol build/redeemer
+	cp test/redeemer/Safe.sol build/redeemer
+
+copy_to_build: copy_illuminate_to_build copy_lender_to_build copy_redeemer_to_build
+
+# Contracts for production (without mocks)
+compile_illuminate_build:
+	solc -o ./build/illuminate --optimize --optimize-runs=15000 --abi --bin --overwrite ./build/illuminate/Illuminate.sol
+	abigen --abi ./build/illuminate/Illuminate.abi --bin ./build/illuminate/Illuminate.bin -pkg illuminate -type Illuminate -out ./build/illuminate/illuminate.go
+
+compile_lender_build:
+	solc -o ./build/lender --optimize --optimize-runs=15000 --abi --bin --overwrite ./build/lender/Lender.sol
+	abigen --abi ./build/lender/Lender.abi --bin ./build/lender/Lender.bin -pkg lender -type Lender -out ./build/lender/lender.go
+
+compile_redeemer_build:
+	solc -o ./build/redeemer --optimize --optimize-runs=15000 --abi --bin --overwrite ./build/redeemer/Redeemer.sol
+	abigen --abi ./build/redeemer/Redeemer.abi --bin ./build/redeemer/Redeemer.bin -pkg redeemer -type Redeemer -out ./build/redeemer/redeemer.go
+
+compile_build: compile_illuminate_build compile_lender_build compile_redeemer_build
+
+all: clean_test compile_mocks compile_test clean_build copy_to_build compile_build
