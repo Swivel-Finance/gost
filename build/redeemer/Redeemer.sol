@@ -17,14 +17,21 @@ contract Redeemer {
 
   event Redeem(uint8 principal, address indexed underlying, uint256 indexed maturity, uint256 amount);  
 
-  /// @param m the deployed Illuminate contract
-  constructor(address m, address a, address t, address p, address s) {
+  /// @param a: the apwine contract
+  /// @param t: the tempus contract
+  /// @param p: the pendle contract
+  /// @param s: the swivel contract
+  constructor(address a, address t, address p, address s) {
     admin = msg.sender;
-    illuminate = m; // TODO add an authorized setter for this?
     apwineAddr = a;
     tempusAddr = t;
     pendleAddr = p;
     swivelAddr = s;
+  }
+
+  function setIlluminate(address i) external {
+    require(msg.sender == admin);
+    illuminate = i;
   }
 
   /// @notice Redeems underlying token for illuminate, apwine and tempus 
