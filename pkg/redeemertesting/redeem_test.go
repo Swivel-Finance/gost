@@ -207,6 +207,9 @@ func (s *redeemTestSuite) SetupSuite() {
 			Signer: s.Env.Owner.Opts.Signer,
 		},
 	}
+
+	s.Redeemer.SetIlluminate(s.Dep.IlluminateAddress)
+	s.Env.Blockchain.Commit()
 }
 
 func (s *redeemTestSuite) TestAPWineRedeem() {
