@@ -31,9 +31,10 @@ contract Lender {
     tempusAddr = t;
   }
 
-  function setIlluminateAddress(address i) external {
-    require(msg.sender == admin);
+  function setIlluminateAddress(address i) authorized(admin) external returns (bool) {
+    require(illuminate == address(0));
     illuminate = i;
+    return true;
   }
 
   /// @dev mint is uniform across all principals, thus there is no need for a 'minter'
@@ -318,5 +319,10 @@ contract Lender {
     IYield(y).sellBase(address(this), returned);
 
     return returned;
+  }
+
+  modifier authorized(address a) {
+    require(msg.sender == a, 'sender must be authorized');
+    _;
   }
 }

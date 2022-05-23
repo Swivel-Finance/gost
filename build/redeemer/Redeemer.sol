@@ -29,9 +29,10 @@ contract Redeemer {
     swivelAddr = s;
   }
 
-  function setIlluminateAddress(address i) external {
-    require(msg.sender == admin);
+  function setIlluminateAddress(address i) authorized(admin) external returns (bool) {
+    require(illuminate == address(0));
     illuminate = i;
+    return true;
   }
 
   /// @notice Redeems underlying token for illuminate, apwine and tempus 
@@ -148,5 +149,10 @@ contract Redeemer {
     emit Redeem(p, u, m, amount);
 
     return true;
+  }
+
+  modifier authorized(address a) {
+    require(msg.sender == a, 'sender must be authorized');
+    _;
   }
 }
