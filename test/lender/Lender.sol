@@ -31,7 +31,7 @@ contract Lender {
     tempusAddr = t;
   }
 
-  function setIlluminate(address i) external {
+  function setIlluminateAddress(address i) external {
     require(msg.sender == admin);
     illuminate = i;
   }
