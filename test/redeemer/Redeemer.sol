@@ -29,6 +29,10 @@ contract Redeemer {
     swivelAddr = s;
   }
 
+  /// Sets the address of the illuminate contract, contains the addresses of all
+  /// the aggregated markets
+  /// @param i: the address of the illumninate contract
+  /// @return bool: true if the address was set, false otherwise
   function setIlluminateAddress(address i) authorized(admin) external returns (bool) {
     require(illuminate == address(0));
     illuminate = i;
