@@ -17,14 +17,26 @@ contract Redeemer {
 
   event Redeem(uint8 principal, address indexed underlying, uint256 indexed maturity, uint256 amount);  
 
-  /// @param m the deployed Illuminate contract
-  constructor(address m, address a, address t, address p, address s) {
+  /// @param a: the apwine contract
+  /// @param t: the tempus contract
+  /// @param p: the pendle contract
+  /// @param s: the swivel contract
+  constructor(address a, address t, address p, address s) {
     admin = msg.sender;
-    illuminate = m; // TODO add an authorized setter for this?
     apwineAddr = a;
     tempusAddr = t;
     pendleAddr = p;
     swivelAddr = s;
+  }
+  
+  /// Sets the address of the illuminate contract, contains the addresses of all
+  /// the aggregated markets
+  /// @param i: the address of the illumninate contract
+  /// @return bool: true if the address was set, false otherwise
+  function setIlluminateAddress(address i) authorized(admin) external returns (bool) {
+    require(illuminate == address(0));
+    illuminate = i;
+    return true;
   }
 
   /// @notice Redeems underlying token for illuminate, apwine and tempus 
@@ -91,7 +103,7 @@ contract Redeemer {
       IYieldToken(principal).redeem(address(this), address(this), amount);
     }
 
-    emit Redeem(p, u, m, amount);
+    emit Redeem(p, u, m, amount); 
 
     return true;
   }
@@ -141,5 +153,10 @@ contract Redeemer {
     emit Redeem(p, u, m, amount);
 
     return true;
+  }
+
+  modifier authorized(address a) {
+    require(msg.sender == a, 'sender must be authorized');
+    _;
   }
 }

@@ -179,6 +179,9 @@ func (s *lendTestSuite) SetupSuite() {
 		},
 	}
 
+	s.Lender.SetIlluminateAddress(s.Dep.IlluminateAddress)
+	s.Env.Blockchain.Commit()
+
 	ORDERS[0].Maker = s.Env.User1.Opts.From
 	ORDERS[1].Maker = s.Env.User2.Opts.From
 	ORDERS[0].Underlying = s.Dep.Erc20Address

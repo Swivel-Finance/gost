@@ -21,13 +21,24 @@ contract Lender {
   event Lend(uint8 principal, address indexed underlying, uint256 indexed maturity, uint256 returned);
   event Mint(uint8 principal, address indexed underlying, uint256 indexed maturity, uint256 amount);
 
-  /// @param i the deployed Illuminate contract
-  constructor(address i, address s, address p, address t) {
+  /// @param s: the swivel contract
+  /// @param p: the pendle contract
+  /// @param t: the tempus contract
+  constructor(address s, address p, address t) {
     admin = msg.sender;
-    illuminate = i; // TODO add an authorized setter for this?
     swivelAddr = s;
     pendleAddr = p;
     tempusAddr = t;
+  }
+  
+  /// Sets the address of the illuminate contract, contains the addresses of all
+  /// the aggregated markets
+  /// @param i: the address of the illumninate contract
+  /// @return bool: true if the address was set, false otherwise
+  function setIlluminateAddress(address i) authorized(admin) external returns (bool) {
+    require(illuminate == address(0));
+    illuminate = i;
+    return true;
   }
 
   /// @dev mint is uniform across all principals, thus there is no need for a 'minter'
@@ -312,5 +323,10 @@ contract Lender {
     IYield(y).sellBase(address(this), returned);
 
     return returned;
+  }
+
+  modifier authorized(address a) {
+    require(msg.sender == a, 'sender must be authorized');
+    _;
   }
 }
