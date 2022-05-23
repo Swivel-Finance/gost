@@ -98,7 +98,7 @@ contract Redeemer {
       IYieldToken(principal).redeem(address(this), address(this), amount);
     }
 
-    emit Redeem(p, u, m, amount);
+    emit Redeem(p, u, m, amount); 
 
     return true;
   }
