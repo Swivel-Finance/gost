@@ -208,7 +208,7 @@ func (s *redeemTestSuite) SetupSuite() {
 		},
 	}
 
-	s.Redeemer.SetIlluminate(s.Dep.IlluminateAddress)
+	s.Redeemer.SetIlluminateAddress(s.Dep.IlluminateAddress)
 	s.Env.Blockchain.Commit()
 }
 

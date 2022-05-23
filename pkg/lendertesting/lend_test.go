@@ -179,7 +179,7 @@ func (s *lendTestSuite) SetupSuite() {
 		},
 	}
 
-	s.Lender.SetIlluminate(s.Dep.IlluminateAddress)
+	s.Lender.SetIlluminateAddress(s.Dep.IlluminateAddress)
 	s.Env.Blockchain.Commit()
 
 	ORDERS[0].Maker = s.Env.User1.Opts.From
