@@ -34,8 +34,11 @@ contract Lender {
     feenominator = 1000;
   }
 
-  function setFee(uint256 f) external authorized(admin) {
+  /// Sets the feenominator to the given value
+  /// @param f: the new value of the feenominator
+  function setFee(uint256 f) external authorized(admin) returns (bool) {
     feenominator = f;
+    return true;
   }
   
   /// Sets the address of the illuminate contract, contains the addresses of all
