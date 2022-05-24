@@ -9,7 +9,6 @@ contract AaveAdapter {
     uint8 public protocol = 4;
 
     function exchangeRateCurrent(address a) external view returns (uint256){
-        IAToken aToken = IAToken(a);
-        return(IAavePool(aToken.POOL()).getReserveNormalizedIncome(aToken.UNDERLYING_ASSET_ADDRESS()));
+        return(IAavePool(IAToken(a).POOL()).getReserveNormalizedIncome(aToken.UNDERLYING_ASSET_ADDRESS()));
     }
 }
