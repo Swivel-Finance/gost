@@ -28,7 +28,7 @@ contract Redeemer {
     pendleAddr = p;
     swivelAddr = s;
   }
-  
+
   /// Sets the address of the illuminate contract, contains the addresses of all
   /// the aggregated markets
   /// @param i: the address of the illumninate contract
