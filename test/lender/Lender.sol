@@ -26,13 +26,12 @@ contract Lender {
   /// @param s: the swivel contract
   /// @param p: the pendle contract
   /// @param t: the tempus contract
-  /// @param f: set to be the feenominator, is correlated to the fee rate
-  constructor(address s, address p, address t, uint256 f) {
+  constructor(address s, address p, address t) {
     admin = msg.sender;
     swivelAddr = s;
     pendleAddr = p;
     tempusAddr = t;
-    feenominator = f;
+    feenominator = 1000;
   }
 
   function setFee(uint256 f) external authorized(admin) {

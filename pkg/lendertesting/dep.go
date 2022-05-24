@@ -1,8 +1,6 @@
 package lendertesting
 
 import (
-	"math/big"
-
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/swivel-finance/gost/test/lender"
 	"github.com/swivel-finance/gost/test/mocks"
@@ -155,7 +153,7 @@ func Deploy(e *Env) (*Dep, error) {
 
 	e.Blockchain.Commit()
 
-	lenderAddress, _, lender, lenderErr := lender.DeployLender(e.Owner.Opts, e.Blockchain, swAddress, peAddress, tAddress, big.NewInt(FEENOMINATOR))
+	lenderAddress, _, lender, lenderErr := lender.DeployLender(e.Owner.Opts, e.Blockchain, swAddress, peAddress, tAddress)
 	if lenderErr != nil {
 		return nil, lenderErr
 	}
