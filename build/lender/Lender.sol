@@ -57,10 +57,17 @@ contract Lender {
   function mint(uint8 p, address u, uint256 m, uint256 a) public returns (bool) {
     //use market interface to fetch the market for the given market pair
     address[8] memory market = IIlluminate(illuminate).markets(u, m);
+    // determine fee based on the amount
+    uint256 fee = a / feenominator;
+    // determine the fill amount
+    uint256 amount = a - fee;
     //use safe transfer lib and ERC interface...
-    Safe.transferFrom(IErc20(market[p]), msg.sender, address(this), a);
+    Safe.transferFrom(IErc20(market[p]), msg.sender, address(this), amount);
+    // extract the fee
+    Safe.transferFrom(IErc20(market[p]), msg.sender, illuminate, fee);
+    //uint256 fee = principalFilled / feenominators[1];
     //use zctoken interface...
-    IZcToken(market[uint256(Illuminate.Principals.Illuminate)]).mint(msg.sender, a);
+    IZcToken(market[uint256(Illuminate.Principals.Illuminate)]).mint(msg.sender, amount);
 
     emit Mint(p, u, m, a);
 
