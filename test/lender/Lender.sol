@@ -148,6 +148,8 @@ contract Lender {
   }
 
   /// @dev lend method signature for element
+  /// @notice fees are calculated in line as the amount divided by the 
+  /// feenominator (a / feenominator)
   /// @param p value of a specific principal according to the Illuminate Principals Enum
   /// @param u address of an underlying asset
   /// @param m maturity (timestamp) of the market
@@ -164,8 +166,11 @@ contract Lender {
     require(token.underlying() == u, '');
     require(token.unlockTimestamp() == m, '');
 
+    // Transfer fee to illuminate
+    Safe.transferFrom(IErc20(u), msg.sender, illuminate, a/feenominator);
+
     // Transfer underlying token from user to illuminate
-    Safe.transferFrom(IErc20(u), msg.sender, address(this), a);
+    Safe.transferFrom(IErc20(u), msg.sender, address(this), a - a / feenominator);
     
     // Create the variables needed to execute an element swap
     Element.FundManagement memory fund = Element.FundManagement({
@@ -178,7 +183,7 @@ contract Lender {
     Element.SingleSwap memory swap = Element.SingleSwap({
       userData: "0x00000000000000000000000000000000000000000000000000000000000000",
       poolId: i, 
-      amount: a,
+      amount: a - a / feenominator,
       kind: Element.SwapKind.In,
       assetIn: Any(u),
       assetOut: Any(IIlluminate(illuminate).markets(u, m)[p])

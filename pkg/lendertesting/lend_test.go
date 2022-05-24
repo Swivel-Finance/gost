@@ -446,7 +446,9 @@ func (s *lendTestSuite) TestLendElement() {
 	assert.Equal(deadline, swap.Deadline)
 	assert.Equal(limit, swap.Limit)
 	assert.Equal(s.Dep.LenderAddress, swap.Recipient)
-	assert.Equal(amount, swap.SwapAmount)
+	fee := new(big.Int).Div(amount, big.NewInt(FEENOMINATOR))
+	amountAfterFees := new(big.Int).Sub(amount, fee)
+	assert.Equal(amountAfterFees, swap.SwapAmount)
 }
 
 func (s *lendTestSuite) TestLendPendle() {
