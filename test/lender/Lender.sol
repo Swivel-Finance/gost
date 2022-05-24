@@ -26,6 +26,8 @@ contract Lender {
   /// @param s: the swivel contract
   /// @param p: the pendle contract
   /// @param t: the tempus contract
+  /// @dev the constrcutor sets a default value for the feenominator, which 
+  /// can be modified by calling setFee()
   constructor(address s, address p, address t) {
     admin = msg.sender;
     swivelAddr = s;
