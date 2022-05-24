@@ -36,6 +36,7 @@ contract Lender {
 
   /// Sets the feenominator to the given value
   /// @param f: the new value of the feenominator
+  /// @return: true if successful
   function setFee(uint256 f) external authorized(admin) returns (bool) {
     feenominator = f;
     return true;
