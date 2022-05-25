@@ -225,7 +225,7 @@ contract Lender {
       path[1] = principal;
 
       // Swap on the Pendle Router using the provided market and params
-      uint256 returned = IPendle(pendleAddr).swapExactTokensForTokens(a - a / feenominator, r, path, address(this), d)[0];
+      uint256 returned = IPendle(pendleAddr).swapExactTokensForTokens(a - (a / feenominator), r, path, address(this), d)[0];
 
       // Mint Illuminate zero coupons
       address illuminateToken = markets[uint8(Illuminate.Principals.Illuminate)];
@@ -261,7 +261,7 @@ contract Lender {
 
       // Swap on the Tempus Router using the provided market and params
       IZcToken illuminateToken = IZcToken(IIlluminate(illuminate).markets(u, m)[uint256(Illuminate.Principals.Illuminate)]);
-      uint256 returned = ITempus(tempusAddr).depositAndFix(Any(x), Any(t), a - a / feenominator, true, r, d) - illuminateToken.balanceOf(address(this));
+      uint256 returned = ITempus(tempusAddr).depositAndFix(Any(x), Any(t), a - (a / feenominator), true, r, d) - illuminateToken.balanceOf(address(this));
 
       // Mint Illuminate zero coupons
       illuminateToken.mint(msg.sender, returned);
