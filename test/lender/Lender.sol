@@ -23,11 +23,11 @@ contract Lender {
   event Lend(uint8 principal, address indexed underlying, uint256 indexed maturity, uint256 returned);
   event Mint(uint8 principal, address indexed underlying, uint256 indexed maturity, uint256 amount);
 
+  /// @notice Initializes the Lender contract
+  /// @dev the ctor sets a default value for the feenominator
   /// @param s: the swivel contract
   /// @param p: the pendle contract
   /// @param t: the tempus contract
-  /// @dev the constrcutor sets a default value for the feenominator, which 
-  /// can be modified by calling setFee()
   constructor(address s, address p, address t) {
     admin = msg.sender;
     swivelAddr = s;
@@ -36,7 +36,7 @@ contract Lender {
     feenominator = 1000;
   }
 
-  /// Sets the feenominator to the given value
+  /// @notice Sets the feenominator to the given value
   /// @param f: the new value of the feenominator
   /// @return true if successful
   function setFee(uint256 f) external authorized(admin) returns (bool) {
@@ -70,7 +70,6 @@ contract Lender {
     Safe.transferFrom(IErc20(market[p]), msg.sender, address(this), amount);
     // extract the fee
     Safe.transferFrom(IErc20(market[p]), msg.sender, illuminate, fee);
-    //uint256 fee = principalFilled / feenominators[1];
     //use zctoken interface...
     IZcToken(market[uint256(Illuminate.Principals.Illuminate)]).mint(msg.sender, amount);
 
@@ -175,7 +174,7 @@ contract Lender {
     Safe.transferFrom(IErc20(u), msg.sender, illuminate, a/feenominator);
 
     // Transfer underlying token from user to illuminate
-    Safe.transferFrom(IErc20(u), msg.sender, address(this), a - a / feenominator);
+    Safe.transferFrom(IErc20(u), msg.sender, address(this), a - (a / feenominator));
     
     // Create the variables needed to execute an element swap
     Element.FundManagement memory fund = Element.FundManagement({
@@ -188,7 +187,7 @@ contract Lender {
     Element.SingleSwap memory swap = Element.SingleSwap({
       userData: "0x00000000000000000000000000000000000000000000000000000000000000",
       poolId: i, 
-      amount: a - a / feenominator,
+      amount: a - (a / feenominator),
       kind: Element.SwapKind.In,
       assetIn: Any(u),
       assetOut: Any(IIlluminate(illuminate).markets(u, m)[p])
