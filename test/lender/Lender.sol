@@ -389,12 +389,15 @@ contract Lender {
   function withdraw(address e) external authorized(admin) returns (bool) {
     // Get the token to be withdrawn
     IErc20 token = IErc20(e);
-    
-    // Transfer the accumulated fees to the admin
-    Safe.transfer(token, admin, fees[e]);
+
+    // Get the balance to be transferred
+    uint256 balance = fees[e];
 
     // Reset accumulated fees of the token to 0
     fees[e] = 0;
+    
+    // Transfer the accumulated fees to the admin
+    Safe.transfer(token, admin, balance);
 
     return true;
   }
