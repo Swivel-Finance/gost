@@ -193,6 +193,8 @@ func (s *lendTestSuite) TestLendIlluminate() {
 
 	maturity := big.NewInt(100000)
 	amountLent := big.NewInt(5000)
+	fee := new(big.Int).Div(amountLent, big.NewInt(FEENOMINATOR))
+	lentAfterFees := new(big.Int).Sub(amountLent, fee)
 	sellBasePreview := big.NewInt(4000)
 
 	s.Erc20.TransferFromReturns(true)
@@ -242,7 +244,7 @@ func (s *lendTestSuite) TestLendIlluminate() {
 
 	yieldSellBasePreview, err := s.Yield.SellBasePreviewCalled()
 	assert.Nil(err)
-	assert.Equal(amountLent, yieldSellBasePreview)
+	assert.Equal(lentAfterFees, yieldSellBasePreview)
 
 	transferRes, err := s.Erc20.TransferCalled(s.Dep.YieldAddress)
 	assert.Nil(err)
@@ -251,6 +253,10 @@ func (s *lendTestSuite) TestLendIlluminate() {
 	yieldSellBase, err := s.Yield.SellBaseCalled(s.Dep.LenderAddress)
 	assert.Nil(err)
 	assert.Equal(amountLent, yieldSellBase)
+
+	transferredAmount, err := s.Erc20.TransferCalled(s.Dep.YieldAddress)
+	assert.Nil(err)
+	assert.Equal(amountLent, transferredAmount)
 }
 
 func (s *lendTestSuite) TestLendYield() {
@@ -258,6 +264,8 @@ func (s *lendTestSuite) TestLendYield() {
 
 	maturity := big.NewInt(100000)
 	amountLent := big.NewInt(5000)
+	fee := new(big.Int).Div(amountLent, big.NewInt(FEENOMINATOR))
+	lentAfterFees := new(big.Int).Sub(amountLent, fee)
 	sellBasePreview := big.NewInt(4000)
 
 	s.Erc20.TransferFromReturns(true)
@@ -311,7 +319,7 @@ func (s *lendTestSuite) TestLendYield() {
 
 	yieldSellBasePreview, err := s.Yield.SellBasePreviewCalled()
 	assert.Nil(err)
-	assert.Equal(amountLent, yieldSellBasePreview)
+	assert.Equal(lentAfterFees, yieldSellBasePreview)
 
 	transferRes, err := s.Erc20.TransferCalled(s.Dep.YieldAddress)
 	assert.Nil(err)
@@ -324,6 +332,10 @@ func (s *lendTestSuite) TestLendYield() {
 	mint, err := s.ZcToken.MintCalled(s.Env.Owner.Opts.From)
 	assert.Nil(err)
 	assert.Equal(amountLent, mint)
+
+	transferredAmount, err := s.Erc20.TransferCalled(s.Dep.YieldAddress)
+	assert.Nil(err)
+	assert.Equal(amountLent, transferredAmount)
 }
 
 func (s *lendTestSuite) TestLendSwivel() {
@@ -392,6 +404,10 @@ func (s *lendTestSuite) TestLendSwivel() {
 	signatureResult, err = s.Swivel.InitiateCalledSignature(ORDERS[1].Maker)
 	assert.Nil(err)
 	assert.Equal(COMPONENTS[1].V, signatureResult)
+
+	transferredAmount, err := s.Erc20.TransferCalled(s.Dep.YieldAddress)
+	assert.Nil(err)
+	assert.Equal(TOTAL_AMOUNT, transferredAmount)
 }
 
 func (s *lendTestSuite) TestLendElement() {
@@ -480,10 +496,12 @@ func (s *lendTestSuite) TestLendPendle() {
 	})
 
 	amount := big.NewInt(100)
+	fee := new(big.Int).Div(amount, big.NewInt(FEENOMINATOR))
+	lent := new(big.Int).Sub(amount, fee)
 	minimumBought := big.NewInt(50)
 	deadline := big.NewInt(1000000000)
 
-	tx, err := s.Lender.Lend0(4, s.Dep.Erc20Address, maturity, amount, minimumBought, deadline)
+	tx, err := s.Lender.Lend0(4, s.Dep.Erc20Address, maturity, lent, minimumBought, deadline)
 	assert.NoError(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
@@ -492,7 +510,7 @@ func (s *lendTestSuite) TestLendPendle() {
 	swap, err := s.Pendle.SwapExactTokensForTokensCalled(s.Dep.LenderAddress)
 	assert.Nil(err)
 	assert.Equal(deadline, swap.Deadline)
-	assert.Equal(amount, swap.Amount)
+	assert.Equal(lent, swap.Amount)
 	assert.Equal(minimumBought, swap.MinimumBought)
 }
 
@@ -531,6 +549,8 @@ func (s *lendTestSuite) TestLendTempus() {
 	s.Env.Blockchain.Commit()
 
 	amount := big.NewInt(1032)
+	fee := new(big.Int).Div(amount, big.NewInt(FEENOMINATOR))
+	lent := new(big.Int).Sub(amount, fee)
 	minimumReturn := big.NewInt(312)
 	amm := common.HexToAddress("0x4321")
 	pool := common.HexToAddress("0x1234")
@@ -542,7 +562,7 @@ func (s *lendTestSuite) TestLendTempus() {
 	s.Env.Blockchain.Commit()
 
 	// verify that mocks were called as expected
-	deposit, err := s.Tempus.DepositAndFixCalled(amount)
+	deposit, err := s.Tempus.DepositAndFixCalled(lent)
 	assert.Nil(err)
 	assert.Equal(amm, deposit.Amm)
 	assert.Equal(pool, deposit.Pool)
@@ -583,6 +603,8 @@ func (s *lendTestSuite) TestLendSense() {
 	maturity := big.NewInt(12094201240)
 	adapter := common.HexToAddress("0x1234")
 	amount := big.NewInt(1032)
+	fee := new(big.Int).Div(amount, big.NewInt(FEENOMINATOR))
+	lent := new(big.Int).Sub(amount, fee)
 	minimumBought := big.NewInt(34)
 
 	tx, err := s.Lender.Lend2(6, s.Dep.Erc20Address, maturity, s.Dep.SenseAddress, adapter, amount, minimumBought)
@@ -594,7 +616,7 @@ func (s *lendTestSuite) TestLendSense() {
 	swap, err := s.Sense.SwapUnderlyingForPTsCalled(adapter)
 	assert.NoError(err)
 	assert.Equal(maturity, swap.Maturity)
-	assert.Equal(amount, swap.Amount)
+	assert.Equal(lent, swap.Amount)
 	assert.Equal(minimumBought, swap.MinimumBought)
 }
 
@@ -625,7 +647,9 @@ func (s *lendTestSuite) TestAPWineSense() {
 	s.Env.Blockchain.Commit()
 
 	maturity := big.NewInt(12094201240)
-	amount := big.NewInt(1032)
+	amount := big.NewInt(100000)
+	fee := new(big.Int).Div(amount, big.NewInt(FEENOMINATOR))
+	lent := new(big.Int).Sub(amount, fee)
 	minimumAmount := big.NewInt(34)
 	id := big.NewInt(1000)
 
@@ -638,7 +662,7 @@ func (s *lendTestSuite) TestAPWineSense() {
 	swap, err := s.APWine.SwapExactAmountInCalled(s.Dep.LenderAddress)
 	assert.Equal(id, swap.Id)
 	assert.Equal(big.NewInt(1), swap.TokenIn)
-	assert.Equal(amount, swap.Amount)
+	assert.Equal(lent, swap.Amount)
 	assert.True(swap.TokenOut.Cmp(big.NewInt(0)) == 0)
 	assert.Equal(minimumAmount, swap.MinimumAmount)
 }
