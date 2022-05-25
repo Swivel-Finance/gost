@@ -126,6 +126,7 @@ contract Lender {
     uint256 returned;
 
     {
+        uint256 totalFee;
         // iterate through each order a calculate the total lent and returned
         for (uint256 i = 0; i < o.length; i++) {
           Swivel.Order memory order = o[i];
@@ -135,21 +136,23 @@ contract Lender {
           // Determine the fee
           uint256 fee = a[i] / feenominator;
           // Track accumulated fees
-          fees[u] += fee;
+          totalFee += fee;
           // Sum the total amount lent to Swivel (amount of zc tokens to mint) minus fees
           lent += a[i] - fee;
           // Sum the total amount of premium paid from Swivel (amount of underlying to lend to yield)
           returned += (a[i] - fee) * (order.premium / order.principal);
-        }
-
-        // transfer underlying tokens from user to illuminate
-        Safe.transferFrom(IErc20(u), msg.sender, address(this), lent);
     }
+    // Track accumulated fee
+    fees[u] += totalFee;
 
+    // transfer underlying tokens from user to illuminate
+    Safe.transferFrom(IErc20(u), msg.sender, address(this), lent);
     // fill the orders on swivel protocol
     ISwivel(swivelAddr).initiate(o, a, s);
 
     yield(u, y, returned);
+    }
+
 
     emit Lend(p, u, m, lent);
     return lent;
