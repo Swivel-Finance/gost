@@ -23,11 +23,11 @@ contract Lender {
   event Lend(uint8 principal, address indexed underlying, uint256 indexed maturity, uint256 returned);
   event Mint(uint8 principal, address indexed underlying, uint256 indexed maturity, uint256 amount);
 
+  /// @notice Initializes the Lender contract
+  /// @dev the ctor sets a default value for the feenominator
   /// @param s: the swivel contract
   /// @param p: the pendle contract
   /// @param t: the tempus contract
-  /// @dev the constrcutor sets a default value for the feenominator, which 
-  /// can be modified by calling setFee()
   constructor(address s, address p, address t) {
     admin = msg.sender;
     swivelAddr = s;
@@ -36,7 +36,7 @@ contract Lender {
     feenominator = 1000;
   }
 
-  /// Sets the feenominator to the given value
+  /// @notice Sets the feenominator to the given value
   /// @param f: the new value of the feenominator
   /// @return true if successful
   function setFee(uint256 f) external authorized(admin) returns (bool) {
@@ -62,10 +62,16 @@ contract Lender {
   function mint(uint8 p, address u, uint256 m, uint256 a) public returns (bool) {
     //use market interface to fetch the market for the given market pair
     address[8] memory market = IIlluminate(illuminate).markets(u, m);
+    // determine fee based on the amount
+    uint256 fee = a / feenominator;
+    // determine the fill amount
+    uint256 amount = a - fee;
     //use safe transfer lib and ERC interface...
-    Safe.transferFrom(IErc20(market[p]), msg.sender, address(this), a);
+    Safe.transferFrom(IErc20(market[p]), msg.sender, address(this), amount);
+    // extract the fee
+    Safe.transferFrom(IErc20(market[p]), msg.sender, illuminate, fee);
     //use zctoken interface...
-    IZcToken(market[uint256(Illuminate.Principals.Illuminate)]).mint(msg.sender, a);
+    IZcToken(market[uint256(Illuminate.Principals.Illuminate)]).mint(msg.sender, amount);
 
     emit Mint(p, u, m, a);
 
@@ -146,6 +152,8 @@ contract Lender {
   }
 
   /// @dev lend method signature for element
+  /// @notice fees are calculated in line as the amount divided by the 
+  /// feenominator (a / feenominator)
   /// @param p value of a specific principal according to the Illuminate Principals Enum
   /// @param u address of an underlying asset
   /// @param m maturity (timestamp) of the market
@@ -162,8 +170,11 @@ contract Lender {
     require(token.underlying() == u, '');
     require(token.unlockTimestamp() == m, '');
 
+    // Transfer fee to illuminate
+    Safe.transferFrom(IErc20(u), msg.sender, illuminate, a/feenominator);
+
     // Transfer underlying token from user to illuminate
-    Safe.transferFrom(IErc20(u), msg.sender, address(this), a);
+    Safe.transferFrom(IErc20(u), msg.sender, address(this), a - (a / feenominator));
     
     // Create the variables needed to execute an element swap
     Element.FundManagement memory fund = Element.FundManagement({
@@ -176,7 +187,7 @@ contract Lender {
     Element.SingleSwap memory swap = Element.SingleSwap({
       userData: "0x00000000000000000000000000000000000000000000000000000000000000",
       poolId: i, 
-      amount: a,
+      amount: a - (a / feenominator),
       kind: Element.SwapKind.In,
       assetIn: Any(u),
       assetOut: Any(IIlluminate(illuminate).markets(u, m)[p])
