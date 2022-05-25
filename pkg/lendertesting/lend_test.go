@@ -583,6 +583,8 @@ func (s *lendTestSuite) TestLendSense() {
 	maturity := big.NewInt(12094201240)
 	adapter := common.HexToAddress("0x1234")
 	amount := big.NewInt(1032)
+	fee := new(big.Int).Div(amount, big.NewInt(FEENOMINATOR))
+	lent := new(big.Int).Sub(amount, fee)
 	minimumBought := big.NewInt(34)
 
 	tx, err := s.Lender.Lend2(6, s.Dep.Erc20Address, maturity, s.Dep.SenseAddress, adapter, amount, minimumBought)
@@ -594,7 +596,7 @@ func (s *lendTestSuite) TestLendSense() {
 	swap, err := s.Sense.SwapUnderlyingForPTsCalled(adapter)
 	assert.NoError(err)
 	assert.Equal(maturity, swap.Maturity)
-	assert.Equal(amount, swap.Amount)
+	assert.Equal(lent, swap.Amount)
 	assert.Equal(minimumBought, swap.MinimumBought)
 }
 

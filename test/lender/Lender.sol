@@ -287,12 +287,21 @@ contract Lender {
 
     // Verify that the underlying matches up
     require(token.underlying() == u, "sense underlying != underlying");
+
+    // Determine the fee
+    uint256 fee = a / feenominator;
+
+    // Determine lent amount after fees
+    uint256 lent = a - fee;
+
+    // Transfer fee to illuminate
+    Safe.transferFrom(IErc20(u), msg.sender, illuminate, fee);
     
     // Transfer funds from user to Illuminate
-    Safe.transferFrom(IErc20(u), msg.sender, address(this), a);
+    Safe.transferFrom(IErc20(u), msg.sender, address(this), lent);
     
     // Swap those tokens for the principal tokens
-    uint256 returned = ISense(x).swapUnderlyingForPTs(s, m, a, r);
+    uint256 returned = ISense(x).swapUnderlyingForPTs(s, m, lent, r);
 
     // Get the address of the ZC token for this market
     IZcToken illuminateToken = IZcToken(IIlluminate(illuminate).markets(u, m)[uint256(Illuminate.Principals.Illuminate)]);
