@@ -253,6 +253,10 @@ func (s *lendTestSuite) TestLendIlluminate() {
 	yieldSellBase, err := s.Yield.SellBaseCalled(s.Dep.LenderAddress)
 	assert.Nil(err)
 	assert.Equal(amountLent, yieldSellBase)
+
+	transferredAmount, err := s.Erc20.TransferCalled(s.Dep.YieldAddress)
+	assert.Nil(err)
+	assert.Equal(amountLent, transferredAmount)
 }
 
 func (s *lendTestSuite) TestLendYield() {
@@ -328,6 +332,10 @@ func (s *lendTestSuite) TestLendYield() {
 	mint, err := s.ZcToken.MintCalled(s.Env.Owner.Opts.From)
 	assert.Nil(err)
 	assert.Equal(amountLent, mint)
+
+	transferredAmount, err := s.Erc20.TransferCalled(s.Dep.YieldAddress)
+	assert.Nil(err)
+	assert.Equal(amountLent, transferredAmount)
 }
 
 func (s *lendTestSuite) TestLendSwivel() {
@@ -396,6 +404,10 @@ func (s *lendTestSuite) TestLendSwivel() {
 	signatureResult, err = s.Swivel.InitiateCalledSignature(ORDERS[1].Maker)
 	assert.Nil(err)
 	assert.Equal(COMPONENTS[1].V, signatureResult)
+
+	transferredAmount, err := s.Erc20.TransferCalled(s.Dep.YieldAddress)
+	assert.Nil(err)
+	assert.Equal(TOTAL_AMOUNT, transferredAmount)
 }
 
 func (s *lendTestSuite) TestLendElement() {
