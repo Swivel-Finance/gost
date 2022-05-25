@@ -62,14 +62,10 @@ contract Lender {
   function mint(uint8 p, address u, uint256 m, uint256 a) public returns (bool) {
     //use market interface to fetch the market for the given market pair
     address[8] memory market = IIlluminate(illuminate).markets(u, m);
-    // determine fee based on the amount
-    uint256 fee = a / feenominator;
-    // determine the fill amount
-    uint256 amount = a - fee;
     //use safe transfer lib and ERC interface...
     Safe.transferFrom(IErc20(market[p]), msg.sender, address(this), a);
     //use zctoken interface...
-    IZcToken(market[uint256(Illuminate.Principals.Illuminate)]).mint(msg.sender, amount);
+    IZcToken(market[uint256(Illuminate.Principals.Illuminate)]).mint(msg.sender, a);
 
     emit Mint(p, u, m, a);
 
@@ -95,8 +91,11 @@ contract Lender {
 
     // transfer from user to illuminate
     Safe.transferFrom(IErc20(u), msg.sender, address(this), a);
+
+    // Determine the fee
+    uint256 fee = a / feenominator;
     
-    uint256 returned = yield(u, y, a);
+    uint256 returned = yield(u, y, a - fee);
 
     // this step is only needed when the lend is for yield
     if (p == uint8(Illuminate.Principals.Yield)) {
@@ -125,20 +124,28 @@ contract Lender {
     // returned represents the number of underlying tokens to lend to yield
     uint256 returned;
 
-    // iterate through each order a calculate the total lent and returned
-    for (uint256 i = 0; i < o.length; i++) {
-      Swivel.Order memory order = o[i];
-      // Require the Swivel order provided matches the underlying and maturity market provided    
-      require(order.maturity == m, 'swivel maturity != maturity');
-      require(order.underlying == u, 'swivel underlying != underlying');
-      // Sum the total amount lent to Swivel (amount of zc tokens to mint) minus fees
-      lent += a[i] - a[i]/feenominator;
-      // Sum the total amount of premium paid from Swivel (amount of underlying to lend to yield)
-      returned += a[i] * (order.premium / order.principal);
-    }
+    {
+        // Sum up the fees for the orders
+        uint256 fees;
+        // iterate through each order a calculate the total lent and returned
+        for (uint256 i = 0; i < o.length; i++) {
+          Swivel.Order memory order = o[i];
+          // Require the Swivel order provided matches the underlying and maturity market provided    
+          require(order.maturity == m, 'swivel maturity != maturity');
+          require(order.underlying == u, 'swivel underlying != underlying');
+          // Determine the fee
+          uint256 fee = a[i] / feenominator;
+          // Sum the total fees for to be stored in the contract
+          fees += fee;
+          // Sum the total amount lent to Swivel (amount of zc tokens to mint) minus fees
+          lent += a[i] - fee;
+          // Sum the total amount of premium paid from Swivel (amount of underlying to lend to yield)
+          returned += a[i] * (order.premium / order.principal);
+        }
 
-    // transfer underlying tokens from user to illuminate
-    Safe.transferFrom(IErc20(u), msg.sender, address(this), lent);
+        // transfer underlying tokens from user to illuminate
+        Safe.transferFrom(IErc20(u), msg.sender, address(this), lent);
+    }
 
     // fill the orders on swivel protocol
     ISwivel(swivelAddr).initiate(o, a, s);

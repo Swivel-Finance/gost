@@ -193,6 +193,8 @@ func (s *lendTestSuite) TestLendIlluminate() {
 
 	maturity := big.NewInt(100000)
 	amountLent := big.NewInt(5000)
+	fee := new(big.Int).Div(amountLent, big.NewInt(FEENOMINATOR))
+	lentAfterFees := new(big.Int).Sub(amountLent, fee)
 	sellBasePreview := big.NewInt(4000)
 
 	s.Erc20.TransferFromReturns(true)
@@ -242,7 +244,7 @@ func (s *lendTestSuite) TestLendIlluminate() {
 
 	yieldSellBasePreview, err := s.Yield.SellBasePreviewCalled()
 	assert.Nil(err)
-	assert.Equal(amountLent, yieldSellBasePreview)
+	assert.Equal(lentAfterFees, yieldSellBasePreview)
 
 	transferRes, err := s.Erc20.TransferCalled(s.Dep.YieldAddress)
 	assert.Nil(err)
@@ -258,6 +260,8 @@ func (s *lendTestSuite) TestLendYield() {
 
 	maturity := big.NewInt(100000)
 	amountLent := big.NewInt(5000)
+	fee := new(big.Int).Div(amountLent, big.NewInt(FEENOMINATOR))
+	lentAfterFees := new(big.Int).Sub(amountLent, fee)
 	sellBasePreview := big.NewInt(4000)
 
 	s.Erc20.TransferFromReturns(true)
@@ -311,7 +315,7 @@ func (s *lendTestSuite) TestLendYield() {
 
 	yieldSellBasePreview, err := s.Yield.SellBasePreviewCalled()
 	assert.Nil(err)
-	assert.Equal(amountLent, yieldSellBasePreview)
+	assert.Equal(lentAfterFees, yieldSellBasePreview)
 
 	transferRes, err := s.Erc20.TransferCalled(s.Dep.YieldAddress)
 	assert.Nil(err)
