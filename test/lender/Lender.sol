@@ -67,9 +67,7 @@ contract Lender {
     // determine the fill amount
     uint256 amount = a - fee;
     //use safe transfer lib and ERC interface...
-    Safe.transferFrom(IErc20(market[p]), msg.sender, address(this), amount);
-    // extract the fee
-    Safe.transferFrom(IErc20(market[p]), msg.sender, illuminate, fee);
+    Safe.transferFrom(IErc20(market[p]), msg.sender, address(this), a);
     //use zctoken interface...
     IZcToken(market[uint256(Illuminate.Principals.Illuminate)]).mint(msg.sender, amount);
 
@@ -171,7 +169,7 @@ contract Lender {
     require(token.unlockTimestamp() == m, '');
 
     // Transfer underlying token from user to illuminate
-    Safe.transferFrom(IErc20(u), msg.sender, address(this), a - (a / feenominator));
+    Safe.transferFrom(IErc20(u), msg.sender, address(this), a);
     
     // Create the variables needed to execute an element swap
     Element.FundManagement memory fund = Element.FundManagement({
@@ -217,7 +215,7 @@ contract Lender {
       require(token.expiry() == m, 'pendle maturity != maturity');
 
       // Transfer funds from user to Illuminate
-      Safe.transferFrom(IErc20(u), msg.sender, address(this), a - a / feenominator);
+      Safe.transferFrom(IErc20(u), msg.sender, address(this), a);
 
       address[] memory path = new address[](2);
       path[0] = u;
@@ -256,7 +254,7 @@ contract Lender {
       IErc20 underlyingToken = IErc20(u);
 
       // Transfer funds from user to Illuminate, Scope to avoid stack limit
-      Safe.transferFrom(underlyingToken, msg.sender, address(this), a - a / feenominator);
+      Safe.transferFrom(underlyingToken, msg.sender, address(this), a);
 
       // Swap on the Tempus Router using the provided market and params
       IZcToken illuminateToken = IZcToken(IIlluminate(illuminate).markets(u, m)[uint256(Illuminate.Principals.Illuminate)]);
@@ -293,7 +291,7 @@ contract Lender {
     uint256 lent = a - fee;
     
     // Transfer funds from user to Illuminate
-    Safe.transferFrom(IErc20(u), msg.sender, address(this), lent);
+    Safe.transferFrom(IErc20(u), msg.sender, address(this), a);
     
     // Swap those tokens for the principal tokens
     uint256 returned = ISense(x).swapUnderlyingForPTs(s, m, lent, r);
@@ -330,7 +328,7 @@ contract Lender {
       uint256 lent = a - fee;
 
       // Transfer funds from user to Illuminate    
-      Safe.transferFrom(IErc20(u), msg.sender, address(this), lent);   
+      Safe.transferFrom(IErc20(u), msg.sender, address(this), a);   
 
       // Swap on the APWine Pool using the provided market and params
       uint256 returned = IAPWineRouter(pool).swapExactAmountIn(i, 1, lent, 0, r, address(this));
