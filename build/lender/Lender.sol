@@ -26,17 +26,22 @@ contract Lender {
   /// @param s: the swivel contract
   /// @param p: the pendle contract
   /// @param t: the tempus contract
-  /// @param f: set to be the feenominator, is correlated to the fee rate
-  constructor(address s, address p, address t, uint256 f) {
+  /// @dev the constrcutor sets a default value for the feenominator, which 
+  /// can be modified by calling setFee()
+  constructor(address s, address p, address t) {
     admin = msg.sender;
     swivelAddr = s;
     pendleAddr = p;
     tempusAddr = t;
-    feenominator = f;
+    feenominator = 1000;
   }
 
-  function setFee(uint256 f) external authorized(admin) {
+  /// Sets the feenominator to the given value
+  /// @param f: the new value of the feenominator
+  /// @return true if successful
+  function setFee(uint256 f) external authorized(admin) returns (bool) {
     feenominator = f;
+    return true;
   }
   
   /// Sets the address of the illuminate contract, contains the addresses of all
@@ -148,6 +153,8 @@ contract Lender {
   }
 
   /// @dev lend method signature for element
+  /// @notice fees are calculated in line as the amount divided by the 
+  /// feenominator (a / feenominator)
   /// @param p value of a specific principal according to the Illuminate Principals Enum
   /// @param u address of an underlying asset
   /// @param m maturity (timestamp) of the market
