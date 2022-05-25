@@ -125,8 +125,6 @@ contract Lender {
     uint256 returned;
 
     {
-        // Sum up the fees for the orders
-        uint256 fees;
         // iterate through each order a calculate the total lent and returned
         for (uint256 i = 0; i < o.length; i++) {
           Swivel.Order memory order = o[i];
@@ -135,8 +133,6 @@ contract Lender {
           require(order.underlying == u, 'swivel underlying != underlying');
           // Determine the fee
           uint256 fee = a[i] / feenominator;
-          // Sum the total fees for to be stored in the contract
-          fees += fee;
           // Sum the total amount lent to Swivel (amount of zc tokens to mint) minus fees
           lent += a[i] - fee;
           // Sum the total amount of premium paid from Swivel (amount of underlying to lend to yield)
@@ -328,14 +324,14 @@ contract Lender {
       address[8] memory markets = IIlluminate(illuminate).markets(u, m);
       require(IAPWineToken(markets[p]).getPTAddress() == u, "apwine principle != principle");
 
+      // Transfer funds from user to Illuminate    
+      Safe.transferFrom(IErc20(u), msg.sender, address(this), a);   
+
       // Determine the fee
       uint256 fee = a / feenominator;
 
       // Determine the amount lent after fees
       uint256 lent = a - fee;
-
-      // Transfer funds from user to Illuminate    
-      Safe.transferFrom(IErc20(u), msg.sender, address(this), a);   
 
       // Swap on the APWine Pool using the provided market and params
       uint256 returned = IAPWineRouter(pool).swapExactAmountIn(i, 1, lent, 0, r, address(this));
