@@ -19,6 +19,7 @@ contract Lender {
   address public tempusAddr;
 
   uint256 public feenominator;
+  mapping(address => uint256) public fees;
 
   event Lend(uint8 principal, address indexed underlying, uint256 indexed maturity, uint256 returned);
   event Mint(uint8 principal, address indexed underlying, uint256 indexed maturity, uint256 amount);
@@ -359,6 +360,17 @@ contract Lender {
     IYield(y).sellBase(address(this), returned);
 
     return returned;
+  }
+
+  /// @notice Allows the admin to withdraw the given token based on the fees
+  /// accumulated of that token by the lender contract
+  /// @param e Address of token to withdraw
+  /// @return true if successful
+  function withdraw(address e) external authorized(admin) returns (bool) {
+    IErc20 token = IErc20(e);
+    Safe.transfer(token, admin, fees[e]);
+
+    return true;
   }
 
   modifier authorized(address a) {
