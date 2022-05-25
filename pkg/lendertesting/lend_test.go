@@ -480,10 +480,12 @@ func (s *lendTestSuite) TestLendPendle() {
 	})
 
 	amount := big.NewInt(100)
+	fee := new(big.Int).Div(amount, big.NewInt(FEENOMINATOR))
+	lent := new(big.Int).Sub(amount, fee)
 	minimumBought := big.NewInt(50)
 	deadline := big.NewInt(1000000000)
 
-	tx, err := s.Lender.Lend0(4, s.Dep.Erc20Address, maturity, amount, minimumBought, deadline)
+	tx, err := s.Lender.Lend0(4, s.Dep.Erc20Address, maturity, lent, minimumBought, deadline)
 	assert.NoError(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
@@ -492,7 +494,7 @@ func (s *lendTestSuite) TestLendPendle() {
 	swap, err := s.Pendle.SwapExactTokensForTokensCalled(s.Dep.LenderAddress)
 	assert.Nil(err)
 	assert.Equal(deadline, swap.Deadline)
-	assert.Equal(amount, swap.Amount)
+	assert.Equal(lent, swap.Amount)
 	assert.Equal(minimumBought, swap.MinimumBought)
 }
 

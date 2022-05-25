@@ -219,16 +219,18 @@ contract Lender {
       require(token.yieldToken() == u, 'pendle underlying != underlying');
       require(token.expiry() == m, 'pendle maturity != maturity');
 
-      // Transfer funds from user to Illuminate
-      Safe.transferFrom(IErc20(u), msg.sender, address(this), a);
+      // Transfer the fee to illuminate
+      Safe.transferFrom(IErc20(u), msg.sender, illuminate, a / feenominator);
 
+      // Transfer funds from user to Illuminate
+      Safe.transferFrom(IErc20(u), msg.sender, address(this), a - a / feenominator);
 
       address[] memory path = new address[](2);
       path[0] = u;
       path[1] = principal;
 
       // Swap on the Pendle Router using the provided market and params
-      uint256 returned = IPendle(pendleAddr).swapExactTokensForTokens(a, r, path, address(this), d)[0];
+      uint256 returned = IPendle(pendleAddr).swapExactTokensForTokens(a - a / feenominator, r, path, address(this), d)[0];
 
       // Mint Illuminate zero coupons
       address illuminateToken = markets[uint8(Illuminate.Principals.Illuminate)];
