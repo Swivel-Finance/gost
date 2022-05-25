@@ -531,6 +531,8 @@ func (s *lendTestSuite) TestLendTempus() {
 	s.Env.Blockchain.Commit()
 
 	amount := big.NewInt(1032)
+	fee := new(big.Int).Div(amount, big.NewInt(FEENOMINATOR))
+	lent := new(big.Int).Sub(amount, fee)
 	minimumReturn := big.NewInt(312)
 	amm := common.HexToAddress("0x4321")
 	pool := common.HexToAddress("0x1234")
@@ -542,7 +544,7 @@ func (s *lendTestSuite) TestLendTempus() {
 	s.Env.Blockchain.Commit()
 
 	// verify that mocks were called as expected
-	deposit, err := s.Tempus.DepositAndFixCalled(amount)
+	deposit, err := s.Tempus.DepositAndFixCalled(lent)
 	assert.Nil(err)
 	assert.Equal(amm, deposit.Amm)
 	assert.Equal(pool, deposit.Pool)

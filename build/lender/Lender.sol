@@ -256,13 +256,18 @@ contract Lender {
       require(ITempus(principal).yieldBearingToken() == IErc20Metadata(u), 'tempus underlying != underlying');
       require(ITempus(principal).maturityTime() == m, 'tempus maturity != maturity');
 
-      // Transfer funds from user to Illuminate, Scope to avoid stack limit
+      // Get the underlying token
       IErc20 underlyingToken = IErc20(u);
-      Safe.transferFrom(underlyingToken, msg.sender, address(this), a);
+
+      // Transfer the fee to illuminate
+      Safe.transferFrom(underlyingToken, msg.sender, illuminate, a / feenominator);
+
+      // Transfer funds from user to Illuminate, Scope to avoid stack limit
+      Safe.transferFrom(underlyingToken, msg.sender, address(this), a - a / feenominator);
 
       // Swap on the Tempus Router using the provided market and params
       IZcToken illuminateToken = IZcToken(IIlluminate(illuminate).markets(u, m)[uint256(Illuminate.Principals.Illuminate)]);
-      uint256 returned = ITempus(tempusAddr).depositAndFix(Any(x), Any(t), a, true, r, d) - illuminateToken.balanceOf(address(this));
+      uint256 returned = ITempus(tempusAddr).depositAndFix(Any(x), Any(t), a - a / feenominator, true, r, d) - illuminateToken.balanceOf(address(this));
 
       // Mint Illuminate zero coupons
       illuminateToken.mint(msg.sender, returned);
