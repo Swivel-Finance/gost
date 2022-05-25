@@ -328,14 +328,14 @@ contract Lender {
       address[8] memory markets = IIlluminate(illuminate).markets(u, m);
       require(IAPWineToken(markets[p]).getPTAddress() == u, "apwine principle != principle");
 
+      // Transfer funds from user to Illuminate    
+      Safe.transferFrom(IErc20(u), msg.sender, address(this), a);   
+
       // Determine the fee
       uint256 fee = a / feenominator;
 
       // Determine the amount lent after fees
       uint256 lent = a - fee;
-
-      // Transfer funds from user to Illuminate    
-      Safe.transferFrom(IErc20(u), msg.sender, address(this), a);   
 
       // Swap on the APWine Pool using the provided market and params
       uint256 returned = IAPWineRouter(pool).swapExactAmountIn(i, 1, lent, 0, r, address(this));
