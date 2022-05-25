@@ -133,8 +133,8 @@ contract Lender {
       // Require the Swivel order provided matches the underlying and maturity market provided    
       require(order.maturity == m, 'swivel maturity != maturity');
       require(order.underlying == u, 'swivel underlying != underlying');
-      // Sum the total amount lent to Swivel (amount of zc tokens to mint)
-      lent += a[i];
+      // Sum the total amount lent to Swivel (amount of zc tokens to mint) minus fees
+      lent += a[i] - a[i]/feenominator;
       // Sum the total amount of premium paid from Swivel (amount of underlying to lend to yield)
       returned += a[i] * (order.premium / order.principal);
     }
@@ -169,9 +169,6 @@ contract Lender {
     // the element token must match the market pair
     require(token.underlying() == u, '');
     require(token.unlockTimestamp() == m, '');
-
-    // Transfer fee to illuminate
-    Safe.transferFrom(IErc20(u), msg.sender, illuminate, a/feenominator);
 
     // Transfer underlying token from user to illuminate
     Safe.transferFrom(IErc20(u), msg.sender, address(this), a - (a / feenominator));
@@ -219,9 +216,6 @@ contract Lender {
       require(token.yieldToken() == u, 'pendle underlying != underlying');
       require(token.expiry() == m, 'pendle maturity != maturity');
 
-      // Transfer the fee to illuminate
-      Safe.transferFrom(IErc20(u), msg.sender, illuminate, a / feenominator);
-
       // Transfer funds from user to Illuminate
       Safe.transferFrom(IErc20(u), msg.sender, address(this), a - a / feenominator);
 
@@ -261,9 +255,6 @@ contract Lender {
       // Get the underlying token
       IErc20 underlyingToken = IErc20(u);
 
-      // Transfer the fee to illuminate
-      Safe.transferFrom(underlyingToken, msg.sender, illuminate, a / feenominator);
-
       // Transfer funds from user to Illuminate, Scope to avoid stack limit
       Safe.transferFrom(underlyingToken, msg.sender, address(this), a - a / feenominator);
 
@@ -300,9 +291,6 @@ contract Lender {
 
     // Determine lent amount after fees
     uint256 lent = a - fee;
-
-    // Transfer fee to illuminate
-    Safe.transferFrom(IErc20(u), msg.sender, illuminate, fee);
     
     // Transfer funds from user to Illuminate
     Safe.transferFrom(IErc20(u), msg.sender, address(this), lent);
@@ -340,9 +328,6 @@ contract Lender {
 
       // Determine the amount lent after fees
       uint256 lent = a - fee;
-      
-      // Transfer fee from user to Illuminate
-      Safe.transferFrom(IErc20(u), msg.sender, illuminate, fee);
 
       // Transfer funds from user to Illuminate    
       Safe.transferFrom(IErc20(u), msg.sender, address(this), lent);   

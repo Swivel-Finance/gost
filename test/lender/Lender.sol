@@ -133,8 +133,8 @@ contract Lender {
       // Require the Swivel order provided matches the underlying and maturity market provided    
       require(order.maturity == m, 'swivel maturity != maturity');
       require(order.underlying == u, 'swivel underlying != underlying');
-      // Sum the total amount lent to Swivel (amount of zc tokens to mint)
-      lent += a[i];
+      // Sum the total amount lent to Swivel (amount of zc tokens to mint) minus fees
+      lent += a[i] - a[i]/feenominator;
       // Sum the total amount of premium paid from Swivel (amount of underlying to lend to yield)
       returned += a[i] * (order.premium / order.principal);
     }
