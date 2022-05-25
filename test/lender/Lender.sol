@@ -18,17 +18,30 @@ contract Lender {
   address public pendleAddr;
   address public tempusAddr;
 
+  uint256 public feenominator;
+
   event Lend(uint8 principal, address indexed underlying, uint256 indexed maturity, uint256 returned);
   event Mint(uint8 principal, address indexed underlying, uint256 indexed maturity, uint256 amount);
 
   /// @param s: the swivel contract
   /// @param p: the pendle contract
   /// @param t: the tempus contract
+  /// @dev the constrcutor sets a default value for the feenominator, which 
+  /// can be modified by calling setFee()
   constructor(address s, address p, address t) {
     admin = msg.sender;
     swivelAddr = s;
     pendleAddr = p;
     tempusAddr = t;
+    feenominator = 1000;
+  }
+
+  /// Sets the feenominator to the given value
+  /// @param f: the new value of the feenominator
+  /// @return true if successful
+  function setFee(uint256 f) external authorized(admin) returns (bool) {
+    feenominator = f;
+    return true;
   }
   
   /// Sets the address of the illuminate contract, contains the addresses of all

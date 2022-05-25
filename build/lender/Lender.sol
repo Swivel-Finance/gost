@@ -18,6 +18,8 @@ contract Lender {
   address public pendleAddr;
   address public tempusAddr;
 
+  uint256 public feenominator;
+
   event Lend(uint8 principal, address indexed underlying, uint256 indexed maturity, uint256 returned);
   event Mint(uint8 principal, address indexed underlying, uint256 indexed maturity, uint256 amount);
 
@@ -29,8 +31,13 @@ contract Lender {
     swivelAddr = s;
     pendleAddr = p;
     tempusAddr = t;
+    feenominator = 1000;
   }
 
+  function setFee(uint256 f) external authorized(admin) {
+    feenominator = f;
+  }
+  
   /// Sets the address of the illuminate contract, contains the addresses of all
   /// the aggregated markets
   /// @param i: the address of the illumninate contract
