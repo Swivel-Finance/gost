@@ -625,7 +625,9 @@ func (s *lendTestSuite) TestAPWineSense() {
 	s.Env.Blockchain.Commit()
 
 	maturity := big.NewInt(12094201240)
-	amount := big.NewInt(1032)
+	amount := big.NewInt(100000)
+	fee := new(big.Int).Div(amount, big.NewInt(FEENOMINATOR))
+	lent := new(big.Int).Sub(amount, fee)
 	minimumAmount := big.NewInt(34)
 	id := big.NewInt(1000)
 
@@ -638,7 +640,7 @@ func (s *lendTestSuite) TestAPWineSense() {
 	swap, err := s.APWine.SwapExactAmountInCalled(s.Dep.LenderAddress)
 	assert.Equal(id, swap.Id)
 	assert.Equal(big.NewInt(1), swap.TokenIn)
-	assert.Equal(amount, swap.Amount)
+	assert.Equal(lent, swap.Amount)
 	assert.True(swap.TokenOut.Cmp(big.NewInt(0)) == 0)
 	assert.Equal(minimumAmount, swap.MinimumAmount)
 }
