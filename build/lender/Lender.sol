@@ -390,7 +390,7 @@ contract Lender {
     // Transfer the accumulated fees to the admin
     Safe.transfer(token, admin, fees[e]);
 
-    // Reset accumulated fees of the token to 0
+    // Reset accumulated fees of the token to
     fees[e] = 0;
 
     return true;
