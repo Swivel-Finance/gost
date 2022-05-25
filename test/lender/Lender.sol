@@ -19,6 +19,7 @@ contract Lender {
   address public tempusAddr;
 
   uint256 public feenominator;
+  mapping(address => uint256) public fees;
 
   event Lend(uint8 principal, address indexed underlying, uint256 indexed maturity, uint256 returned);
   event Mint(uint8 principal, address indexed underlying, uint256 indexed maturity, uint256 amount);
@@ -125,6 +126,7 @@ contract Lender {
     uint256 returned;
 
     {
+        uint256 totalFee;
         // iterate through each order a calculate the total lent and returned
         for (uint256 i = 0; i < o.length; i++) {
           Swivel.Order memory order = o[i];
@@ -133,20 +135,24 @@ contract Lender {
           require(order.underlying == u, 'swivel underlying != underlying');
           // Determine the fee
           uint256 fee = a[i] / feenominator;
+          // Track accumulated fees
+          totalFee += fee;
           // Sum the total amount lent to Swivel (amount of zc tokens to mint) minus fees
           lent += a[i] - fee;
           // Sum the total amount of premium paid from Swivel (amount of underlying to lend to yield)
           returned += (a[i] - fee) * (order.premium / order.principal);
-        }
-
-        // transfer underlying tokens from user to illuminate
-        Safe.transferFrom(IErc20(u), msg.sender, address(this), lent);
     }
+    // Track accumulated fee
+    fees[u] += totalFee;
 
+    // transfer underlying tokens from user to illuminate
+    Safe.transferFrom(IErc20(u), msg.sender, address(this), lent);
     // fill the orders on swivel protocol
     ISwivel(swivelAddr).initiate(o, a, s);
 
     yield(u, y, returned);
+    }
+
 
     emit Lend(p, u, m, lent);
     return lent;
@@ -173,6 +179,9 @@ contract Lender {
 
     // Transfer underlying token from user to illuminate
     Safe.transferFrom(IErc20(u), msg.sender, address(this), a);
+
+    // Track the accumulated fees
+    fees[u] += a / feenominator;
     
     // Create the variables needed to execute an element swap
     Element.FundManagement memory fund = Element.FundManagement({
@@ -220,6 +229,9 @@ contract Lender {
       // Transfer funds from user to Illuminate
       Safe.transferFrom(IErc20(u), msg.sender, address(this), a);
 
+      // Add the accumulated fees to the total
+      fees[u] += a / feenominator;
+
       address[] memory path = new address[](2);
       path[0] = u;
       path[1] = principal;
@@ -259,6 +271,9 @@ contract Lender {
       // Transfer funds from user to Illuminate, Scope to avoid stack limit
       Safe.transferFrom(underlyingToken, msg.sender, address(this), a);
 
+      // Add the accumulated fees to the total
+      fees[u] += a / feenominator;
+
       // Swap on the Tempus Router using the provided market and params
       IZcToken illuminateToken = IZcToken(IIlluminate(illuminate).markets(u, m)[uint256(Illuminate.Principals.Illuminate)]);
       uint256 returned = ITempus(tempusAddr).depositAndFix(Any(x), Any(t), a - (a / feenominator), true, r, d) - illuminateToken.balanceOf(address(this));
@@ -289,6 +304,9 @@ contract Lender {
 
     // Determine the fee
     uint256 fee = a / feenominator;
+
+    // Add the accumulated fees to the total
+    fees[u] += a / feenominator;
 
     // Determine lent amount after fees
     uint256 lent = a - fee;
@@ -330,6 +348,9 @@ contract Lender {
       // Determine the fee
       uint256 fee = a / feenominator;
 
+      // Add the accumulated fees to the total
+      fees[u] += a / feenominator;
+
       // Determine the amount lent after fees
       uint256 lent = a - fee;
 
@@ -359,6 +380,26 @@ contract Lender {
     IYield(y).sellBase(address(this), returned);
 
     return returned;
+  }
+
+  /// @notice Allows the admin to withdraw the given token based on the fees
+  /// accumulated of that token by the lender contract
+  /// @param e Address of token to withdraw
+  /// @return true if successful
+  function withdraw(address e) external authorized(admin) returns (bool) {
+    // Get the token to be withdrawn
+    IErc20 token = IErc20(e);
+
+    // Get the balance to be transferred
+    uint256 balance = fees[e];
+
+    // Reset accumulated fees of the token to 0
+    fees[e] = 0;
+    
+    // Transfer the accumulated fees to the admin
+    Safe.transfer(token, admin, balance);
+
+    return true;
   }
 
   modifier authorized(address a) {
