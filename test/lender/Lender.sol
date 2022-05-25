@@ -124,28 +124,22 @@ contract Lender {
     // returned represents the number of underlying tokens to lend to yield
     uint256 returned;
 
-    {
-        // Sum up the fees for the orders
-        uint256 fees;
-        // iterate through each order a calculate the total lent and returned
-        for (uint256 i = 0; i < o.length; i++) {
-          Swivel.Order memory order = o[i];
-          // Require the Swivel order provided matches the underlying and maturity market provided    
-          require(order.maturity == m, 'swivel maturity != maturity');
-          require(order.underlying == u, 'swivel underlying != underlying');
-          // Determine the fee
-          uint256 fee = a[i] / feenominator;
-          // Sum the total fees for to be stored in the contract
-          fees += fee;
-          // Sum the total amount lent to Swivel (amount of zc tokens to mint) minus fees
-          lent += a[i] - fee;
-          // Sum the total amount of premium paid from Swivel (amount of underlying to lend to yield)
-          returned += a[i] * (order.premium / order.principal);
-        }
-
-        // transfer underlying tokens from user to illuminate
-        Safe.transferFrom(IErc20(u), msg.sender, address(this), lent);
+    // iterate through each order a calculate the total lent and returned
+    for (uint256 i = 0; i < o.length; i++) {
+      Swivel.Order memory order = o[i];
+      // Require the Swivel order provided matches the underlying and maturity market provided    
+      require(order.maturity == m, 'swivel maturity != maturity');
+      require(order.underlying == u, 'swivel underlying != underlying');
+      // Determine the fee
+      uint256 fee = a[i] / feenominator;
+      // Sum the total amount lent to Swivel (amount of zc tokens to mint) minus fees
+      lent += a[i] - fee;
+      // Sum the total amount of premium paid from Swivel (amount of underlying to lend to yield)
+      returned += a[i] * (order.premium / order.principal);
     }
+
+    // transfer underlying tokens from user to illuminate
+    Safe.transferFrom(IErc20(u), msg.sender, address(this), lent);
 
     // fill the orders on swivel protocol
     ISwivel(swivelAddr).initiate(o, a, s);
