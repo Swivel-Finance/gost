@@ -136,7 +136,7 @@ contract Lender {
           // Sum the total amount lent to Swivel (amount of zc tokens to mint) minus fees
           lent += a[i] - fee;
           // Sum the total amount of premium paid from Swivel (amount of underlying to lend to yield)
-          returned += a[i] * (order.premium / order.principal);
+          returned += (a[i] - fee) * (order.premium / order.principal);
         }
 
         // transfer underlying tokens from user to illuminate
