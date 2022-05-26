@@ -18,6 +18,7 @@ contract Lender {
   address public pendleAddr;
   address public tempusAddr;
 
+  uint16 constant public MIN_FEENOMINATOR = 33;
   uint256 public feenominator;
   mapping(address => uint256) public fees;
 
@@ -41,6 +42,7 @@ contract Lender {
   /// @param f: the new value of the feenominator
   /// @return true if successful
   function setFee(uint256 f) external authorized(admin) returns (bool) {
+    require(f >= MIN_FEENOMINATOR, 'fee too high');
     feenominator = f;
     return true;
   }
