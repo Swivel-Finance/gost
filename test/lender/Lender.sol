@@ -46,13 +46,6 @@ contract Lender {
     feenominator = f;
     return true;
   }
-
-  /// @notice Disables fees
-  /// @return true if successful
-  function disableFees() external authorized(admin) returns (bool) {
-    feenominator = 0;
-    return true;
-  }
   
   /// Sets the address of the illuminate contract, contains the addresses of all
   /// the aggregated markets
