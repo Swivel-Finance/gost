@@ -44,6 +44,13 @@ contract Lender {
     feenominator = f;
     return true;
   }
+
+  ///@notice Disables fees
+  ///@return true if successful
+  function disableFees() external authorized(admin) returns (bool) {
+    feenominator = 0;
+    return true;
+  }
   
   /// Sets the address of the illuminate contract, contains the addresses of all
   /// the aggregated markets
@@ -73,9 +80,6 @@ contract Lender {
     return true;
   }
 
-  // TODO since we are heavily using overriding here do we need any extra fallback function security?
-  // likely not if we just don't define it but... worth asking
-
   /// @dev lend method signature for both illuminate and yield
   /// @param p value of a specific principal according to the Illuminate Principals Enum
   /// @param u address of an underlying asset
@@ -93,10 +97,7 @@ contract Lender {
     // transfer from user to illuminate
     Safe.transferFrom(IErc20(u), msg.sender, address(this), a);
 
-    // Determine the fee
-    uint256 fee = a / feenominator;
-    
-    uint256 returned = yield(u, y, a - fee);
+    uint256 returned = yield(u, y, a - calculateFee(a));
 
     // this step is only needed when the lend is for yield
     if (p == uint8(Illuminate.Principals.Yield)) {
@@ -134,14 +135,14 @@ contract Lender {
           require(order.maturity == m, 'swivel maturity != maturity');
           require(order.underlying == u, 'swivel underlying != underlying');
           // Determine the fee
-          uint256 fee = a[i] / feenominator;
+          uint256 fee = calculateFee(a[i]);
           // Track accumulated fees
           totalFee += fee;
           // Sum the total amount lent to Swivel (amount of zc tokens to mint) minus fees
           lent += a[i] - fee;
           // Sum the total amount of premium paid from Swivel (amount of underlying to lend to yield)
           returned += (a[i] - fee) * (order.premium / order.principal);
-        }
+    }
     // Track accumulated fee
     fees[u] += totalFee;
 
@@ -181,7 +182,7 @@ contract Lender {
     Safe.transferFrom(IErc20(u), msg.sender, address(this), a);
 
     // Track the accumulated fees
-    fees[u] += a / feenominator;
+    fees[u] += calculateFee(a);
     
     // Create the variables needed to execute an element swap
     Element.FundManagement memory fund = Element.FundManagement({
@@ -194,7 +195,7 @@ contract Lender {
     Element.SingleSwap memory swap = Element.SingleSwap({
       userData: "0x00000000000000000000000000000000000000000000000000000000000000",
       poolId: i, 
-      amount: a - (a / feenominator),
+      amount: a - calculateFee(a),
       kind: Element.SwapKind.In,
       assetIn: Any(u),
       assetOut: Any(IIlluminate(illuminate).markets(u, m)[p])
@@ -230,14 +231,14 @@ contract Lender {
       Safe.transferFrom(IErc20(u), msg.sender, address(this), a);
 
       // Add the accumulated fees to the total
-      fees[u] += a / feenominator;
+      fees[u] += calculateFee(a);
 
       address[] memory path = new address[](2);
       path[0] = u;
       path[1] = principal;
 
       // Swap on the Pendle Router using the provided market and params
-      uint256 returned = IPendle(pendleAddr).swapExactTokensForTokens(a - (a / feenominator), r, path, address(this), d)[0];
+      uint256 returned = IPendle(pendleAddr).swapExactTokensForTokens(a - calculateFee(a), r, path, address(this), d)[0];
 
       // Mint Illuminate zero coupons
       address illuminateToken = markets[uint8(Illuminate.Principals.Illuminate)];
@@ -272,11 +273,11 @@ contract Lender {
       Safe.transferFrom(underlyingToken, msg.sender, address(this), a);
 
       // Add the accumulated fees to the total
-      fees[u] += a / feenominator;
+      fees[u] += calculateFee(a);
 
       // Swap on the Tempus Router using the provided market and params
       IZcToken illuminateToken = IZcToken(IIlluminate(illuminate).markets(u, m)[uint256(Illuminate.Principals.Illuminate)]);
-      uint256 returned = ITempus(tempusAddr).depositAndFix(Any(x), Any(t), a - (a / feenominator), true, r, d) - illuminateToken.balanceOf(address(this));
+      uint256 returned = ITempus(tempusAddr).depositAndFix(Any(x), Any(t), a - calculateFee(a), true, r, d) - illuminateToken.balanceOf(address(this));
 
       // Mint Illuminate zero coupons
       illuminateToken.mint(msg.sender, returned);
@@ -303,10 +304,10 @@ contract Lender {
     require(token.underlying() == u, "sense underlying != underlying");
 
     // Determine the fee
-    uint256 fee = a / feenominator;
+    uint256 fee = calculateFee(a);
 
     // Add the accumulated fees to the total
-    fees[u] += a / feenominator;
+    fees[u] += fee;
 
     // Determine lent amount after fees
     uint256 lent = a - fee;
@@ -346,10 +347,10 @@ contract Lender {
       Safe.transferFrom(IErc20(u), msg.sender, address(this), a);   
 
       // Determine the fee
-      uint256 fee = a / feenominator;
+      uint256 fee = calculateFee(a);
 
       // Add the accumulated fees to the total
-      fees[u] += a / feenominator;
+      fees[u] += fee;
 
       // Determine the amount lent after fees
       uint256 lent = a - fee;
@@ -389,14 +390,24 @@ contract Lender {
   function withdraw(address e) external authorized(admin) returns (bool) {
     // Get the token to be withdrawn
     IErc20 token = IErc20(e);
-    
-    // Transfer the accumulated fees to the admin
-    Safe.transfer(token, admin, fees[e]);
+
+    // Get the balance to be transferred
+    uint256 balance = fees[e];
 
     // Reset accumulated fees of the token to 0
     fees[e] = 0;
+    
+    // Transfer the accumulated fees to the admin
+    Safe.transfer(token, admin, balance);
 
     return true;
+  }
+
+  function calculateFee(uint256 a) internal view returns (uint256) {
+    if (feenominator == 0) {
+      return 0;
+    } 
+    return a / feenominator;
   }
 
   modifier authorized(address a) {
