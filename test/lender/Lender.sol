@@ -44,6 +44,13 @@ contract Lender {
     feenominator = f;
     return true;
   }
+
+  ///@notice Disables fees
+  ///@return true if successful
+  function disableFees() external authorized(admin) returns (bool) {
+    feenominator = 0;
+    return true;
+  }
   
   /// Sets the address of the illuminate contract, contains the addresses of all
   /// the aggregated markets
@@ -72,10 +79,7 @@ contract Lender {
 
     return true;
   }
-
-  // TODO since we are heavily using overriding here do we need any extra fallback function security?
-  // likely not if we just don't define it but... worth asking
-
+  
   /// @dev lend method signature for both illuminate and yield
   /// @param p value of a specific principal according to the Illuminate Principals Enum
   /// @param u address of an underlying asset
