@@ -9,12 +9,14 @@ import './Element.sol'; // library of element specific constructs
 import './Safe.sol';
 import './Cast.sol';
 
-
+/// @title Lender contract used to lend on any fixed rate protocol
+/// 
 contract Lender {
   address public admin;
-  address public illuminate; // TODO authorized setter for this
+  address public illuminate;
 
-  address public swivelAddr; // addresses of the 3rd party protocol contracts
+  /// @dev addresses of the 3rd party protocol contracts
+  address public swivelAddr;
   address public pendleAddr;
   address public tempusAddr;
 
@@ -38,28 +40,31 @@ contract Lender {
   }
 
   /// @notice Sets the feenominator to the given value
-  /// @param f: the new value of the feenominator
-  /// @return true if successful
+  /// @param f: the new value of the feenominator, fees are not collected when the feenominator is 0
+  /// @return bool true if successful
   function setFee(uint256 f) external authorized(admin) returns (bool) {
     feenominator = f;
     return true;
   }
   
-  /// Sets the address of the illuminate contract, contains the addresses of all
-  /// the aggregated markets
+  /// Sets the address of the illuminate contract which contains the addresses of all
+  /// the fixed rate markets
   /// @param i: the address of the illumninate contract
-  /// @return bool: true if the address was set, false otherwise
+  /// @return bool true if the address was set, false otherwise
   function setIlluminateAddress(address i) authorized(admin) external returns (bool) {
     require(illuminate == address(0));
     illuminate = i;
     return true;
   }
 
+  /// @notice mint swaps the sender's principal tokens for illuminate's zc tokens
+  /// @notice in effect, this opens a new fixed rate position for the sender on illuminate
   /// @dev mint is uniform across all principals, thus there is no need for a 'minter'
-  /// @param p value of a specific principal according to the Illuminate Principals Enum.
+  /// @param p value of a specific principal according to the Illuminate Principals Enum
   /// @param u address of an underlying asset
   /// @param m maturity (timestamp) of the market
   /// @param a amount being minted
+  /// @return bool true if the mint was successful, false otherwise
   function mint(uint8 p, address u, uint256 m, uint256 a) public returns (bool) {
     //use market interface to fetch the market for the given market pair
     address[8] memory market = IIlluminate(illuminate).markets(u, m);
@@ -79,6 +84,7 @@ contract Lender {
   /// @param m maturity (timestamp) of the market
   /// @param y yield pool that will execute the swap for the principal token
   /// @param a amount of underlying tokens to lend
+  /// @return uint256 the amount of principal tokens lent out
   function lend(uint8 p, address u, uint256 m, address y, uint256 a) public returns (uint256) {
     // uses yield token interface...
     IYield yToken = IYield(y);
@@ -104,8 +110,9 @@ contract Lender {
     return returned;
   }
 
+  /// @notice lends to yield pool. remaining balance is sent to the yield pool 
+  /// TODO: this will change when we implement a check on the gas market
   /// @dev lend method signature for swivel
-  /// @notice can be called before maturity to lend to Swivel while minting Illuminate tokens
   /// @param p value of a specific principal according to the Illuminate Principals Enum
   /// @param u address of an underlying asset
   /// @param m maturity (timestamp) of the market
@@ -113,6 +120,7 @@ contract Lender {
   /// @param o array of swivel orders being filled
   /// @param a array of amounts of underlying tokens lent to each order in the orders array
   /// @param s array of signatures for each order in the orders array
+  /// @return uint256 the amount of principal tokens lent out
   function lend(uint8 p, address u, uint256 m, address y, Swivel.Order[] calldata o, uint256[] calldata a, Swivel.Components[] calldata s) public returns (uint256) {
     // lent represents the number of underlying tokens lent
     uint256 lent;
@@ -153,16 +161,14 @@ contract Lender {
   }
 
   /// @dev lend method signature for element
-  /// @notice fees are calculated in line as the amount divided by the 
-  /// feenominator (a / feenominator)
   /// @param p value of a specific principal according to the Illuminate Principals Enum
   /// @param u address of an underlying asset
   /// @param m maturity (timestamp) of the market
   /// @param e element pool that is lent to
-  /// @param i element pool id 
+  /// @param i the id of the pool
   /// @param a amount of principal tokens to lend
-  /// @param r minimum amount to return 
-  /// @param d deadline ?
+  /// @param r minimum amount to return, this puts a cap on allowed slippage
+  /// @param d deadline is a timestamp by which the swap must be executed deadline is a timestamp by which the swap must be executed
   function lend(uint8 p, address u, uint256 m, address e, bytes32 i, uint256 a, uint256 r, uint256 d) public returns (uint256) {
     // Get the principal token for this market for element
     IElementToken token = IElementToken(IIlluminate(illuminate).markets(u, m)[p]);
@@ -203,13 +209,13 @@ contract Lender {
   }
 
   /// @dev lend method signature for pendle
-  /// @notice Can be called before maturity to lend to Pendle while minting Illuminate tokens
-  /// @param p value of a specific principal according to the MarketPlace Principals Enum
+  /// @param p value of a specific principal according to the Illuminate Principals Enum
   /// @param u address of an underlying asset
   /// @param m maturity (timestamp) of the market
-  /// @param a the amount of underlying tokens to lend
-  /// @param r the minimum amount of zero-coupon tokens to return accounting for slippage
-  /// @param d the maximum timestamp at which the transaction can be executed
+  /// @param a amount of principal tokens to lend
+  /// @param r minimum amount to return, this puts a cap on allowed slippage
+  /// @param d deadline is a timestamp by which the swap must be executed
+  /// @return uint256 the amount of principal tokens lent out
   function lend(uint8 p, address u, uint256 m, uint256 a, uint256 r, uint256 d) public returns (uint256) {
       // Instantiate market and tokens
       address[8] memory markets = IIlluminate(illuminate).markets(u, m); 
@@ -247,12 +253,12 @@ contract Lender {
   /// @param p value of a specific principal according to the Illuminate Principals Enum
   /// @param u address of an underlying asset
   /// @param m maturity (timestamp) of the market
-  /// @param a amount of underlying tokens to swap for
+  /// @param a amount of principal tokens to lend
   /// @param r minimum amount to return when executing the swap (sets a limit to slippage)
   /// @param x tempus amm that executes the swap
   /// @param t tempus pool that houses the underlying principal tokens
-  /// @param d timestamp by which the swap must occur otherwise the lend is reverted
-  /// @return returned number amount of underlying tokens that were lent
+  /// @param d deadline is a timestamp by which the swap must be executed
+  /// @return uint256 the amount of principal tokens lent out
   function lend(uint8 p, address u, uint256 m, uint256 a, uint256 r, address x, address t, uint256 d) public returns (uint256) {
       // Instantiate market and tokens
       address principal = IIlluminate(illuminate).markets(u, m)[p];
@@ -289,7 +295,8 @@ contract Lender {
   /// @param s contract that holds the principal token for this market
   /// @param a amount of underlying tokens to lend
   /// @param r minimum number of tokens to lend (sets a limit on the order)
-  function lend(uint8 p, address u, uint256 m, address x, address s, uint128 a, uint256 r) public returns (uint256){
+  /// @return uint256 the amount of principal tokens lent out
+  function lend(uint8 p, address u, uint256 m, address x, address s, uint128 a, uint256 r) public returns (uint256) {
     // Get the principal token for this market for this market
     ISenseToken token = ISenseToken(IIlluminate(illuminate).markets(u, m)[p]);
 
@@ -324,13 +331,13 @@ contract Lender {
 
   /// @notice Can be called before maturity to lend to APWine while minting Illuminate tokens
   /// @param p value of a specific principal according to the Illuminate Principals Enum
-  /// @param u the underlying token being redeemed
-  /// @param m the maturity of the market being redeemed
+  /// @param u address of an underlying asset
+  /// @param m maturity (timestamp) of the market
   /// @param a the amount of underlying tokens to lend
   /// @param r the minimum amount of zero-coupon tokens to return accounting for slippage
   /// @param pool the address of a given APWine pool
   /// @param i the id of the pool
-  /// @return returned the amount of underlying tokens that were lent
+  /// @return uint256 the amount of principal tokens lent out
   function lend(uint8 p, address u, uint256 m, uint256 a, uint256 r, address pool, uint256 i) public returns (uint256) {
       // Instantiate market and tokens
       address[8] memory markets = IIlluminate(illuminate).markets(u, m);
@@ -359,11 +366,16 @@ contract Lender {
       return returned;
   }
 
-  /// @notice transfers funds to yield pool and executes a lend
-  /// @param u: the underlying asset
+  /// @notice transfers excess funds to yield pool after principal tokens have been lent out
+  /// @dev this method is only used by the yield, illuminate and swivel protocols
+  /// @param u address of an underlying asset
   /// @param y: the yield pool to lend to
   /// @param a: the amount of underlying tokens to lend
+  /// @return uint256 the amount of tokens sent to the yield pool
   function yield(address u, address y, uint256 a) internal returns (uint256) {
+    // TODO: This is definitely a bug. The returned variable should be returned
+    // by the method, but the original amount should still be sent to the pool.
+
     // preview exact swap slippage on yield
     uint128 returned = IYield(y).sellBasePreview(Cast.u128(a));
 
@@ -376,10 +388,9 @@ contract Lender {
     return returned;
   }
 
-  /// @notice Allows the admin to withdraw the given token based on the fees
-  /// accumulated of that token by the lender contract
-  /// @param e Address of token to withdraw
-  /// @return true if successful
+  /// @notice Withdraws accumulated lending fees of the underlying token
+  /// @param e Address of the underlying token to withdraw
+  /// @return bool true if successful
   function withdraw(address e) external authorized(admin) returns (bool) {
     // Get the token to be withdrawn
     IErc20 token = IErc20(e);
