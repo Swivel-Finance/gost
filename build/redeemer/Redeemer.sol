@@ -10,6 +10,7 @@ contract Redeemer {
   address public admin;
   address public illuminate;
 
+  /// @dev addresses of the 3rd party protocol contracts
   address public apwineAddr;
   address public tempusAddr;
   address public pendleAddr;
@@ -29,10 +30,9 @@ contract Redeemer {
     swivelAddr = s;
   }
 
-  /// Sets the address of the illuminate contract, contains the addresses of all
-  /// the aggregated markets
-  /// @param i: the address of the illumninate contract
-  /// @return bool: true if the address was set, false otherwise
+  /// @notice sets the address of the illuminate contract which contains the addresses of the markets
+  /// @param i the address of the illumninate contract
+  /// @return bool true if the address was set, false otherwise
   function setIlluminateAddress(address i) authorized(admin) external returns (bool) {
     require(illuminate == address(0));
     illuminate = i;
@@ -41,13 +41,14 @@ contract Redeemer {
 
   /// @notice Redeems underlying token for illuminate, apwine and tempus 
   /// protocols
-  /// @notice Illuminate burns its tokens prior to redemption, unlike APWine and
+  /// @dev Illuminate burns its tokens prior to redemption, unlike APWine and
   /// Tempus, which withdraw their tokens after transferring the underlying to 
   /// the redeem contract
   /// @param p value of a specific principal according to the Illuminate Principals Enum
   /// @param u the underlying token being redeemed
   /// @param m the maturity of the market being redeemed
   /// @param o address of the controller or contract that manages the underlying token
+  /// @return bool true if the redemption was successful
   function redeem(uint8 p, address u, uint256 m, address o) public returns (bool) {
     // Get the address of the principal token being redeemed
     address principal = IIlluminate(illuminate).markets(u, m)[p];
@@ -79,10 +80,10 @@ contract Redeemer {
   }
 
   /// @dev redeem method for swivel, yield, element. This method redeems all
-  /// @param p prinicipal tokens to illuminate upon maturity
-  /// @param p the protocol being used to redeem
+  /// @param p value of a specific principal according to the Illuminate Principals Enum
   /// @param u underlying token being redeemed
   /// @param m maturity of the market being redeemed
+  /// @return bool true if the redemption was successful
   function redeem(uint8 p, address u, uint256 m) public returns (bool) {
     // Get the principal token that is being redeemed by the user
     address principal = IIlluminate(illuminate).markets(u, m)[p];
@@ -98,8 +99,10 @@ contract Redeemer {
       // Redeems zc tokens to the sender's address
       require((ISwivel(swivelAddr).redeemZcToken(u, m, amount)));
     } else if (p == uint8(Illuminate.Principals.Element)) {
+      // Redeems principal tokens from element
       IElementToken(principal).withdrawPrincipal(amount, illuminate);
     } else if (p == uint8(Illuminate.Principals.Yield)) {
+      // Redeems prinicipal tokens from yield
       IYieldToken(principal).redeem(address(this), address(this), amount);
     }
 
@@ -113,6 +116,7 @@ contract Redeemer {
   /// @param u underlying token being redeemed
   /// @param m maturity of the market being redeemed
   /// @param i forge id used by pendle to redeem the underlying token
+  /// @return bool true if the redemption was successful
   function redeem(uint8 p, address u, uint256 m, bytes32 i) public returns (bool) {
     // Get the principal token that is being redeemed by the user
     IErc20 token = IErc20(IIlluminate(illuminate).markets(u, m)[p]);
