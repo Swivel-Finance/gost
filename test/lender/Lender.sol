@@ -9,8 +9,6 @@ import './Element.sol'; // library of element specific constructs
 import './Safe.sol';
 import './Cast.sol';
 
-/// @title Lender contract used to lend on any fixed rate protocol
-/// 
 contract Lender {
   address public admin;
   address public illuminate;
