@@ -401,10 +401,7 @@ contract Lender {
   /// @param a Amount of underlying tokens to calculate the fee for
   /// @return uint256 The total for for the given amount
   function calculateFee(uint256 a) internal view returns (uint256) {
-    if (feenominator == 0) {
-      return 0;
-    } 
-    return a / feenominator;
+    return feenominator > 0 ? a / feenominator : 0;
   }
 
   modifier authorized(address a) {
