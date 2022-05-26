@@ -36,33 +36,39 @@ contract Illuminate {
     redeemer = r;
   }
 
-  /// @param u underlying
-  /// @param m maturity
+  /// @notice creates a new market for the given underlying token and maturity
+  /// @notice all seven protocols should be provided in the order of their enum value
+  /// @param u address of an underlying asset
+  /// @param m maturity (timestamp) of the market
   /// @param t principal token addresses for this market minus the illuminate principal (which is added here)
   /// @param n name for the illuminate token
   /// @param s symbol for the illuminate token
   /// @param d decimals for the illuminate token
+  /// @return bool true if successful
   function createMarket(address u, uint256 m, address[7] memory t, string calldata n, string calldata s, uint8 d) external authorized(admin) returns (bool) {
     require(markets[u][m][uint256(Principals.Illuminate)] == address(0), 'market exists'); 
 
-    // deploy an illuminate token with this new market NOTE: ATM is using name as symbol args
+    // deploy an illuminate token with this new market 
+    // NOTE: ATM is using name as symbol args
     address iToken = address(new ZcToken(u, m, n, s, d));
 
     // the market will have the illuminate principal as its zeroth item, thus t should have Principals[1] as [0]
     // TODO we could choose to put illuminate last in
     address[8] memory market = [iToken, t[0], t[1], t[2], t[3], t[4], t[5], t[6]];
 
+    // max is the maximum integer value for a 256 unsighed integer
     uint256 max = 2**256 - 1;
+
     // approve the underlying for max per given principal
     for (uint8 i; i < 8; i++) {
       Safe.approve(IErc20(market[i]), redeemer, max);
     }
 
+    // set the market
     markets[u][m] = market;
 
-    // TODO "args" for this event?
     emit CreateMarket(u, m);
-    // ...
+
     return true;
   }
 
