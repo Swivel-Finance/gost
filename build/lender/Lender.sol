@@ -18,7 +18,6 @@ contract Lender {
   address public pendleAddr;
   address public tempusAddr;
 
-  uint16 constant public MIN_FEENOMINATOR = 33;
   uint256 public feenominator;
   mapping(address => uint256) public fees;
 
@@ -42,15 +41,7 @@ contract Lender {
   /// @param f: the new value of the feenominator
   /// @return true if successful
   function setFee(uint256 f) external authorized(admin) returns (bool) {
-    require(f >= MIN_FEENOMINATOR, 'fee too high');
     feenominator = f;
-    return true;
-  }
-
-  /// @notice Disables fees
-  /// @return true if successful
-  function disableFees() external authorized(admin) returns (bool) {
-    feenominator = 0;
     return true;
   }
   
@@ -410,10 +401,7 @@ contract Lender {
   /// @param a Amount of underlying tokens to calculate the fee for
   /// @return uint256 The total for for the given amount
   function calculateFee(uint256 a) internal view returns (uint256) {
-    if (feenominator == 0) {
-      return 0;
-    } 
-    return a / feenominator;
+    return feenominator > 0 ? a / feenominator : 0;
   }
 
   modifier authorized(address a) {
