@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: UNLICENSED
 
-pragma solidity 0.8.4;
+pragma solidity 0.8.13;
 
 import './Interfaces.sol';
 import './Hash.sol';
@@ -94,15 +94,15 @@ contract Swivel {
     filled[hash] += a;
 
     // transfer underlying tokens
-    Erc20 uToken = Erc20(o.underlying);
+    IErc20 uToken = IErc20(o.underlying);
     Safe.transferFrom(uToken, msg.sender, o.maker, a);
 
     uint256 principalFilled = (a * o.principal) / o.premium;
     Safe.transferFrom(uToken, o.maker, address(this), principalFilled);
 
-    MarketPlace mPlace = MarketPlace(marketPlace);
+    IMarketPlace mPlace = IMarketPlace(marketPlace);
     // mint tokens
-    require(CErc20(mPlace.cTokenAddress(o.underlying, o.maturity)).mint(principalFilled) == 0, 'minting CToken failed');
+    require(ICErc20(mPlace.cTokenAddress(o.underlying, o.maturity)).mint(principalFilled) == 0, 'minting CToken failed');
     // alert marketplace
     require(mPlace.custodialInitiate(o.underlying, o.maturity, o.maker, msg.sender, principalFilled), 'custodial initiate failed');
 
@@ -125,7 +125,7 @@ contract Swivel {
 
     filled[hash] += a;
 
-    Erc20 uToken = Erc20(o.underlying);
+    IErc20 uToken = IErc20(o.underlying);
 
     uint256 premiumFilled = (a * o.premium) / o.principal;
     Safe.transferFrom(uToken, o.maker, msg.sender, premiumFilled);
@@ -134,9 +134,9 @@ contract Swivel {
     uint256 fee = premiumFilled / feenominators[0];
     Safe.transferFrom(uToken, msg.sender, address(this), (a + fee));
 
-    MarketPlace mPlace = MarketPlace(marketPlace);
+    IMarketPlace mPlace = IMarketPlace(marketPlace);
     // mint tokens
-    require(CErc20(mPlace.cTokenAddress(o.underlying, o.maturity)).mint(a) == 0, 'minting CToken Failed');
+    require(ICErc20(mPlace.cTokenAddress(o.underlying, o.maturity)).mint(a) == 0, 'minting CToken Failed');
     // alert marketplace 
     require(mPlace.custodialInitiate(o.underlying, o.maturity, msg.sender, o.maker, a), 'custodial initiate failed');
 
@@ -157,7 +157,7 @@ contract Swivel {
 
     uint256 premiumFilled = (a * o.premium) / o.principal;
 
-    Erc20 uToken = Erc20(o.underlying);
+    IErc20 uToken = IErc20(o.underlying);
     // transfer underlying tokens, then take fee
     Safe.transferFrom(uToken, msg.sender, o.maker, a - premiumFilled);
 
@@ -165,7 +165,7 @@ contract Swivel {
     Safe.transferFrom(uToken, msg.sender, address(this), fee);
 
     // alert marketplace
-    require(MarketPlace(marketPlace).p2pZcTokenExchange(o.underlying, o.maturity, o.maker, msg.sender, a), 'zcToken exchange failed');
+    require(IMarketPlace(marketPlace).p2pZcTokenExchange(o.underlying, o.maturity, o.maker, msg.sender, a), 'zcToken exchange failed');
             
     emit Initiate(o.key, hash, o.maker, o.vault, o.exit, msg.sender, a, premiumFilled);
   }
@@ -182,9 +182,9 @@ contract Swivel {
 
     filled[hash] += a;
 
-    Safe.transferFrom(Erc20(o.underlying), msg.sender, o.maker, a);
+    Safe.transferFrom(IErc20(o.underlying), msg.sender, o.maker, a);
 
-    MarketPlace mPlace = MarketPlace(marketPlace);
+    IMarketPlace mPlace = IMarketPlace(marketPlace);
     uint256 principalFilled = (a * o.principal) / o.premium;
     // alert marketplace
     require(mPlace.p2pVaultExchange(o.underlying, o.maturity, o.maker, msg.sender, principalFilled), 'vault exchange failed');
@@ -244,7 +244,7 @@ contract Swivel {
 
     filled[hash] += a;       
 
-    Erc20 uToken = Erc20(o.underlying);
+    IErc20 uToken = IErc20(o.underlying);
 
     uint256 principalFilled = (a * o.principal) / o.premium;
     // transfer underlying from initiating party to exiting party, minus the price the exit party pays for the exit (premium), and the fee.
@@ -255,7 +255,7 @@ contract Swivel {
     Safe.transferFrom(uToken, o.maker, address(this), fee);
 
     // alert marketplace
-    require(MarketPlace(marketPlace).p2pZcTokenExchange(o.underlying, o.maturity, msg.sender, o.maker, principalFilled), 'zcToken exchange failed');
+    require(IMarketPlace(marketPlace).p2pZcTokenExchange(o.underlying, o.maturity, msg.sender, o.maker, principalFilled), 'zcToken exchange failed');
 
     emit Exit(o.key, hash, o.maker, o.vault, o.exit, msg.sender, a, principalFilled);
   }
@@ -272,7 +272,7 @@ contract Swivel {
     
     filled[hash] += a;
         
-    Erc20 uToken = Erc20(o.underlying);
+    IErc20 uToken = IErc20(o.underlying);
 
     // transfer premium from maker to sender
     uint256 premiumFilled = (a * o.premium) / o.principal;
@@ -283,7 +283,7 @@ contract Swivel {
     Safe.transferFrom(uToken, msg.sender, address(this), fee);
 
     // transfer <a> notional from sender to maker
-    require(MarketPlace(marketPlace).p2pVaultExchange(o.underlying, o.maturity, msg.sender, o.maker, a), 'vault exchange failed');
+    require(IMarketPlace(marketPlace).p2pVaultExchange(o.underlying, o.maturity, msg.sender, o.maker, a), 'vault exchange failed');
 
     emit Exit(o.key, hash, o.maker, o.vault, o.exit, msg.sender, a, premiumFilled);
   }
@@ -301,11 +301,11 @@ contract Swivel {
     filled[hash] += a;
 
     // redeem underlying on Compound and burn cTokens
-    MarketPlace mPlace = MarketPlace(marketPlace);
+    IMarketPlace mPlace = IMarketPlace(marketPlace);
     address cTokenAddr = mPlace.cTokenAddress(o.underlying, o.maturity);
-    require((CErc20(cTokenAddr).redeemUnderlying(a) == 0), "compound redemption error");
+    require((ICErc20(cTokenAddr).redeemUnderlying(a) == 0), "compound redemption error");
 
-    Erc20 uToken = Erc20(o.underlying);
+    IErc20 uToken = IErc20(o.underlying);
     // transfer principal-premium  back to fixed exit party now that the interest coupon and zcb have been redeemed
     uint256 premiumFilled = (a * o.premium) / o.principal;
     Safe.transfer(uToken, o.maker, a - premiumFilled);
@@ -333,13 +333,13 @@ contract Swivel {
     filled[hash] += a;
 
     // redeem underlying on Compound and burn cTokens
-    MarketPlace mPlace = MarketPlace(marketPlace);
+    IMarketPlace mPlace = IMarketPlace(marketPlace);
 
     address cTokenAddr = mPlace.cTokenAddress(o.underlying, o.maturity);
     uint256 principalFilled = (a * o.principal) / o.premium;
-    require((CErc20(cTokenAddr).redeemUnderlying(principalFilled) == 0), "compound redemption error");
+    require((ICErc20(cTokenAddr).redeemUnderlying(principalFilled) == 0), "compound redemption error");
 
-    Erc20 uToken = Erc20(o.underlying);
+    IErc20 uToken = IErc20(o.underlying);
     // transfer principal-premium-fee back to fixed exit party now that the interest coupon and zcb have been redeemed
     uint256 fee = principalFilled / feenominators[1];
     Safe.transfer(uToken, msg.sender, principalFilled - a - fee);
@@ -406,7 +406,7 @@ contract Swivel {
 
     withdrawals[e] = 0;
 
-    Erc20 token = Erc20(e);
+    IErc20 token = IErc20(e);
     Safe.transfer(token, admin, token.balanceOf(address(this)));
 
     return true;
@@ -435,7 +435,7 @@ contract Swivel {
     uint256 max = 2**256 - 1;
 
     for (uint256 i; i < len; i++) {
-      Erc20 uToken = Erc20(u[i]);
+      IErc20 uToken = IErc20(u[i]);
       Safe.approve(uToken, c[i], max);
     }
 
@@ -450,10 +450,10 @@ contract Swivel {
   /// @param m Maturity timestamp of the market
   /// @param a Amount of underlying being deposited
   function splitUnderlying(address u, uint256 m, uint256 a) external returns (bool) {
-    Erc20 uToken = Erc20(u);
+    IErc20 uToken = IErc20(u);
     Safe.transferFrom(uToken, msg.sender, address(this), a);
-    MarketPlace mPlace = MarketPlace(marketPlace);
-    require(CErc20(mPlace.cTokenAddress(u, m)).mint(a) == 0, 'minting CToken Failed');
+    IMarketPlace mPlace = IMarketPlace(marketPlace);
+    require(ICErc20(mPlace.cTokenAddress(u, m)).mint(a) == 0, 'minting CToken Failed');
     require(mPlace.mintZcTokenAddingNotional(u, m, msg.sender, a), 'mint ZcToken adding Notional failed');
 
     return true;
@@ -465,11 +465,11 @@ contract Swivel {
   /// @param m Maturity timestamp of the market
   /// @param a Amount of zcTokens being redeemed
   function combineTokens(address u, uint256 m, uint256 a) external returns (bool) {
-    MarketPlace mPlace = MarketPlace(marketPlace);
+    IMarketPlace mPlace = IMarketPlace(marketPlace);
     require(mPlace.burnZcTokenRemovingNotional(u, m, msg.sender, a), 'burn ZcToken removing Notional failed');
     address cTokenAddr = mPlace.cTokenAddress(u, m);
-    require((CErc20(cTokenAddr).redeemUnderlying(a) == 0), "compound redemption error");
-    Safe.transfer(Erc20(u), msg.sender, a);
+    require((ICErc20(cTokenAddr).redeemUnderlying(a) == 0), "compound redemption error");
+    Safe.transfer(IErc20(u), msg.sender, a);
 
     return true;
   }
@@ -479,13 +479,13 @@ contract Swivel {
   /// @param m Maturity timestamp of the market
   /// @param a Amount of zcTokens being redeemed
   function redeemZcToken(address u, uint256 m, uint256 a) external returns (bool) {
-    MarketPlace mPlace = MarketPlace(marketPlace);
+    IMarketPlace mPlace = IMarketPlace(marketPlace);
     // call marketplace to determine the amount redeemed
     uint256 redeemed = mPlace.redeemZcToken(u, m, msg.sender, a);
     // redeem underlying from compound
-    require(CErc20(mPlace.cTokenAddress(u, m)).redeemUnderlying(redeemed) == 0, 'compound redemption failed');
+    require(ICErc20(mPlace.cTokenAddress(u, m)).redeemUnderlying(redeemed) == 0, 'compound redemption failed');
     // transfer underlying back to msg.sender
-    Safe.transfer(Erc20(u), msg.sender, redeemed);
+    Safe.transfer(IErc20(u), msg.sender, redeemed);
 
     return true;
   }
@@ -494,13 +494,13 @@ contract Swivel {
   /// @param u Underlying token address associated with the market
   /// @param m Maturity timestamp of the market
   function redeemVaultInterest(address u, uint256 m) external returns (bool) {
-    MarketPlace mPlace = MarketPlace(marketPlace);
+    IMarketPlace mPlace = IMarketPlace(marketPlace);
     // call marketplace to determine the amount redeemed
     uint256 redeemed = mPlace.redeemVaultInterest(u, m, msg.sender);
     // redeem underlying from compound
-    require(CErc20(mPlace.cTokenAddress(u, m)).redeemUnderlying(redeemed) == 0, 'compound redemption failed');
+    require(ICErc20(mPlace.cTokenAddress(u, m)).redeemUnderlying(redeemed) == 0, 'compound redemption failed');
     // transfer underlying back to msg.sender
-    Safe.transfer(Erc20(u), msg.sender, redeemed);
+    Safe.transfer(IErc20(u), msg.sender, redeemed);
 
     return true;
   }

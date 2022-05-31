@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: UNLICENSED
 
-pragma solidity 0.8.4;
+pragma solidity 0.8.13;
 
 import './Interfaces.sol';
 import './ZcToken.sol';
@@ -62,10 +62,10 @@ contract MarketPlace {
     address swivelAddr = swivel;
     require(swivelAddr != address(0), 'swivel contract address not set');
 
-    address underAddr = CErc20(c).underlying();
+    address underAddr = ICErc20(c).underlying();
     require(markets[underAddr][m].vaultAddr == address(0), 'market already exists');
 
-    uint8 decimals = Erc20(underAddr).decimals();
+    uint8 decimals = IErc20(underAddr).decimals();
     address zcTokenAddr = address(new ZcToken(underAddr, m, n, s, decimals));
     address vaultAddr = address(new VaultTracker(m, c, swivelAddr));
     markets[underAddr][m] = Market(c, zcTokenAddr, vaultAddr, 0);
@@ -85,7 +85,7 @@ contract MarketPlace {
     require(block.timestamp >= m, "maturity not reached");
 
     // set the base maturity cToken exchange rate at maturity to the current cToken exchange rate
-    uint256 currentExchangeRate = CErc20(mkt.cTokenAddr).exchangeRateCurrent();
+    uint256 currentExchangeRate = ICErc20(mkt.cTokenAddr).exchangeRateCurrent();
     markets[u][m].maturityRate = currentExchangeRate;
 
     require(VaultTracker(mkt.vaultAddr).matureVault(currentExchangeRate), 'mature vault failed');
@@ -166,7 +166,7 @@ contract MarketPlace {
   /// @param a Amount of zcTokens being redeemed
   function calculateReturn(address u, uint256 m, uint256 a) internal returns (uint256) {
     Market memory mkt = markets[u][m];
-    uint256 rate = CErc20(mkt.cTokenAddr).exchangeRateCurrent();
+    uint256 rate = ICErc20(mkt.cTokenAddr).exchangeRateCurrent();
 
     return (a * rate) / mkt.maturityRate;
   }

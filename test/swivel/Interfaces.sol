@@ -1,20 +1,20 @@
 // SPDX-License-Identifier: UNLICENSED
 
-pragma solidity 0.8.4;
+pragma solidity 0.8.13;
 
-interface Erc20 {
+interface IErc20 {
 	function approve(address, uint256) external returns (bool);
 	function transfer(address, uint256) external returns (bool);
 	function balanceOf(address) external returns (uint256);
 	function transferFrom(address, address, uint256) external returns (bool);
 }
 
-interface CErc20 {
+interface ICErc20 {
 	function mint(uint256) external returns (uint256);
 	function redeemUnderlying(uint256) external returns (uint256);
 }
 
-interface MarketPlace {
+interface IMarketPlace {
   // adds notional and mints zctokens
   function mintZcTokenAddingNotional(address, uint256, address, uint256) external returns (bool);
   // removes notional and burns zctokens
