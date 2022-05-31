@@ -217,15 +217,15 @@ compile_tokens: compile_zct
 # Fakes
 
 # Contracts for unit testing (with mocks)
-compile_solidity_illuminate_test:
-	@echo "compiling Illuminate solidity source into abi and bin files"
-	solc -o ./test/illuminate --optimize --optimize-runs=15000 --abi --bin --overwrite ./test/illuminate/Illuminate.sol
+compile_solidity_marketplace_test:
+	@echo "compiling MarketPlace solidity source into abi and bin files"
+	solc -o ./test/marketplace --optimize --optimize-runs=15000 --abi --bin --overwrite ./test/marketplace/MarketPlace.sol
 
-compile_go_illuminate_test:
+compile_go_marketplace_test:
 	@echo "compiling Illuminate abi and bin files to golang"
-	abigen --abi ./test/illuminate/Illuminate.abi --bin ./test/illuminate/Illuminate.bin -pkg illuminate -type Illuminate -out ./test/illuminate/illuminate.go
+	abigen --abi ./test/marketplace/MarketPlace.abi --bin ./test/marketplace/MarketPlace.bin -pkg MarketPlace -type MarketPlace -out ./test/marketplace/marketplace.go
 
-compile_illuminate_test: compile_solidity_illuminate_test compile_go_illuminate_test
+compile_marketplace_test: compile_solidity_marketplace_test compile_go_marketplace_test
 
 compile_solidity_lender_test:
 	@echo "compiling Lender solidity source into abi and bin files"
