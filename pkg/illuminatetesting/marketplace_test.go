@@ -8,19 +8,19 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
-	"github.com/swivel-finance/gost/test/illuminate"
+	"github.com/swivel-finance/gost/build/marketplace"
 	"github.com/swivel-finance/gost/test/mocks"
 )
 
-type illuminateTestSuite struct {
+type marketplaceTestSuite struct {
 	suite.Suite
-	Env        *Env
-	Dep        *Dep
-	Erc20      *mocks.Erc20Session
-	Illuminate *illuminate.IlluminateSession
+	Env         *Env
+	Dep         *Dep
+	Erc20       *mocks.Erc20Session
+	MarketPlace *marketplace.MarketPlaceSession
 }
 
-func (s *illuminateTestSuite) SetupSuite() {
+func (s *marketplaceTestSuite) SetupSuite() {
 	var err error
 
 	s.Env = NewEnv(big.NewInt(ONE_ETH)) // each of the wallets in the env will begin with this balance
@@ -40,8 +40,8 @@ func (s *illuminateTestSuite) SetupSuite() {
 		},
 	}
 
-	s.Illuminate = &illuminate.IlluminateSession{
-		Contract: s.Dep.Illuminate,
+	s.MarketPlace = &marketplace.MarketPlaceSession{
+		Contract: s.Dep.MarketPlace,
 		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
 		TransactOpts: bind.TransactOpts{
 			From:   s.Env.Owner.Opts.From,
@@ -50,15 +50,15 @@ func (s *illuminateTestSuite) SetupSuite() {
 	}
 }
 
-func (s *illuminateTestSuite) TestConstruction() {
+func (s *marketplaceTestSuite) TestConstruction() {
 	assert := assert.New(s.T())
 
-	rAddr, _ := s.Illuminate.Redeemer()
+	rAddr, _ := s.MarketPlace.Redeemer()
 
 	assert.Equal(rAddr, s.Dep.RedeemerAddress)
 }
 
-func (s *illuminateTestSuite) TestCreateMarket() {
+func (s *marketplaceTestSuite) TestCreateMarket() {
 	assert := assert.New(s.T())
 
 	// stub the erc approve to return true or safe will revert
@@ -79,7 +79,7 @@ func (s *illuminateTestSuite) TestCreateMarket() {
 		s.Dep.Erc20Address,
 	}
 
-	tx, err := s.Illuminate.CreateMarket(s.Dep.Erc20Address, maturity, principals, "spam token", "SPAM", uint8(18))
+	tx, err := s.MarketPlace.CreateMarket(s.Dep.Erc20Address, maturity, principals, "spam token", "SPAM", uint8(18))
 	assert.Nil(err)
 	assert.NotNil(tx)
 
@@ -87,13 +87,13 @@ func (s *illuminateTestSuite) TestCreateMarket() {
 
 	// we should see a market for that market-pair that has the new ZcToken address at [0] (as illuminate)
 	// remember that you cannot fetch the entire array, but must provide the index of the principal you want...
-	illPrincipal, err := s.Illuminate.Markets(s.Dep.Erc20Address, maturity, big.NewInt(0))
+	illPrincipal, err := s.MarketPlace.Markets(s.Dep.Erc20Address, maturity, big.NewInt(0))
 	assert.Nil(err)
 	// this will be the only one NOT the mock erc address...
 	assert.NotEqual(illPrincipal, s.Dep.Erc20Address)
 
 	// the first address in the array passed to the function should now be at [1] (as swivel)
-	swivPrincipal, err := s.Illuminate.Markets(s.Dep.Erc20Address, maturity, big.NewInt(1))
+	swivPrincipal, err := s.MarketPlace.Markets(s.Dep.Erc20Address, maturity, big.NewInt(1))
 	assert.Nil(err)
 	assert.Equal(swivPrincipal, s.Dep.Erc20Address)
 
@@ -109,5 +109,5 @@ func (s *illuminateTestSuite) TestCreateMarket() {
 }
 
 func TestIlluminateSuite(t *test.T) {
-	suite.Run(t, &illuminateTestSuite{})
+	suite.Run(t, &marketplaceTestSuite{})
 }
