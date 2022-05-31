@@ -6,7 +6,7 @@ import "./Interfaces.sol";
 import "./ZcToken.sol";
 import "./Safe.sol";
 
-contract Illuminate {
+contract MarketPlace {
   /// @notice for any given illuminate deployment the available principles are contained here
   enum Principals {
     Illuminate,

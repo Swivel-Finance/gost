@@ -246,7 +246,7 @@ compile_go_redeemer_test:
 	abigen --abi ./test/redeemer/Redeemer.abi --bin ./test/redeemer/Redeemer.bin -pkg redeemer -type Redeemer -out ./test/redeemer/redeemer.go
 
 compile_redeemer_test: compile_solidity_redeemer_test compile_go_redeemer_test
-compile_test: compile_illuminate_test compile_lender_test compile_redeemer_test
+compile_test: compile_marketplace_test compile_lender_test compile_redeemer_test
 
 # Cleaning
 clean_test_abi:
@@ -282,18 +282,18 @@ clean_build_go:
 clean_build: clean_build_sol clean_build_abi clean_build_bin clean_build_go
 
 # Copying to build, prepare for compiling build assets
-copy_illuminate_to_build:
+copy_marketplace_to_build:
 	@echo "copying Illuminate files to build"
-	cp test/illuminate/Illuminate.sol build/illuminate
-	cp test/illuminate/Interfaces.sol build/illuminate
-	cp test/illuminate/Safe.sol build/illuminate
-	cp test/tokens/Hash.sol build/illuminate
-	cp test/tokens/PErc20.sol build/illuminate
-	cp test/tokens/IPErc20.sol build/illuminate
-	cp test/tokens/Erc2612.sol build/illuminate
-	cp test/tokens/IErc2612.sol build/illuminate
-	cp test/tokens/ZcToken.sol build/illuminate
-	cp test/tokens/IZcToken.sol build/illuminate
+	cp test/marketplace/MarketPlace.sol build/marketplace
+	cp test/marketplace/Interfaces.sol build/marketplace
+	cp test/marketplace/Safe.sol build/marketplace
+	cp test/tokens/Hash.sol build/marketplace
+	cp test/tokens/PErc20.sol build/marketplace
+	cp test/tokens/IPErc20.sol build/marketplace
+	cp test/tokens/Erc2612.sol build/marketplace
+	cp test/tokens/IErc2612.sol build/marketplace
+	cp test/tokens/ZcToken.sol build/marketplace
+	cp test/tokens/IZcToken.sol build/marketplace
 
 copy_lender_to_build:
 	@echo "copying Lender files to build"
@@ -312,12 +312,12 @@ copy_redeemer_to_build:
 	cp test/redeemer/Illuminate.sol build/redeemer
 	cp test/redeemer/Safe.sol build/redeemer
 
-copy_to_build: copy_illuminate_to_build copy_lender_to_build copy_redeemer_to_build
+copy_to_build: copy_marketplace_to_build copy_lender_to_build copy_redeemer_to_build
 
 # Contracts for production (without mocks)
-compile_illuminate_build:
-	solc -o ./build/illuminate --optimize --optimize-runs=15000 --abi --bin --overwrite ./build/illuminate/Illuminate.sol
-	abigen --abi ./build/illuminate/Illuminate.abi --bin ./build/illuminate/Illuminate.bin -pkg illuminate -type Illuminate -out ./build/illuminate/illuminate.go
+compile_marketplace_build:
+	solc -o ./build/marketplace --optimize --optimize-runs=15000 --abi --bin --overwrite ./build/marketplace/MarketPlace.sol
+	abigen --abi ./build/marketplace/MarketPlace.abi --bin ./build/marketplace/MarketPlace.bin -pkg marketplace -type MarketPlace -out ./build/marketplace/marketplace.go
 
 compile_lender_build:
 	solc -o ./build/lender --optimize --optimize-runs=15000 --abi --bin --overwrite ./build/lender/Lender.sol
@@ -327,6 +327,6 @@ compile_redeemer_build:
 	solc -o ./build/redeemer --optimize --optimize-runs=15000 --abi --bin --overwrite ./build/redeemer/Redeemer.sol
 	abigen --abi ./build/redeemer/Redeemer.abi --bin ./build/redeemer/Redeemer.bin -pkg redeemer -type Redeemer -out ./build/redeemer/redeemer.go
 
-compile_build: compile_illuminate_build compile_lender_build compile_redeemer_build
+compile_build: compile_marketplace_build compile_lender_build compile_redeemer_build
 
 all: clean_test compile_mocks compile_test clean_build copy_to_build compile_build
