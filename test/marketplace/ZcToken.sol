@@ -5,9 +5,11 @@
   provides setters allowing us to dictate method return values
 */
 
+import './Interfaces.sol';
+
 pragma solidity 0.8.13;
 
-contract ZcToken {
+contract ZcToken is IErc20 {
   // mapping for arguments passed to approve
   mapping (address => uint256) public approveCalled;
   address public balanceOfCalled;
