@@ -47,11 +47,11 @@ contract Lender {
   
   /// Sets the address of the marketplace contract which contains the addresses of all
   /// the fixed rate markets
-  /// @param i: the address of the illumninate contract
+  /// @param m: the address of the illumninate contract
   /// @return bool true if the address was set, false otherwise
-  function setMarketPlaceAddress(address i) authorized(admin) external returns (bool) {
+  function setMarketPlaceAddress(address m) authorized(admin) external returns (bool) {
     require(marketplace == address(0));
-    marketplace = i;
+    marketplace = m;
     return true;
   }
 
