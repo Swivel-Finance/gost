@@ -20,7 +20,7 @@ interface IErc20Metadata is IErc20 {
     function decimals() external view returns (uint8);
 }
 
-interface IIlluminate {
+interface IMarketPlace {
   function markets(address, uint256) external returns (address[8] calldata);
 }
 

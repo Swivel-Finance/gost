@@ -17,7 +17,7 @@ type lendTestSuite struct {
 	Env          *Env
 	Dep          *Dep
 	Erc20        *mocks.Erc20Session
-	Illuminate   *mocks.IlluminateSession
+	MarketPlace  *mocks.MarketPlaceSession
 	Yield        *mocks.YieldSession
 	ZcToken      *mocks.ZcTokenSession
 	Swivel       *mocks.SwivelSession
@@ -53,8 +53,8 @@ func (s *lendTestSuite) SetupSuite() {
 		},
 	}
 
-	s.Illuminate = &mocks.IlluminateSession{
-		Contract: s.Dep.Illuminate,
+	s.MarketPlace = &mocks.MarketPlaceSession{
+		Contract: s.Dep.MarketPlace,
 		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
 		TransactOpts: bind.TransactOpts{
 			From:   s.Env.Owner.Opts.From,
@@ -179,7 +179,7 @@ func (s *lendTestSuite) SetupSuite() {
 		},
 	}
 
-	s.Lender.SetIlluminateAddress(s.Dep.IlluminateAddress)
+	s.Lender.SetMarketPlaceAddress(s.Dep.MarketPlaceAddress)
 	s.Env.Blockchain.Commit()
 
 	ORDERS[0].Maker = s.Env.User1.Opts.From
@@ -206,7 +206,7 @@ func (s *lendTestSuite) TestLendIlluminate() {
 	s.Yield.BaseReturns(s.Dep.Erc20Address)
 	s.Env.Blockchain.Commit()
 
-	s.Illuminate.MarketsReturns([8]common.Address{
+	s.MarketPlace.MarketsReturns([8]common.Address{
 		common.HexToAddress("0x0"),
 		common.HexToAddress("0x1"),
 		common.HexToAddress("0x2"),
@@ -287,7 +287,7 @@ func (s *lendTestSuite) TestLendYield() {
 		common.HexToAddress("0x6"),
 		common.HexToAddress("0x7"),
 	}
-	s.Illuminate.MarketsReturns(markets)
+	s.MarketPlace.MarketsReturns(markets)
 	s.Env.Blockchain.Commit()
 
 	s.Yield.MaturityReturns(uint32(maturity.Uint64()))
@@ -368,7 +368,7 @@ func (s *lendTestSuite) TestLendSwivel() {
 		common.HexToAddress("0x6"),
 		common.HexToAddress("0x7"),
 	}
-	s.Illuminate.MarketsReturns(markets)
+	s.MarketPlace.MarketsReturns(markets)
 	s.Env.Blockchain.Commit()
 
 	s.Yield.MaturityReturns(uint32(TEST_MATURITY.Uint64()))
@@ -413,7 +413,7 @@ func (s *lendTestSuite) TestLendSwivel() {
 func (s *lendTestSuite) TestLendElement() {
 	assert := assert.New(s.T())
 
-	s.Illuminate.MarketsReturns([8]common.Address{
+	s.MarketPlace.MarketsReturns([8]common.Address{
 		s.Dep.ElementTokenAddress,
 		s.Dep.ElementTokenAddress,
 		s.Dep.ElementTokenAddress,
@@ -484,7 +484,7 @@ func (s *lendTestSuite) TestLendPendle() {
 	s.Env.Blockchain.Commit()
 
 	// TODO: This should be a helper that always returns a given address
-	s.Illuminate.MarketsReturns([8]common.Address{
+	s.MarketPlace.MarketsReturns([8]common.Address{
 		s.Dep.ZcTokenAddress,
 		s.Dep.PendleTokenAddress,
 		s.Dep.PendleTokenAddress,
@@ -517,7 +517,7 @@ func (s *lendTestSuite) TestLendPendle() {
 func (s *lendTestSuite) TestLendTempus() {
 	assert := assert.New(s.T())
 
-	s.Illuminate.MarketsReturns([8]common.Address{
+	s.MarketPlace.MarketsReturns([8]common.Address{
 		s.Dep.ZcTokenAddress,
 		s.Dep.TempusAddress,
 		s.Dep.TempusAddress,
@@ -573,7 +573,7 @@ func (s *lendTestSuite) TestLendTempus() {
 
 func (s *lendTestSuite) TestLendSense() {
 	assert := assert.New(s.T())
-	s.Illuminate.MarketsReturns([8]common.Address{
+	s.MarketPlace.MarketsReturns([8]common.Address{
 		s.Dep.ZcTokenAddress,
 		s.Dep.SenseTokenAddress,
 		s.Dep.SenseTokenAddress,
@@ -622,7 +622,7 @@ func (s *lendTestSuite) TestLendSense() {
 
 func (s *lendTestSuite) TestAPWineSense() {
 	assert := assert.New(s.T())
-	s.Illuminate.MarketsReturns([8]common.Address{
+	s.MarketPlace.MarketsReturns([8]common.Address{
 		s.Dep.ZcTokenAddress,
 		s.Dep.APWineTokenAddress,
 		s.Dep.APWineTokenAddress,

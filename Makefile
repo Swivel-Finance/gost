@@ -11,14 +11,14 @@
 .PHONY: compile_solidity_mock_apwine compile_go_mock_apwine compile_mock_apwine
 .PHONY: compile_solidity_mock_sense_token compile_go_mock_sense_token compile_mock_sense_token
 .PHONY: compile_solidity_mock_element_token compile_go_mock_element_token compile_mock_element_token
-.PHONY: compile_solidity_mock_illuminate compile_go_mock_illuminate compile_mock_illuminate
+.PHONY: compile_solidity_mock_marketplace compile_go_mock_marketplace compile_mock_marketplace
 .PHONY: compile_mock_deps
 .PHONY: compile_mocks
 
 .PHONY: compile_solidity_zct compile_go_zct compile_zct
 .PHONY: compile_tokens
 
-.PHONY: compile_solidity_illuminate_test compile_go_illuminate_test compile_illuminate_test
+.PHONY: compile_solidity_marketplace_test compile_go_marketplace_test compile_marketplace_test
 .PHONY: compile_solidity_lender_test compile_go_lender_test compile_lender_test
 .PHONY: compile_solidity_redeemer_test compile_go_redeemer_test compile_redeemer_test
 .PHONY: compile_test
@@ -31,7 +31,7 @@
 
 .PHONY: copy_to_build
 
-.PHONY: compile_illuminate_build compile_lender_build compile_redeemer_build
+.PHONY: compile_marketplace_build compile_lender_build compile_redeemer_build
 .PHONY: compile_build
 
 .PHONY: all
@@ -117,15 +117,15 @@ compile_go_mock_swivel:
 
 compile_mock_swivel: compile_solidity_mock_swivel compile_go_mock_swivel
 
-compile_solidity_mock_illuminate:
-	@echo "compiling Mock Illuminate solidity source into abi and bin files"
-	solc -o ./test/mocks --abi --bin --overwrite ./test/mocks/Illuminate.sol
+compile_solidity_mock_marketplace:
+	@echo "compiling Mock MarketPlace solidity source into abi and bin files"
+	solc -o ./test/mocks --abi --bin --overwrite ./test/mocks/MarketPlace.sol
 
-compile_go_mock_illuminate:
+compile_go_mock_marketplace:
 	@echo "compiling abi and bin files to golang"
-	abigen --abi ./test/mocks/Illuminate.abi --bin ./test/mocks/Illuminate.bin -pkg mocks -type Illuminate -out ./test/mocks/illuminate.go 
+	abigen --abi ./test/mocks/MarketPlace.abi --bin ./test/mocks/MarketPlace.bin -pkg mocks -type MarketPlace -out ./test/mocks/marketplace.go 
 
-compile_mock_illuminate: compile_solidity_mock_illuminate compile_go_mock_illuminate
+compile_mock_marketplace: compile_solidity_mock_marketplace compile_go_mock_marketplace
 
 compile_solidity_mock_zc_token:
 	@echo "compiling Mock ZcToken solidity source into abi and bin files"
@@ -199,7 +199,7 @@ compile_mock_apwine: compile_mock_apwine_token compile_solidity_mock_apwine comp
 
 compile_mock_deps: compile_mock_erc compile_mock_zc_token
 
-compile_mocks: compile_mock_deps compile_mock_illuminate compile_mock_swivel compile_mock_yield compile_mock_yield_token compile_mock_element compile_mock_pendle compile_mock_tempus compile_mock_sense compile_mock_sense_token compile_mock_apwine compile_mock_tempus_token
+compile_mocks: compile_mock_deps compile_mock_marketplace compile_mock_swivel compile_mock_yield compile_mock_yield_token compile_mock_element compile_mock_pendle compile_mock_tempus compile_mock_sense compile_mock_sense_token compile_mock_apwine compile_mock_tempus_token
 
 # Real Tokens
 compile_solidity_zct:
@@ -222,7 +222,7 @@ compile_solidity_marketplace_test:
 	solc -o ./test/marketplace --optimize --optimize-runs=15000 --abi --bin --overwrite ./test/marketplace/MarketPlace.sol
 
 compile_go_marketplace_test:
-	@echo "compiling Illuminate abi and bin files to golang"
+	@echo "compiling MarketPlace abi and bin files to golang"
 	abigen --abi ./test/marketplace/MarketPlace.abi --bin ./test/marketplace/MarketPlace.bin -pkg MarketPlace -type MarketPlace -out ./test/marketplace/marketplace.go
 
 compile_marketplace_test: compile_solidity_marketplace_test compile_go_marketplace_test
@@ -283,7 +283,7 @@ clean_build: clean_build_sol clean_build_abi clean_build_bin clean_build_go
 
 # Copying to build, prepare for compiling build assets
 copy_marketplace_to_build:
-	@echo "copying Illuminate files to build"
+	@echo "copying MarketPlace files to build"
 	cp test/marketplace/MarketPlace.sol build/marketplace
 	cp test/marketplace/Interfaces.sol build/marketplace
 	cp test/marketplace/Safe.sol build/marketplace
@@ -299,7 +299,7 @@ copy_lender_to_build:
 	@echo "copying Lender files to build"
 	cp test/lender/Lender.sol build/lender
 	cp test/lender/Interfaces.sol build/lender
-	cp test/lender/Illuminate.sol build/lender
+	cp test/lender/MarketPlace.sol build/lender
 	cp test/lender/Swivel.sol build/lender
 	cp test/lender/Element.sol build/lender
 	cp test/lender/Safe.sol build/lender
@@ -309,7 +309,7 @@ copy_redeemer_to_build:
 	@echo "copying Redeemer files to build"
 	cp test/redeemer/Redeemer.sol build/redeemer
 	cp test/redeemer/Interfaces.sol build/redeemer
-	cp test/redeemer/Illuminate.sol build/redeemer
+	cp test/redeemer/MarketPlace.sol build/redeemer
 	cp test/redeemer/Safe.sol build/redeemer
 
 copy_to_build: copy_marketplace_to_build copy_lender_to_build copy_redeemer_to_build

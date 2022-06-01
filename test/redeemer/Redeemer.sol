@@ -3,12 +3,12 @@
 pragma solidity 0.8.13;
 
 import "./Interfaces.sol";
-import "./Illuminate.sol";
+import "./MarketPlace.sol";
 import "./Safe.sol";
 
 contract Redeemer {
   address public admin;
-  address public illuminate;
+  address public marketplace;
 
   /// @dev addresses of the 3rd party protocol contracts
   address public apwineAddr;
@@ -30,12 +30,12 @@ contract Redeemer {
     swivelAddr = s;
   }
 
-  /// @notice sets the address of the illuminate contract which contains the addresses of the markets
+  /// @notice sets the address of the marketplace contract which contains the addresses of the markets
   /// @param i the address of the illumninate contract
   /// @return bool true if the address was set, false otherwise
-  function setIlluminateAddress(address i) authorized(admin) external returns (bool) {
-    require(illuminate == address(0));
-    illuminate = i;
+  function setMarketplaceAddress(address i) authorized(admin) external returns (bool) {
+    require(marketplace == address(0));
+    marketplace = i;
     return true;
   }
 
@@ -51,27 +51,27 @@ contract Redeemer {
   /// @return bool true if the redemption was successful
   function redeem(uint8 p, address u, uint256 m, address o) public returns (bool) {
     // Get the address of the principal token being redeemed
-    address principal = IIlluminate(illuminate).markets(u, m)[p];
+    address principal = IMarketPlace(marketplace).markets(u, m)[p];
 
     // Get the amount of tokens to be redeemed from the principal token
     uint256 amount = IErc20(principal).balanceOf(o);
 
     // Transfer the underlying token to the redeem contract if it is not illuminate
-    if (p != uint8(Illuminate.Principals.Illuminate)) {
-        Safe.transferFrom(IErc20(u), illuminate, address(this), amount);
+    if (p != uint8(MarketPlace.Principals.Illuminate)) {
+        Safe.transferFrom(IErc20(u), marketplace, address(this), amount);
     }
 
-    if (p == uint8(Illuminate.Principals.Apwine)) {
+    if (p == uint8(MarketPlace.Principals.Apwine)) {
         // Redeem the underlying token from APWine to illuminate
         IAPWine(apwineAddr).withdraw(o, amount);
-    } else if (p == uint8(Illuminate.Principals.Tempus)) {
+    } else if (p == uint8(MarketPlace.Principals.Tempus)) {
         // Redeem the tokens from the tempus contract to illuminate
         ITempus(tempusAddr).redeemToBacking(o, amount, 0, address(this));
-    } else if (p == uint8(Illuminate.Principals.Illuminate)) {
+    } else if (p == uint8(MarketPlace.Principals.Illuminate)) {
         // Burn the prinicipal token from illuminate
         IZcToken(principal).burn(o, amount);
         // Transfer the original underlying token back to the user
-        Safe.transferFrom(IErc20(u), illuminate, address(this), amount);
+        Safe.transferFrom(IErc20(u), marketplace, address(this), amount);
     }
 
     emit Redeem(0, u, m, amount);
@@ -86,22 +86,22 @@ contract Redeemer {
   /// @return bool true if the redemption was successful
   function redeem(uint8 p, address u, uint256 m) public returns (bool) {
     // Get the principal token that is being redeemed by the user
-    address principal = IIlluminate(illuminate).markets(u, m)[p];
+    address principal = IMarketPlace(marketplace).markets(u, m)[p];
 
     // The amount redeemed should be the balance of the principal token held by the illuminate contract
     // TODO: Should we check if the principal token has matured?
-    uint256 amount = IErc20(principal).balanceOf(illuminate);
+    uint256 amount = IErc20(principal).balanceOf(marketplace);
 
-    // Transfer the principal token to the illuminate contract from here
-    Safe.transferFrom(IErc20(principal), illuminate, address(this), amount);
+    // Transfer the principal token to the marketplace contract from here
+    Safe.transferFrom(IErc20(principal), marketplace, address(this), amount);
 
-    if (p == uint8(Illuminate.Principals.Swivel)) {
+    if (p == uint8(MarketPlace.Principals.Swivel)) {
       // Redeems zc tokens to the sender's address
       require((ISwivel(swivelAddr).redeemZcToken(u, m, amount)));
-    } else if (p == uint8(Illuminate.Principals.Element)) {
+    } else if (p == uint8(MarketPlace.Principals.Element)) {
       // Redeems principal tokens from element
-      IElementToken(principal).withdrawPrincipal(amount, illuminate);
-    } else if (p == uint8(Illuminate.Principals.Yield)) {
+      IElementToken(principal).withdrawPrincipal(amount, marketplace);
+    } else if (p == uint8(MarketPlace.Principals.Yield)) {
       // Redeems prinicipal tokens from yield
       IYieldToken(principal).redeem(address(this), address(this), amount);
     }
@@ -119,13 +119,13 @@ contract Redeemer {
   /// @return bool true if the redemption was successful
   function redeem(uint8 p, address u, uint256 m, bytes32 i) public returns (bool) {
     // Get the principal token that is being redeemed by the user
-    IErc20 token = IErc20(IIlluminate(illuminate).markets(u, m)[p]);
+    IErc20 token = IErc20(IMarketPlace(marketplace).markets(u, m)[p]);
 
     // Get the balance of tokens to be redeemed by the user
-    uint256 amount = token.balanceOf(illuminate);
+    uint256 amount = token.balanceOf(marketplace);
 
     // Transfer the user's tokens to the redeem contract
-    Safe.transferFrom(token, illuminate, address(this), amount);
+    Safe.transferFrom(token, marketplace, address(this), amount);
 
     // Redeem the tokens from the pendle contract
     IPendle(pendleAddr).redeemAfterExpiry(i, u, m);
@@ -140,7 +140,7 @@ contract Redeemer {
   /// @param o sense contract that [d] calls into to adapt the underlying to sense
   function redeem(uint8 p, address u, uint256 m, address d, address o) public returns (bool) {
     // Get the principal token for the given market
-    IErc20 token = IErc20(IIlluminate(illuminate).markets(u, m)[p]);
+    IErc20 token = IErc20(IMarketPlace(marketplace).markets(u, m)[p]);
 
     // Set the redeemer contract address
     address self = address(this);
@@ -149,7 +149,7 @@ contract Redeemer {
     uint256 amount = token.balanceOf(self);
 
     // Transfer the user's tokens to the redeem contract
-    Safe.transferFrom(token, illuminate, self, amount);
+    Safe.transferFrom(token, marketplace, self, amount);
 
     // Redeem the tokens from the sense contract
     ISense(d).redeem(o, m, amount);

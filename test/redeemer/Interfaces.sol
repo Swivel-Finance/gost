@@ -4,7 +4,7 @@ pragma solidity 0.8.13;
 
 import './Redeemer.sol';
 
-interface IIlluminate {
+interface IMarketPlace {
   function markets(address, uint256) external returns (address[8] calldata);
 }
 

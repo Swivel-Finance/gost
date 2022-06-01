@@ -3,7 +3,7 @@
 pragma solidity 0.8.13;
 
 import './Interfaces.sol';
-import './Illuminate.sol'; // library of market place specific constructs
+import './MarketPlace.sol'; // library of market place specific constructs
 import './Swivel.sol'; // library of swivel specific constructs
 import './Element.sol'; // library of element specific constructs
 import './Safe.sol';
@@ -11,7 +11,7 @@ import './Cast.sol';
 
 contract Lender {
   address public admin;
-  address public illuminate;
+  address public marketplace;
 
   /// @dev addresses of the 3rd party protocol contracts
   address public swivelAddr;
@@ -49,27 +49,27 @@ contract Lender {
   /// the fixed rate markets
   /// @param i: the address of the illumninate contract
   /// @return bool true if the address was set, false otherwise
-  function setIlluminateAddress(address i) authorized(admin) external returns (bool) {
-    require(illuminate == address(0));
-    illuminate = i;
+  function setMarketPlaceAddress(address i) authorized(admin) external returns (bool) {
+    require(marketplace == address(0));
+    marketplace = i;
     return true;
   }
 
   /// @notice mint swaps the sender's principal tokens for illuminate's zc tokens
   /// @notice in effect, this opens a new fixed rate position for the sender on illuminate
   /// @dev mint is uniform across all principals, thus there is no need for a 'minter'
-  /// @param p value of a specific principal according to the Illuminate Principals Enum
+  /// @param p value of a specific principal according to the MarketPlace Principals Enum
   /// @param u address of an underlying asset
   /// @param m maturity (timestamp) of the market
   /// @param a amount being minted
   /// @return bool true if the mint was successful, false otherwise
   function mint(uint8 p, address u, uint256 m, uint256 a) public returns (bool) {
     //use market interface to fetch the market for the given market pair
-    address[8] memory market = IIlluminate(illuminate).markets(u, m);
+    address[8] memory market = IMarketPlace(marketplace).markets(u, m);
     //use safe transfer lib and ERC interface...
     Safe.transferFrom(IErc20(market[p]), msg.sender, address(this), a);
     //use zctoken interface...
-    IZcToken(market[uint256(Illuminate.Principals.Illuminate)]).mint(msg.sender, a);
+    IZcToken(market[uint256(MarketPlace.Principals.Illuminate)]).mint(msg.sender, a);
 
     emit Mint(p, u, m, a);
 
@@ -77,7 +77,7 @@ contract Lender {
   }
 
   /// @dev lend method signature for both illuminate and yield
-  /// @param p value of a specific principal according to the Illuminate Principals Enum
+  /// @param p value of a specific principal according to the MarketPlace Principals Enum
   /// @param u address of an underlying asset
   /// @param m maturity (timestamp) of the market
   /// @param y yield pool that will execute the swap for the principal token
@@ -97,10 +97,10 @@ contract Lender {
     uint256 returned = yield(u, y, a - calculateFee(a));
 
     // this step is only needed when the lend is for yield
-    if (p == uint8(Illuminate.Principals.Yield)) {
-      address[8] memory market = IIlluminate(illuminate).markets(u, m); 
+    if (p == uint8(MarketPlace.Principals.Yield)) {
+      address[8] memory market = IMarketPlace(marketplace).markets(u, m); 
       // TODO should we require on this?
-      IZcToken(market[uint256(Illuminate.Principals.Illuminate)]).mint(msg.sender, returned);
+      IZcToken(market[uint256(MarketPlace.Principals.Illuminate)]).mint(msg.sender, returned);
     }
 
     emit Lend(p, u, m, returned);
@@ -169,7 +169,7 @@ contract Lender {
   /// @param d deadline is a timestamp by which the swap must be executed deadline is a timestamp by which the swap must be executed
   function lend(uint8 p, address u, uint256 m, address e, bytes32 i, uint256 a, uint256 r, uint256 d) public returns (uint256) {
     // Get the principal token for this market for element
-    IElementToken token = IElementToken(IIlluminate(illuminate).markets(u, m)[p]);
+    IElementToken token = IElementToken(IMarketPlace(marketplace).markets(u, m)[p]);
 
     // the element token must match the market pair
     require(token.underlying() == u, '');
@@ -195,7 +195,7 @@ contract Lender {
       amount: a - calculateFee(a),
       kind: Element.SwapKind.In,
       assetIn: Any(u),
-      assetOut: Any(IIlluminate(illuminate).markets(u, m)[p])
+      assetOut: Any(IMarketPlace(marketplace).markets(u, m)[p])
     });
 
 
@@ -216,7 +216,7 @@ contract Lender {
   /// @return uint256 the amount of principal tokens lent out
   function lend(uint8 p, address u, uint256 m, uint256 a, uint256 r, uint256 d) public returns (uint256) {
       // Instantiate market and tokens
-      address[8] memory markets = IIlluminate(illuminate).markets(u, m); 
+      address[8] memory markets = IMarketPlace(marketplace).markets(u, m); 
       address principal = markets[p];
       IPendleToken token = IPendleToken(principal); // rename to pendletoken
 
@@ -238,7 +238,7 @@ contract Lender {
       uint256 returned = IPendle(pendleAddr).swapExactTokensForTokens(a - calculateFee(a), r, path, address(this), d)[0];
 
       // Mint Illuminate zero coupons
-      address illuminateToken = markets[uint8(Illuminate.Principals.Illuminate)];
+      address illuminateToken = markets[uint8(MarketPlace.Principals.Illuminate)];
       IZcToken(illuminateToken).mint(msg.sender, returned);
 
       emit Lend(p, u, m, returned);
@@ -259,7 +259,7 @@ contract Lender {
   /// @return uint256 the amount of principal tokens lent out
   function lend(uint8 p, address u, uint256 m, uint256 a, uint256 r, address x, address t, uint256 d) public returns (uint256) {
       // Instantiate market and tokens
-      address principal = IIlluminate(illuminate).markets(u, m)[p];
+      address principal = IMarketPlace(marketplace).markets(u, m)[p];
       require(ITempus(principal).yieldBearingToken() == IErc20Metadata(u), 'tempus underlying != underlying');
       require(ITempus(principal).maturityTime() == m, 'tempus maturity != maturity');
 
@@ -273,7 +273,7 @@ contract Lender {
       fees[u] += calculateFee(a);
 
       // Swap on the Tempus Router using the provided market and params
-      IZcToken illuminateToken = IZcToken(IIlluminate(illuminate).markets(u, m)[uint256(Illuminate.Principals.Illuminate)]);
+      IZcToken illuminateToken = IZcToken(IMarketPlace(marketplace).markets(u, m)[uint256(MarketPlace.Principals.Illuminate)]);
       uint256 returned = ITempus(tempusAddr).depositAndFix(Any(x), Any(t), a - calculateFee(a), true, r, d) - illuminateToken.balanceOf(address(this));
 
       // Mint Illuminate zero coupons
@@ -296,7 +296,7 @@ contract Lender {
   /// @return uint256 the amount of principal tokens lent out
   function lend(uint8 p, address u, uint256 m, address x, address s, uint128 a, uint256 r) public returns (uint256) {
     // Get the principal token for this market for this market
-    ISenseToken token = ISenseToken(IIlluminate(illuminate).markets(u, m)[p]);
+    ISenseToken token = ISenseToken(IMarketPlace(marketplace).markets(u, m)[p]);
 
     // Verify that the underlying matches up
     require(token.underlying() == u, "sense underlying != underlying");
@@ -317,7 +317,7 @@ contract Lender {
     uint256 returned = ISense(x).swapUnderlyingForPTs(s, m, lent, r);
 
     // Get the address of the ZC token for this market
-    IZcToken illuminateToken = IZcToken(IIlluminate(illuminate).markets(u, m)[uint256(Illuminate.Principals.Illuminate)]);
+    IZcToken illuminateToken = IZcToken(IMarketPlace(marketplace).markets(u, m)[uint256(MarketPlace.Principals.Illuminate)]);
     
     // Mint the illuminate tokens based on the returned amount
     illuminateToken.mint(msg.sender, returned);
@@ -338,7 +338,7 @@ contract Lender {
   /// @return uint256 the amount of principal tokens lent out
   function lend(uint8 p, address u, uint256 m, uint256 a, uint256 r, address pool, uint256 i) public returns (uint256) {
       // Instantiate market and tokens
-      address[8] memory markets = IIlluminate(illuminate).markets(u, m);
+      address[8] memory markets = IMarketPlace(marketplace).markets(u, m);
       require(IAPWineToken(markets[p]).getPTAddress() == u, "apwine principle != principle");
 
       // Transfer funds from user to Illuminate    
@@ -357,7 +357,7 @@ contract Lender {
       uint256 returned = IAPWineRouter(pool).swapExactAmountIn(i, 1, lent, 0, r, address(this));
 
       // Mint Illuminate zero coupons
-      IZcToken(markets[uint256(Illuminate.Principals.Illuminate)]).mint(msg.sender, returned);
+      IZcToken(markets[uint256(MarketPlace.Principals.Illuminate)]).mint(msg.sender, returned);
 
       emit Lend(p, u, m, returned);
 

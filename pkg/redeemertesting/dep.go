@@ -17,8 +17,8 @@ type Dep struct {
 	ZcToken             *mocks.ZcToken
 	SwivelAddress       common.Address
 	Swivel              *mocks.Swivel
-	IlluminateAddress   common.Address
-	Illuminate          *mocks.Illuminate
+	MarketplaceAddress  common.Address
+	Marketplace         *mocks.MarketPlace
 	APWineAddress       common.Address
 	APWine              *mocks.APWine
 	APWineTokenAddress  common.Address
@@ -85,7 +85,7 @@ func Deploy(e *Env) (*Dep, error) {
 
 	e.Blockchain.Commit()
 
-	mpAddress, _, mpContract, mpErr := mocks.DeployIlluminate(e.Owner.Opts, e.Blockchain)
+	mpAddress, _, mpContract, mpErr := mocks.DeployMarketPlace(e.Owner.Opts, e.Blockchain)
 
 	if mpErr != nil {
 		return nil, mpErr
@@ -192,8 +192,8 @@ func Deploy(e *Env) (*Dep, error) {
 		ZcToken:             zcContract,
 		SwivelAddress:       swivelAddress,
 		Swivel:              swivelContract,
-		IlluminateAddress:   mpAddress,
-		Illuminate:          mpContract,
+		MarketplaceAddress:  mpAddress,
+		Marketplace:         mpContract,
 		RedeemerAddress:     redeemerAddress,
 		APWine:              apContract,
 		APWineAddress:       apAddress,
