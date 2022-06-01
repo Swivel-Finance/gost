@@ -10,10 +10,12 @@ pragma solidity 0.8.13;
 contract ZcToken {
   // mapping for arguments passed to approve
   mapping (address => uint256) public approveCalled;
+  address public balanceOfCalled;
 
   address private underlyingReturn;
   uint256 private maturityReturn;
   bool private approveReturn;
+  uint256 private balanceOfReturn;
   string public name;
   string public symbol;
   uint8 public decimals;
@@ -42,5 +44,14 @@ contract ZcToken {
 
   function approveReturns(bool b) public {
     approveReturn = b;
+  }
+
+  function balanceOfReturns(uint256 b) public {
+    balanceOfReturn = b;
+  }
+
+  function balanceOf(address t) public returns (uint256) {
+    balanceOfCalled = t;
+    return balanceOfReturn;
   }
 }
