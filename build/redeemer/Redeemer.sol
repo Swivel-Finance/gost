@@ -33,7 +33,7 @@ contract Redeemer {
   /// @notice sets the address of the marketplace contract which contains the addresses of the markets
   /// @param m the address of the illumninate contract
   /// @return bool true if the address was set, false otherwise
-  function setMarketplaceAddress(address m) authorized(admin) external returns (bool) {
+  function setMarketPlaceAddress(address m) authorized(admin) external returns (bool) {
     require(marketplace == address(0));
     marketplace = m;
     return true;
