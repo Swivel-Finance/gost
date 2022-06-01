@@ -45,7 +45,7 @@ contract Lender {
     return true;
   }
   
-  /// Sets the address of the illuminate contract which contains the addresses of all
+  /// Sets the address of the marketplace contract which contains the addresses of all
   /// the fixed rate markets
   /// @param i: the address of the illumninate contract
   /// @return bool true if the address was set, false otherwise
