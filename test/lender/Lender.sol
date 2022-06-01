@@ -364,6 +364,39 @@ contract Lender {
       return returned;
   }
 
+  /// @dev lend method signature for pendle
+  /// @param p value of a specific principal according to the Illuminate Principals Enum
+  /// @param u address of an underlying asset
+  /// @param m maturity (timestamp) of the market
+  /// @param a amount of principal tokens to lend
+  /// @return uint256 the amount of principal tokens lent out
+  function lend(uint8 p, address u, uint256 m, uint256 a) public returns (uint256) {
+      // Instantiate market and tokens
+      address[8] memory markets = IMarketPlace(marketplace).markets(u, m); 
+      address principal = markets[p];
+      INotionalToken token = INotionalToken(principal); // rename to pendletoken
+
+      // Transfer funds from user to Illuminate
+      Safe.transferFrom(IErc20(u), msg.sender, address(this), a);
+
+      uint256 fee = calculateFee(a);
+      // Add the accumulated fees to the total
+      fees[u] += fee;
+
+      // Swap on the Notional Token wrapper
+      uint256 returned = token.deposit(a - fee, address(this));
+
+      // Mint Illuminate zero coupons
+      address illuminateToken = markets[uint8(MarketPlace.Principals.Illuminate)];
+      IZcToken(illuminateToken).mint(msg.sender, returned);
+
+      emit Lend(p, u, m, returned);
+
+      return returned;
+  }
+
+
+
   /// @notice transfers excess funds to yield pool after principal tokens have been lent out
   /// @dev this method is only used by the yield, illuminate and swivel protocols
   /// @param u address of an underlying asset
