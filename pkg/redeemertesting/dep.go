@@ -173,7 +173,7 @@ func Deploy(e *Env) (*Dep, error) {
 
 	e.Blockchain.Commit()
 
-	redeemerAddress, _, redeemerContract, redeemerErr := redeemer.DeployRedeemer(e.Owner.Opts, e.Blockchain, apAddress, tAddress, pAddress, swivelAddress)
+	redeemerAddress, _, redeemerContract, redeemerErr := redeemer.DeployRedeemer(e.Owner.Opts, e.Blockchain, swivelAddress, pAddress, tAddress, apAddress)
 
 	if redeemerErr != nil {
 		return nil, redeemerErr

@@ -22,7 +22,7 @@ contract Redeemer {
   /// @param p: the pendle contract
   /// @param t: the tempus contract
   /// @param a: the apwine contract
-  constructor(address t, address p, address s, address a) {
+  constructor(address s, address p, address t, address a) {
     admin = msg.sender;
     swivelAddr = s;
     pendleAddr = p;
