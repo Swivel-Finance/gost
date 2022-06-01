@@ -17,7 +17,7 @@ type redeemTestSuite struct {
 	Env          *Env
 	Dep          *Dep
 	Erc20        *mocks.Erc20Session
-	Illuminate   *mocks.IlluminateSession
+	MarketPlace  *mocks.MarketPlaceSession
 	Yield        *mocks.YieldSession
 	YieldToken   *mocks.YieldTokenSession
 	ZcToken      *mocks.ZcTokenSession
@@ -55,8 +55,8 @@ func (s *redeemTestSuite) SetupSuite() {
 		},
 	}
 
-	s.Illuminate = &mocks.IlluminateSession{
-		Contract: s.Dep.Illuminate,
+	s.MarketPlace = &mocks.MarketPlaceSession{
+		Contract: s.Dep.Marketplace,
 		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
 		TransactOpts: bind.TransactOpts{
 			From:   s.Env.Owner.Opts.From,
@@ -208,7 +208,7 @@ func (s *redeemTestSuite) SetupSuite() {
 		},
 	}
 
-	s.Redeemer.SetIlluminateAddress(s.Dep.IlluminateAddress)
+	s.Redeemer.SetMarketplaceAddress(s.Dep.MarketplaceAddress)
 	s.Env.Blockchain.Commit()
 }
 
@@ -220,7 +220,7 @@ func (s *redeemTestSuite) TestAPWineRedeem() {
 	owner := s.Env.User1.Opts.From
 	principal := uint8(7)
 
-	s.Illuminate.MarketsReturns([8]common.Address{
+	s.MarketPlace.MarketsReturns([8]common.Address{
 		s.Dep.APWineTokenAddress,
 		s.Dep.APWineTokenAddress,
 		s.Dep.APWineTokenAddress,
@@ -255,7 +255,7 @@ func (s *redeemTestSuite) TestAPWineRedeem() {
 	assert.NoError(err)
 	assert.Equal(owner, vaultCalled)
 
-	underlyingTransfer, err := s.Erc20.TransferFromCalled(s.Dep.IlluminateAddress)
+	underlyingTransfer, err := s.Erc20.TransferFromCalled(s.Dep.MarketplaceAddress)
 	assert.NoError(err)
 	assert.Equal(amount, underlyingTransfer.Amount)
 	assert.Equal(s.Dep.RedeemerAddress, underlyingTransfer.To)
@@ -269,7 +269,7 @@ func (s *redeemTestSuite) TestTempusRedeem() {
 	owner := s.Env.User1.Opts.From
 	prinicipal := uint8(5)
 
-	s.Illuminate.MarketsReturns([8]common.Address{
+	s.MarketPlace.MarketsReturns([8]common.Address{
 		s.Dep.TempusTokenAddress,
 		s.Dep.TempusTokenAddress,
 		s.Dep.TempusTokenAddress,
@@ -302,7 +302,7 @@ func (s *redeemTestSuite) TestTempusRedeem() {
 	assert.True(redeemCall.Yield.Cmp(big.NewInt(0)) == 0)
 	assert.Equal(s.Dep.RedeemerAddress, redeemCall.Recipient)
 
-	underlyingTransfer, err := s.Erc20.TransferFromCalled(s.Dep.IlluminateAddress)
+	underlyingTransfer, err := s.Erc20.TransferFromCalled(s.Dep.MarketplaceAddress)
 	assert.NoError(err)
 	assert.Equal(amount, underlyingTransfer.Amount)
 	assert.Equal(s.Dep.RedeemerAddress, underlyingTransfer.To)
@@ -316,7 +316,7 @@ func (s *redeemTestSuite) TestIlluminateRedeem() {
 	owner := s.Env.User1.Opts.From
 	principal := uint8(0)
 
-	s.Illuminate.MarketsReturns([8]common.Address{
+	s.MarketPlace.MarketsReturns([8]common.Address{
 		s.Dep.ZcTokenAddress,
 		s.Dep.ZcTokenAddress,
 		s.Dep.ZcTokenAddress,
@@ -347,7 +347,7 @@ func (s *redeemTestSuite) TestIlluminateRedeem() {
 	assert.NoError(err)
 	assert.Equal(amount, burnCall)
 
-	underlyingTransfer, err := s.Erc20.TransferFromCalled(s.Dep.IlluminateAddress)
+	underlyingTransfer, err := s.Erc20.TransferFromCalled(s.Dep.MarketplaceAddress)
 	assert.NoError(err)
 	assert.Equal(amount, underlyingTransfer.Amount)
 	assert.Equal(s.Dep.RedeemerAddress, underlyingTransfer.To)
@@ -361,7 +361,7 @@ func (s *redeemTestSuite) TestPendleRedeem() {
 	maturity := big.NewInt(9999999)
 	principal := uint8(4)
 
-	s.Illuminate.MarketsReturns([8]common.Address{
+	s.MarketPlace.MarketsReturns([8]common.Address{
 		s.Dep.PendleTokenAddress,
 		s.Dep.PendleTokenAddress,
 		s.Dep.PendleTokenAddress,
@@ -389,7 +389,7 @@ func (s *redeemTestSuite) TestPendleRedeem() {
 	assert.Equal(forgeId, redeemCall.ForgeId)
 	assert.Equal(maturity, redeemCall.Maturity)
 
-	underlyingTransfer, err := s.PendleToken.TransferFromCalled(s.Dep.IlluminateAddress)
+	underlyingTransfer, err := s.PendleToken.TransferFromCalled(s.Dep.MarketplaceAddress)
 	assert.NoError(err)
 	assert.Equal(amount, underlyingTransfer.Amount)
 	assert.Equal(s.Dep.RedeemerAddress, underlyingTransfer.To)
@@ -403,7 +403,7 @@ func (s *redeemTestSuite) TestSenseRedeem() {
 	maturity := big.NewInt(9999999)
 	principal := uint8(4)
 
-	s.Illuminate.MarketsReturns([8]common.Address{
+	s.MarketPlace.MarketsReturns([8]common.Address{
 		s.Dep.SenseTokenAddress,
 		s.Dep.SenseTokenAddress,
 		s.Dep.SenseTokenAddress,
@@ -431,7 +431,7 @@ func (s *redeemTestSuite) TestSenseRedeem() {
 	assert.Equal(maturity, redeemCall.Maturity)
 	assert.Equal(amount, redeemCall.Amount)
 
-	underlyingTransfer, err := s.SenseToken.TransferFromCalled(s.Dep.IlluminateAddress)
+	underlyingTransfer, err := s.SenseToken.TransferFromCalled(s.Dep.MarketplaceAddress)
 	assert.NoError(err)
 	assert.Equal(amount, underlyingTransfer.Amount)
 	assert.Equal(s.Dep.RedeemerAddress, underlyingTransfer.To)
@@ -444,7 +444,7 @@ func (s *redeemTestSuite) TestSwivelRedeem() {
 	maturity := big.NewInt(9999999)
 	principal := uint8(1)
 
-	s.Illuminate.MarketsReturns([8]common.Address{
+	s.MarketPlace.MarketsReturns([8]common.Address{
 		s.Dep.ZcTokenAddress,
 		s.Dep.ZcTokenAddress,
 		s.Dep.ZcTokenAddress,
@@ -475,7 +475,7 @@ func (s *redeemTestSuite) TestSwivelRedeem() {
 	assert.Equal(maturity, call.Maturity)
 	assert.Equal(amount, call.Amount)
 
-	underlyingTransfer, err := s.ZcToken.TransferFromCalled(s.Dep.IlluminateAddress)
+	underlyingTransfer, err := s.ZcToken.TransferFromCalled(s.Dep.MarketplaceAddress)
 	assert.NoError(err)
 	assert.Equal(amount, underlyingTransfer.Amount)
 	assert.Equal(s.Dep.RedeemerAddress, underlyingTransfer.To)
@@ -488,7 +488,7 @@ func (s *redeemTestSuite) TestElementRedeem() {
 	maturity := big.NewInt(9999999)
 	principal := uint8(3)
 
-	s.Illuminate.MarketsReturns([8]common.Address{
+	s.MarketPlace.MarketsReturns([8]common.Address{
 		s.Dep.ElementTokenAddress,
 		s.Dep.ElementTokenAddress,
 		s.Dep.ElementTokenAddress,
@@ -511,11 +511,11 @@ func (s *redeemTestSuite) TestElementRedeem() {
 	s.Env.Blockchain.Commit()
 
 	// verify that the mocked functions were called as expected
-	withdrawnAmount, err := s.ElementToken.WithdrawPrincipalCalled(s.Dep.IlluminateAddress)
+	withdrawnAmount, err := s.ElementToken.WithdrawPrincipalCalled(s.Dep.MarketplaceAddress)
 	assert.NoError(err)
 	assert.Equal(amount, withdrawnAmount)
 
-	underlyingTransfer, err := s.ElementToken.TransferFromCalled(s.Dep.IlluminateAddress)
+	underlyingTransfer, err := s.ElementToken.TransferFromCalled(s.Dep.MarketplaceAddress)
 	assert.NoError(err)
 	assert.Equal(amount, underlyingTransfer.Amount)
 	assert.Equal(s.Dep.RedeemerAddress, underlyingTransfer.To)
@@ -528,7 +528,7 @@ func (s *redeemTestSuite) TestYieldRedeem() {
 	maturity := big.NewInt(9999999)
 	principal := uint8(2)
 
-	s.Illuminate.MarketsReturns([8]common.Address{
+	s.MarketPlace.MarketsReturns([8]common.Address{
 		s.Dep.YieldTokenAddress,
 		s.Dep.YieldTokenAddress,
 		s.Dep.YieldTokenAddress,
@@ -556,7 +556,7 @@ func (s *redeemTestSuite) TestYieldRedeem() {
 	assert.Equal(amount, redeem.Amount)
 	assert.Equal(s.Dep.RedeemerAddress, redeem.From)
 
-	underlyingTransfer, err := s.YieldToken.TransferFromCalled(s.Dep.IlluminateAddress)
+	underlyingTransfer, err := s.YieldToken.TransferFromCalled(s.Dep.MarketplaceAddress)
 	assert.NoError(err)
 	assert.Equal(amount, underlyingTransfer.Amount)
 	assert.Equal(s.Dep.RedeemerAddress, underlyingTransfer.To)
