@@ -11,23 +11,23 @@ contract Redeemer {
   address public marketplace;
 
   /// @dev addresses of the 3rd party protocol contracts
-  address public apwineAddr;
-  address public tempusAddr;
-  address public pendleAddr;
   address public swivelAddr;
+  address public pendleAddr;
+  address public tempusAddr;
+  address public apwineAddr;
 
   event Redeem(uint8 principal, address indexed underlying, uint256 indexed maturity, uint256 amount);  
 
-  /// @param a: the apwine contract
-  /// @param t: the tempus contract
-  /// @param p: the pendle contract
   /// @param s: the swivel contract
-  constructor(address a, address t, address p, address s) {
+  /// @param p: the pendle contract
+  /// @param t: the tempus contract
+  /// @param a: the apwine contract
+  constructor(address t, address p, address s, address a) {
     admin = msg.sender;
-    apwineAddr = a;
-    tempusAddr = t;
-    pendleAddr = p;
     swivelAddr = s;
+    pendleAddr = p;
+    tempusAddr = t;
+    apwineAddr = a;
   }
 
   /// @notice sets the address of the marketplace contract which contains the addresses of the markets
