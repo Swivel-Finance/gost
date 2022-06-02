@@ -3,6 +3,7 @@ package lendertesting
 import (
 	"math/big"
 
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/swivel-finance/gost/test/lender"
 )
 
@@ -45,4 +46,12 @@ var COMPONENTS = []lender.SwivelComponents{
 		R: [32]byte{7, 8, 9},
 		S: [32]byte{10, 11, 12},
 	},
+}
+
+/// @notice Convenience method that returns a list of repeated addresses
+/// @param a: the address used to represent the zc token
+/// @param b: the address that fills the rest of the list
+/// @return: list of repeated addresses
+func marketsList(a common.Address, b common.Address) [9]common.Address {
+	return [9]common.Address{a, b, b, b, b, b, b, b, b}
 }
