@@ -218,7 +218,7 @@ contract Lender {
       // Instantiate market and tokens
       address[9] memory markets = IMarketPlace(marketPlace).markets(u, m); 
       address principal = markets[p];
-      IPendleToken token = IPendleToken(principal); // rename to pendletoken
+      IPendleToken token = IPendleToken(principal);
 
       // confirm that we are in the correct market
       require(token.yieldToken() == u, 'pendle underlying != underlying');
@@ -363,6 +363,46 @@ contract Lender {
 
       return returned;
   }
+
+  /// @dev lend method signature for Notional
+  /// @param p value of a specific principal according to the Illuminate Principals Enum
+  /// @param u address of an underlying asset
+  /// @param m maturity (timestamp) of the market
+  /// @param a amount of principal tokens to lend
+  /// @return uint256 the amount of principal tokens lent out
+  function lend(uint8 p, address u, uint256 m, uint256 a) public returns (uint256) {
+      // Instantiate market and tokens
+      address[9] memory markets = IMarketPlace(marketPlace).markets(u, m); 
+      address principal = markets[p];
+
+      INotionalToken token = INotionalToken(principal); 
+      
+      // Verify that the maturity matches up
+      require(token.getMaturity() == m, "notional maturity != maturity");
+      // Verify that the underlying matches up
+      (IErc20 underlying,) = token.getUnderlyingToken();
+      require(address(underlying) == u, "notional underlying != underlying");
+
+      // Transfer funds from user to Illuminate
+      Safe.transferFrom(IErc20(u), msg.sender, address(this), a);
+
+      // Add the accumulated fees to the total
+      uint256 fee = calculateFee(a);
+      fees[u] += fee;
+
+      // Swap on the Notional Token wrapper
+      uint256 returned = token.deposit(a - fee, address(this));
+
+      // Mint Illuminate zero coupons
+      address illuminateToken = markets[uint8(MarketPlace.Principals.Illuminate)];
+      IZcToken(illuminateToken).mint(msg.sender, returned);
+
+      emit Lend(p, u, m, returned);
+
+      return returned;
+  }
+
+
 
   /// @notice transfers excess funds to yield pool after principal tokens have been lent out
   /// @dev this method is only used by the yield, illuminate and swivel protocols

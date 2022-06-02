@@ -380,7 +380,8 @@ contract Lender {
       // Verify that the maturity matches up
       require(token.getMaturity() == m, "notional maturity != maturity");
       // Verify that the underlying matches up
-      require(token.getUnderlyingToken() == u, "notional underlying != underlying");
+      (IErc20 underlying,) = token.getUnderlyingToken();
+      require(address(underlying) == u, "notional underlying != underlying");
 
       // Transfer funds from user to Illuminate
       Safe.transferFrom(IErc20(u), msg.sender, address(this), a);

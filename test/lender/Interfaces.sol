@@ -84,5 +84,5 @@ interface IAPWineToken {
 interface INotionalToken {
   function getUnderlyingToken() external view returns (IErc20, int256);
   function getMaturity() external view returns (uint40) ;
-  function deposit(uint256 a, address r) external returns (uint256)
+  function deposit(uint256 a, address r) external returns (uint256);
 }

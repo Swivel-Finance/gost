@@ -218,7 +218,7 @@ func (s *lendTestSuite) TestLendIlluminate() {
 	s.Yield.SellBaseReturns(sellBasePreview)
 	s.Env.Blockchain.Commit()
 
-	tx, err := s.Lender.Lend4(0, s.Dep.Erc20Address, maturity, s.Dep.YieldAddress, amountLent)
+	tx, err := s.Lender.Lend5(0, s.Dep.Erc20Address, maturity, s.Dep.YieldAddress, amountLent)
 	assert.Nil(err)
 	assert.NotNil(tx)
 
@@ -285,7 +285,7 @@ func (s *lendTestSuite) TestLendYield() {
 	s.ZcToken.MintReturns(true)
 	s.Env.Blockchain.Commit()
 
-	tx, err := s.Lender.Lend4(2, s.Dep.Erc20Address, maturity, s.Dep.YieldAddress, amountLent)
+	tx, err := s.Lender.Lend5(2, s.Dep.Erc20Address, maturity, s.Dep.YieldAddress, amountLent)
 	assert.Nil(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
@@ -505,7 +505,7 @@ func (s *lendTestSuite) TestLendTempus() {
 	pool := common.HexToAddress("0x1234")
 	deadline := big.NewInt(9999)
 
-	tx, err := s.Lender.Lend5(5, s.Dep.Erc20Address, maturity, amount, minimumReturn, amm, pool, deadline)
+	tx, err := s.Lender.Lend6(5, s.Dep.Erc20Address, maturity, amount, minimumReturn, amm, pool, deadline)
 	assert.NoError(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
