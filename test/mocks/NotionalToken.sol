@@ -2,31 +2,40 @@
 
 pragma solidity 0.8.13;
 
+
+interface IErc20 {
+	function approve(address, uint256) external returns (bool);
+	function transfer(address, uint256) external returns (bool);
+	function balanceOf(address) external returns (uint256);
+	function transferFrom(address, address, uint256) external returns (bool);
+}
+
 contract NotionalToken {
     struct TransferFromArgs {
         address to;
         uint256 amount;
     }
 
-    address private getUnderlyingTokenReturn;
+    IErc20 private getUnderlyingTokenReturn;
     uint256 private getMaturityReturn;
     bool private transferFromReturn;
     uint256 private balanceOfReturn;
+    uint256 private depositReturn;
 
     mapping (address => TransferFromArgs) public transferFromCalled;
     mapping (address => uint256) public depositCalled;
     address public balanceOfCalled;
 
     function getUnderlyingTokenReturns(address a) external {
-        getUnderlyingTokenReturn = a;
+        getUnderlyingTokenReturn = IErc20(a);
     }
 
     function getMaturityReturns(uint256 m) external {
         getMaturityReturn = m;
     }
 
-    function getUnderlyingToken() external view returns (address) {
-        return getUnderlyingTokenReturn;
+    function getUnderlyingToken() external view returns (IErc20, int256) {
+        return (IErc20(getUnderlyingTokenReturn), 0);
     }
 
     function getMaturity() external view returns (uint256) {
@@ -54,7 +63,12 @@ contract NotionalToken {
         return transferFromReturn;
     }
 
-    function deposit(address a, uint256 b) public {
-        depositCalled[a] = b;
+    function depositReturns(uint256 a) public {
+        depositReturn = a;
+    }
+
+    function deposit(uint256 a, address r) public returns (uint256) {
+        depositCalled[r] = a;
+        return depositReturn;
     }
 }

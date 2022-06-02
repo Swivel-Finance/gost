@@ -171,6 +171,15 @@ func (s *lendTestSuite) SetupSuite() {
 		},
 	}
 
+	s.NotionalToken = &mocks.NotionalTokenSession{
+		Contract: s.Dep.NotionalToken,
+		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
+		TransactOpts: bind.TransactOpts{
+			From:   s.Env.Owner.Opts.From,
+			Signer: s.Env.Owner.Opts.Signer,
+		},
+	}
+
 	s.Lender = &lender.LenderSession{
 		Contract: s.Dep.Lender,
 		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
@@ -607,13 +616,7 @@ func (s *lendTestSuite) TestLendNotional() {
 	s.MarketPlace.MarketsReturns(markets)
 	s.Env.Blockchain.Commit()
 
-	s.APWineToken.GetPTAddressReturns(s.Dep.Erc20Address)
-	s.Env.Blockchain.Commit()
-
 	s.Erc20.TransferFromReturns(true)
-	s.Env.Blockchain.Commit()
-
-	s.APWine.SwapExactAmountInReturns(big.NewInt(12345))
 	s.Env.Blockchain.Commit()
 
 	s.ZcToken.MintReturns(true)
@@ -621,23 +624,27 @@ func (s *lendTestSuite) TestLendNotional() {
 
 	maturity := big.NewInt(12094201240)
 	amount := big.NewInt(100000)
+
+	s.NotionalToken.GetMaturityReturns(maturity)
+	s.Env.Blockchain.Commit()
+
+	s.NotionalToken.GetUnderlyingTokenReturns(s.Dep.Erc20Address)
+	s.Env.Blockchain.Commit()
+
 	fee := new(big.Int).Div(amount, big.NewInt(FEENOMINATOR))
 	lent := new(big.Int).Sub(amount, fee)
-	minimumAmount := big.NewInt(34)
-	id := big.NewInt(1000)
 
-	tx, err := s.Lender.Lend(7, s.Dep.Erc20Address, maturity, amount, minimumAmount, s.Dep.APWineAddress, id)
+	s.NotionalToken.DepositReturns(lent)
+	s.Env.Blockchain.Commit()
+
+	tx, err := s.Lender.Lend4(7, s.Dep.Erc20Address, maturity, amount)
 	assert.NoError(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
 
 	// verify that mocks were called as expected
-	swap, err := s.APWine.SwapExactAmountInCalled(s.Dep.LenderAddress)
-	assert.Equal(id, swap.Id)
-	assert.Equal(big.NewInt(1), swap.TokenIn)
-	assert.Equal(lent, swap.Amount)
-	assert.True(swap.TokenOut.Cmp(big.NewInt(0)) == 0)
-	assert.Equal(minimumAmount, swap.MinimumAmount)
+	amountLent, err := s.NotionalToken.DepositCalled(s.Dep.LenderAddress)
+	assert.Equal(lent, amountLent)
 }
 
 func TestLendSuite(t *test.T) {
