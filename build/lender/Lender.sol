@@ -65,7 +65,7 @@ contract Lender {
   /// @return bool true if the mint was successful, false otherwise
   function mint(uint8 p, address u, uint256 m, uint256 a) public returns (bool) {
     //use market interface to fetch the market for the given market pair
-    address[8] memory market = IMarketPlace(marketPlace).markets(u, m);
+    address[9] memory market = IMarketPlace(marketPlace).markets(u, m);
     //use safe transfer lib and ERC interface...
     Safe.transferFrom(IErc20(market[p]), msg.sender, address(this), a);
     //use zctoken interface...
@@ -98,7 +98,7 @@ contract Lender {
 
     // this step is only needed when the lend is for yield
     if (p == uint8(MarketPlace.Principals.Yield)) {
-      address[8] memory market = IMarketPlace(marketPlace).markets(u, m); 
+      address[9] memory market = IMarketPlace(marketPlace).markets(u, m); 
       // TODO should we require on this?
       IZcToken(market[uint256(MarketPlace.Principals.Illuminate)]).mint(msg.sender, returned);
     }
@@ -216,7 +216,7 @@ contract Lender {
   /// @return uint256 the amount of principal tokens lent out
   function lend(uint8 p, address u, uint256 m, uint256 a, uint256 r, uint256 d) public returns (uint256) {
       // Instantiate market and tokens
-      address[8] memory markets = IMarketPlace(marketPlace).markets(u, m); 
+      address[9] memory markets = IMarketPlace(marketPlace).markets(u, m); 
       address principal = markets[p];
       IPendleToken token = IPendleToken(principal); // rename to pendletoken
 
@@ -338,7 +338,7 @@ contract Lender {
   /// @return uint256 the amount of principal tokens lent out
   function lend(uint8 p, address u, uint256 m, uint256 a, uint256 r, address pool, uint256 i) public returns (uint256) {
       // Instantiate market and tokens
-      address[8] memory markets = IMarketPlace(marketPlace).markets(u, m);
+      address[9] memory markets = IMarketPlace(marketPlace).markets(u, m);
       require(IAPWineToken(markets[p]).getPTAddress() == u, "apwine principle != principle");
 
       // Transfer funds from user to Illuminate    
