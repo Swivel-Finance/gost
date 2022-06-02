@@ -16,13 +16,14 @@ contract MarketPlace {
     Pendle,
     Tempus,
     Sense,
-    Apwine
+    Apwine,
+    Notional
   }
 
   /// markets are defined by a market pair which point to a fixed length array of principal token addresses.
   /// the principal tokens those addresses represent correspond to their Principals enum value, thus the
   /// array should be ordered in that way
-  mapping (address => mapping (uint256 => address[8])) public markets;
+  mapping (address => mapping (uint256 => address[9])) public markets;
 
   address public admin;
   /// @notice address of the deployed redeemer contract
@@ -45,7 +46,7 @@ contract MarketPlace {
   /// @param s symbol for the illuminate token
   /// @param d decimals for the illuminate token
   /// @return bool true if successful
-  function createMarket(address u, uint256 m, address[7] memory t, string calldata n, string calldata s, uint8 d) external authorized(admin) returns (bool) {
+  function createMarket(address u, uint256 m, address[8] memory t, string calldata n, string calldata s, uint8 d) external authorized(admin) returns (bool) {
     require(markets[u][m][uint256(Principals.Illuminate)] == address(0), 'market exists'); 
 
     // deploy an illuminate token with this new market 
@@ -54,7 +55,7 @@ contract MarketPlace {
 
     // the market will have the illuminate principal as its zeroth item, thus t should have Principals[1] as [0]
     // TODO we could choose to put illuminate last in
-    address[8] memory market = [iToken, t[0], t[1], t[2], t[3], t[4], t[5], t[6]];
+    address[9] memory market = [iToken, t[0], t[1], t[2], t[3], t[4], t[5], t[6], t[7]];
 
     // max is the maximum integer value for a 256 unsighed integer
     uint256 max = 2**256 - 1;
