@@ -2,7 +2,7 @@
 
 pragma solidity 0.8.13;
 
-contract Marketplace {
+contract MarketPlace {
     address[9] private marketsReturn;
 
     mapping (address => uint256) public marketsCalled;
