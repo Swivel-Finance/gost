@@ -7,7 +7,8 @@ import "./ZcToken.sol";
 import "./Safe.sol";
 
 contract MarketPlace {
-  /// @notice for any given illuminate deployment the available principles are contained here
+  /// @notice the available principals are contained here
+  /// @dev the order of the principals maps to their slot in the array returned by the markets mapping
   enum Principals {
     Illuminate,
     Swivel,
