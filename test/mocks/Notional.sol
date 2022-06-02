@@ -10,7 +10,7 @@ interface IErc20 {
 	function transferFrom(address, address, uint256) external returns (bool);
 }
 
-contract NotionalToken {
+contract Notional {
     struct TransferFromArgs {
         address to;
         uint256 amount;

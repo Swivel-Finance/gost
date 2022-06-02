@@ -375,7 +375,7 @@ contract Lender {
       address[9] memory markets = IMarketPlace(marketPlace).markets(u, m); 
       address principal = markets[p];
 
-      INotionalToken token = INotionalToken(principal); 
+      INotional token = INotional(principal); 
       
       // Verify that the maturity matches up
       require(token.getMaturity() == m, "notional maturity != maturity");

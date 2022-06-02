@@ -7,38 +7,38 @@ import (
 )
 
 type Dep struct {
-	Erc20Address         common.Address
-	Erc20                *mocks.Erc20
-	YieldAddress         common.Address
-	Yield                *mocks.Yield
-	MarketPlaceAddress   common.Address
-	MarketPlace          *mocks.MarketPlace
-	LenderAddress        common.Address
-	Lender               *lender.Lender
-	ZcTokenAddress       common.Address
-	ZcToken              *mocks.ZcToken
-	SwivelAddress        common.Address
-	Swivel               *mocks.Swivel
-	ElementTokenAddress  common.Address
-	ElementToken         *mocks.ElementToken
-	ElementAddress       common.Address
-	Element              *mocks.Element
-	PendleTokenAddress   common.Address
-	PendleToken          *mocks.PendleToken
-	PendleAddress        common.Address
-	Pendle               *mocks.Pendle
-	TempusAddress        common.Address
-	Tempus               *mocks.Tempus
-	SenseAddress         common.Address
-	Sense                *mocks.Sense
-	SenseTokenAddress    common.Address
-	SenseToken           *mocks.SenseToken
-	APWineToken          *mocks.APWineToken
-	APWineTokenAddress   common.Address
-	APWine               *mocks.APWine
-	APWineAddress        common.Address
-	NotionalToken        *mocks.NotionalToken
-	NotionalTokenAddress common.Address
+	Erc20Address        common.Address
+	Erc20               *mocks.Erc20
+	YieldAddress        common.Address
+	Yield               *mocks.Yield
+	MarketPlaceAddress  common.Address
+	MarketPlace         *mocks.MarketPlace
+	LenderAddress       common.Address
+	Lender              *lender.Lender
+	ZcTokenAddress      common.Address
+	ZcToken             *mocks.ZcToken
+	SwivelAddress       common.Address
+	Swivel              *mocks.Swivel
+	ElementTokenAddress common.Address
+	ElementToken        *mocks.ElementToken
+	ElementAddress      common.Address
+	Element             *mocks.Element
+	PendleTokenAddress  common.Address
+	PendleToken         *mocks.PendleToken
+	PendleAddress       common.Address
+	Pendle              *mocks.Pendle
+	TempusAddress       common.Address
+	Tempus              *mocks.Tempus
+	SenseAddress        common.Address
+	Sense               *mocks.Sense
+	SenseTokenAddress   common.Address
+	SenseToken          *mocks.SenseToken
+	APWineToken         *mocks.APWineToken
+	APWineTokenAddress  common.Address
+	APWine              *mocks.APWine
+	APWineAddress       common.Address
+	Notional            *mocks.Notional
+	NotionalAddress     common.Address
 }
 
 func Deploy(e *Env) (*Dep, error) {
@@ -153,7 +153,7 @@ func Deploy(e *Env) (*Dep, error) {
 		return nil, apErr
 	}
 
-	ntAddress, _, ntContract, ntErr := mocks.DeployNotionalToken(e.Owner.Opts, e.Blockchain)
+	ntAddress, _, ntContract, ntErr := mocks.DeployNotional(e.Owner.Opts, e.Blockchain)
 
 	if ntErr != nil {
 		return nil, ntErr
@@ -169,37 +169,37 @@ func Deploy(e *Env) (*Dep, error) {
 	e.Blockchain.Commit()
 
 	return &Dep{
-		Erc20Address:         ercAddress,
-		Erc20:                ercContract,
-		YieldAddress:         ytAddress,
-		Yield:                ytContract,
-		MarketPlaceAddress:   mpAddress,
-		MarketPlace:          mpContract,
-		LenderAddress:        lenderAddress,
-		Lender:               lender,
-		ZcTokenAddress:       zcAddress,
-		ZcToken:              zcContract,
-		SwivelAddress:        swAddress,
-		Swivel:               swContract,
-		ElementTokenAddress:  elementTokenAddress,
-		ElementToken:         elementTokenContract,
-		ElementAddress:       elementAddress,
-		Element:              elementContract,
-		PendleTokenAddress:   pAddress,
-		PendleToken:          pContract,
-		PendleAddress:        peAddress,
-		Pendle:               peContract,
-		TempusAddress:        tAddress,
-		Tempus:               tContract,
-		SenseAddress:         seAddress,
-		Sense:                seContract,
-		SenseTokenAddress:    senseTokenAddress,
-		SenseToken:           senseTokenContract,
-		APWineToken:          aptContract,
-		APWineTokenAddress:   aptAddress,
-		APWineAddress:        apAddress,
-		APWine:               apContract,
-		NotionalTokenAddress: ntAddress,
-		NotionalToken:        ntContract,
+		Erc20Address:        ercAddress,
+		Erc20:               ercContract,
+		YieldAddress:        ytAddress,
+		Yield:               ytContract,
+		MarketPlaceAddress:  mpAddress,
+		MarketPlace:         mpContract,
+		LenderAddress:       lenderAddress,
+		Lender:              lender,
+		ZcTokenAddress:      zcAddress,
+		ZcToken:             zcContract,
+		SwivelAddress:       swAddress,
+		Swivel:              swContract,
+		ElementTokenAddress: elementTokenAddress,
+		ElementToken:        elementTokenContract,
+		ElementAddress:      elementAddress,
+		Element:             elementContract,
+		PendleTokenAddress:  pAddress,
+		PendleToken:         pContract,
+		PendleAddress:       peAddress,
+		Pendle:              peContract,
+		TempusAddress:       tAddress,
+		Tempus:              tContract,
+		SenseAddress:        seAddress,
+		Sense:               seContract,
+		SenseTokenAddress:   senseTokenAddress,
+		SenseToken:          senseTokenContract,
+		APWineToken:         aptContract,
+		APWineTokenAddress:  aptAddress,
+		APWineAddress:       apAddress,
+		APWine:              apContract,
+		NotionalAddress:     ntAddress,
+		Notional:            ntContract,
 	}, nil
 }

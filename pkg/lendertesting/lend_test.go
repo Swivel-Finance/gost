@@ -14,24 +14,24 @@ import (
 
 type lendTestSuite struct {
 	suite.Suite
-	Env           *Env
-	Dep           *Dep
-	Erc20         *mocks.Erc20Session
-	MarketPlace   *mocks.MarketPlaceSession
-	Yield         *mocks.YieldSession
-	ZcToken       *mocks.ZcTokenSession
-	Swivel        *mocks.SwivelSession
-	ElementToken  *mocks.ElementTokenSession
-	Element       *mocks.ElementSession
-	PendleToken   *mocks.PendleTokenSession
-	Pendle        *mocks.PendleSession
-	Tempus        *mocks.TempusSession
-	Sense         *mocks.SenseSession
-	SenseToken    *mocks.SenseTokenSession
-	APWineToken   *mocks.APWineTokenSession
-	APWine        *mocks.APWineSession
-	NotionalToken *mocks.NotionalTokenSession
-	Lender        *lender.LenderSession
+	Env          *Env
+	Dep          *Dep
+	Erc20        *mocks.Erc20Session
+	MarketPlace  *mocks.MarketPlaceSession
+	Yield        *mocks.YieldSession
+	ZcToken      *mocks.ZcTokenSession
+	Swivel       *mocks.SwivelSession
+	ElementToken *mocks.ElementTokenSession
+	Element      *mocks.ElementSession
+	PendleToken  *mocks.PendleTokenSession
+	Pendle       *mocks.PendleSession
+	Tempus       *mocks.TempusSession
+	Sense        *mocks.SenseSession
+	SenseToken   *mocks.SenseTokenSession
+	APWineToken  *mocks.APWineTokenSession
+	APWine       *mocks.APWineSession
+	Notional     *mocks.NotionalSession
+	Lender       *lender.LenderSession
 }
 
 func (s *lendTestSuite) SetupSuite() {
@@ -171,8 +171,8 @@ func (s *lendTestSuite) SetupSuite() {
 		},
 	}
 
-	s.NotionalToken = &mocks.NotionalTokenSession{
-		Contract: s.Dep.NotionalToken,
+	s.Notional = &mocks.NotionalSession{
+		Contract: s.Dep.Notional,
 		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
 		TransactOpts: bind.TransactOpts{
 			From:   s.Env.Owner.Opts.From,
@@ -612,7 +612,7 @@ func (s *lendTestSuite) TestLendAPWine() {
 
 func (s *lendTestSuite) TestLendNotional() {
 	assert := assert.New(s.T())
-	markets := marketsList(s.Dep.ZcTokenAddress, s.Dep.NotionalTokenAddress)
+	markets := marketsList(s.Dep.ZcTokenAddress, s.Dep.NotionalAddress)
 	s.MarketPlace.MarketsReturns(markets)
 	s.Env.Blockchain.Commit()
 
@@ -625,16 +625,16 @@ func (s *lendTestSuite) TestLendNotional() {
 	maturity := big.NewInt(12094201240)
 	amount := big.NewInt(100000)
 
-	s.NotionalToken.GetMaturityReturns(maturity)
+	s.Notional.GetMaturityReturns(maturity)
 	s.Env.Blockchain.Commit()
 
-	s.NotionalToken.GetUnderlyingTokenReturns(s.Dep.Erc20Address)
+	s.Notional.GetUnderlyingTokenReturns(s.Dep.Erc20Address)
 	s.Env.Blockchain.Commit()
 
 	fee := new(big.Int).Div(amount, big.NewInt(FEENOMINATOR))
 	lent := new(big.Int).Sub(amount, fee)
 
-	s.NotionalToken.DepositReturns(lent)
+	s.Notional.DepositReturns(lent)
 	s.Env.Blockchain.Commit()
 
 	tx, err := s.Lender.Lend4(7, s.Dep.Erc20Address, maturity, amount)
@@ -643,7 +643,7 @@ func (s *lendTestSuite) TestLendNotional() {
 	s.Env.Blockchain.Commit()
 
 	// verify that mocks were called as expected
-	amountLent, err := s.NotionalToken.DepositCalled(s.Dep.LenderAddress)
+	amountLent, err := s.Notional.DepositCalled(s.Dep.LenderAddress)
 	assert.Equal(lent, amountLent)
 }
 
