@@ -199,7 +199,7 @@ compile_go_mock_apwine:
 # TODO: Add the notional mock implementation here
 
 compile_solidity_mock_notional_token:
-	@echo "compiling Mock APWine Token solidity source into abi and bin files"
+	@echo "compiling Mock Notional Token solidity source into abi and bin files"
 	solc -o ./test/mocks --abi --bin --overwrite ./test/mocks/NotionalToken.sol
 
 compile_go_mock_notional_token:
