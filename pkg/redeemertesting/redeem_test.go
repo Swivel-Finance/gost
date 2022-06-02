@@ -208,7 +208,7 @@ func (s *redeemTestSuite) SetupSuite() {
 		},
 	}
 
-	s.Redeemer.SetMarketplaceAddress(s.Dep.MarketplaceAddress)
+	s.Redeemer.SetMarketPlaceAddress(s.Dep.MarketplaceAddress)
 	s.Env.Blockchain.Commit()
 }
 
