@@ -8,6 +8,7 @@
 .PHONY: compile_solidity_mock_tempus_token compile_go_mock_tempus_token compile_mock_tempus_token
 .PHONY: compile_solidity_mock_sense compile_go_mock_sense compile_mock_sense
 .PHONY: compile_solidity_mock_apwine_token compile_go_mock_apwine_token compile_mock_apwine_token
+.PHONY: compile_solidity_mock_notional_token compile_go_mock_notional_token compile_mock_notional_token
 .PHONY: compile_solidity_mock_apwine compile_go_mock_apwine compile_mock_apwine
 .PHONY: compile_solidity_mock_sense_token compile_go_mock_sense_token compile_mock_sense_token
 .PHONY: compile_solidity_mock_element_token compile_go_mock_element_token compile_mock_element_token
@@ -194,6 +195,18 @@ compile_solidity_mock_apwine:
 compile_go_mock_apwine:
 	@echo "compiling abi and bin files to golang"
 	abigen --abi ./test/mocks/APWine.abi --bin ./test/mocks/APWine.bin -pkg mocks -type APWine -out ./test/mocks/apwine.go 
+
+# TODO: Add the notional mock implementation here
+
+compile_solidity_mock_notional_token:
+	@echo "compiling Mock APWine Token solidity source into abi and bin files"
+	solc -o ./test/mocks --abi --bin --overwrite ./test/mocks/NotionalToken.sol
+
+compile_go_mock_notional_token:
+	@echo "compiling abi and bin files to golang"
+	abigen --abi ./test/mocks/NotionalToken.abi --bin ./test/mocks/NotionalToken.bin -pkg mocks -type NotionalToken -out ./test/mocks/notionaltoken.go 
+
+compile_mock_notional_token: compile_solidity_mock_notional_token compile_go_mock_notional_token
 
 compile_mock_apwine: compile_mock_apwine_token compile_solidity_mock_apwine compile_go_mock_apwine
 

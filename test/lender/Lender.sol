@@ -372,11 +372,15 @@ contract Lender {
   /// @return uint256 the amount of principal tokens lent out
   function lend(uint8 p, address u, uint256 m, uint256 a) public returns (uint256) {
       // Instantiate market and tokens
-      address[8] memory markets = IMarketPlace(marketPlace).markets(u, m); 
+      address[9] memory markets = IMarketPlace(marketPlace).markets(u, m); 
       address principal = markets[p];
+
       INotionalToken token = INotionalToken(principal); 
       
-      // TODO: Check underlying & maturity of the token
+      // Verify that the maturity matches up
+      require(token.getMaturity() == m, "notional maturity != maturity");
+      // Verify that the underlying matches up
+      require(token.getUnderlyingToken() == u, "notional underlying != underlying");
 
       // Transfer funds from user to Illuminate
       Safe.transferFrom(IErc20(u), msg.sender, address(this), a);
