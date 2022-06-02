@@ -218,7 +218,7 @@ contract Lender {
       // Instantiate market and tokens
       address[9] memory markets = IMarketPlace(marketPlace).markets(u, m); 
       address principal = markets[p];
-      IPendleToken token = IPendleToken(principal); // rename to pendletoken
+      IPendleToken token = IPendleToken(principal);
 
       // confirm that we are in the correct market
       require(token.yieldToken() == u, 'pendle underlying != underlying');
@@ -364,7 +364,7 @@ contract Lender {
       return returned;
   }
 
-  /// @dev lend method signature for pendle
+  /// @dev lend method signature for Notional
   /// @param p value of a specific principal according to the Illuminate Principals Enum
   /// @param u address of an underlying asset
   /// @param m maturity (timestamp) of the market
@@ -372,15 +372,17 @@ contract Lender {
   /// @return uint256 the amount of principal tokens lent out
   function lend(uint8 p, address u, uint256 m, uint256 a) public returns (uint256) {
       // Instantiate market and tokens
-      address[8] memory markets = IMarketPlace(marketplace).markets(u, m); 
+      address[8] memory markets = IMarketPlace(marketPlace).markets(u, m); 
       address principal = markets[p];
-      INotionalToken token = INotionalToken(principal); // rename to pendletoken
+      INotionalToken token = INotionalToken(principal); 
+      
+      // TODO: Check underlying & maturity of the token
 
       // Transfer funds from user to Illuminate
       Safe.transferFrom(IErc20(u), msg.sender, address(this), a);
 
-      uint256 fee = calculateFee(a);
       // Add the accumulated fees to the total
+      uint256 fee = calculateFee(a);
       fees[u] += fee;
 
       // Swap on the Notional Token wrapper
