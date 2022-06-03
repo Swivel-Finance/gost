@@ -32,6 +32,7 @@ type redeemTestSuite struct {
 	SenseToken   *mocks.SenseTokenSession
 	Element      *mocks.ElementSession
 	ElementToken *mocks.ElementTokenSession
+	Notional     *mocks.NotionalSession
 	Redeemer     *redeemer.RedeemerSession
 }
 
@@ -192,6 +193,15 @@ func (s *redeemTestSuite) SetupSuite() {
 
 	s.YieldToken = &mocks.YieldTokenSession{
 		Contract: s.Dep.YieldToken,
+		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
+		TransactOpts: bind.TransactOpts{
+			From:   s.Env.Owner.Opts.From,
+			Signer: s.Env.Owner.Opts.Signer,
+		},
+	}
+
+	s.Notional = &mocks.NotionalSession{
+		Contract: s.Dep.Notional,
 		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
 		TransactOpts: bind.TransactOpts{
 			From:   s.Env.Owner.Opts.From,
@@ -493,6 +503,41 @@ func (s *redeemTestSuite) TestYieldRedeem() {
 	assert.Equal(s.Dep.RedeemerAddress, redeem.From)
 
 	underlyingTransfer, err := s.YieldToken.TransferFromCalled(s.Dep.MarketplaceAddress)
+	assert.NoError(err)
+	assert.Equal(amount, underlyingTransfer.Amount)
+	assert.Equal(s.Dep.RedeemerAddress, underlyingTransfer.To)
+}
+
+func (s *redeemTestSuite) TestNotionalRedeem() {
+	assert := assert.New(s.T())
+
+	amount := big.NewInt(1000)
+	maturity := big.NewInt(9999999)
+	principal := uint8(8)
+
+	markets := marketsList(s.Dep.ZcTokenAddress, s.Dep.NotionalAddress)
+	s.MarketPlace.MarketsReturns(markets)
+
+	s.Notional.MaxRedeemReturns(amount)
+	s.Env.Blockchain.Commit()
+
+	s.Notional.BalanceOfReturns(amount)
+	s.Env.Blockchain.Commit()
+
+	s.Notional.TransferFromReturns(true)
+	s.Env.Blockchain.Commit()
+
+	tx, err := s.Redeemer.Redeem(principal, s.Dep.Erc20Address, maturity)
+	assert.NoError(err)
+	assert.NotNil(tx)
+	s.Env.Blockchain.Commit()
+
+	// verify that the mocked functions were called as expected
+	redeemer, err := s.Notional.MaxRedeemCalled()
+	assert.NoError(err)
+	assert.Equal(s.Dep.RedeemerAddress, redeemer)
+
+	underlyingTransfer, err := s.Notional.TransferFromCalled(s.Dep.MarketplaceAddress)
 	assert.NoError(err)
 	assert.Equal(amount, underlyingTransfer.Amount)
 	assert.Equal(s.Dep.RedeemerAddress, underlyingTransfer.To)

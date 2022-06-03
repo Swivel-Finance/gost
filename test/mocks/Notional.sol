@@ -21,10 +21,12 @@ contract Notional {
     bool private transferFromReturn;
     uint256 private balanceOfReturn;
     uint256 private depositReturn;
+    uint256 private maxRedeemReturn;
 
     mapping (address => TransferFromArgs) public transferFromCalled;
     mapping (address => uint256) public depositCalled;
     address public balanceOfCalled;
+    address public maxRedeemCalled;
 
     function getUnderlyingTokenReturns(address a) external {
         getUnderlyingTokenReturn = IErc20(a);
@@ -70,5 +72,14 @@ contract Notional {
     function deposit(uint256 a, address r) public returns (uint256) {
         depositCalled[r] = a;
         return depositReturn;
+    }
+
+    function maxRedeemReturns(uint256 a) public {
+        maxRedeemReturn = a;
+    }
+
+    function maxRedeem(address o) public returns (uint256) {
+        maxRedeemCalled = o;
+        return maxRedeemReturn;
     }
 }

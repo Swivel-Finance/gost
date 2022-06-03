@@ -54,3 +54,7 @@ interface IElementToken {
 interface IYieldToken {
 	function redeem(address from, address to, uint256 amount) external;
 }
+
+interface INotional { 
+  function maxRedeem(address) external returns (uint256);
+}
