@@ -119,7 +119,7 @@ func (s *redeemVaultInterestSuite) TestRedeemVaultInterest() {
 	assert.Nil(err)
 	assert.Equal(market.CTokenAddr, ctokenAddr)
 
-	zcTokenContract, err := mocks.NewZcToken(market.ZcTokenAddr, s.Env.Blockchain)
+	zcTokenContract, err := mocks.NewZcToken(market.ZcToken, s.Env.Blockchain)
 	zcToken := &mocks.ZcTokenSession{
 		Contract: zcTokenContract,
 		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
@@ -132,7 +132,7 @@ func (s *redeemVaultInterestSuite) TestRedeemVaultInterest() {
 	zcMaturity, err := zcToken.Maturity()
 	assert.Equal(maturity, zcMaturity)
 
-	vaultTrackerContract, err := mocks.NewVaultTracker(market.VaultAddr, s.Env.Blockchain)
+	vaultTrackerContract, err := mocks.NewVaultTracker(market.VaultTracker, s.Env.Blockchain)
 	vaultTracker := &mocks.VaultTrackerSession{
 		Contract: vaultTrackerContract,
 		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},

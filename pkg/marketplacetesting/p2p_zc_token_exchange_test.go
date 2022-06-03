@@ -132,7 +132,7 @@ func (s *p2pZCTokenExchangeSuite) TestP2PZCTokenExchange() {
 
 	s.Env.Blockchain.Commit()
 
-	zcTokenContract, err := mocks.NewZcToken(market.ZcTokenAddr, s.Env.Blockchain)
+	zcTokenContract, err := mocks.NewZcToken(market.ZcToken, s.Env.Blockchain)
 	zcToken := &mocks.ZcTokenSession{
 		Contract: zcTokenContract,
 		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},

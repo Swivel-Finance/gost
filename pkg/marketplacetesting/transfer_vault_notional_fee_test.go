@@ -98,7 +98,7 @@ func (s *vaultTransferFeeSuite) TestVaultTransferFee() {
 	assert.Nil(err)
 	assert.Equal(market.CTokenAddr, ctoken)
 
-	vaultTrackerContract, err := mocks.NewVaultTracker(market.VaultAddr, s.Env.Blockchain)
+	vaultTrackerContract, err := mocks.NewVaultTracker(market.VaultTracker, s.Env.Blockchain)
 	vaultTracker := &mocks.VaultTrackerSession{
 		Contract: vaultTrackerContract,
 		CallOpts: bind.CallOpts{From: ownerOpts.From, Pending: false},
