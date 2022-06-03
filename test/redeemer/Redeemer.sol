@@ -81,7 +81,7 @@ contract Redeemer {
     return true;
   }
 
-  /// @dev redeem method for swivel, yield, element. This method redeems all
+  /// @dev redeem method for swivel, yield, element and notional. This method redeems all
   /// @param p value of a specific principal according to the Illuminate Principals Enum
   /// @param u underlying token being redeemed
   /// @param m maturity of the market being redeemed
@@ -106,6 +106,9 @@ contract Redeemer {
     } else if (p == uint8(MarketPlace.Principals.Yield)) {
       // Redeems prinicipal tokens from yield
       IYieldToken(principal).redeem(address(this), address(this), amount);
+    } else if (p == uint8(MarketPlace.Principals.Notional)) {
+      // Redeems the principal token from notional
+      INotional(principal).maxRedeem(msg.sender);
     }
 
     emit Redeem(p, u, m, amount); 
