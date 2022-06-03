@@ -9,8 +9,8 @@ import './VaultTracker.sol';
 contract MarketPlace {
   struct Market {
     address cTokenAddr;
-    address zcTokenAddr;
-    address vaultAddr;
+    address zcToken;
+    address vault;
     uint256 maturityRate;
   }
 
