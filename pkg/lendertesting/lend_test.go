@@ -30,6 +30,7 @@ type lendTestSuite struct {
 	SenseToken   *mocks.SenseTokenSession
 	APWineToken  *mocks.APWineTokenSession
 	APWine       *mocks.APWineSession
+	Notional     *mocks.NotionalSession
 	Lender       *lender.LenderSession
 }
 
@@ -170,6 +171,15 @@ func (s *lendTestSuite) SetupSuite() {
 		},
 	}
 
+	s.Notional = &mocks.NotionalSession{
+		Contract: s.Dep.Notional,
+		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
+		TransactOpts: bind.TransactOpts{
+			From:   s.Env.Owner.Opts.From,
+			Signer: s.Env.Owner.Opts.Signer,
+		},
+	}
+
 	s.Lender = &lender.LenderSession{
 		Contract: s.Dep.Lender,
 		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
@@ -218,7 +228,7 @@ func (s *lendTestSuite) TestLendIlluminate() {
 	s.Yield.SellBaseReturns(sellBasePreview)
 	s.Env.Blockchain.Commit()
 
-	tx, err := s.Lender.Lend4(0, s.Dep.Erc20Address, maturity, s.Dep.YieldAddress, amountLent)
+	tx, err := s.Lender.Lend5(0, s.Dep.Erc20Address, maturity, s.Dep.YieldAddress, amountLent)
 	assert.Nil(err)
 	assert.NotNil(tx)
 
@@ -285,7 +295,7 @@ func (s *lendTestSuite) TestLendYield() {
 	s.ZcToken.MintReturns(true)
 	s.Env.Blockchain.Commit()
 
-	tx, err := s.Lender.Lend4(2, s.Dep.Erc20Address, maturity, s.Dep.YieldAddress, amountLent)
+	tx, err := s.Lender.Lend5(2, s.Dep.Erc20Address, maturity, s.Dep.YieldAddress, amountLent)
 	assert.Nil(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
@@ -505,7 +515,7 @@ func (s *lendTestSuite) TestLendTempus() {
 	pool := common.HexToAddress("0x1234")
 	deadline := big.NewInt(9999)
 
-	tx, err := s.Lender.Lend5(5, s.Dep.Erc20Address, maturity, amount, minimumReturn, amm, pool, deadline)
+	tx, err := s.Lender.Lend6(5, s.Dep.Erc20Address, maturity, amount, minimumReturn, amm, pool, deadline)
 	assert.NoError(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
@@ -561,7 +571,7 @@ func (s *lendTestSuite) TestLendSense() {
 	assert.Equal(minimumBought, swap.MinimumBought)
 }
 
-func (s *lendTestSuite) TestAPWineSense() {
+func (s *lendTestSuite) TestLendAPWine() {
 	assert := assert.New(s.T())
 	markets := marketsList(s.Dep.ZcTokenAddress, s.Dep.APWineTokenAddress)
 	s.MarketPlace.MarketsReturns(markets)
@@ -598,6 +608,43 @@ func (s *lendTestSuite) TestAPWineSense() {
 	assert.Equal(lent, swap.Amount)
 	assert.True(swap.TokenOut.Cmp(big.NewInt(0)) == 0)
 	assert.Equal(minimumAmount, swap.MinimumAmount)
+}
+
+func (s *lendTestSuite) TestLendNotional() {
+	assert := assert.New(s.T())
+	markets := marketsList(s.Dep.ZcTokenAddress, s.Dep.NotionalAddress)
+	s.MarketPlace.MarketsReturns(markets)
+	s.Env.Blockchain.Commit()
+
+	s.Erc20.TransferFromReturns(true)
+	s.Env.Blockchain.Commit()
+
+	s.ZcToken.MintReturns(true)
+	s.Env.Blockchain.Commit()
+
+	maturity := big.NewInt(12094201240)
+	amount := big.NewInt(100000)
+
+	s.Notional.GetMaturityReturns(maturity)
+	s.Env.Blockchain.Commit()
+
+	s.Notional.GetUnderlyingTokenReturns(s.Dep.Erc20Address)
+	s.Env.Blockchain.Commit()
+
+	fee := new(big.Int).Div(amount, big.NewInt(FEENOMINATOR))
+	lent := new(big.Int).Sub(amount, fee)
+
+	s.Notional.DepositReturns(lent)
+	s.Env.Blockchain.Commit()
+
+	tx, err := s.Lender.Lend4(7, s.Dep.Erc20Address, maturity, amount)
+	assert.NoError(err)
+	assert.NotNil(tx)
+	s.Env.Blockchain.Commit()
+
+	// verify that mocks were called as expected
+	amountLent, err := s.Notional.DepositCalled(s.Dep.LenderAddress)
+	assert.Equal(lent, amountLent)
 }
 
 func TestLendSuite(t *test.T) {
