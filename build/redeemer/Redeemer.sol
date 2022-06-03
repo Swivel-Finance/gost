@@ -108,7 +108,7 @@ contract Redeemer {
       IYieldToken(principal).redeem(address(this), address(this), amount);
     } else if (p == uint8(MarketPlace.Principals.Notional)) {
       // Redeems the principal token from notional
-      INotional(principal).maxRedeem(msg.sender);
+      amount = INotional(principal).maxRedeem(msg.sender);
     }
 
     emit Redeem(p, u, m, amount); 
