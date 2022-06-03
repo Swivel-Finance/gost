@@ -521,6 +521,9 @@ func (s *redeemTestSuite) TestNotionalRedeem() {
 	s.Notional.MaxRedeemReturns(amount)
 	s.Env.Blockchain.Commit()
 
+	s.Notional.BalanceOfReturns(amount)
+	s.Env.Blockchain.Commit()
+
 	s.Notional.TransferFromReturns(true)
 	s.Env.Blockchain.Commit()
 
@@ -532,7 +535,7 @@ func (s *redeemTestSuite) TestNotionalRedeem() {
 	// verify that the mocked functions were called as expected
 	redeemer, err := s.Notional.MaxRedeemCalled()
 	assert.NoError(err)
-	assert.Equal(s.Env.Owner.Opts.From, redeemer)
+	assert.Equal(s.Dep.RedeemerAddress, redeemer)
 
 	underlyingTransfer, err := s.Notional.TransferFromCalled(s.Dep.MarketplaceAddress)
 	assert.NoError(err)

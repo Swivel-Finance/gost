@@ -91,10 +91,9 @@ contract Redeemer {
     address principal = IMarketPlace(marketPlace).markets(u, m)[p];
 
     // The amount redeemed should be the balance of the principal token held by the illuminate contract
-    // TODO: Should we check if the principal token has matured?
     uint256 amount = IErc20(principal).balanceOf(marketPlace);
 
-    // Transfer the principal token to the marketplace contract from here
+    // Transfer the principal token from the marketplace contract to here
     Safe.transferFrom(IErc20(principal), marketPlace, address(this), amount);
 
     if (p == uint8(MarketPlace.Principals.Swivel)) {
@@ -108,7 +107,7 @@ contract Redeemer {
       IYieldToken(principal).redeem(address(this), address(this), amount);
     } else if (p == uint8(MarketPlace.Principals.Notional)) {
       // Redeems the principal token from notional
-      amount = INotional(principal).maxRedeem(msg.sender);
+      amount = INotional(principal).maxRedeem(address(this));
     }
 
     emit Redeem(p, u, m, amount); 
