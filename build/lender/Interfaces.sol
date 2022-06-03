@@ -20,10 +20,6 @@ interface IErc20Metadata is IErc20 {
     function decimals() external view returns (uint8);
 }
 
-interface IMarketPlace {
-  function markets(address, uint256) external returns (address[9] calldata);
-}
-
 interface ISwivel {
   function initiate(Swivel.Order[] calldata, uint256[] calldata, Swivel.Components[] calldata) external returns (bool);
 }
