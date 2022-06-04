@@ -17,14 +17,14 @@ contract Router {
     // a = the amount of FYToken sold
     function sellFYToken(address u, uint256 m, uint128 a) external unpaused() returns (uint128 returned) {
         IPool pool = IPool(pools[u][m]);
-        IERC20(address(pool.fyToken())).transferFrom(msg.sender, address(pool), a);
+        SafeTransferLib.safeTransfer(ERC20(address(pool.fyToken())), address(pool), a);
         return pool.sellFYToken(msg.sender, pool.sellFYTokenPreview(a));
     }
 
     // a = the amount of FYToken bought
     function buyFYToken(address u, uint256 m, uint128 a) external unpaused() returns (uint128 returned) {
         IPool pool = IPool(pools[u][m]);
-        IERC20(pool.base()).transferFrom(msg.sender, address(pool), a);
+        SafeTransferLib.safeTransfer(ERC20(address(pool.base())), address(pool), a);
         return pool.buyFYToken(msg.sender, pool.buyFYTokenPreview(a), a);
     }
 
@@ -38,7 +38,7 @@ contract Router {
     // a = the amount of base bought
     function buyBase(address u, uint256 m, uint128 a) external unpaused() returns (uint128 returned) {
         IPool pool = IPool(pools[u][m]);
-        IERC20(address(pool.fyToken())).transferFrom(msg.sender, address(pool), a);
+        SafeTransferLib.safeTransfer(ERC20(address(pool.fyToken())), address(pool), a);
         return pool.buyBase(msg.sender, pool.buyBasePreview(a), a);
     }   
 
