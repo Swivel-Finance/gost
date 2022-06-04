@@ -1,16 +1,18 @@
-// SPDX-License-Identifier: MIT
 pragma solidity >= 0.8.4;
 
 import './IPool.sol'; 
 import './SafeTransferLib.sol';
+import './Pool.sol';
 
 contract Router {
 
     address public immutable admin;
+    address public immutable marketplace;
     bool public paused;
 
-    constructor(address a) {
+    constructor(address a, address m) {
         admin = a;
+        marketplace = m;
     }
 
     mapping (address => mapping (uint256 => IPool)) public pools;
@@ -42,6 +44,12 @@ contract Router {
         SafeTransferLib.safeTransfer(ERC20(address(pool.fyToken())), address(pool), a);
         return pool.buyBase(msg.sender, pool.buyBasePreview(a), a);
     }   
+
+    function createPool(address u, uint256 m, address i) external authorized(marketplace) {
+        ////////////////////////////////////////////Secs in 10 yr//sell base fee co-eff//sell fyToken co-eff
+        Pool pool = new Pool(IERC20(u), IFYToken(i), 23381681843, 13835058055282163712, 24595658764946068821);
+        pools[u][m] = pool;
+    }
 
     /// @notice Called by admin at any point to pause / unpause market transactions
     /// @param b Boolean which indicates the markets paused status
