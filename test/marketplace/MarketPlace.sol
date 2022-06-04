@@ -30,13 +30,16 @@ contract MarketPlace {
   address public admin;
   /// @notice address of the deployed redeemer contract
   address public immutable redeemer;
+  /// @notice address of the deployed router contract
+  address public immutable router;
 
   event CreateMarket(address indexed underlying, uint256 indexed maturity);
 
   /// @param r address of the deployed redeemer contract 
-  constructor(address r) {
+  constructor(address r, address ro) {
     admin = msg.sender;
     redeemer = r;
+    router = ro;
   }
 
   /// @notice creates a new market for the given underlying token and maturity
@@ -58,6 +61,9 @@ contract MarketPlace {
     // the market will have the illuminate principal as its zeroth item, thus t should have Principals[1] as [0]
     // TODO we could choose to put illuminate last in
     address[9] memory market = [iToken, t[0], t[1], t[2], t[3], t[4], t[5], t[6], t[7]];
+
+    // create a secondary market pool through the illuminate router contract
+    IRouter(router).createMarket(u, m, iToken);
 
     // max is the maximum integer value for a 256 unsighed integer
     uint256 max = 2**256 - 1;
