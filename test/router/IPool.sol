@@ -2,7 +2,7 @@
 pragma solidity >= 0.8.0;
 import "./IERC20.sol";
 import "./IERC2612.sol";
-import "./IPT.sol";
+import "../tokens/IERC5095.sol";
 
 
 interface IPool is IERC20, IERC2612 {
@@ -13,7 +13,7 @@ interface IPool is IERC20, IERC2612 {
     function scaleFactor() external view returns(uint96);
     function getCache() external view returns (uint112, uint112, uint32);
     function underlying() external view returns(IERC20);
-    function PT() external view returns(IPT);
+    function PT() external view returns(IERC5095); 
     function getunderlyingBalance() external view returns(uint112);
     function getPTBalance() external view returns(uint112);
     function retrieveunderlying(address to) external returns(uint128 retrieved);

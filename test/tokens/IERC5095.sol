@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity ^0.8.0;
 
-interface IERC4095 {
+interface IERC5095 {
 
     event Redeem(address indexed from, address indexed to, uint256 amount);
     event Mature(uint256 timestamp);

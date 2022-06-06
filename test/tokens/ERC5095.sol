@@ -3,10 +3,10 @@ pragma solidity ^0.8.4;
 
 import "./PErc20.sol";
 import "./IAdapter.sol"; 
-import "./IERC4095.sol";
+import "./IERC5095.sol"; 
 import "./IRedeemer.sol";
 
-abstract contract ERC4095 is PErc20, IERC4095 {
+abstract contract ERC5095 is PErc20, IERC5095 {
 
     uint256 public override immutable maturity;
     address public override immutable underlying;

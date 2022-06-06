@@ -10,7 +10,7 @@ import "./CastU256I256.sol";
 import "./CastU128U112.sol";
 import "./CastU128I128.sol";
 import "./IPool.sol";
-import "../tokens/IERC4095.sol";
+import "../tokens/IERC5095.sol";
 import "./YieldMath.sol";
 import "./ERC20Permit.sol";
 
@@ -35,7 +35,7 @@ contract Pool is IPool, ERC20Permit {
     uint96 public immutable override scaleFactor;    // Scale up to 18 low decimal tokens to get the right precision in YieldMath
 
     IERC20 public immutable override underlying;
-    IERC4095 public immutable override PT;
+    IERC5095 public immutable override PT;
 
     uint112 private underlyingCached;              // uses single storage slot, accessible via getCache
     uint112 private PTCached;           // uses single storage slot, accessible via getCache
