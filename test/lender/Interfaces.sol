@@ -21,7 +21,7 @@ interface IErc20Metadata is IErc20 {
 }
 
 interface IMarketPlace {
-  function principals(address, uint256) external returns (address[9] calldata);
+  function principals(address, uint256) external returns (address[9] memory);
 }
 
 interface ISwivel {
