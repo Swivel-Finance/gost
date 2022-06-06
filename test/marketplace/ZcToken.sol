@@ -47,11 +47,6 @@ contract ZcToken {
     approveReturn = b;
   }
 
-  function deal(address u, uint256 a) public returns (bool) {
-    balances[u] = a;
-    return true;
-  }
-
   function balanceOf(address a) public view returns (uint256) {
     return balances[a];
   }
