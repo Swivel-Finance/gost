@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: BUSL-1.1
 pragma solidity ^0.8.4;
 
 import "./PErc20.sol";
@@ -12,8 +12,8 @@ abstract contract ERC4095 is PErc20, IERC4095 {
     address public override immutable underlying;
     uint256 public override maturityRate;
     IRedeemer public immutable redeemer;
-    address public cToken;
     IAdapter public adapter;
+    address public cToken;
 
     error Maturity(uint256 maturity);  
 
