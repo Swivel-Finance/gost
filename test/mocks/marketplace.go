@@ -27,10 +27,10 @@ var (
 )
 
 // MarketPlaceABI is the input ABI used to generate the binding from.
-const MarketPlaceABI = "[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"marketsCalled\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address[9]\",\"name\":\"m\",\"type\":\"address[9]\"}],\"name\":\"marketsReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"u\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"m\",\"type\":\"uint256\"}],\"name\":\"principals\",\"outputs\":[{\"internalType\":\"address[9]\",\"name\":\"\",\"type\":\"address[9]\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]"
+const MarketPlaceABI = "[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"marketsCalled\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address[9]\",\"name\":\"m\",\"type\":\"address[9]\"}],\"name\":\"marketsReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"principals\",\"outputs\":[{\"internalType\":\"address[9]\",\"name\":\"\",\"type\":\"address[9]\"}],\"stateMutability\":\"view\",\"type\":\"function\"}]"
 
 // MarketPlaceBin is the compiled bytecode used for deploying new contracts.
-var MarketPlaceBin = "0x608060405234801561001057600080fd5b5061050c806100206000396000f3fe608060405234801561001057600080fd5b50600436106100415760003560e01c80632db46d28146100465780637794292e14610076578063ef8c64b6146100a6575b600080fd5b610060600480360381019061005b91906102ed565b6100c2565b60405161006d9190610333565b60405180910390f35b610090600480360381019061008b919061037a565b6100da565b60405161009d9190610465565b60405180910390f35b6100c060048036038101906100bb91906104a8565b6101a2565b005b60096020528060005260406000206000915090505481565b6100e26101b7565b81600960008573ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020819055506000600980602002604051908101604052809291908260098015610195576020028201915b8160009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168152602001906001019080831161014b575b5050505050905092915050565b8060009060096101b39291906101da565b5050565b604051806101200160405280600990602082028036833780820191505090505090565b826009810192821561025c579160200282015b8281111561025b57823573ffffffffffffffffffffffffffffffffffffffff168260006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff160217905550916020019190600101906101ed565b5b509050610269919061026d565b5090565b5b8082111561028657600081600090555060010161026e565b5090565b600080fd5b600073ffffffffffffffffffffffffffffffffffffffff82169050919050565b60006102ba8261028f565b9050919050565b6102ca816102af565b81146102d557600080fd5b50565b6000813590506102e7816102c1565b92915050565b6000602082840312156103035761030261028a565b5b6000610311848285016102d8565b91505092915050565b6000819050919050565b61032d8161031a565b82525050565b60006020820190506103486000830184610324565b92915050565b6103578161031a565b811461036257600080fd5b50565b6000813590506103748161034e565b92915050565b600080604083850312156103915761039061028a565b5b600061039f858286016102d8565b92505060206103b085828601610365565b9150509250929050565b600060099050919050565b600081905092915050565b6000819050919050565b6103e3816102af565b82525050565b60006103f583836103da565b60208301905092915050565b6000602082019050919050565b610417816103ba565b61042181846103c5565b925061042c826103d0565b8060005b8381101561045d57815161044487826103e9565b965061044f83610401565b925050600181019050610430565b505050505050565b60006101208201905061047b600083018461040e565b92915050565b600080fd5b6000819050826020600902820111156104a2576104a1610481565b5b92915050565b600061012082840312156104bf576104be61028a565b5b60006104cd84828501610486565b9150509291505056fea2646970667358221220352473f06538914280b7cb74878fc91b14c48f20a97d86a52090f9b1684baf8164736f6c634300080d0033"
+var MarketPlaceBin = "0x608060405234801561001057600080fd5b506104c8806100206000396000f3fe608060405234801561001057600080fd5b50600436106100415760003560e01c80632db46d28146100465780637794292e14610076578063ef8c64b6146100a6575b600080fd5b610060600480360381019061005b91906102a9565b6100c2565b60405161006d91906102ef565b60405180910390f35b610090600480360381019061008b9190610336565b6100da565b60405161009d9190610421565b60405180910390f35b6100c060048036038101906100bb9190610464565b61015e565b005b60096020528060005260406000206000915090505481565b6100e2610173565b6000600980602002604051908101604052809291908260098015610151576020028201915b8160009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1681526020019060010190808311610107575b5050505050905092915050565b80600090600961016f929190610196565b5050565b604051806101200160405280600990602082028036833780820191505090505090565b8260098101928215610218579160200282015b8281111561021757823573ffffffffffffffffffffffffffffffffffffffff168260006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff160217905550916020019190600101906101a9565b5b5090506102259190610229565b5090565b5b8082111561024257600081600090555060010161022a565b5090565b600080fd5b600073ffffffffffffffffffffffffffffffffffffffff82169050919050565b60006102768261024b565b9050919050565b6102868161026b565b811461029157600080fd5b50565b6000813590506102a38161027d565b92915050565b6000602082840312156102bf576102be610246565b5b60006102cd84828501610294565b91505092915050565b6000819050919050565b6102e9816102d6565b82525050565b600060208201905061030460008301846102e0565b92915050565b610313816102d6565b811461031e57600080fd5b50565b6000813590506103308161030a565b92915050565b6000806040838503121561034d5761034c610246565b5b600061035b85828601610294565b925050602061036c85828601610321565b9150509250929050565b600060099050919050565b600081905092915050565b6000819050919050565b61039f8161026b565b82525050565b60006103b18383610396565b60208301905092915050565b6000602082019050919050565b6103d381610376565b6103dd8184610381565b92506103e88261038c565b8060005b8381101561041957815161040087826103a5565b965061040b836103bd565b9250506001810190506103ec565b505050505050565b60006101208201905061043760008301846103ca565b92915050565b600080fd5b60008190508260206009028201111561045e5761045d61043d565b5b92915050565b6000610120828403121561047b5761047a610246565b5b600061048984828501610442565b9150509291505056fea2646970667358221220f3e3ceaaa5c1f9057f880eaa12f5ae5416ddef00b441e92e13977e839d12236764736f6c634300080d0033"
 
 // DeployMarketPlace deploys a new Ethereum contract, binding an instance of MarketPlace to it.
 func DeployMarketPlace(auth *bind.TransactOpts, backend bind.ContractBackend) (common.Address, *types.Transaction, *MarketPlace, error) {
@@ -219,6 +219,37 @@ func (_MarketPlace *MarketPlaceCallerSession) MarketsCalled(arg0 common.Address)
 	return _MarketPlace.Contract.MarketsCalled(&_MarketPlace.CallOpts, arg0)
 }
 
+// Principals is a free data retrieval call binding the contract method 0x7794292e.
+//
+// Solidity: function principals(address , uint256 ) view returns(address[9])
+func (_MarketPlace *MarketPlaceCaller) Principals(opts *bind.CallOpts, arg0 common.Address, arg1 *big.Int) ([9]common.Address, error) {
+	var out []interface{}
+	err := _MarketPlace.contract.Call(opts, &out, "principals", arg0, arg1)
+
+	if err != nil {
+		return *new([9]common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new([9]common.Address)).(*[9]common.Address)
+
+	return out0, err
+
+}
+
+// Principals is a free data retrieval call binding the contract method 0x7794292e.
+//
+// Solidity: function principals(address , uint256 ) view returns(address[9])
+func (_MarketPlace *MarketPlaceSession) Principals(arg0 common.Address, arg1 *big.Int) ([9]common.Address, error) {
+	return _MarketPlace.Contract.Principals(&_MarketPlace.CallOpts, arg0, arg1)
+}
+
+// Principals is a free data retrieval call binding the contract method 0x7794292e.
+//
+// Solidity: function principals(address , uint256 ) view returns(address[9])
+func (_MarketPlace *MarketPlaceCallerSession) Principals(arg0 common.Address, arg1 *big.Int) ([9]common.Address, error) {
+	return _MarketPlace.Contract.Principals(&_MarketPlace.CallOpts, arg0, arg1)
+}
+
 // MarketsReturns is a paid mutator transaction binding the contract method 0xef8c64b6.
 //
 // Solidity: function marketsReturns(address[9] m) returns()
@@ -238,25 +269,4 @@ func (_MarketPlace *MarketPlaceSession) MarketsReturns(m [9]common.Address) (*ty
 // Solidity: function marketsReturns(address[9] m) returns()
 func (_MarketPlace *MarketPlaceTransactorSession) MarketsReturns(m [9]common.Address) (*types.Transaction, error) {
 	return _MarketPlace.Contract.MarketsReturns(&_MarketPlace.TransactOpts, m)
-}
-
-// Principals is a paid mutator transaction binding the contract method 0x7794292e.
-//
-// Solidity: function principals(address u, uint256 m) returns(address[9])
-func (_MarketPlace *MarketPlaceTransactor) Principals(opts *bind.TransactOpts, u common.Address, m *big.Int) (*types.Transaction, error) {
-	return _MarketPlace.contract.Transact(opts, "principals", u, m)
-}
-
-// Principals is a paid mutator transaction binding the contract method 0x7794292e.
-//
-// Solidity: function principals(address u, uint256 m) returns(address[9])
-func (_MarketPlace *MarketPlaceSession) Principals(u common.Address, m *big.Int) (*types.Transaction, error) {
-	return _MarketPlace.Contract.Principals(&_MarketPlace.TransactOpts, u, m)
-}
-
-// Principals is a paid mutator transaction binding the contract method 0x7794292e.
-//
-// Solidity: function principals(address u, uint256 m) returns(address[9])
-func (_MarketPlace *MarketPlaceTransactorSession) Principals(u common.Address, m *big.Int) (*types.Transaction, error) {
-	return _MarketPlace.Contract.Principals(&_MarketPlace.TransactOpts, u, m)
 }

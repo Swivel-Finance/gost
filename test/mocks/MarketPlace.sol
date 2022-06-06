@@ -11,8 +11,7 @@ contract MarketPlace {
         marketsReturn = m;
     }
 
-    function principals(address u, uint256 m) external returns (address[9] memory) {
-        marketsCalled[u] = m;
+    function principals(address, uint256) external view returns (address[9] memory) {
         return marketsReturn;
     }
 }

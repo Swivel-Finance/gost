@@ -5,7 +5,7 @@ pragma solidity 0.8.13;
 import './Redeemer.sol';
 
 interface IMarketPlace {
-  function principals(address, uint256) external returns (address[9] memory);
+  function principals(address, uint256) external view returns (address[9] memory);
 }
 
 interface IErc20 {
