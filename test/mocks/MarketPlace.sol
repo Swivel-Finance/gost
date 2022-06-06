@@ -3,29 +3,29 @@
 pragma solidity 0.8.13;
 
 contract MarketPlace {
-    struct MarketsCalledArgs {
+    struct MarketsArgs {
         uint256 maturity;
         uint8 precision;
     }
 
-    address private marketsReturn;
-    address private zcTokenMarketReturn;
+    address private princialTokenReturn;
+    address private zcTokenReturn;
 
-    mapping (address => MarketsCalledArgs) public marketsCalled;
+    mapping (address => MarketsArgs) public marketsCalled;
 
-    function marketsReturns(address m) external {
-        marketsReturn = m;
+    function principalTokenReturns(address p) external {
+        princialTokenReturn = p;
     }
 
-    function marketZcTokenReturns(address z) external {
-        zcTokenMarketReturn = z;
+    function zcTokenReturns(address z) external {
+        zcTokenReturn = z;
     }
 
     function markets(address u, uint256 m, uint8 p) external returns (address) {
-        marketsCalled[u] = MarketsCalledArgs(m, p);
+        marketsCalled[u] = MarketsArgs(m, p);
         if (p == 0) {
-          return zcTokenMarketReturn;
+          return zcTokenReturn;
         }
-        return marketsReturn;
+        return princialTokenReturn;
     }
 }

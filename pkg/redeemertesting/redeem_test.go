@@ -229,8 +229,8 @@ func (s *redeemTestSuite) TestAPWineRedeem() {
 	owner := s.Env.User1.Opts.From
 	principal := uint8(7)
 
-	s.MarketPlace.MarketsReturns(s.Dep.APWineTokenAddress)
-	s.MarketPlace.MarketZcTokenReturns(s.Dep.ZcTokenAddress)
+	s.MarketPlace.PrincipalTokenReturns(s.Dep.APWineTokenAddress)
+	s.MarketPlace.ZcTokenReturns(s.Dep.ZcTokenAddress)
 	s.Env.Blockchain.Commit()
 
 	s.APWineToken.TransferFromReturns(true)
@@ -270,8 +270,8 @@ func (s *redeemTestSuite) TestTempusRedeem() {
 	owner := s.Env.User1.Opts.From
 	prinicipal := uint8(5)
 
-	s.MarketPlace.MarketsReturns(s.Dep.TempusTokenAddress)
-	s.MarketPlace.MarketZcTokenReturns(s.Dep.ZcTokenAddress)
+	s.MarketPlace.PrincipalTokenReturns(s.Dep.TempusTokenAddress)
+	s.MarketPlace.ZcTokenReturns(s.Dep.ZcTokenAddress)
 	s.Env.Blockchain.Commit()
 
 	s.TempusToken.TransferFromReturns(true)
@@ -309,8 +309,8 @@ func (s *redeemTestSuite) TestIlluminateRedeem() {
 	owner := s.Env.User1.Opts.From
 	principal := uint8(0)
 
-	s.MarketPlace.MarketsReturns(s.Dep.ZcTokenAddress)
-	s.MarketPlace.MarketZcTokenReturns(s.Dep.ZcTokenAddress)
+	s.MarketPlace.PrincipalTokenReturns(s.Dep.ZcTokenAddress)
+	s.MarketPlace.ZcTokenReturns(s.Dep.ZcTokenAddress)
 	s.Env.Blockchain.Commit()
 
 	s.ZcToken.TransferFromReturns(true)
@@ -346,8 +346,8 @@ func (s *redeemTestSuite) TestPendleRedeem() {
 	maturity := big.NewInt(9999999)
 	principal := uint8(4)
 
-	s.MarketPlace.MarketsReturns(s.Dep.PendleTokenAddress)
-	s.MarketPlace.MarketZcTokenReturns(s.Dep.ZcTokenAddress)
+	s.MarketPlace.PrincipalTokenReturns(s.Dep.PendleTokenAddress)
+	s.MarketPlace.ZcTokenReturns(s.Dep.ZcTokenAddress)
 
 	s.PendleToken.BalanceOfReturns(amount)
 	s.Env.Blockchain.Commit()
@@ -380,8 +380,8 @@ func (s *redeemTestSuite) TestSenseRedeem() {
 	maturity := big.NewInt(9999999)
 	principal := uint8(4)
 
-	s.MarketPlace.MarketsReturns(s.Dep.SenseTokenAddress)
-	s.MarketPlace.MarketZcTokenReturns(s.Dep.ZcTokenAddress)
+	s.MarketPlace.PrincipalTokenReturns(s.Dep.SenseTokenAddress)
+	s.MarketPlace.ZcTokenReturns(s.Dep.ZcTokenAddress)
 
 	s.SenseToken.BalanceOfReturns(amount)
 	s.Env.Blockchain.Commit()
@@ -413,8 +413,8 @@ func (s *redeemTestSuite) TestSwivelRedeem() {
 	maturity := big.NewInt(9999999)
 	principal := uint8(1)
 
-	s.MarketPlace.MarketsReturns(s.Dep.ZcTokenAddress)
-	s.MarketPlace.MarketZcTokenReturns(s.Dep.ZcTokenAddress)
+	s.MarketPlace.PrincipalTokenReturns(s.Dep.ZcTokenAddress)
+	s.MarketPlace.ZcTokenReturns(s.Dep.ZcTokenAddress)
 
 	s.ZcToken.BalanceOfReturns(amount)
 	s.Env.Blockchain.Commit()
@@ -449,8 +449,8 @@ func (s *redeemTestSuite) TestElementRedeem() {
 	maturity := big.NewInt(9999999)
 	principal := uint8(3)
 
-	s.MarketPlace.MarketsReturns(s.Dep.ElementTokenAddress)
-	s.MarketPlace.MarketZcTokenReturns(s.Dep.ZcTokenAddress)
+	s.MarketPlace.PrincipalTokenReturns(s.Dep.ElementTokenAddress)
+	s.MarketPlace.ZcTokenReturns(s.Dep.ZcTokenAddress)
 
 	s.ElementToken.BalanceOfReturns(amount)
 	s.Env.Blockchain.Commit()
@@ -481,8 +481,8 @@ func (s *redeemTestSuite) TestYieldRedeem() {
 	maturity := big.NewInt(9999999)
 	principal := uint8(2)
 
-	s.MarketPlace.MarketsReturns(s.Dep.YieldTokenAddress)
-	s.MarketPlace.MarketZcTokenReturns(s.Dep.ZcTokenAddress)
+	s.MarketPlace.PrincipalTokenReturns(s.Dep.YieldTokenAddress)
+	s.MarketPlace.ZcTokenReturns(s.Dep.ZcTokenAddress)
 
 	s.YieldToken.BalanceOfReturns(amount)
 	s.Env.Blockchain.Commit()
@@ -514,8 +514,8 @@ func (s *redeemTestSuite) TestNotionalRedeem() {
 	maturity := big.NewInt(9999999)
 	principal := uint8(8)
 
-	s.MarketPlace.MarketsReturns(s.Dep.NotionalAddress)
-	s.MarketPlace.MarketZcTokenReturns(s.Dep.ZcTokenAddress)
+	s.MarketPlace.PrincipalTokenReturns(s.Dep.NotionalAddress)
+	s.MarketPlace.ZcTokenReturns(s.Dep.ZcTokenAddress)
 
 	s.Notional.MaxRedeemReturns(amount)
 	s.Env.Blockchain.Commit()
