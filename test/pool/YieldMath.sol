@@ -32,11 +32,11 @@ library Exp64x64 {
   }
 
   /**
-   * Calculate base 2 logarithm of an unsigned 128-bit integer number.  Revert
+   * Calculate underlying 2 logarithm of an unsigned 128-bit integer number.  Revert
    * in case x is zero.
    *
-   * @param x number to calculate base 2 logarithm of
-   * @return base 2 logarithm of x, multiplied by 2^121
+   * @param x number to calculate underlying 2 logarithm of
+   * @return underlying 2 logarithm of x, multiplied by 2^121
    */
   function log_2(uint128 x)
   internal pure returns(uint128) {
@@ -338,7 +338,7 @@ library YieldMath {
   /**
    * Calculate a YieldSpace pool invariant according to the whitepaper
    */
-  function invariant(uint128 baseReserves, uint128 fyTokenReserves, uint256 totalSupply, uint128 timeTillMaturity, int128 ts)
+  function invariant(uint128 underlyingReserves, uint128 PTReserves, uint256 totalSupply, uint128 timeTillMaturity, int128 ts)
       public pure returns(uint128)
   {
     if (totalSupply == 0) return 0;
@@ -349,8 +349,8 @@ library YieldMath {
       require (a > 0, "YieldMath: Too far from maturity");
 
       uint256 sum =
-      uint256(baseReserves.pow(uint128 (a), ONE)) +
-      uint256(fyTokenReserves.pow(uint128 (a), ONE)) >> 1;
+      uint256(underlyingReserves.pow(uint128 (a), ONE)) +
+      uint256(PTReserves.pow(uint128 (a), ONE)) >> 1;
       require(sum < MAX, "YieldMath: Sum overflow");
 
       // We multiply the dividend by 1e18 to get a fixed point number with 18 decimals
@@ -362,42 +362,42 @@ library YieldMath {
   }
 
   /**
-   * Calculate the amount of fyToken a user would get for given amount of Base.
+   * Calculate the amount of PT a user would get for given amount of underlying.
    * https://www.desmos.com/calculator/5nf2xuy6yb
-   * @param baseReserves base reserves amount
-   * @param fyTokenReserves fyToken reserves amount
-   * @param baseAmount base amount to be traded
+   * @param underlyingReserves underlying reserves amount
+   * @param PTReserves PT reserves amount
+   * @param underlyingAmount underlying amount to be traded
    * @param timeTillMaturity time till maturity in seconds
    * @param ts time till maturity coefficient, multiplied by 2^64
    * @param g fee coefficient, multiplied by 2^64
-   * @return the amount of fyToken a user would get for given amount of Base
+   * @return the amount of PT a user would get for given amount of underlying
    */
-  function fyTokenOutForBaseIn(
-    uint128 baseReserves, uint128 fyTokenReserves, uint128 baseAmount,
+  function PTOutForunderlyingIn(
+    uint128 underlyingReserves, uint128 PTReserves, uint128 underlyingAmount,
     uint128 timeTillMaturity, int128 ts, int128 g)
   public pure returns(uint128) {
     unchecked {
       uint128 a = _computeA(timeTillMaturity, ts, g);
 
-      // za = baseReserves ** a
-      uint256 za = baseReserves.pow(a, ONE);
+      // za = underlyingReserves ** a
+      uint256 za = underlyingReserves.pow(a, ONE);
 
-      // ya = fyTokenReserves ** a
-      uint256 ya = fyTokenReserves.pow(a, ONE);
+      // ya = PTReserves ** a
+      uint256 ya = PTReserves.pow(a, ONE);
 
-      // zx = baseReserves + baseAmount
-      uint256 zx = uint256(baseReserves) + uint256(baseAmount);
-      require(zx <= MAX, "YieldMath: Too much base in");
+      // zx = underlyingReserves + underlyingAmount
+      uint256 zx = uint256(underlyingReserves) + uint256(underlyingAmount);
+      require(zx <= MAX, "YieldMath: Too much underlying in");
 
       // zxa = zx ** a
       uint256 zxa = uint128(zx).pow(a, ONE);
 
       // sum = za + ya - zxa
       uint256 sum = za + ya - zxa; // z < MAX, y < MAX, a < 1. It can only underflow, not overflow.
-      require(sum <= MAX, "YieldMath: Insufficient fyToken reserves");
+      require(sum <= MAX, "YieldMath: Insufficient PT reserves");
 
-      // result = fyTokenReserves - (sum ** (1/a))
-      uint256 result = uint256(fyTokenReserves) - uint256(uint128(sum).pow(ONE, a));
+      // result = PTReserves - (sum ** (1/a))
+      uint256 result = uint256(PTReserves) - uint256(uint128(sum).pow(ONE, a));
       require(result <= MAX, "YieldMath: Rounding induced error");
 
       result = result > VAR ? result - VAR : 0; // Subtract error guard, flooring the result at zero
@@ -407,42 +407,42 @@ library YieldMath {
   }
 
   /**
-   * Calculate the amount of base a user would get for certain amount of fyToken.
+   * Calculate the amount of underlying a user would get for certain amount of PT.
    * https://www.desmos.com/calculator/6jlrre7ybt
-   * @param baseReserves base reserves amount
-   * @param fyTokenReserves fyToken reserves amount
-   * @param fyTokenAmount fyToken amount to be traded
+   * @param underlyingReserves underlying reserves amount
+   * @param PTReserves PT reserves amount
+   * @param PTAmount PT amount to be traded
    * @param timeTillMaturity time till maturity in seconds
    * @param ts time till maturity coefficient, multiplied by 2^64
    * @param g fee coefficient, multiplied by 2^64
-   * @return the amount of Base a user would get for given amount of fyToken
+   * @return the amount of underlying a user would get for given amount of PT
    */
-  function baseOutForFYTokenIn(
-    uint128 baseReserves, uint128 fyTokenReserves, uint128 fyTokenAmount,
+  function underlyingOutForPTIn(
+    uint128 underlyingReserves, uint128 PTReserves, uint128 PTAmount,
     uint128 timeTillMaturity, int128 ts, int128 g)
   public pure returns(uint128) {
     unchecked {
       uint128 a = _computeA(timeTillMaturity, ts, g);
 
-      // za = baseReserves ** a
-      uint256 za = baseReserves.pow(a, ONE);
+      // za = underlyingReserves ** a
+      uint256 za = underlyingReserves.pow(a, ONE);
 
-      // ya = fyTokenReserves ** a
-      uint256 ya = fyTokenReserves.pow(a, ONE);
+      // ya = PTReserves ** a
+      uint256 ya = PTReserves.pow(a, ONE);
 
-      // yx = fyDayReserves + fyTokenAmount
-      uint256 yx = uint256(fyTokenReserves) + uint256(fyTokenAmount);
-      require(yx <= MAX, "YieldMath: Too much fyToken in");
+      // yx = fyDayReserves + PTAmount
+      uint256 yx = uint256(PTReserves) + uint256(PTAmount);
+      require(yx <= MAX, "YieldMath: Too much PT in");
 
       // yxa = yx ** a
       uint256 yxa = uint128(yx).pow(a, ONE);
 
       // sum = za + ya - yxa
       uint256 sum = za + ya - yxa; // z < MAX, y < MAX, a < 1. It can only underflow, not overflow.
-      require(sum <= MAX, "YieldMath: Insufficient base reserves");
+      require(sum <= MAX, "YieldMath: Insufficient underlying reserves");
 
-      // result = baseReserves - (sum ** (1/a))
-      uint256 result = uint256(baseReserves) - uint256(uint128(sum).pow(ONE, a));
+      // result = underlyingReserves - (sum ** (1/a))
+      uint256 result = uint256(underlyingReserves) - uint256(uint128(sum).pow(ONE, a));
       require(result <= MAX, "YieldMath: Rounding induced error");
 
       result = result > VAR ? result - VAR : 0; // Subtract error guard, flooring the result at zero
@@ -452,42 +452,42 @@ library YieldMath {
   }
 
   /**
-   * Calculate the amount of fyToken a user could sell for given amount of Base.
+   * Calculate the amount of PT a user could sell for given amount of underlying.
    * https://www.desmos.com/calculator/0rgnmtckvy
-   * @param baseReserves base reserves amount
-   * @param fyTokenReserves fyToken reserves amount
-   * @param baseAmount Base amount to be traded
+   * @param underlyingReserves underlying reserves amount
+   * @param PTReserves PT reserves amount
+   * @param underlyingAmount underlying amount to be traded
    * @param timeTillMaturity time till maturity in seconds
    * @param ts time till maturity coefficient, multiplied by 2^64
    * @param g fee coefficient, multiplied by 2^64
-   * @return the amount of fyToken a user could sell for given amount of Base
+   * @return the amount of PT a user could sell for given amount of underlying
    */
-  function fyTokenInForBaseOut(
-    uint128 baseReserves, uint128 fyTokenReserves, uint128 baseAmount,
+  function PTInForunderlyingOut(
+    uint128 underlyingReserves, uint128 PTReserves, uint128 underlyingAmount,
     uint128 timeTillMaturity, int128 ts, int128 g)
   public pure returns(uint128) {
     unchecked {
       uint128 a = _computeA(timeTillMaturity, ts, g);
 
-      // za = baseReserves ** a
-      uint256 za = baseReserves.pow(a, ONE);
+      // za = underlyingReserves ** a
+      uint256 za = underlyingReserves.pow(a, ONE);
 
-      // ya = fyTokenReserves ** a
-      uint256 ya = fyTokenReserves.pow(a, ONE);
+      // ya = PTReserves ** a
+      uint256 ya = PTReserves.pow(a, ONE);
 
-      // zx = baseReserves - baseAmount
-      uint256 zx = uint256(baseReserves) - uint256(baseAmount);
-      require(zx <= MAX, "YieldMath: Too much base out");
+      // zx = underlyingReserves - underlyingAmount
+      uint256 zx = uint256(underlyingReserves) - uint256(underlyingAmount);
+      require(zx <= MAX, "YieldMath: Too much underlying out");
 
       // zxa = zx ** a
       uint256 zxa = uint128(zx).pow(a, ONE);
 
       // sum = za + ya - zxa
       uint256 sum = za + ya - zxa; // z < MAX, y < MAX, a < 1. It can only underflow, not overflow.
-      require(sum <= MAX, "YieldMath: Resulting fyToken reserves too high");
+      require(sum <= MAX, "YieldMath: Resulting PT reserves too high");
 
-      // result = (sum ** (1/a)) - fyTokenReserves
-      uint256 result = uint256(uint128(sum).pow(ONE, a)) - uint256(fyTokenReserves);
+      // result = (sum ** (1/a)) - PTReserves
+      uint256 result = uint256(uint128(sum).pow(ONE, a)) - uint256(PTReserves);
       require(result <= MAX, "YieldMath: Rounding induced error");
 
       result = result < MAX - VAR ? result + VAR : MAX; // Add error guard, ceiling the result at max
@@ -497,43 +497,43 @@ library YieldMath {
   }
 
   /**
-   * Calculate the amount of base a user would have to pay for certain amount of fyToken.
+   * Calculate the amount of underlying a user would have to pay for certain amount of PT.
    * https://www.desmos.com/calculator/ws5oqj8x5i
-   * @param baseReserves Base reserves amount
-   * @param fyTokenReserves fyToken reserves amount
-   * @param fyTokenAmount fyToken amount to be traded
+   * @param underlyingReserves underlying reserves amount
+   * @param PTReserves PT reserves amount
+   * @param PTAmount PT amount to be traded
    * @param timeTillMaturity time till maturity in seconds
    * @param ts time till maturity coefficient, multiplied by 2^64
    * @param g fee coefficient, multiplied by 2^64
-   * @return the amount of base a user would have to pay for given amount of
-   *         fyToken
+   * @return the amount of underlying a user would have to pay for given amount of
+   *         PT
    */
-  function baseInForFYTokenOut(
-    uint128 baseReserves, uint128 fyTokenReserves, uint128 fyTokenAmount,
+  function underlyingInForPTOut(
+    uint128 underlyingReserves, uint128 PTReserves, uint128 PTAmount,
     uint128 timeTillMaturity, int128 ts, int128 g)
   public pure returns(uint128) {
     unchecked {
       uint128 a = _computeA(timeTillMaturity, ts, g);
 
-      // za = baseReserves ** a
-      uint256 za = baseReserves.pow(a, ONE);
+      // za = underlyingReserves ** a
+      uint256 za = underlyingReserves.pow(a, ONE);
 
-      // ya = fyTokenReserves ** a
-      uint256 ya = fyTokenReserves.pow(a, ONE);
+      // ya = PTReserves ** a
+      uint256 ya = PTReserves.pow(a, ONE);
 
-      // yx = baseReserves - baseAmount
-      uint256 yx = uint256(fyTokenReserves) - uint256(fyTokenAmount);
-      require(yx <= MAX, "YieldMath: Too much fyToken out");
+      // yx = underlyingReserves - underlyingAmount
+      uint256 yx = uint256(PTReserves) - uint256(PTAmount);
+      require(yx <= MAX, "YieldMath: Too much PT out");
 
       // yxa = yx ** a
       uint256 yxa = uint128(yx).pow(a, ONE);
 
       // sum = za + ya - yxa
       uint256 sum = za + ya - yxa; // z < MAX, y < MAX, a < 1. It can only underflow, not overflow.
-      require(sum <= MAX, "YieldMath: Resulting base reserves too high");
+      require(sum <= MAX, "YieldMath: Resulting underlying reserves too high");
 
-      // result = (sum ** (1/a)) - baseReserves
-      uint256 result = uint256(uint128(sum).pow(ONE, a)) - uint256(baseReserves);
+      // result = (sum ** (1/a)) - underlyingReserves
+      uint256 result = uint256(uint128(sum).pow(ONE, a)) - uint256(underlyingReserves);
       require(result <= MAX, "YieldMath: Rounding induced error");
 
       result = result < MAX - VAR ? result + VAR : MAX; // Add error guard, ceiling the result at max
@@ -543,28 +543,28 @@ library YieldMath {
   }
 
   /**
-   * Calculate the max amount of fyTokens that can be bought from the pool without making the interest rate negative.
+   * Calculate the max amount of PTs that can be bought from the pool without making the interest rate negative.
    * See section 6.3 of the YieldSpace White paper
-   * @param baseReserves Base reserves amount
-   * @param fyTokenReserves fyToken reserves amount
+   * @param underlyingReserves underlying reserves amount
+   * @param PTReserves PT reserves amount
    * @param timeTillMaturity time till maturity in seconds
    * @param ts time till maturity coefficient, multiplied by 2^64
    * @param g fee coefficient, multiplied by 2^64
-   * @return max amount of fyTokens that can be bought from the pool
+   * @return max amount of PTs that can be bought from the pool
    */
-  function maxFYTokenOut(
-    uint128 baseReserves, uint128 fyTokenReserves,
+  function maxPTOut(
+    uint128 underlyingReserves, uint128 PTReserves,
     uint128 timeTillMaturity, int128 ts, int128 g)
   public pure returns(uint128) {
-    if (baseReserves == fyTokenReserves) return 0;
+    if (underlyingReserves == PTReserves) return 0;
     unchecked {
       uint128 a = _computeA(timeTillMaturity, ts, g);
 
-      // xa = baseReserves ** a
-      uint128 xa = baseReserves.pow(a, ONE);
+      // xa = underlyingReserves ** a
+      uint128 xa = underlyingReserves.pow(a, ONE);
 
-      // ya = fyTokenReserves ** a
-      uint128 ya = fyTokenReserves.pow(a, ONE);
+      // ya = PTReserves ** a
+      uint128 ya = PTReserves.pow(a, ONE);
 
       int128 xy2 = (xa + ya).divu(TWO);
 
@@ -573,33 +573,33 @@ library YieldMath {
 
       inaccessible = inaccessible < MAX - VAR ? inaccessible + VAR : MAX; // Add error guard, ceiling the result at max
 
-      return uint128(inaccessible) > fyTokenReserves ? 0 : fyTokenReserves - uint128(inaccessible);
+      return uint128(inaccessible) > PTReserves ? 0 : PTReserves - uint128(inaccessible);
     }
   }
 
   /**
-   * Calculate the max amount of fyTokens that can be sold to into the pool.
-   * @param baseReserves Base reserves amount
-   * @param fyTokenReserves fyToken reserves amount
+   * Calculate the max amount of PTs that can be sold to into the pool.
+   * @param underlyingReserves underlying reserves amount
+   * @param PTReserves PT reserves amount
    * @param timeTillMaturity time till maturity in seconds
    * @param ts time till maturity coefficient, multiplied by 2^64
    * @param g fee coefficient, multiplied by 2^64
-   * @return max amount of fyTokens that can be sold to into the pool
+   * @return max amount of PTs that can be sold to into the pool
    */
-  function maxFYTokenIn(
-    uint128 baseReserves, uint128 fyTokenReserves,
+  function maxPTIn(
+    uint128 underlyingReserves, uint128 PTReserves,
     uint128 timeTillMaturity, int128 ts, int128 g)
   public pure returns(uint128) {
     unchecked {
       uint128 b = _computeB(timeTillMaturity, ts, g);
 
-      // xa = baseReserves ** a
-      uint128 xa = baseReserves.pow(b, ONE);
+      // xa = underlyingReserves ** a
+      uint128 xa = underlyingReserves.pow(b, ONE);
 
-      // ya = fyTokenReserves ** a
-      uint128 ya = fyTokenReserves.pow(b, ONE);
+      // ya = PTReserves ** a
+      uint128 ya = PTReserves.pow(b, ONE);
 
-      uint result = (xa + ya).pow(ONE, b) - fyTokenReserves;
+      uint result = (xa + ya).pow(ONE, b) - PTReserves;
       require(result <= MAX, "YieldMath: Rounding induced error");
 
       result = result > VAR ? result - VAR : 0; // Subtract error guard, flooring the result at zero
@@ -609,39 +609,39 @@ library YieldMath {
   }
 
   /**
-   * Calculate the max amount of base that can be sold to into the pool without making the interest rate negative.
-   * @param baseReserves Base reserves amount
-   * @param fyTokenReserves fyToken reserves amount
+   * Calculate the max amount of underlying that can be sold to into the pool without making the interest rate negative.
+   * @param underlyingReserves underlying reserves amount
+   * @param PTReserves PT reserves amount
    * @param timeTillMaturity time till maturity in seconds
    * @param ts time till maturity coefficient, multiplied by 2^64
    * @param g fee coefficient, multiplied by 2^64
-   * @return max amount of base that can be sold to into the pool
+   * @return max amount of underlying that can be sold to into the pool
    */
-  function maxBaseIn(
-    uint128 baseReserves, uint128 fyTokenReserves,
+  function maxunderlyingIn(
+    uint128 underlyingReserves, uint128 PTReserves,
     uint128 timeTillMaturity, int128 ts, int128 g)
   public pure returns (uint128) {
-    uint128 _maxFYTokenOut = maxFYTokenOut(baseReserves, fyTokenReserves, timeTillMaturity, ts, g);
-    if (_maxFYTokenOut > 0)
-      return baseInForFYTokenOut(baseReserves, fyTokenReserves, _maxFYTokenOut, timeTillMaturity, ts, g);
+    uint128 _maxPTOut = maxPTOut(underlyingReserves, PTReserves, timeTillMaturity, ts, g);
+    if (_maxPTOut > 0)
+      return underlyingInForPTOut(underlyingReserves, PTReserves, _maxPTOut, timeTillMaturity, ts, g);
     return 0;
   }
 
   /**
-   * Calculate the max amount of base that can be bought from the pool.
-   * @param baseReserves Base reserves amount
-   * @param fyTokenReserves fyToken reserves amount
+   * Calculate the max amount of underlying that can be bought from the pool.
+   * @param underlyingReserves underlying reserves amount
+   * @param PTReserves PT reserves amount
    * @param timeTillMaturity time till maturity in seconds
    * @param ts time till maturity coefficient, multiplied by 2^64
    * @param g fee coefficient, multiplied by 2^64
-   * @return max amount of base that can be bought from the pool
+   * @return max amount of underlying that can be bought from the pool
    */
-  function maxBaseOut(
-    uint128 baseReserves, uint128 fyTokenReserves,
+  function maxunderlyingOut(
+    uint128 underlyingReserves, uint128 PTReserves,
     uint128 timeTillMaturity, int128 ts, int128 g)
   public pure returns (uint128) {
-    uint128 _maxFYTokenIn = maxFYTokenIn(baseReserves, fyTokenReserves, timeTillMaturity, ts, g);
-    return baseOutForFYTokenIn(baseReserves, fyTokenReserves, _maxFYTokenIn, timeTillMaturity, ts, g);
+    uint128 _maxPTIn = maxPTIn(underlyingReserves, PTReserves, timeTillMaturity, ts, g);
+    return underlyingOutForPTIn(underlyingReserves, PTReserves, _maxPTIn, timeTillMaturity, ts, g);
   }
 
   function _computeA(uint128 timeTillMaturity, int128 ts, int128 g) private pure returns (uint128) {

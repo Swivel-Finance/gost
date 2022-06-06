@@ -10,12 +10,12 @@ import "./CastU256I256.sol";
 import "./CastU128U112.sol";
 import "./CastU128I128.sol";
 import "./IPool.sol";
-import "./IFYToken.sol";
+import "../tokens/IERC4095.sol";
 import "./YieldMath.sol";
 import "./ERC20Permit.sol";
 
 
-/// @dev The Pool contract exchanges base for fyToken at a price defined by a specific formula.
+/// @dev The Pool contract exchanges underlying for PT at a price defined by a specific formula.
 contract Pool is IPool, ERC20Permit {
     using CastU256U128 for uint256;
     using CastU256U112 for uint256;
@@ -24,38 +24,38 @@ contract Pool is IPool, ERC20Permit {
     using CastU128I128 for uint128;
     using MinimalTransferHelper for IERC20;
 
-    event Trade(uint32 maturity, address indexed from, address indexed to, int256 bases, int256 fyTokens);
-    event Liquidity(uint32 maturity, address indexed from, address indexed to, address indexed fyTokenTo, int256 bases, int256 fyTokens, int256 poolTokens);
-    event Sync(uint112 baseCached, uint112 fyTokenCached, uint256 cumulativeBalancesRatio);
+    event Trade(uint32 maturity, address indexed from, address indexed to, int256 underlyings, int256 PTs);
+    event Liquidity(uint32 maturity, address indexed from, address indexed to, address indexed PTTo, int256 underlyings, int256 PTs, int256 poolTokens);
+    event Sync(uint112 underlyingCached, uint112 PTCached, uint256 cumulativeBalancesRatio);
 
     int128 public immutable override ts;              // 1 / Seconds in 10 years, in 64.64
-    int128 public immutable override g1;             // To be used when selling base to the pool
-    int128 public immutable override g2;             // To be used when selling fyToken to the pool
+    int128 public immutable override g1;             // To be used when selling underlying to the pool
+    int128 public immutable override g2;             // To be used when selling PT to the pool
     uint32 public immutable override maturity;
     uint96 public immutable override scaleFactor;    // Scale up to 18 low decimal tokens to get the right precision in YieldMath
 
-    IERC20 public immutable override base;
-    IFYToken public immutable override fyToken;
+    IERC20 public immutable override underlying;
+    IERC4095 public immutable override PT;
 
-    uint112 private baseCached;              // uses single storage slot, accessible via getCache
-    uint112 private fyTokenCached;           // uses single storage slot, accessible via getCache
+    uint112 private underlyingCached;              // uses single storage slot, accessible via getCache
+    uint112 private PTCached;           // uses single storage slot, accessible via getCache
     uint32  private blockTimestampLast;      // uses single storage slot, accessible via getCache
 
     uint256 public override cumulativeBalancesRatio;  // Fixed point factor with 27 decimals (ray)
 
     /// @dev Deploy a Pool.
-    /// Make sure that the fyToken follows ERC20 standards with regards to name, symbol and decimals
-    constructor(IERC20 base_, IFYToken fyToken_, int128 ts_, int128 g1_, int128 g2_)
+    /// Make sure that the PT follows ERC20 standards with regards to name, symbol and decimals
+    constructor(IERC20 underlying_, IERC4095 PT_, int128 ts_, int128 g1_, int128 g2_)
         ERC20Permit(
-            string(abi.encodePacked(IERC20Metadata(address(fyToken_)).name(), " LP")),
-            string(abi.encodePacked(IERC20Metadata(address(fyToken_)).symbol(), "LP")),
-            IERC20Metadata(address(fyToken_)).decimals()
+            string(abi.encodePacked(IERC20Metadata(address(PT_)).name(), " LP")),
+            string(abi.encodePacked(IERC20Metadata(address(PT_)).symbol(), "LP")),
+            IERC20Metadata(address(PT_)).decimals()
         )
     {
-        fyToken = fyToken_;
-        base = base_;
+        PT = PT_;
+        underlying = underlying_;
 
-        uint256 maturity_ = fyToken_.maturity();
+        uint256 maturity_ = PT_.maturity();
         require (maturity_ <= type(uint32).max, "Pool: Maturity too far in the future");
         maturity = uint32(maturity_);
 
@@ -79,96 +79,96 @@ contract Pool is IPool, ERC20Permit {
 
     /// @dev Updates the cache to match the actual balances.
     function sync() external {
-        _update(_getBaseBalance(), _getFYTokenBalance(), baseCached, fyTokenCached);
+        _update(_getUnderlyingBalance(), _getPTBalance(), underlyingCached, PTCached);
     }
 
     /// @dev Returns the cached balances & last updated timestamp.
-    /// @return Cached base token balance.
+    /// @return Cached underlying token balance.
     /// @return Cached virtual FY token balance.
     /// @return Timestamp that balances were last cached.
     function getCache()
         external view override
         returns (uint112, uint112, uint32)
     {
-        return (baseCached, fyTokenCached, blockTimestampLast);
+        return (underlyingCached, PTCached, blockTimestampLast);
     }
 
-    /// @dev Returns the "virtual" fyToken balance, which is the real balance plus the pool token supply.
-    function getFYTokenBalance()
+    /// @dev Returns the "virtual" PT balance, which is the real balance plus the pool token supply.
+    function getPTBalance()
         public view override
         returns(uint112)
     {
-        return _getFYTokenBalance();
+        return _getPTBalance();
     }
 
-    /// @dev Returns the base balance
-    function getBaseBalance()
+    /// @dev Returns the underlying balance
+    function getUnderlyingBalance()
         public view override
         returns(uint112)
     {
-        return _getBaseBalance();
+        return _getUnderlyingBalance();
     }
 
-    /// @dev Returns the "virtual" fyToken balance, which is the real balance plus the pool token supply.
-    function _getFYTokenBalance()
+    /// @dev Returns the "virtual" PT balance, which is the real balance plus the pool token supply.
+    function _getPTBalance()
         internal view
         returns(uint112)
     {
-        return (fyToken.balanceOf(address(this)) + _totalSupply).u112();
+        return (PT.balanceOf(address(this)) + _totalSupply).u112();
     }
 
-    /// @dev Returns the base balance
-    function _getBaseBalance()
+    /// @dev Returns the underlying balance
+    function _getUnderlyingBalance()
         internal view
         returns(uint112)
     {
-        return base.balanceOf(address(this)).u112();
+        return underlying.balanceOf(address(this)).u112();
     }
 
-    /// @dev Retrieve any base tokens not accounted for in the cache
-    function retrieveBase(address to)
+    /// @dev Retrieve any underlying tokens not accounted for in the cache
+    function retrieveUnderlying(address to)
         external override
         returns(uint128 retrieved)
     {
-        retrieved = _getBaseBalance() - baseCached; // Cache can never be above balances
-        base.safeTransfer(to, retrieved);
+        retrieved = _getUnderlyingBalance() - underlyingCached; // Cache can never be above balances
+        underlying.safeTransfer(to, retrieved);
         // Now the current balances match the cache, so no need to update the TWAR
     }
 
-    /// @dev Retrieve any fyTokens not accounted for in the cache
-    function retrieveFYToken(address to)
+    /// @dev Retrieve any PTs not accounted for in the cache
+    function retrievePT(address to)
         external override
         returns(uint128 retrieved)
     {
-        retrieved = _getFYTokenBalance() - fyTokenCached; // Cache can never be above balances
-        IERC20(address(fyToken)).safeTransfer(to, retrieved);
+        retrieved = _getPTBalance() - PTCached; // Cache can never be above balances
+        IERC20(address(PT)).safeTransfer(to, retrieved);
         // Now the balances match the cache, so no need to update the TWAR
     }
 
     /// @dev Update cache and, on the first call per block, ratio accumulators
-    function _update(uint128 baseBalance, uint128 fyBalance, uint112 _baseCached, uint112 _fyTokenCached) private {
+    function _update(uint128 underlyingBalance, uint128 fyBalance, uint112 _underlyingCached, uint112 _PTCached) private {
         uint32 blockTimestamp = uint32(block.timestamp);
         uint32 timeElapsed = blockTimestamp - blockTimestampLast; // overflow is desired
-        if (timeElapsed > 0 && _baseCached != 0 && _fyTokenCached != 0) {
+        if (timeElapsed > 0 && _underlyingCached != 0 && _PTCached != 0) {
             // We multiply by 1e27 here so that r = t * y/x is a fixed point factor with 27 decimals 
-            uint256 scaledFYTokenCached = uint256(_fyTokenCached) * 1e27;
-            cumulativeBalancesRatio += scaledFYTokenCached  * timeElapsed / _baseCached;
+            uint256 scaledPTCached = uint256(_PTCached) * 1e27;
+            cumulativeBalancesRatio += scaledPTCached  * timeElapsed / _underlyingCached;
         }
-        baseCached = baseBalance.u112();
-        fyTokenCached = fyBalance.u112();
+        underlyingCached = underlyingBalance.u112();
+        PTCached = fyBalance.u112();
         blockTimestampLast = blockTimestamp;
-        emit Sync(baseCached, fyTokenCached, cumulativeBalancesRatio);
+        emit Sync(underlyingCached, PTCached, cumulativeBalancesRatio);
     }
 
     // ---- Liquidity ----
 
-    /// @dev Mint liquidity tokens in exchange for adding base and fyToken
-    /// The amount of liquidity tokens to mint is calculated from the amount of unaccounted for fyToken in this contract.
-    /// A proportional amount of base tokens need to be present in this contract, also unaccounted for.
+    /// @dev Mint liquidity tokens in exchange for adding underlying and PT
+    /// The amount of liquidity tokens to mint is calculated from the amount of unaccounted for PT in this contract.
+    /// A proportional amount of underlying tokens need to be present in this contract, also unaccounted for.
     /// @param to Wallet receiving the minted liquidity tokens.
-    /// @param remainder Wallet receiving any surplus base.
-    /// @param minRatio Minimum ratio of base to fyToken in the pool.
-    /// @param maxRatio Maximum ratio of base to fyToken in the pool.
+    /// @param remainder Wallet receiving any surplus underlying.
+    /// @param minRatio Minimum ratio of underlying to PT in the pool.
+    /// @param maxRatio Maximum ratio of underlying to PT in the pool.
     /// @return The amount of liquidity tokens minted.
     function mint(address to, address remainder, uint256 minRatio, uint256 maxRatio)
         external override
@@ -177,341 +177,341 @@ contract Pool is IPool, ERC20Permit {
         return _mintInternal(to, remainder, 0, minRatio, maxRatio);
     }
 
-    /// @dev Mint liquidity tokens in exchange for adding only base
-    /// The amount of liquidity tokens is calculated from the amount of fyToken to buy from the pool,
-    /// plus the amount of unaccounted for fyToken in this contract.
-    /// The base tokens need to be present in this contract, unaccounted for.
+    /// @dev Mint liquidity tokens in exchange for adding only underlying
+    /// The amount of liquidity tokens is calculated from the amount of PT to buy from the pool,
+    /// plus the amount of unaccounted for PT in this contract.
+    /// The underlying tokens need to be present in this contract, unaccounted for.
     /// @param to Wallet receiving the minted liquidity tokens.
-    /// @param remainder Wallet receiving any surplus base.
-    /// @param fyTokenToBuy Amount of `fyToken` being bought in the Pool, from this we calculate how much base it will be taken in.
-    /// @param minRatio Minimum ratio of base to fyToken in the pool.
-    /// @param maxRatio Maximum ratio of base to fyToken in the pool.
+    /// @param remainder Wallet receiving any surplus underlying.
+    /// @param PTToBuy Amount of `PT` being bought in the Pool, from this we calculate how much underlying it will be taken in.
+    /// @param minRatio Minimum ratio of underlying to PT in the pool.
+    /// @param maxRatio Maximum ratio of underlying to PT in the pool.
     /// @return The amount of liquidity tokens minted.
-    function mintWithBase(address to, address remainder, uint256 fyTokenToBuy, uint256 minRatio, uint256 maxRatio)
+    function mintWithUnderlying(address to, address remainder, uint256 PTToBuy, uint256 minRatio, uint256 maxRatio)
         external override
         returns (uint256, uint256, uint256)
     {
-        return _mintInternal(to, remainder, fyTokenToBuy, minRatio, maxRatio);
+        return _mintInternal(to, remainder, PTToBuy, minRatio, maxRatio);
     }
 
-    /// @dev Mint liquidity tokens, with an optional internal trade to buy fyToken beforehand.
-    /// The amount of liquidity tokens is calculated from the amount of fyToken to buy from the pool,
-    /// plus the amount of unaccounted for fyToken in this contract.
-    /// The base tokens need to be present in this contract, unaccounted for.
+    /// @dev Mint liquidity tokens, with an optional internal trade to buy PT beforehand.
+    /// The amount of liquidity tokens is calculated from the amount of PT to buy from the pool,
+    /// plus the amount of unaccounted for PT in this contract.
+    /// The underlying tokens need to be present in this contract, unaccounted for.
     /// @param to Wallet receiving the minted liquidity tokens.
-    /// @param remainder Wallet receiving any surplus base.
-    /// @param fyTokenToBuy Amount of `fyToken` being bought in the Pool, from this we calculate how much base it will be taken in.
-    /// @param minRatio Minimum ratio of base to fyToken in the pool.
-    /// @param maxRatio Minimum ratio of base to fyToken in the pool.
-    function _mintInternal(address to, address remainder, uint256 fyTokenToBuy, uint256 minRatio, uint256 maxRatio)
+    /// @param remainder Wallet receiving any surplus underlying.
+    /// @param PTToBuy Amount of `PT` being bought in the Pool, from this we calculate how much underlying it will be taken in.
+    /// @param minRatio Minimum ratio of underlying to PT in the pool.
+    /// @param maxRatio Minimum ratio of underlying to PT in the pool.
+    function _mintInternal(address to, address remainder, uint256 PTToBuy, uint256 minRatio, uint256 maxRatio)
         internal
-        returns (uint256 baseIn, uint256 fyTokenIn, uint256 tokensMinted)
+        returns (uint256 underlyingIn, uint256 PTIn, uint256 tokensMinted)
     {
         // Gather data
         uint256 supply = _totalSupply;
-        (uint112 _baseCached, uint112 _fyTokenCached) =
-            (baseCached, fyTokenCached);
-        uint256 _realFYTokenCached = _fyTokenCached - supply;    // The fyToken cache includes the virtual fyToken, equal to the supply
-        uint256 baseBalance = base.balanceOf(address(this));
-        uint256 fyTokenBalance = fyToken.balanceOf(address(this));
-        uint256 baseAvailable = baseBalance - _baseCached;
+        (uint112 _underlyingCached, uint112 _PTCached) =
+            (underlyingCached, PTCached);
+        uint256 _realPTCached = _PTCached - supply;    // The PT cache includes the virtual PT, equal to the supply
+        uint256 underlyingBalance = underlying.balanceOf(address(this));
+        uint256 PTBalance = PT.balanceOf(address(this));
+        uint256 underlyingAvailable = underlyingBalance - _underlyingCached;
 
         // Check the burn wasn't sandwiched
         require (
-            _realFYTokenCached == 0 || (
-                uint256(_baseCached) * 1e18 / _realFYTokenCached >= minRatio &&
-                uint256(_baseCached) * 1e18 / _realFYTokenCached <= maxRatio
+            _realPTCached == 0 || (
+                uint256(_underlyingCached) * 1e18 / _realPTCached >= minRatio &&
+                uint256(_underlyingCached) * 1e18 / _realPTCached <= maxRatio
             ),
             "Pool: Reserves ratio changed"
         );
 
         // Calculate token amounts
-        if (supply == 0) { // Initialize at 1 pool token minted per base token supplied
-            baseIn = baseAvailable;
-            tokensMinted = baseIn;
-        } else if (_realFYTokenCached == 0) { // Edge case, no fyToken in the Pool after initialization
-            baseIn = baseAvailable;
-            tokensMinted = supply * baseIn / _baseCached;
+        if (supply == 0) { // Initialize at 1 pool token minted per underlying token supplied
+            underlyingIn = underlyingAvailable;
+            tokensMinted = underlyingIn;
+        } else if (_realPTCached == 0) { // Edge case, no PT in the Pool after initialization
+            underlyingIn = underlyingAvailable;
+            tokensMinted = supply * underlyingIn / _underlyingCached;
         } else {
             // There is an optional virtual trade before the mint
-            uint256 baseToSell;
-            if (fyTokenToBuy > 0) {
-                baseToSell = _buyFYTokenPreview(
-                    fyTokenToBuy.u128(),
-                    _baseCached,
-                    _fyTokenCached
+            uint256 underlyingToSell;
+            if (PTToBuy > 0) {
+                underlyingToSell = _buyPTPreview(
+                    PTToBuy.u128(),
+                    _underlyingCached,
+                    _PTCached
                 ); 
             }
 
-            // We use all the available fyTokens, plus a virtual trade if it happened, surplus is in base tokens
-            fyTokenIn = fyTokenBalance - _realFYTokenCached;
-            tokensMinted = (supply * (fyTokenToBuy + fyTokenIn)) / (_realFYTokenCached - fyTokenToBuy);
-            baseIn = baseToSell + ((_baseCached + baseToSell) * tokensMinted) / supply;
-            require(baseAvailable >= baseIn, "Pool: Not enough base token in");
+            // We use all the available PTs, plus a virtual trade if it happened, surplus is in underlying tokens
+            PTIn = PTBalance - _realPTCached;
+            tokensMinted = (supply * (PTToBuy + PTIn)) / (_realPTCached - PTToBuy);
+            underlyingIn = underlyingToSell + ((_underlyingCached + underlyingToSell) * tokensMinted) / supply;
+            require(underlyingAvailable >= underlyingIn, "Pool: Not enough underlying token in");
         }
 
         // Update TWAR
         _update(
-            (_baseCached + baseIn).u128(),
-            (_fyTokenCached + fyTokenIn + tokensMinted).u128(), // Account for the "virtual" fyToken from the new minted LP tokens
-            _baseCached,
-            _fyTokenCached
+            (_underlyingCached + underlyingIn).u128(),
+            (_PTCached + PTIn + tokensMinted).u128(), // Account for the "virtual" PT from the new minted LP tokens
+            _underlyingCached,
+            _PTCached
         );
 
         // Execute mint
         _mint(to, tokensMinted);
 
-        // Return any unused base
-        if (baseAvailable - baseIn > 0) base.safeTransfer(remainder, baseAvailable - baseIn);
+        // Return any unused underlying
+        if (underlyingAvailable - underlyingIn > 0) underlying.safeTransfer(remainder, underlyingAvailable - underlyingIn);
 
-        emit Liquidity(maturity, msg.sender, to, address(0), -(baseIn.i256()), -(fyTokenIn.i256()), tokensMinted.i256());
+        emit Liquidity(maturity, msg.sender, to, address(0), -(underlyingIn.i256()), -(PTIn.i256()), tokensMinted.i256());
     }
 
-    /// @dev Burn liquidity tokens in exchange for base and fyToken.
+    /// @dev Burn liquidity tokens in exchange for underlying and PT.
     /// The liquidity tokens need to be in this contract.
-    /// @param baseTo Wallet receiving the base.
-    /// @param fyTokenTo Wallet receiving the fyToken.
-    /// @param minRatio Minimum ratio of base to fyToken in the pool.
-    /// @param maxRatio Maximum ratio of base to fyToken in the pool.
-    /// @return The amount of tokens burned and returned (tokensBurned, bases, fyTokens).
-    function burn(address baseTo, address fyTokenTo, uint256 minRatio, uint256 maxRatio)
+    /// @param underlyingTo Wallet receiving the underlying.
+    /// @param PTTo Wallet receiving the PT.
+    /// @param minRatio Minimum ratio of underlying to PT in the pool.
+    /// @param maxRatio Maximum ratio of underlying to PT in the pool.
+    /// @return The amount of tokens burned and returned (tokensBurned, underlyings, PTs).
+    function burn(address underlyingTo, address PTTo, uint256 minRatio, uint256 maxRatio)
         external override
         returns (uint256, uint256, uint256)
     {
-        return _burnInternal(baseTo, fyTokenTo, false, minRatio, maxRatio);
+        return _burnInternal(underlyingTo, PTTo, false, minRatio, maxRatio);
     }
 
-    /// @dev Burn liquidity tokens in exchange for base.
+    /// @dev Burn liquidity tokens in exchange for underlying.
     /// The liquidity provider needs to have called `pool.approve`.
-    /// @param to Wallet receiving the base and fyToken.
-    /// @param minRatio Minimum ratio of base to fyToken in the pool.
-    /// @param maxRatio Minimum ratio of base to fyToken in the pool.
+    /// @param to Wallet receiving the underlying and PT.
+    /// @param minRatio Minimum ratio of underlying to PT in the pool.
+    /// @param maxRatio Minimum ratio of underlying to PT in the pool.
     /// @return tokensBurned The amount of lp tokens burned.
-    /// @return baseOut The amount of base tokens returned.
-    function burnForBase(address to, uint256 minRatio, uint256 maxRatio)
+    /// @return underlyingOut The amount of underlying tokens returned.
+    function burnForUnderlying(address to, uint256 minRatio, uint256 maxRatio)
         external override
-        returns (uint256 tokensBurned, uint256 baseOut)
+        returns (uint256 tokensBurned, uint256 underlyingOut)
     {
-        (tokensBurned, baseOut, ) = _burnInternal(to, address(0), true, minRatio, maxRatio);
+        (tokensBurned, underlyingOut, ) = _burnInternal(to, address(0), true, minRatio, maxRatio);
     }
 
 
-    /// @dev Burn liquidity tokens in exchange for base.
+    /// @dev Burn liquidity tokens in exchange for underlying.
     /// The liquidity provider needs to have called `pool.approve`.
-    /// @param baseTo Wallet receiving the base.
-    /// @param fyTokenTo Wallet receiving the fyToken.
-    /// @param tradeToBase Whether the resulting fyToken should be traded for base tokens.
-    /// @param minRatio Minimum ratio of base to fyToken in the pool.
-    /// @param maxRatio Minimum ratio of base to fyToken in the pool.
+    /// @param underlyingTo Wallet receiving the underlying.
+    /// @param PTTo Wallet receiving the PT.
+    /// @param tradeTounderlying Whether the resulting PT should be traded for underlying tokens.
+    /// @param minRatio Minimum ratio of underlying to PT in the pool.
+    /// @param maxRatio Minimum ratio of underlying to PT in the pool.
     /// @return tokensBurned The amount of pool tokens burned.
-    /// @return tokenOut The amount of base tokens returned.
-    /// @return fyTokenOut The amount of fyTokens returned.
-    function _burnInternal(address baseTo, address fyTokenTo, bool tradeToBase, uint256 minRatio, uint256 maxRatio)
+    /// @return tokenOut The amount of underlying tokens returned.
+    /// @return PTOut The amount of PTs returned.
+    function _burnInternal(address underlyingTo, address PTTo, bool tradeTounderlying, uint256 minRatio, uint256 maxRatio)
         internal
-        returns (uint256 tokensBurned, uint256 tokenOut, uint256 fyTokenOut)
+        returns (uint256 tokensBurned, uint256 tokenOut, uint256 PTOut)
     {
         
         // Gather data
         tokensBurned = _balanceOf[address(this)];
         uint256 supply = _totalSupply;
-        (uint112 _baseCached, uint112 _fyTokenCached) =
-            (baseCached, fyTokenCached);
-        uint256 _realFYTokenCached = _fyTokenCached - supply;    // The fyToken cache includes the virtual fyToken, equal to the supply
+        (uint112 _underlyingCached, uint112 _PTCached) =
+            (underlyingCached, PTCached);
+        uint256 _realPTCached = _PTCached - supply;    // The PT cache includes the virtual PT, equal to the supply
 
         // Check the burn wasn't sandwiched
         require (
-            _realFYTokenCached == 0 || (
-                uint256(_baseCached) * 1e18 / _realFYTokenCached >= minRatio &&
-                uint256(_baseCached) * 1e18 / _realFYTokenCached <= maxRatio
+            _realPTCached == 0 || (
+                uint256(_underlyingCached) * 1e18 / _realPTCached >= minRatio &&
+                uint256(_underlyingCached) * 1e18 / _realPTCached <= maxRatio
             ),
             "Pool: Reserves ratio changed"
         );
 
         // Calculate trade
-        tokenOut = (tokensBurned * _baseCached) / supply;
-        fyTokenOut = (tokensBurned * _realFYTokenCached) / supply;
+        tokenOut = (tokensBurned * _underlyingCached) / supply;
+        PTOut = (tokensBurned * _realPTCached) / supply;
 
-        if (tradeToBase) {
-            tokenOut += YieldMath.baseOutForFYTokenIn(                      // This is a virtual sell
-                (_baseCached - tokenOut.u128()) * scaleFactor,              // Cache, minus virtual burn
-                (_fyTokenCached - fyTokenOut.u128()) * scaleFactor,         // Cache, minus virtual burn
-                fyTokenOut.u128() * scaleFactor,                            // Sell the virtual fyToken obtained
+        if (tradeTounderlying) {
+            tokenOut += YieldMath.underlyingOutForPTIn(                      // This is a virtual sell
+                (_underlyingCached - tokenOut.u128()) * scaleFactor,              // Cache, minus virtual burn
+                (_PTCached - PTOut.u128()) * scaleFactor,         // Cache, minus virtual burn
+                PTOut.u128() * scaleFactor,                            // Sell the virtual PT obtained
                 maturity - uint32(block.timestamp),                         // This can't be called after maturity
                 ts,
                 g2
             ) / scaleFactor;
-            fyTokenOut = 0;
+            PTOut = 0;
         }
 
         // Update TWAR
         _update(
-            (_baseCached - tokenOut).u128(),
-            (_fyTokenCached - fyTokenOut - tokensBurned).u128(),
-            _baseCached,
-            _fyTokenCached
+            (_underlyingCached - tokenOut).u128(),
+            (_PTCached - PTOut - tokensBurned).u128(),
+            _underlyingCached,
+            _PTCached
         );
 
         // Transfer assets
         _burn(address(this), tokensBurned);
-        base.safeTransfer(baseTo, tokenOut);
-        if (fyTokenOut > 0) IERC20(address(fyToken)).safeTransfer(fyTokenTo, fyTokenOut);
+        underlying.safeTransfer(underlyingTo, tokenOut);
+        if (PTOut > 0) IERC20(address(PT)).safeTransfer(PTTo, PTOut);
 
-        emit Liquidity(maturity, msg.sender, baseTo, fyTokenTo, tokenOut.i256(), fyTokenOut.i256(), -(tokensBurned.i256()));
+        emit Liquidity(maturity, msg.sender, underlyingTo, PTTo, tokenOut.i256(), PTOut.i256(), -(tokensBurned.i256()));
     }
 
     // ---- Trading ----
 
-    /// @dev Sell base for fyToken.
-    /// The trader needs to have transferred the amount of base to sell to the pool before in the same transaction.
-    /// @param to Wallet receiving the fyToken being bought
-    /// @param min Minimm accepted amount of fyToken
-    /// @return Amount of fyToken that will be deposited on `to` wallet
-    function sellBase(address to, uint128 min)
+    /// @dev Sell underlying for PT.
+    /// The trader needs to have transferred the amount of underlying to sell to the pool before in the same transaction.
+    /// @param to Wallet receiving the PT being bought
+    /// @param min Minimm accepted amount of PT
+    /// @return Amount of PT that will be deposited on `to` wallet
+    function sellUnderlying(address to, uint128 min)
         external override
         returns(uint128)
     {
         // Calculate trade
-        (uint112 _baseCached, uint112 _fyTokenCached) =
-            (baseCached, fyTokenCached);
-        uint112 _baseBalance = _getBaseBalance();
-        uint112 _fyTokenBalance = _getFYTokenBalance();
-        uint128 baseIn = _baseBalance - _baseCached;
-        uint128 fyTokenOut = _sellBasePreview(
-            baseIn,
-            _baseCached,
-            _fyTokenBalance
+        (uint112 _underlyingCached, uint112 _PTCached) =
+            (underlyingCached, PTCached);
+        uint112 _underlyingBalance = _getUnderlyingBalance();
+        uint112 _PTBalance = _getPTBalance();
+        uint128 underlyingIn = _underlyingBalance - _underlyingCached;
+        uint128 PTOut = _sellunderlyingPreview(
+            underlyingIn,
+            _underlyingCached,
+            _PTBalance
         );
 
         // Slippage check
         require(
-            fyTokenOut >= min,
-            "Pool: Not enough fyToken obtained"
+            PTOut >= min,
+            "Pool: Not enough PT obtained"
         );
 
         // Update TWAR
         _update(
-            _baseBalance,
-            _fyTokenBalance - fyTokenOut,
-            _baseCached,
-            _fyTokenCached
+            _underlyingBalance,
+            _PTBalance - PTOut,
+            _underlyingCached,
+            _PTCached
         );
 
         // Transfer assets
-        IERC20(address(fyToken)).safeTransfer(to, fyTokenOut);
+        IERC20(address(PT)).safeTransfer(to, PTOut);
 
-        emit Trade(maturity, msg.sender, to, -(baseIn.i128()), fyTokenOut.i128());
-        return fyTokenOut;
+        emit Trade(maturity, msg.sender, to, -(underlyingIn.i128()), PTOut.i128());
+        return PTOut;
     }
 
-    /// @dev Returns how much fyToken would be obtained by selling `baseIn` base
-    /// @param baseIn Amount of base hypothetically sold.
-    /// @return Amount of fyToken hypothetically bought.
-    function sellBasePreview(uint128 baseIn)
+    /// @dev Returns how much PT would be obtained by selling `underlyingIn` underlying
+    /// @param underlyingIn Amount of underlying hypothetically sold.
+    /// @return Amount of PT hypothetically bought.
+    function sellUnderlyingPreview(uint128 underlyingIn)
         external view override
         returns(uint128)
     {
-        (uint112 _baseCached, uint112 _fyTokenCached) =
-            (baseCached, fyTokenCached);
-        return _sellBasePreview(baseIn, _baseCached, _fyTokenCached);
+        (uint112 _underlyingCached, uint112 _PTCached) =
+            (underlyingCached, PTCached);
+        return _sellunderlyingPreview(underlyingIn, _underlyingCached, _PTCached);
     }
 
-    /// @dev Returns how much fyToken would be obtained by selling `baseIn` base
-    function _sellBasePreview(
-        uint128 baseIn,
-        uint112 baseBalance,
-        uint112 fyTokenBalance
+    /// @dev Returns how much PT would be obtained by selling `underlyingIn` underlying
+    function _sellunderlyingPreview(
+        uint128 underlyingIn,
+        uint112 underlyingBalance,
+        uint112 PTBalance
     )
         private view
         beforeMaturity
         returns(uint128)
     {
-        uint128 fyTokenOut = YieldMath.fyTokenOutForBaseIn(
-            baseBalance * scaleFactor,
-            fyTokenBalance * scaleFactor,
-            baseIn * scaleFactor,
+        uint128 PTOut = YieldMath.PTOutForunderlyingIn(
+            underlyingBalance * scaleFactor,
+            PTBalance * scaleFactor,
+            underlyingIn * scaleFactor,
             maturity - uint32(block.timestamp),             // This can't be called after maturity
             ts,
             g1
         ) / scaleFactor;
 
         require(
-            fyTokenBalance - fyTokenOut >= baseBalance + baseIn,
-            "Pool: fyToken balance too low"
+            PTBalance - PTOut >= underlyingBalance + underlyingIn,
+            "Pool: PT balance too low"
         );
 
-        return fyTokenOut;
+        return PTOut;
     }
 
-    /// @dev Buy base for fyToken
-    /// The trader needs to have called `fyToken.approve`
-    /// @param to Wallet receiving the base being bought
-    /// @param tokenOut Amount of base being bought that will be deposited in `to` wallet
-    /// @param max Maximum amount of fyToken that will be paid for the trade
-    /// @return Amount of fyToken that will be taken from caller
-    function buyBase(address to, uint128 tokenOut, uint128 max)
+    /// @dev Buy underlying for PT
+    /// The trader needs to have called `PT.approve`
+    /// @param to Wallet receiving the underlying being bought
+    /// @param tokenOut Amount of underlying being bought that will be deposited in `to` wallet
+    /// @param max Maximum amount of PT that will be paid for the trade
+    /// @return Amount of PT that will be taken from caller
+    function buyUnderlying(address to, uint128 tokenOut, uint128 max)
         external override
         returns(uint128)
     {
         // Calculate trade
-        uint128 fyTokenBalance = _getFYTokenBalance();
-        (uint112 _baseCached, uint112 _fyTokenCached) =
-            (baseCached, fyTokenCached);
-        uint128 fyTokenIn = _buyBasePreview(
+        uint128 PTBalance = _getPTBalance();
+        (uint112 _underlyingCached, uint112 _PTCached) =
+            (underlyingCached, PTCached);
+        uint128 PTIn = _buyunderlyingPreview(
             tokenOut,
-            _baseCached,
-            _fyTokenCached
+            _underlyingCached,
+            _PTCached
         );
         require(
-            fyTokenBalance - _fyTokenCached >= fyTokenIn,
-            "Pool: Not enough fyToken in"
+            PTBalance - _PTCached >= PTIn,
+            "Pool: Not enough PT in"
         );
 
         // Slippage check
         require(
-            fyTokenIn <= max,
-            "Pool: Too much fyToken in"
+            PTIn <= max,
+            "Pool: Too much PT in"
         );
 
         // Update TWAR
         _update(
-            _baseCached - tokenOut,
-            _fyTokenCached + fyTokenIn,
-            _baseCached,
-            _fyTokenCached
+            _underlyingCached - tokenOut,
+            _PTCached + PTIn,
+            _underlyingCached,
+            _PTCached
         );
 
         // Transfer assets
-        base.safeTransfer(to, tokenOut);
+        underlying.safeTransfer(to, tokenOut);
 
-        emit Trade(maturity, msg.sender, to, tokenOut.i128(), -(fyTokenIn.i128()));
-        return fyTokenIn;
+        emit Trade(maturity, msg.sender, to, tokenOut.i128(), -(PTIn.i128()));
+        return PTIn;
     }
 
-    /// @dev Returns how much fyToken would be required to buy `tokenOut` base.
-    /// @param tokenOut Amount of base hypothetically desired.
-    /// @return Amount of fyToken hypothetically required.
-    function buyBasePreview(uint128 tokenOut)
+    /// @dev Returns how much PT would be required to buy `tokenOut` underlying.
+    /// @param tokenOut Amount of underlying hypothetically desired.
+    /// @return Amount of PT hypothetically required.
+    function buyUnderlyingPreview(uint128 tokenOut)
         external view override
         returns(uint128)
     {
-        (uint112 _baseCached, uint112 _fyTokenCached) =
-            (baseCached, fyTokenCached);
-        return _buyBasePreview(tokenOut, _baseCached, _fyTokenCached);
+        (uint112 _underlyingCached, uint112 _PTCached) =
+            (underlyingCached, PTCached);
+        return _buyunderlyingPreview(tokenOut, _underlyingCached, _PTCached);
     }
 
-    /// @dev Returns how much fyToken would be required to buy `tokenOut` base.
-    function _buyBasePreview(
+    /// @dev Returns how much PT would be required to buy `tokenOut` underlying.
+    function _buyunderlyingPreview(
         uint128 tokenOut,
-        uint112 baseBalance,
-        uint112 fyTokenBalance
+        uint112 underlyingBalance,
+        uint112 PTBalance
     )
         private view
         beforeMaturity
         returns(uint128)
     {
-        return YieldMath.fyTokenInForBaseOut(
-            baseBalance * scaleFactor,
-            fyTokenBalance * scaleFactor,
+        return YieldMath.PTInForunderlyingOut(
+            underlyingBalance * scaleFactor,
+            PTBalance * scaleFactor,
             tokenOut * scaleFactor,
             maturity - uint32(block.timestamp),             // This can't be called after maturity
             ts,
@@ -519,161 +519,161 @@ contract Pool is IPool, ERC20Permit {
         ) / scaleFactor;
     }
 
-    /// @dev Sell fyToken for base
-    /// The trader needs to have transferred the amount of fyToken to sell to the pool before in the same transaction.
-    /// @param to Wallet receiving the base being bought
-    /// @param min Minimm accepted amount of base
-    /// @return Amount of base that will be deposited on `to` wallet
-    function sellFYToken(address to, uint128 min)
+    /// @dev Sell PT for underlying
+    /// The trader needs to have transferred the amount of PT to sell to the pool before in the same transaction.
+    /// @param to Wallet receiving the underlying being bought
+    /// @param min Minimm accepted amount of underlying
+    /// @return Amount of underlying that will be deposited on `to` wallet
+    function sellPT(address to, uint128 min)
         external override
         returns(uint128)
     {
         // Calculate trade
-        (uint112 _baseCached, uint112 _fyTokenCached) =
-            (baseCached, fyTokenCached);
-        uint112 _fyTokenBalance = _getFYTokenBalance();
-        uint112 _baseBalance = _getBaseBalance();
-        uint128 fyTokenIn = _fyTokenBalance - _fyTokenCached;
-        uint128 baseOut = _sellFYTokenPreview(
-            fyTokenIn,
-            _baseCached,
-            _fyTokenCached
+        (uint112 _underlyingCached, uint112 _PTCached) =
+            (underlyingCached, PTCached);
+        uint112 _PTBalance = _getPTBalance();
+        uint112 _underlyingBalance = _getUnderlyingBalance();
+        uint128 PTIn = _PTBalance - _PTCached;
+        uint128 underlyingOut = _sellPTPreview(
+            PTIn,
+            _underlyingCached,
+            _PTCached
         );
 
         // Slippage check
         require(
-            baseOut >= min,
-            "Pool: Not enough base obtained"
+            underlyingOut >= min,
+            "Pool: Not enough underlying obtained"
         );
 
         // Update TWAR
         _update(
-            _baseBalance - baseOut,
-            _fyTokenBalance,
-            _baseCached,
-            _fyTokenCached
+            _underlyingBalance - underlyingOut,
+            _PTBalance,
+            _underlyingCached,
+            _PTCached
         );
 
         // Transfer assets
-        base.safeTransfer(to, baseOut);
+        underlying.safeTransfer(to, underlyingOut);
 
-        emit Trade(maturity, msg.sender, to, baseOut.i128(), -(fyTokenIn.i128()));
-        return baseOut;
+        emit Trade(maturity, msg.sender, to, underlyingOut.i128(), -(PTIn.i128()));
+        return underlyingOut;
     }
 
-    /// @dev Returns how much base would be obtained by selling `fyTokenIn` fyToken.
-    /// @param fyTokenIn Amount of fyToken hypothetically sold.
-    /// @return Amount of base hypothetically bought.
-    function sellFYTokenPreview(uint128 fyTokenIn)
+    /// @dev Returns how much underlying would be obtained by selling `PTIn` PT.
+    /// @param PTIn Amount of PT hypothetically sold.
+    /// @return Amount of underlying hypothetically bought.
+    function sellPTPreview(uint128 PTIn)
         external view override
         returns(uint128)
     {
-        (uint112 _baseCached, uint112 _fyTokenCached) =
-            (baseCached, fyTokenCached);
-        return _sellFYTokenPreview(fyTokenIn, _baseCached, _fyTokenCached);
+        (uint112 _underlyingCached, uint112 _PTCached) =
+            (underlyingCached, PTCached);
+        return _sellPTPreview(PTIn, _underlyingCached, _PTCached);
     }
 
-    /// @dev Returns how much base would be obtained by selling `fyTokenIn` fyToken.
-    function _sellFYTokenPreview(
-        uint128 fyTokenIn,
-        uint112 baseBalance,
-        uint112 fyTokenBalance
+    /// @dev Returns how much underlying would be obtained by selling `PTIn` PT.
+    function _sellPTPreview(
+        uint128 PTIn,
+        uint112 underlyingBalance,
+        uint112 PTBalance
     )
         private view
         beforeMaturity
         returns(uint128)
     {
-        return YieldMath.baseOutForFYTokenIn(
-            baseBalance * scaleFactor,
-            fyTokenBalance * scaleFactor,
-            fyTokenIn * scaleFactor,
+        return YieldMath.underlyingOutForPTIn(
+            underlyingBalance * scaleFactor,
+            PTBalance * scaleFactor,
+            PTIn * scaleFactor,
             maturity - uint32(block.timestamp),             // This can't be called after maturity
             ts,
             g2
         ) / scaleFactor;
     }
 
-    /// @dev Buy fyToken for base
-    /// The trader needs to have called `base.approve`
-    /// @param to Wallet receiving the fyToken being bought
-    /// @param fyTokenOut Amount of fyToken being bought that will be deposited in `to` wallet
-    /// @param max Maximum amount of base token that will be paid for the trade
-    /// @return Amount of base that will be taken from caller's wallet
-    function buyFYToken(address to, uint128 fyTokenOut, uint128 max)
+    /// @dev Buy PT for underlying
+    /// The trader needs to have called `underlying.approve`
+    /// @param to Wallet receiving the PT being bought
+    /// @param PTOut Amount of PT being bought that will be deposited in `to` wallet
+    /// @param max Maximum amount of underlying token that will be paid for the trade
+    /// @return Amount of underlying that will be taken from caller's wallet
+    function buyPT(address to, uint128 PTOut, uint128 max)
         external override
         returns(uint128)
     {
         // Calculate trade
-        uint128 baseBalance = _getBaseBalance();
-        (uint112 _baseCached, uint112 _fyTokenCached) =
-            (baseCached, fyTokenCached);
-        uint128 baseIn = _buyFYTokenPreview(
-            fyTokenOut,
-            _baseCached,
-            _fyTokenCached
+        uint128 underlyingBalance = _getUnderlyingBalance();
+        (uint112 _underlyingCached, uint112 _PTCached) =
+            (underlyingCached, PTCached);
+        uint128 underlyingIn = _buyPTPreview(
+            PTOut,
+            _underlyingCached,
+            _PTCached
         );
         require(
-            baseBalance - _baseCached >= baseIn,
-            "Pool: Not enough base token in"
+            underlyingBalance - _underlyingCached >= underlyingIn,
+            "Pool: Not enough underlying token in"
         );
 
         // Slippage check
         require(
-            baseIn <= max,
-            "Pool: Too much base token in"
+            underlyingIn <= max,
+            "Pool: Too much underlying token in"
         );
 
         // Update TWAR
         _update(
-            _baseCached + baseIn,
-            _fyTokenCached - fyTokenOut,
-            _baseCached,
-            _fyTokenCached
+            _underlyingCached + underlyingIn,
+            _PTCached - PTOut,
+            _underlyingCached,
+            _PTCached
         );
 
         // Transfer assets
-        IERC20(address(fyToken)).safeTransfer(to, fyTokenOut);
+        IERC20(address(PT)).safeTransfer(to, PTOut);
 
-        emit Trade(maturity, msg.sender, to, -(baseIn.i128()), fyTokenOut.i128());
-        return baseIn;
+        emit Trade(maturity, msg.sender, to, -(underlyingIn.i128()), PTOut.i128());
+        return underlyingIn;
     }
 
-    /// @dev Returns how much base would be required to buy `fyTokenOut` fyToken.
-    /// @param fyTokenOut Amount of fyToken hypothetically desired.
-    /// @return Amount of base hypothetically required.
-    function buyFYTokenPreview(uint128 fyTokenOut)
+    /// @dev Returns how much underlying would be required to buy `PTOut` PT.
+    /// @param PTOut Amount of PT hypothetically desired.
+    /// @return Amount of underlying hypothetically required.
+    function buyPTPreview(uint128 PTOut)
         external view override
         returns(uint128)
     {
-        (uint112 _baseCached, uint112 _fyTokenCached) =
-            (baseCached, fyTokenCached);
-        return _buyFYTokenPreview(fyTokenOut, _baseCached, _fyTokenCached);
+        (uint112 _underlyingCached, uint112 _PTCached) =
+            (underlyingCached, PTCached);
+        return _buyPTPreview(PTOut, _underlyingCached, _PTCached);
     }
 
-    /// @dev Returns how much base would be required to buy `fyTokenOut` fyToken.
-    function _buyFYTokenPreview(
-        uint128 fyTokenOut,
-        uint128 baseBalance,
-        uint128 fyTokenBalance
+    /// @dev Returns how much underlying would be required to buy `PTOut` PT.
+    function _buyPTPreview(
+        uint128 PTOut,
+        uint128 underlyingBalance,
+        uint128 PTBalance
     )
         private view
         beforeMaturity
         returns(uint128)
     {
-        uint128 baseIn = YieldMath.baseInForFYTokenOut(
-            baseBalance * scaleFactor,
-            fyTokenBalance * scaleFactor,
-            fyTokenOut * scaleFactor,
+        uint128 underlyingIn = YieldMath.underlyingInForPTOut(
+            underlyingBalance * scaleFactor,
+            PTBalance * scaleFactor,
+            PTOut * scaleFactor,
             maturity - uint32(block.timestamp),             // This can't be called after maturity
             ts,
             g1
         ) / scaleFactor;
 
         require(
-            fyTokenBalance - fyTokenOut >= baseBalance + baseIn,
-            "Pool: fyToken balance too low"
+            PTBalance - PTOut >= underlyingBalance + underlyingIn,
+            "Pool: PT balance too low"
         );
 
-        return baseIn;
+        return underlyingIn;
     }
 }

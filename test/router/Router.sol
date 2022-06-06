@@ -18,37 +18,37 @@ contract Router {
 
     mapping (address => mapping (uint256 => IPool)) public pools;
 
-    // a = the amount of FYToken sold
-    function sellFYToken(address u, uint256 m, uint128 a) external unpaused() returns (uint128 returned) {
+    // a = the amount of PT sold
+    function sellPT(address u, uint256 m, uint128 a) external unpaused() returns (uint128 returned) {
         IPool pool = IPool(pools[u][m]);
-        SafeTransferLib.safeTransfer(ERC20(address(pool.fyToken())), address(pool), a);
-        return pool.sellFYToken(msg.sender, pool.sellFYTokenPreview(a));
+        SafeTransferLib.safeTransfer(ERC20(address(pool.PT())), address(pool), a);
+        return pool.sellPT(msg.sender, pool.sellPTPreview(a));
     }
 
-    // a = the amount of FYToken bought
-    function buyFYToken(address u, uint256 m, uint128 a) external unpaused() returns (uint128 returned) {
+    // a = the amount of PT bought
+    function buyPT(address u, uint256 m, uint128 a) external unpaused() returns (uint128 returned) {
         IPool pool = IPool(pools[u][m]);
-        SafeTransferLib.safeTransfer(ERC20(address(pool.base())), address(pool), a);
-        return pool.buyFYToken(msg.sender, pool.buyFYTokenPreview(a), a);
+        SafeTransferLib.safeTransfer(ERC20(address(pool.underlying())), address(pool), a);
+        return pool.buyPT(msg.sender, pool.buyPTPreview(a), a);
     }
 
     // a = the amount of underlying sold
-    function sellBase(address u, uint256 m, uint128 a) external unpaused() returns (uint128 returned) {
+    function sellunderlying(address u, uint256 m, uint128 a) external unpaused() returns (uint128 returned) {
         IPool pool = IPool(pools[u][m]);
-        SafeTransferLib.safeTransfer(ERC20(address(pool.base())), address(pool), a);
-        return pool.sellBase(msg.sender, pool.sellBasePreview(a));
+        SafeTransferLib.safeTransfer(ERC20(address(pool.underlying())), address(pool), a);
+        return pool.sellunderlying(msg.sender, pool.sellunderlyingPreview(a));
     }
 
-    // a = the amount of base bought
-    function buyBase(address u, uint256 m, uint128 a) external unpaused() returns (uint128 returned) {
+    // a = the amount of underlying bought
+    function buyunderlying(address u, uint256 m, uint128 a) external unpaused() returns (uint128 returned) {
         IPool pool = IPool(pools[u][m]);
-        SafeTransferLib.safeTransfer(ERC20(address(pool.fyToken())), address(pool), a);
-        return pool.buyBase(msg.sender, pool.buyBasePreview(a), a);
+        SafeTransferLib.safeTransfer(ERC20(address(pool.PT())), address(pool), a);
+        return pool.buyunderlying(msg.sender, pool.buyunderlyingPreview(a), a);
     }   
 
     function createPool(address u, uint256 m, address i) external authorized(marketplace) returns (address p) {
-        ////////////////////////////////////////////Secs in 10 yr//sell base fee co-eff//sell fyToken co-eff
-        Pool pool = new Pool(IERC20(u), IFYToken(i), 23381681843, 13835058055282163712, 24595658764946068821);
+        ////////////////////////////////////////////Secs in 10 yr//sell underlying fee co-eff//sell PT co-eff
+        Pool pool = new Pool(IERC20(u), IPT(i), 23381681843, 13835058055282163712, 24595658764946068821);
         pools[u][m] = pool;
         return (address(pool));
     }
