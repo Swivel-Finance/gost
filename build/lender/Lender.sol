@@ -65,11 +65,11 @@ contract Lender {
   /// @return bool true if the mint was successful, false otherwise
   function mint(uint8 p, address u, uint256 m, uint256 a) public returns (bool) {
     //use market interface to fetch the market for the given market pair
-    address[9] memory market = IMarketPlace(marketPlace).markets(u, m);
+    address principal = IMarketPlace(marketPlace).markets(u, m, p);
     //use safe transfer lib and ERC interface...
-    Safe.transferFrom(IErc20(market[p]), msg.sender, address(this), a);
+    Safe.transferFrom(IErc20(principal), msg.sender, address(this), a);
     //use zctoken interface...
-    IZcToken(market[uint256(MarketPlace.Principals.Illuminate)]).mint(msg.sender, a);
+    IZcToken(getZcToken(u, m)).mint(msg.sender, a);
 
     emit Mint(p, u, m, a);
 
@@ -98,9 +98,8 @@ contract Lender {
 
     // this step is only needed when the lend is for yield
     if (p == uint8(MarketPlace.Principals.Yield)) {
-      address[9] memory market = IMarketPlace(marketPlace).markets(u, m); 
       // TODO should we require on this?
-      IZcToken(market[uint256(MarketPlace.Principals.Illuminate)]).mint(msg.sender, returned);
+      IZcToken(getZcToken(u, m)).mint(msg.sender, returned);
     }
 
     emit Lend(p, u, m, returned);
@@ -169,11 +168,11 @@ contract Lender {
   /// @param d deadline is a timestamp by which the swap must be executed deadline is a timestamp by which the swap must be executed
   function lend(uint8 p, address u, uint256 m, address e, bytes32 i, uint256 a, uint256 r, uint256 d) public returns (uint256) {
     // Get the principal token for this market for element
-    IElementToken token = IElementToken(IMarketPlace(marketPlace).markets(u, m)[p]);
+    address principal = IMarketPlace(marketPlace).markets(u, m, p);
 
     // the element token must match the market pair
-    require(token.underlying() == u, '');
-    require(token.unlockTimestamp() == m, '');
+    require(IElementToken(principal).underlying() == u, '');
+    require(IElementToken(principal).unlockTimestamp() == m, '');
 
     // Transfer underlying token from user to illuminate
     Safe.transferFrom(IErc20(u), msg.sender, address(this), a);
@@ -195,9 +194,8 @@ contract Lender {
       amount: a - calculateFee(a),
       kind: Element.SwapKind.In,
       assetIn: Any(u),
-      assetOut: Any(IMarketPlace(marketPlace).markets(u, m)[p])
+      assetOut: Any(principal)
     });
-
 
     // Conduct the swap on element
     uint256 purchased = IElement(e).swap(swap, fund, r, d);
@@ -216,8 +214,7 @@ contract Lender {
   /// @return uint256 the amount of principal tokens lent out
   function lend(uint8 p, address u, uint256 m, uint256 a, uint256 r, uint256 d) public returns (uint256) {
       // Instantiate market and tokens
-      address[9] memory markets = IMarketPlace(marketPlace).markets(u, m); 
-      address principal = markets[p];
+      address principal = IMarketPlace(marketPlace).markets(u, m, p); 
       IPendleToken token = IPendleToken(principal);
 
       // confirm that we are in the correct market
@@ -238,7 +235,7 @@ contract Lender {
       uint256 returned = IPendle(pendleAddr).swapExactTokensForTokens(a - calculateFee(a), r, path, address(this), d)[0];
 
       // Mint Illuminate zero coupons
-      address illuminateToken = markets[uint8(MarketPlace.Principals.Illuminate)];
+      address illuminateToken = getZcToken(u, m);
       IZcToken(illuminateToken).mint(msg.sender, returned);
 
       emit Lend(p, u, m, returned);
@@ -259,7 +256,7 @@ contract Lender {
   /// @return uint256 the amount of principal tokens lent out
   function lend(uint8 p, address u, uint256 m, uint256 a, uint256 r, address x, address t, uint256 d) public returns (uint256) {
       // Instantiate market and tokens
-      address principal = IMarketPlace(marketPlace).markets(u, m)[p];
+      address principal = IMarketPlace(marketPlace).markets(u, m, p);
       require(ITempus(principal).yieldBearingToken() == IErc20Metadata(u), 'tempus underlying != underlying');
       require(ITempus(principal).maturityTime() == m, 'tempus maturity != maturity');
 
@@ -273,7 +270,7 @@ contract Lender {
       fees[u] += calculateFee(a);
 
       // Swap on the Tempus Router using the provided market and params
-      IZcToken illuminateToken = IZcToken(IMarketPlace(marketPlace).markets(u, m)[uint256(MarketPlace.Principals.Illuminate)]);
+      IZcToken illuminateToken = IZcToken(getZcToken(u, m));
       uint256 returned = ITempus(tempusAddr).depositAndFix(Any(x), Any(t), a - calculateFee(a), true, r, d) - illuminateToken.balanceOf(address(this));
 
       // Mint Illuminate zero coupons
@@ -296,7 +293,7 @@ contract Lender {
   /// @return uint256 the amount of principal tokens lent out
   function lend(uint8 p, address u, uint256 m, address x, address s, uint128 a, uint256 r) public returns (uint256) {
     // Get the principal token for this market for this market
-    ISenseToken token = ISenseToken(IMarketPlace(marketPlace).markets(u, m)[p]);
+    ISenseToken token = ISenseToken(IMarketPlace(marketPlace).markets(u, m, p));
 
     // Verify that the underlying matches up
     require(token.underlying() == u, "sense underlying != underlying");
@@ -317,7 +314,7 @@ contract Lender {
     uint256 returned = ISense(x).swapUnderlyingForPTs(s, m, lent, r);
 
     // Get the address of the ZC token for this market
-    IZcToken illuminateToken = IZcToken(IMarketPlace(marketPlace).markets(u, m)[uint256(MarketPlace.Principals.Illuminate)]);
+    IZcToken illuminateToken = IZcToken(getZcToken(u, m));
     
     // Mint the illuminate tokens based on the returned amount
     illuminateToken.mint(msg.sender, returned);
@@ -338,8 +335,8 @@ contract Lender {
   /// @return uint256 the amount of principal tokens lent out
   function lend(uint8 p, address u, uint256 m, uint256 a, uint256 r, address pool, uint256 i) public returns (uint256) {
       // Instantiate market and tokens
-      address[9] memory markets = IMarketPlace(marketPlace).markets(u, m);
-      require(IAPWineToken(markets[p]).getPTAddress() == u, "apwine principle != principle");
+      address principal = IMarketPlace(marketPlace).markets(u, m, p);
+      require(IAPWineToken(principal).getPTAddress() == u, "apwine principle != principle");
 
       // Transfer funds from user to Illuminate    
       Safe.transferFrom(IErc20(u), msg.sender, address(this), a);   
@@ -357,7 +354,7 @@ contract Lender {
       uint256 returned = IAPWineRouter(pool).swapExactAmountIn(i, 1, lent, 0, r, address(this));
 
       // Mint Illuminate zero coupons
-      IZcToken(markets[uint256(MarketPlace.Principals.Illuminate)]).mint(msg.sender, returned);
+      IZcToken(getZcToken(u, m)).mint(msg.sender, returned);
 
       emit Lend(p, u, m, returned);
 
@@ -372,8 +369,7 @@ contract Lender {
   /// @return uint256 the amount of principal tokens lent out
   function lend(uint8 p, address u, uint256 m, uint256 a) public returns (uint256) {
       // Instantiate market and tokens
-      address[9] memory markets = IMarketPlace(marketPlace).markets(u, m); 
-      address principal = markets[p];
+      address principal = IMarketPlace(marketPlace).markets(u, m, p);
 
       INotional token = INotional(principal); 
       
@@ -395,7 +391,7 @@ contract Lender {
       uint256 returned = token.deposit(a - fee, address(this));
 
       // Mint Illuminate zero coupons
-      address illuminateToken = markets[uint8(MarketPlace.Principals.Illuminate)];
+      address illuminateToken = getZcToken(u, m);
       IZcToken(illuminateToken).mint(msg.sender, returned);
 
       emit Lend(p, u, m, returned);
@@ -452,6 +448,14 @@ contract Lender {
   /// @return uint256 The total for for the given amount
   function calculateFee(uint256 a) internal view returns (uint256) {
     return feenominator > 0 ? a / feenominator : 0;
+  }
+
+  /// @notice retrieves the zc token for the given market
+  /// @param u address of the underlying
+  /// @param m uint256 representing the maturity of the market
+  /// @return address of the zc token for the market
+  function getZcToken(address u, uint256 m) internal returns (address) {
+    return IMarketPlace(marketPlace).markets(u, m, 0);
   }
 
   modifier authorized(address a) {
