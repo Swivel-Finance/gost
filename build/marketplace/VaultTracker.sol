@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: UNLICENSED
 
-pragma solidity 0.8.4;
+pragma solidity 0.8.13;
 
-import "./Interfaces.sol";
+import './Interfaces.sol';
 
 contract VaultTracker {
   struct Vault {
@@ -32,7 +32,7 @@ contract VaultTracker {
     vaults[s] = Vault({
       notional: 0,
       redeemable: 0,
-      exchangeRate: CErc20(c).exchangeRateCurrent()
+      exchangeRate: ICErc20(c).exchangeRateCurrent()
     });
   }
 
@@ -40,7 +40,7 @@ contract VaultTracker {
   /// @param o Address that owns a vault
   /// @param a Amount of notional added
   function addNotional(address o, uint256 a) external authorized(admin) returns (bool) {
-    uint256 exchangeRate = CErc20(cTokenAddr).exchangeRateCurrent();
+    uint256 exchangeRate = ICErc20(cTokenAddr).exchangeRateCurrent();
 
     Vault memory vlt = vaults[o];
 
@@ -79,7 +79,7 @@ contract VaultTracker {
     require(vlt.notional >= a, "amount exceeds vault balance");
 
     uint256 yield;
-    uint256 exchangeRate = CErc20(cTokenAddr).exchangeRateCurrent();
+    uint256 exchangeRate = ICErc20(cTokenAddr).exchangeRateCurrent();
 
     // if market has matured, calculate marginal interest between the maturity rate and previous position exchange rate
     // otherwise, calculate marginal exchange rate between current and previous exchange rate.
@@ -109,7 +109,7 @@ contract VaultTracker {
 
     uint256 redeemable = vlt.redeemable;
     uint256 yield;
-    uint256 exchangeRate = CErc20(cTokenAddr).exchangeRateCurrent();
+    uint256 exchangeRate = ICErc20(cTokenAddr).exchangeRateCurrent();
 
     // if market has matured, calculate marginal interest between the maturity rate and previous position exchange rate
     // otherwise, calculate marginal exchange rate between current and previous exchange rate.
@@ -151,7 +151,7 @@ contract VaultTracker {
     require(from.notional >= a, "amount exceeds available balance");
 
     uint256 yield;
-    uint256 exchangeRate = CErc20(cTokenAddr).exchangeRateCurrent();
+    uint256 exchangeRate = ICErc20(cTokenAddr).exchangeRateCurrent();
 
     // if market has matured, calculate marginal interest between the maturity rate and previous position exchange rate
     // otherwise, calculate marginal exchange rate between current and previous exchange rate.
@@ -205,7 +205,7 @@ contract VaultTracker {
     // remove notional from its owner
     oVault.notional -= a;
 
-    uint256 exchangeRate = CErc20(cTokenAddr).exchangeRateCurrent();
+    uint256 exchangeRate = ICErc20(cTokenAddr).exchangeRateCurrent();
     uint256 yield;
 
     // check if exchangeRate has been stored already this block. If not, calculate marginal interest + store exchangeRate

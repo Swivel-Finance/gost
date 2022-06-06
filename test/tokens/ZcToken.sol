@@ -3,7 +3,7 @@
 // NOTE: whomever decided methods which are the implementation of a stated interface
 //       need to be labeled 'override' should to be publicly flogged.
 
-pragma solidity 0.8.4;
+pragma solidity 0.8.13;
 
 import './Erc2612.sol';
 import './IZcToken.sol';

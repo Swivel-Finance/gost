@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: UNLICENSED
 
-pragma solidity 0.8.4;
+pragma solidity 0.8.13;
 
 import './Interfaces.sol';
 import './ZcToken.sol';
@@ -9,8 +9,8 @@ import './VaultTracker.sol';
 contract MarketPlace {
   struct Market {
     address cTokenAddr;
-    address zcTokenAddr;
-    address vaultAddr;
+    address zcToken;
+    address vaultTracker;
     uint256 maturityRate;
   }
 
@@ -62,10 +62,10 @@ contract MarketPlace {
     address swivelAddr = swivel;
     require(swivelAddr != address(0), 'swivel contract address not set');
 
-    address underAddr = CErc20(c).underlying();
-    require(markets[underAddr][m].vaultAddr == address(0), 'market already exists');
+    address underAddr = ICErc20(c).underlying();
+    require(markets[underAddr][m].vaultTracker == address(0), 'market already exists');
 
-    uint8 decimals = Erc20(underAddr).decimals();
+    uint8 decimals = IErc20(underAddr).decimals();
     address zcTokenAddr = address(new ZcToken(underAddr, m, n, s, decimals));
     address vaultAddr = address(new VaultTracker(m, c, swivelAddr));
     markets[underAddr][m] = Market(c, zcTokenAddr, vaultAddr, 0);
@@ -85,10 +85,10 @@ contract MarketPlace {
     require(block.timestamp >= m, "maturity not reached");
 
     // set the base maturity cToken exchange rate at maturity to the current cToken exchange rate
-    uint256 currentExchangeRate = CErc20(mkt.cTokenAddr).exchangeRateCurrent();
+    uint256 currentExchangeRate = ICErc20(mkt.cTokenAddr).exchangeRateCurrent();
     markets[u][m].maturityRate = currentExchangeRate;
 
-    require(VaultTracker(mkt.vaultAddr).matureVault(currentExchangeRate), 'mature vault failed');
+    require(VaultTracker(mkt.vaultTracker).matureVault(currentExchangeRate), 'mature vault failed');
 
     emit Mature(u, m, currentExchangeRate, block.timestamp);
 
@@ -102,8 +102,8 @@ contract MarketPlace {
   /// @param a Amount of notional being added
   function mintZcTokenAddingNotional(address u, uint256 m, address t, uint256 a) external authorized(swivel) unpaused() returns (bool) {
     Market memory mkt = markets[u][m];
-    require(ZcToken(mkt.zcTokenAddr).mint(t, a), 'mint zcToken failed');
-    require(VaultTracker(mkt.vaultAddr).addNotional(t, a), 'add notional failed');
+    require(ZcToken(mkt.zcToken).mint(t, a), 'mint zcToken failed');
+    require(VaultTracker(mkt.vaultTracker).addNotional(t, a), 'add notional failed');
     
     return true;
   }
@@ -115,8 +115,8 @@ contract MarketPlace {
   /// @param a Amount of zcTokens being burned
   function burnZcTokenRemovingNotional(address u, uint256 m, address t, uint256 a) external authorized(swivel) unpaused() returns(bool) {
     Market memory mkt = markets[u][m];
-    require(ZcToken(mkt.zcTokenAddr).burn(t, a), 'burn failed');
-    require(VaultTracker(mkt.vaultAddr).removeNotional(t, a), 'remove notional failed');
+    require(ZcToken(mkt.zcToken).burn(t, a), 'burn failed');
+    require(VaultTracker(mkt.vaultTracker).removeNotional(t, a), 'remove notional failed');
     
     return true;
   }
@@ -135,7 +135,7 @@ contract MarketPlace {
     }
 
     // burn user's zcTokens
-    require(ZcToken(mkt.zcTokenAddr).burn(t, a), 'could not burn');
+    require(ZcToken(mkt.zcToken).burn(t, a), 'could not burn');
 
     emit RedeemZcToken(u, m, t, a);
 
@@ -153,7 +153,7 @@ contract MarketPlace {
   /// @param t Address of the redeeming user
   function redeemVaultInterest(address u, uint256 m, address t) external authorized(swivel) unpaused() returns (uint256) {
     // call to the floating market contract to release the position and calculate the interest generated
-    uint256 interest = VaultTracker(markets[u][m].vaultAddr).redeemInterest(t);
+    uint256 interest = VaultTracker(markets[u][m].vaultTracker).redeemInterest(t);
 
     emit RedeemVaultInterest(u, m, t);
 
@@ -166,7 +166,7 @@ contract MarketPlace {
   /// @param a Amount of zcTokens being redeemed
   function calculateReturn(address u, uint256 m, uint256 a) internal returns (uint256) {
     Market memory mkt = markets[u][m];
-    uint256 rate = CErc20(mkt.cTokenAddr).exchangeRateCurrent();
+    uint256 rate = ICErc20(mkt.cTokenAddr).exchangeRateCurrent();
 
     return (a * rate) / mkt.maturityRate;
   }
@@ -187,8 +187,8 @@ contract MarketPlace {
   /// @param a Amount of zcToken minted and notional added
   function custodialInitiate(address u, uint256 m, address z, address n, uint256 a) external authorized(swivel) unpaused() returns (bool) {
     Market memory mkt = markets[u][m];
-    require(ZcToken(mkt.zcTokenAddr).mint(z, a), 'mint failed');
-    require(VaultTracker(mkt.vaultAddr).addNotional(n, a), 'add notional failed');
+    require(ZcToken(mkt.zcToken).mint(z, a), 'mint failed');
+    require(VaultTracker(mkt.vaultTracker).addNotional(n, a), 'add notional failed');
     emit CustodialInitiate(u, m, z, n, a);
     return true;
   }
@@ -202,8 +202,8 @@ contract MarketPlace {
   /// @param a Amount of zcToken burned and notional removed
   function custodialExit(address u, uint256 m, address z, address n, uint256 a) external authorized(swivel) unpaused() returns (bool) {
     Market memory mkt = markets[u][m];
-    require(ZcToken(mkt.zcTokenAddr).burn(z, a), 'burn failed');
-    require(VaultTracker(mkt.vaultAddr).removeNotional(n, a), 'remove notional failed');
+    require(ZcToken(mkt.zcToken).burn(z, a), 'burn failed');
+    require(VaultTracker(mkt.vaultTracker).removeNotional(n, a), 'remove notional failed');
     emit CustodialExit(u, m, z, n, a);
     return true;
   }
@@ -217,8 +217,8 @@ contract MarketPlace {
   /// @param a Amount of zcToken transfer
   function p2pZcTokenExchange(address u, uint256 m, address f, address t, uint256 a) external authorized(swivel) unpaused() returns (bool) {
     Market memory mkt = markets[u][m];
-    require(ZcToken(mkt.zcTokenAddr).burn(f, a), 'zcToken burn failed');
-    require(ZcToken(mkt.zcTokenAddr).mint(t, a), 'zcToken mint failed');
+    require(ZcToken(mkt.zcToken).burn(f, a), 'zcToken burn failed');
+    require(ZcToken(mkt.zcToken).mint(t, a), 'zcToken mint failed');
     emit P2pZcTokenExchange(u, m, f, t, a);
     return true;
   }
@@ -231,7 +231,7 @@ contract MarketPlace {
   /// @param t Target to be transferred to
   /// @param a Amount of notional transfer
   function p2pVaultExchange(address u, uint256 m, address f, address t, uint256 a) external authorized(swivel) unpaused() returns (bool) {
-    require(VaultTracker(markets[u][m].vaultAddr).transferNotionalFrom(f, t, a), 'transfer notional failed');
+    require(VaultTracker(markets[u][m].vaultTracker).transferNotionalFrom(f, t, a), 'transfer notional failed');
     emit P2pVaultExchange(u, m, f, t, a);
     return true;
   }
@@ -243,7 +243,7 @@ contract MarketPlace {
   /// @param t Target to be transferred to
   /// @param a Amount of notional to be transferred
   function transferVaultNotional(address u, uint256 m, address t, uint256 a) external unpaused() returns (bool) {
-    require(VaultTracker(markets[u][m].vaultAddr).transferNotionalFrom(msg.sender, t, a), 'vault transfer failed');
+    require(VaultTracker(markets[u][m].vaultTracker).transferNotionalFrom(msg.sender, t, a), 'vault transfer failed');
     emit TransferVaultNotional(u, m, msg.sender, t, a);
     return true;
   }
@@ -254,7 +254,7 @@ contract MarketPlace {
   /// @param f Owner of the amount
   /// @param a Amount to transfer
   function transferVaultNotionalFee(address u, uint256 m, address f, uint256 a) external authorized(swivel) returns (bool) {
-    VaultTracker(markets[u][m].vaultAddr).transferNotionalFee(f, a);
+    VaultTracker(markets[u][m].vaultTracker).transferNotionalFee(f, a);
     return true;
   }
 

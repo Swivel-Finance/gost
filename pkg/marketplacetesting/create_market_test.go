@@ -128,10 +128,10 @@ func (s *createMarketSuite) TestCreateMarket18Decimals() {
 	market, err := s.MarketPlace.Markets(underlying, maturity)
 	assert.Nil(err)
 	assert.Equal(market.CTokenAddr, ctoken)
-	assert.NotEqual(market.ZcTokenAddr, common.HexToAddress("0x0"))
-	assert.NotEqual(market.VaultAddr, common.HexToAddress("0x0"))
+	assert.NotEqual(market.ZcToken, common.HexToAddress("0x0"))
+	assert.NotEqual(market.VaultTracker, common.HexToAddress("0x0"))
 
-	zcTokenContract, err := mocks.NewZcToken(market.ZcTokenAddr, s.Env.Blockchain)
+	zcTokenContract, err := mocks.NewZcToken(market.ZcToken, s.Env.Blockchain)
 	zcToken := &mocks.ZcTokenSession{
 		Contract: zcTokenContract,
 		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
@@ -178,10 +178,10 @@ func (s *createMarketSuite) TestCreateMarket6Decimals() {
 	market, err := s.MarketPlace.Markets(underlying, maturity)
 	assert.Nil(err)
 	assert.Equal(market.CTokenAddr, ctoken)
-	assert.NotEqual(market.ZcTokenAddr, common.HexToAddress("0x0"))
-	assert.NotEqual(market.VaultAddr, common.HexToAddress("0x0"))
+	assert.NotEqual(market.ZcToken, common.HexToAddress("0x0"))
+	assert.NotEqual(market.VaultTracker, common.HexToAddress("0x0"))
 
-	zcTokenContract, err := mocks.NewZcToken(market.ZcTokenAddr, s.Env.Blockchain)
+	zcTokenContract, err := mocks.NewZcToken(market.ZcToken, s.Env.Blockchain)
 	zcToken := &mocks.ZcTokenSession{
 		Contract: zcTokenContract,
 		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},

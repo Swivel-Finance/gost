@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: UNLICENSED
 
-pragma solidity 0.8.4;
+pragma solidity 0.8.13;
 
-interface CErc20 {
+interface ICErc20 {
 	function exchangeRateCurrent() external returns (uint256);
 }
