@@ -17,6 +17,8 @@ contract ZcToken {
   string public name;
   string public symbol;
   uint8 public decimals;
+  
+  mapping (address => uint256) private balances;
 
   /// @param u Underlying
   /// @param m Maturity
@@ -29,6 +31,7 @@ contract ZcToken {
     maturityReturn = m;
     // set approve to return true by default so that createMarket won't revert
     approveReturn = true;
+    // store the balances of all users
 
     name = n;
     symbol = s;
@@ -42,5 +45,14 @@ contract ZcToken {
 
   function approveReturns(bool b) public {
     approveReturn = b;
+  }
+
+  function deal(address u, uint256 a) public returns (bool) {
+    balances[u] = a;
+    return true;
+  }
+
+  function balanceOf(address a) public view returns (uint256) {
+    return balances[a];
   }
 }
