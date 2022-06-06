@@ -8,12 +8,13 @@ import "./IRedeemer.sol";
 
 abstract contract ERC5095 is PErc20, IERC5095 {
 
+
     uint256 public override immutable maturity;
     address public override immutable underlying;
     uint256 public override maturityRate;
     IRedeemer public immutable redeemer;
-    IAdapter public adapter;
     address public cToken;
+    IAdapter public adapter;
 
     error Maturity(uint256 maturity);  
 
@@ -24,49 +25,49 @@ abstract contract ERC5095 is PErc20, IERC5095 {
         redeemer = IRedeemer(mp);
     }
 
-    function convertToUnderlying(uint256 principalAmount) external view returns (uint256){
+    function convertToUnderlying(uint256 principalAmount) external override view returns (uint256){
         if (block.timestamp < maturity) {
             return 0;
         }
         return (principalAmount * (adapter.exchangeRateCurrent(cToken) / maturityRate));
     }
 
-    function convertToPrincipal(uint256 underlyingAmount) external view returns (uint256){
+    function convertToPrincipal(uint256 underlyingAmount) external override view returns (uint256){
         if (block.timestamp < maturity) {
             return 0;
         }
         return(underlyingAmount * maturityRate / adapter.exchangeRateCurrent(cToken));
     }
 
-    function maxRedeem(address owner) external view returns (uint256){
+    function maxRedeem(address owner) external override view returns (uint256){
         if (block.timestamp < maturity) {
             return 0;
         }
         return(_balanceOf[owner]);
     }
 
-    function previewRedeem(uint256 principalAmount) external view returns (uint256){
+    function previewRedeem(uint256 principalAmount) external override view returns (uint256){
         if (block.timestamp < maturity) {
             return 0;
         }
         return(principalAmount * (adapter.exchangeRateCurrent(cToken) / maturityRate));
     }
 
-    function maxWithdraw(address owner) external view returns (uint256){
+    function maxWithdraw(address owner) external override view returns (uint256){
         if (block.timestamp < maturity) {
             return 0;
         }
         return(_balanceOf[owner] * (adapter.exchangeRateCurrent(cToken) / maturityRate));
     }
 
-    function previewWithdraw(uint256 underlyingAmount) external view returns (uint256){
+    function previewWithdraw(uint256 underlyingAmount) external override view returns (uint256){
         if (block.timestamp < maturity) {
             return 0;
         }
         return(underlyingAmount * maturityRate / adapter.exchangeRateCurrent(cToken));
     }
 
-    function withdraw(uint256 underlyingAmount, address owner, address receiver) external returns (uint256){
+    function withdraw(uint256 underlyingAmount, address owner, address receiver) external override returns (uint256){
         if (maturityRate == 0) {
             if (block.timestamp < maturity) {
                 revert Maturity(maturity);
@@ -77,7 +78,7 @@ abstract contract ERC5095 is PErc20, IERC5095 {
         return redeemer.adminRedeem(underlying, maturity, owner, receiver, (underlyingAmount * maturityRate / adapter.exchangeRateCurrent(cToken)));
     }
 
-    function redeem(uint256 principalAmount, address owner, address receiver) external returns (uint256){
+    function redeem(uint256 principalAmount, address owner, address receiver) external override returns (uint256){
         if (maturityRate == 0) {
             if (block.timestamp < maturity) {
                 revert Maturity(maturity);
