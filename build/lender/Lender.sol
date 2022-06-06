@@ -65,7 +65,7 @@ contract Lender {
   /// @return bool true if the mint was successful, false otherwise
   function mint(uint8 p, address u, uint256 m, uint256 a) public returns (bool) {
     //use market interface to fetch the market for the given market pair
-    address[9] memory market = IMarketPlace(marketPlace).markets(u, m);
+    address[9] memory market = IMarketPlace(marketPlace).principals(u, m);
     //use safe transfer lib and ERC interface...
     Safe.transferFrom(IErc20(market[p]), msg.sender, address(this), a);
     //use zctoken interface...
@@ -98,7 +98,7 @@ contract Lender {
 
     // this step is only needed when the lend is for yield
     if (p == uint8(MarketPlace.Principals.Yield)) {
-      address[9] memory market = IMarketPlace(marketPlace).markets(u, m); 
+      address[9] memory market = IMarketPlace(marketPlace).principals(u, m); 
       // TODO should we require on this?
       IZcToken(market[uint256(MarketPlace.Principals.Illuminate)]).mint(msg.sender, returned);
     }
@@ -169,7 +169,7 @@ contract Lender {
   /// @param d deadline is a timestamp by which the swap must be executed deadline is a timestamp by which the swap must be executed
   function lend(uint8 p, address u, uint256 m, address e, bytes32 i, uint256 a, uint256 r, uint256 d) public returns (uint256) {
     // Get the principal token for this market for element
-    IElementToken token = IElementToken(IMarketPlace(marketPlace).markets(u, m)[p]);
+    IElementToken token = IElementToken(IMarketPlace(marketPlace).principals(u, m)[p]);
 
     // the element token must match the market pair
     require(token.underlying() == u, '');
@@ -195,7 +195,7 @@ contract Lender {
       amount: a - calculateFee(a),
       kind: Element.SwapKind.In,
       assetIn: Any(u),
-      assetOut: Any(IMarketPlace(marketPlace).markets(u, m)[p])
+      assetOut: Any(IMarketPlace(marketPlace).principals(u, m)[p])
     });
 
 
@@ -216,7 +216,7 @@ contract Lender {
   /// @return uint256 the amount of principal tokens lent out
   function lend(uint8 p, address u, uint256 m, uint256 a, uint256 r, uint256 d) public returns (uint256) {
       // Instantiate market and tokens
-      address[9] memory markets = IMarketPlace(marketPlace).markets(u, m); 
+      address[9] memory markets = IMarketPlace(marketPlace).principals(u, m); 
       address principal = markets[p];
       IPendleToken token = IPendleToken(principal);
 
@@ -259,7 +259,7 @@ contract Lender {
   /// @return uint256 the amount of principal tokens lent out
   function lend(uint8 p, address u, uint256 m, uint256 a, uint256 r, address x, address t, uint256 d) public returns (uint256) {
       // Instantiate market and tokens
-      address principal = IMarketPlace(marketPlace).markets(u, m)[p];
+      address principal = IMarketPlace(marketPlace).principals(u, m)[p];
       require(ITempus(principal).yieldBearingToken() == IErc20Metadata(u), 'tempus underlying != underlying');
       require(ITempus(principal).maturityTime() == m, 'tempus maturity != maturity');
 
@@ -273,7 +273,7 @@ contract Lender {
       fees[u] += calculateFee(a);
 
       // Swap on the Tempus Router using the provided market and params
-      IZcToken illuminateToken = IZcToken(IMarketPlace(marketPlace).markets(u, m)[uint256(MarketPlace.Principals.Illuminate)]);
+      IZcToken illuminateToken = IZcToken(IMarketPlace(marketPlace).principals(u, m)[uint256(MarketPlace.Principals.Illuminate)]);
       uint256 returned = ITempus(tempusAddr).depositAndFix(Any(x), Any(t), a - calculateFee(a), true, r, d) - illuminateToken.balanceOf(address(this));
 
       // Mint Illuminate zero coupons
@@ -296,7 +296,7 @@ contract Lender {
   /// @return uint256 the amount of principal tokens lent out
   function lend(uint8 p, address u, uint256 m, address x, address s, uint128 a, uint256 r) public returns (uint256) {
     // Get the principal token for this market for this market
-    ISenseToken token = ISenseToken(IMarketPlace(marketPlace).markets(u, m)[p]);
+    ISenseToken token = ISenseToken(IMarketPlace(marketPlace).principals(u, m)[p]);
 
     // Verify that the underlying matches up
     require(token.underlying() == u, "sense underlying != underlying");
@@ -317,7 +317,7 @@ contract Lender {
     uint256 returned = ISense(x).swapUnderlyingForPTs(s, m, lent, r);
 
     // Get the address of the ZC token for this market
-    IZcToken illuminateToken = IZcToken(IMarketPlace(marketPlace).markets(u, m)[uint256(MarketPlace.Principals.Illuminate)]);
+    IZcToken illuminateToken = IZcToken(IMarketPlace(marketPlace).principals(u, m)[uint256(MarketPlace.Principals.Illuminate)]);
     
     // Mint the illuminate tokens based on the returned amount
     illuminateToken.mint(msg.sender, returned);
@@ -338,7 +338,7 @@ contract Lender {
   /// @return uint256 the amount of principal tokens lent out
   function lend(uint8 p, address u, uint256 m, uint256 a, uint256 r, address pool, uint256 i) public returns (uint256) {
       // Instantiate market and tokens
-      address[9] memory markets = IMarketPlace(marketPlace).markets(u, m);
+      address[9] memory markets = IMarketPlace(marketPlace).principals(u, m);
       require(IAPWineToken(markets[p]).getPTAddress() == u, "apwine principle != principle");
 
       // Transfer funds from user to Illuminate    
@@ -372,7 +372,7 @@ contract Lender {
   /// @return uint256 the amount of principal tokens lent out
   function lend(uint8 p, address u, uint256 m, uint256 a) public returns (uint256) {
       // Instantiate market and tokens
-      address[9] memory markets = IMarketPlace(marketPlace).markets(u, m); 
+      address[9] memory markets = IMarketPlace(marketPlace).principals(u, m); 
       address principal = markets[p];
 
       INotional token = INotional(principal); 

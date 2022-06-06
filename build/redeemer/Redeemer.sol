@@ -53,7 +53,7 @@ contract Redeemer {
   /// @return bool true if the redemption was successful
   function redeem(uint8 p, address u, uint256 m, address o) public returns (bool) {
     // Get the address of the principal token being redeemed
-    address principal = IMarketPlace(marketPlace).markets(u, m)[p];
+    address principal = IMarketPlace(marketPlace).principals(u, m)[p];
 
     // Get the amount of tokens to be redeemed from the principal token
     uint256 amount = IErc20(principal).balanceOf(o);
@@ -88,7 +88,7 @@ contract Redeemer {
   /// @return bool true if the redemption was successful
   function redeem(uint8 p, address u, uint256 m) public returns (bool) {
     // Get the principal token that is being redeemed by the user
-    address principal = IMarketPlace(marketPlace).markets(u, m)[p];
+    address principal = IMarketPlace(marketPlace).principals(u, m)[p];
 
     // The amount redeemed should be the balance of the principal token held by the illuminate contract
     uint256 amount = IErc20(principal).balanceOf(marketPlace);
@@ -123,7 +123,7 @@ contract Redeemer {
   /// @return bool true if the redemption was successful
   function redeem(uint8 p, address u, uint256 m, bytes32 i) public returns (bool) {
     // Get the principal token that is being redeemed by the user
-    IErc20 token = IErc20(IMarketPlace(marketPlace).markets(u, m)[p]);
+    IErc20 token = IErc20(IMarketPlace(marketPlace).principals(u, m)[p]);
 
     // Get the balance of tokens to be redeemed by the user
     uint256 amount = token.balanceOf(marketPlace);
@@ -144,7 +144,7 @@ contract Redeemer {
   /// @param o sense contract that [d] calls into to adapt the underlying to sense
   function redeem(uint8 p, address u, uint256 m, address d, address o) public returns (bool) {
     // Get the principal token for the given market
-    IErc20 token = IErc20(IMarketPlace(marketPlace).markets(u, m)[p]);
+    IErc20 token = IErc20(IMarketPlace(marketPlace).principals(u, m)[p]);
 
     // Set the redeemer contract address
     address self = address(this);

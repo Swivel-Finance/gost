@@ -75,6 +75,15 @@ contract MarketPlace {
     return true;
   }
 
+  /// @notice Returns the set of prinicpal tokens for a given market represented
+  /// by their underlying and maturity
+  /// @param u: the underlying token address
+  /// @param m: the maturity of the market
+  /// @return address[9] the principal token addresses for this market
+  function principals(address u, uint256 m) external view returns (address[9] memory) {
+    return markets[u][m];
+  }
+
   modifier authorized(address a) {
     require(msg.sender == a, 'sender must be authorized');
     _;
