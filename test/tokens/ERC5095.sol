@@ -8,7 +8,6 @@ import "./IRedeemer.sol";
 
 abstract contract ERC5095 is PErc20, IERC5095 {
 
-
     uint256 public override immutable maturity;
     address public override immutable underlying;
     uint256 public override maturityRate;

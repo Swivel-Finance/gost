@@ -33,14 +33,14 @@ contract Router {
     }
 
     // a = the amount of underlying sold
-    function sellunderlying(address u, uint256 m, uint128 a) external unpaused() returns (uint128 returned) {
+    function sellUnderlying(address u, uint256 m, uint128 a) external unpaused() returns (uint128 returned) {
         IPool pool = IPool(pools[u][m]);
         SafeTransferLib.safeTransfer(ERC20(address(pool.underlying())), address(pool), a);
         return pool.sellunderlying(msg.sender, pool.sellunderlyingPreview(a));
     }
 
     // a = the amount of underlying bought
-    function buyunderlying(address u, uint256 m, uint128 a) external unpaused() returns (uint128 returned) {
+    function buyUnderlying(address u, uint256 m, uint128 a) external unpaused() returns (uint128 returned) {
         IPool pool = IPool(pools[u][m]);
         SafeTransferLib.safeTransfer(ERC20(address(pool.PT())), address(pool), a);
         return pool.buyunderlying(msg.sender, pool.buyunderlyingPreview(a), a);

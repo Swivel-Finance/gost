@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: UNLICENSED
+// SPDX-License-Identifier: BUSL-1.1
 
 pragma solidity >= 0.8.13;
 
@@ -415,13 +415,13 @@ contract Lender {
     // by the method, but the original amount should still be sent to the pool.
 
     // preview exact swap slippage on yield
-    uint128 returned = IYield(y).sellBasePreview(Cast.u128(a));
+    uint128 returned = IYield(y).sellUnderlyingPreview(Cast.u128(a));
 
     // send the remaing amount to the given yield pool
     Safe.transfer(IErc20(u), y, returned);
     
     // lend out the remaining tokens in the yield pool
-    IYield(y).sellBase(address(this), returned);
+    IYield(y).sellUnderlying(address(this), returned);
 
     return returned;
   }
