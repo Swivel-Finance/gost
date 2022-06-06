@@ -163,6 +163,21 @@ contract Redeemer {
     return true;
   }
 
+  function authRedeem(address u, uint256 m, address from, address to, uint256 amount) authorized(IMarketPlace(marketPlace).markets(u, m)[0]) public returns (bool) {
+    // Get the principal token for the given market
+    IZcToken PT = IErc20(IMarketPlace(marketPlace).markets(u, m)[0]);
+    require(block.timestamp > PT.maturity, 'maturity error');
+
+    // Get the balance of tokens to be redeemed by the user
+    uint256 amount = PT.balanceOf(from);
+
+    // Burn the user's principal tokens
+    PT.burn(from, amount);
+
+    // Transfer the original underlying token back to the user
+    Safe.transfer(IErc20(u), to, amount);
+  }
+
   modifier authorized(address a) {
     require(msg.sender == a, 'sender must be authorized');
     _;
