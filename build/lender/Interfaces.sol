@@ -21,7 +21,7 @@ interface IErc20Metadata is IErc20 {
 }
 
 interface IMarketPlace {
-  function markets(address, uint256) external returns (address[8] calldata);
+  function markets(address, uint256) external returns (address[9] calldata);
 }
 
 interface ISwivel {
@@ -79,4 +79,10 @@ interface IAPWineRouter {
 
 interface IAPWineToken {
   function getPTAddress() external view returns (address);
+}
+
+interface INotional {
+  function getUnderlyingToken() external view returns (IErc20, int256);
+  function getMaturity() external view returns (uint40) ;
+  function deposit(uint256 a, address r) external returns (uint256);
 }

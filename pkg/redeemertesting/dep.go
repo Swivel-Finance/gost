@@ -41,6 +41,8 @@ type Dep struct {
 	ElementAddress      common.Address
 	ElementToken        *mocks.ElementToken
 	ElementTokenAddress common.Address
+	Notional            *mocks.Notional
+	NotionalAddress     common.Address
 }
 
 func Deploy(e *Env) (*Dep, error) {
@@ -173,7 +175,15 @@ func Deploy(e *Env) (*Dep, error) {
 
 	e.Blockchain.Commit()
 
-	redeemerAddress, _, redeemerContract, redeemerErr := redeemer.DeployRedeemer(e.Owner.Opts, e.Blockchain, apAddress, tAddress, pAddress, swivelAddress)
+	nAddress, _, nContract, nErr := mocks.DeployNotional(e.Owner.Opts, e.Blockchain)
+
+	if nErr != nil {
+		return nil, nErr
+	}
+
+	e.Blockchain.Commit()
+
+	redeemerAddress, _, redeemerContract, redeemerErr := redeemer.DeployRedeemer(e.Owner.Opts, e.Blockchain, swivelAddress, pAddress, tAddress, apAddress)
 
 	if redeemerErr != nil {
 		return nil, redeemerErr
@@ -215,6 +225,8 @@ func Deploy(e *Env) (*Dep, error) {
 		ElementAddress:      eAddress,
 		ElementToken:        etContract,
 		ElementTokenAddress: etAddress,
+		Notional:            nContract,
+		NotionalAddress:     nAddress,
 		Redeemer:            redeemerContract,
 	}, nil
 }

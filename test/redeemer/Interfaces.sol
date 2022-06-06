@@ -5,7 +5,7 @@ pragma solidity 0.8.13;
 import './Redeemer.sol';
 
 interface IMarketPlace {
-  function markets(address, uint256) external returns (address[8] calldata);
+  function markets(address, uint256) external returns (address[9] calldata);
 }
 
 interface IErc20 {
@@ -53,4 +53,8 @@ interface IElementToken {
 
 interface IYieldToken {
 	function redeem(address from, address to, uint256 amount) external;
+}
+
+interface INotional { 
+  function maxRedeem(address) external returns (uint256);
 }

@@ -69,7 +69,8 @@ func (s *marketplaceTestSuite) TestCreateMarket() {
 	maturity := big.NewInt(100000)
 
 	// a fixed len array of 7 as illuminate is set in the method...
-	principals := [7]common.Address{
+	principals := [8]common.Address{
+		s.Dep.Erc20Address,
 		s.Dep.Erc20Address,
 		s.Dep.Erc20Address,
 		s.Dep.Erc20Address,
