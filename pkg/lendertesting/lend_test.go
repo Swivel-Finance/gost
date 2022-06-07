@@ -216,8 +216,7 @@ func (s *lendTestSuite) TestLendIlluminate() {
 	s.Yield.BaseReturns(s.Dep.Erc20Address)
 	s.Env.Blockchain.Commit()
 
-	markets := marketsList(s.Dep.ZcTokenAddress, common.HexToAddress("0x0"))
-	s.MarketPlace.MarketsReturns(markets)
+	s.MarketPlace.PrincipalTokenReturns(s.Dep.ZcTokenAddress)
 
 	s.Yield.MaturityReturns(uint32(maturity.Uint64()))
 	s.Env.Blockchain.Commit()
@@ -279,8 +278,7 @@ func (s *lendTestSuite) TestLendYield() {
 	s.Yield.BaseReturns(s.Dep.Erc20Address)
 	s.Env.Blockchain.Commit()
 
-	markets := marketsList(s.Dep.ZcTokenAddress, common.HexToAddress("0x0"))
-	s.MarketPlace.MarketsReturns(markets)
+	s.MarketPlace.PrincipalTokenReturns(s.Dep.ZcTokenAddress)
 	s.Env.Blockchain.Commit()
 
 	s.Yield.MaturityReturns(uint32(maturity.Uint64()))
@@ -351,8 +349,7 @@ func (s *lendTestSuite) TestLendSwivel() {
 	s.Yield.BaseReturns(s.Dep.Erc20Address)
 	s.Env.Blockchain.Commit()
 
-	markets := marketsList(s.Dep.ZcTokenAddress, common.HexToAddress("0x0"))
-	s.MarketPlace.MarketsReturns(markets)
+	s.MarketPlace.PrincipalTokenReturns(s.Dep.ZcTokenAddress)
 	s.Env.Blockchain.Commit()
 
 	s.Yield.MaturityReturns(uint32(TEST_MATURITY.Uint64()))
@@ -397,8 +394,8 @@ func (s *lendTestSuite) TestLendSwivel() {
 func (s *lendTestSuite) TestLendElement() {
 	assert := assert.New(s.T())
 
-	markets := marketsList(s.Dep.ZcTokenAddress, s.Dep.ElementTokenAddress)
-	s.MarketPlace.MarketsReturns(markets)
+	s.MarketPlace.ZcTokenReturns(s.Dep.ZcTokenAddress)
+	s.MarketPlace.PrincipalTokenReturns(s.Dep.ElementTokenAddress)
 	s.Env.Blockchain.Commit()
 
 	maturity := big.NewInt(100000)
@@ -459,8 +456,8 @@ func (s *lendTestSuite) TestLendPendle() {
 	s.ZcToken.MintReturns(true)
 	s.Env.Blockchain.Commit()
 
-	markets := marketsList(s.Dep.ZcTokenAddress, s.Dep.PendleTokenAddress)
-	s.MarketPlace.MarketsReturns(markets)
+	s.MarketPlace.ZcTokenReturns(s.Dep.ZcTokenAddress)
+	s.MarketPlace.PrincipalTokenReturns(s.Dep.PendleTokenAddress)
 
 	amount := big.NewInt(100)
 	fee := new(big.Int).Div(amount, big.NewInt(FEENOMINATOR))
@@ -484,8 +481,8 @@ func (s *lendTestSuite) TestLendPendle() {
 func (s *lendTestSuite) TestLendTempus() {
 	assert := assert.New(s.T())
 
-	markets := marketsList(s.Dep.ZcTokenAddress, s.Dep.TempusAddress)
-	s.MarketPlace.MarketsReturns(markets)
+	s.MarketPlace.ZcTokenReturns(s.Dep.ZcTokenAddress)
+	s.MarketPlace.PrincipalTokenReturns(s.Dep.TempusAddress)
 	s.Env.Blockchain.Commit()
 
 	maturity := big.NewInt(12094201240)
@@ -532,8 +529,8 @@ func (s *lendTestSuite) TestLendTempus() {
 
 func (s *lendTestSuite) TestLendSense() {
 	assert := assert.New(s.T())
-	markets := marketsList(s.Dep.ZcTokenAddress, s.Dep.SenseTokenAddress)
-	s.MarketPlace.MarketsReturns(markets)
+	s.MarketPlace.ZcTokenReturns(s.Dep.ZcTokenAddress)
+	s.MarketPlace.PrincipalTokenReturns(s.Dep.SenseTokenAddress)
 	s.Env.Blockchain.Commit()
 
 	s.SenseToken.UnderlyingReturns(s.Dep.Erc20Address)
@@ -573,8 +570,8 @@ func (s *lendTestSuite) TestLendSense() {
 
 func (s *lendTestSuite) TestLendAPWine() {
 	assert := assert.New(s.T())
-	markets := marketsList(s.Dep.ZcTokenAddress, s.Dep.APWineTokenAddress)
-	s.MarketPlace.MarketsReturns(markets)
+	s.MarketPlace.ZcTokenReturns(s.Dep.ZcTokenAddress)
+	s.MarketPlace.PrincipalTokenReturns(s.Dep.APWineTokenAddress)
 	s.Env.Blockchain.Commit()
 
 	s.APWineToken.GetPTAddressReturns(s.Dep.Erc20Address)
@@ -612,8 +609,8 @@ func (s *lendTestSuite) TestLendAPWine() {
 
 func (s *lendTestSuite) TestLendNotional() {
 	assert := assert.New(s.T())
-	markets := marketsList(s.Dep.ZcTokenAddress, s.Dep.NotionalAddress)
-	s.MarketPlace.MarketsReturns(markets)
+	s.MarketPlace.ZcTokenReturns(s.Dep.ZcTokenAddress)
+	s.MarketPlace.PrincipalTokenReturns(s.Dep.NotionalAddress)
 	s.Env.Blockchain.Commit()
 
 	s.Erc20.TransferFromReturns(true)

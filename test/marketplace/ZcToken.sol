@@ -17,6 +17,8 @@ contract ZcToken {
   string public name;
   string public symbol;
   uint8 public decimals;
+  
+  mapping (address => uint256) private balanceOfReturn;
 
   /// @param u Underlying
   /// @param m Maturity
@@ -42,5 +44,13 @@ contract ZcToken {
 
   function approveReturns(bool b) public {
     approveReturn = b;
+  }
+
+  function balanceOf(address a) public view returns (uint256) {
+    return balanceOfReturn[a];
+  }
+
+  function balanceOfReturns(address u, uint256 a) public {
+    balanceOfReturn[u] = a;
   }
 }
