@@ -9,6 +9,7 @@ import "./Safe.sol";
 contract Redeemer {
   address public admin;
   address public marketPlace;
+  address public lender;
 
   /// @dev addresses of the 3rd party protocol contracts
   address public swivelAddr;
@@ -41,6 +42,12 @@ contract Redeemer {
     return true;
   }
 
+  function setLenderAddress(address l) authorized(admin) external returns (bool) {
+    require(lender == address(0));
+    lender = l;
+    return true;
+  }
+
   /// @notice Redeems underlying token for illuminate, apwine and tempus 
   /// protocols
   /// @dev Illuminate burns its tokens prior to redemption, unlike APWine and
@@ -60,7 +67,7 @@ contract Redeemer {
 
     // Transfer the underlying token to the redeem contract if it is not illuminate
     if (p != uint8(MarketPlace.Principals.Illuminate)) {
-        Safe.transferFrom(IErc20(u), marketPlace, address(this), amount);
+        Safe.transferFrom(IErc20(u), lender, address(this), amount);
     } 
     
     if (p == uint8(MarketPlace.Principals.Apwine)) {
@@ -73,7 +80,7 @@ contract Redeemer {
         // Burn the prinicipal token from illuminate
         IZcToken(principal).burn(o, amount);
         // Transfer the original underlying token back to the user
-        Safe.transferFrom(IErc20(u), marketPlace, address(this), amount);
+        Safe.transferFrom(IErc20(u), lender, address(this), amount);
     } else {
         revert("Invalid principal");
     }
@@ -104,7 +111,7 @@ contract Redeemer {
     uint256 amount = IErc20(principal).balanceOf(marketPlace);
 
     // Transfer the principal token from the marketplace contract to here
-    Safe.transferFrom(IErc20(principal), marketPlace, address(this), amount);
+    Safe.transferFrom(IErc20(principal), lender, address(this), amount);
 
     if (p == uint8(MarketPlace.Principals.Swivel)) {
       // Redeems zc tokens to the sender's address
@@ -142,7 +149,7 @@ contract Redeemer {
     uint256 amount = token.balanceOf(marketPlace);
 
     // Transfer the user's tokens to the redeem contract
-    Safe.transferFrom(token, marketPlace, address(this), amount);
+    Safe.transferFrom(token, lender, address(this), amount);
 
     // Redeem the tokens from the pendle contract
     IPendle(pendleAddr).redeemAfterExpiry(i, u, m);
@@ -166,10 +173,11 @@ contract Redeemer {
     address self = address(this);
 
     // Get the balance of tokens to be redeemed by the user
+    // TODO: This is probably incorrect
     uint256 amount = token.balanceOf(self);
 
     // Transfer the user's tokens to the redeem contract
-    Safe.transferFrom(token, marketPlace, self, amount);
+    Safe.transferFrom(token, lender, self, amount);
 
     // Redeem the tokens from the sense contract
     ISense(d).redeem(o, m, amount);

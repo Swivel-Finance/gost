@@ -2,6 +2,7 @@ package redeemertesting
 
 import (
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/swivel-finance/gost/test/lender"
 	"github.com/swivel-finance/gost/test/mocks"
 	"github.com/swivel-finance/gost/test/redeemer"
 )
@@ -43,6 +44,8 @@ type Dep struct {
 	ElementTokenAddress common.Address
 	Notional            *mocks.Notional
 	NotionalAddress     common.Address
+	Lender              *lender.Lender
+	LenderAddress       common.Address
 }
 
 func Deploy(e *Env) (*Dep, error) {
@@ -191,6 +194,14 @@ func Deploy(e *Env) (*Dep, error) {
 
 	e.Blockchain.Commit()
 
+	lenderAddress, _, lenderContract, lenderErr := lender.DeployLender(e.Owner.Opts, e.Blockchain, swivelAddress, pAddress, tAddress)
+
+	if lenderErr != nil {
+		return nil, lenderErr
+	}
+
+	e.Blockchain.Commit()
+
 	return &Dep{
 		Erc20Address:        ercAddress,
 		Erc20:               ercContract,
@@ -204,7 +215,6 @@ func Deploy(e *Env) (*Dep, error) {
 		Swivel:              swivelContract,
 		MarketplaceAddress:  mpAddress,
 		Marketplace:         mpContract,
-		RedeemerAddress:     redeemerAddress,
 		APWine:              apContract,
 		APWineAddress:       apAddress,
 		APWineToken:         aptContract,
@@ -227,6 +237,9 @@ func Deploy(e *Env) (*Dep, error) {
 		ElementTokenAddress: etAddress,
 		Notional:            nContract,
 		NotionalAddress:     nAddress,
+		Lender:              lenderContract,
+		LenderAddress:       lenderAddress,
 		Redeemer:            redeemerContract,
+		RedeemerAddress:     redeemerAddress,
 	}, nil
 }
