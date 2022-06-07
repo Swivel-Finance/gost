@@ -84,6 +84,10 @@ contract Lender {
   /// @param a amount of underlying tokens to lend
   /// @return uint256 the amount of principal tokens lent out
   function lend(uint8 p, address u, uint256 m, address y, uint256 a) public returns (uint256) {
+    // check the principal is illuminate or yield
+    require(p == uint8(MarketPlace.Principals.Illuminate) || 
+        p == uint8(MarketPlace.Principals.Yield));
+
     // uses yield token interface...
     IYield yToken = IYield(y);
 
@@ -119,27 +123,30 @@ contract Lender {
   /// @param s array of signatures for each order in the orders array
   /// @return uint256 the amount of principal tokens lent out
   function lend(uint8 p, address u, uint256 m, address y, Swivel.Order[] calldata o, uint256[] calldata a, Swivel.Components[] calldata s) public returns (uint256) {
+    // check the principal is swivel
+    require(p == uint8(MarketPlace.Principals.Swivel));
+
     // lent represents the number of underlying tokens lent
     uint256 lent;
     // returned represents the number of underlying tokens to lend to yield
     uint256 returned;
 
     {
-        uint256 totalFee;
-        // iterate through each order a calculate the total lent and returned
-        for (uint256 i = 0; i < o.length; i++) {
-          Swivel.Order memory order = o[i];
-          // Require the Swivel order provided matches the underlying and maturity market provided    
-          require(order.maturity == m, 'swivel maturity != maturity');
-          require(order.underlying == u, 'swivel underlying != underlying');
-          // Determine the fee
-          uint256 fee = calculateFee(a[i]);
-          // Track accumulated fees
-          totalFee += fee;
-          // Sum the total amount lent to Swivel (amount of zc tokens to mint) minus fees
-          lent += a[i] - fee;
-          // Sum the total amount of premium paid from Swivel (amount of underlying to lend to yield)
-          returned += (a[i] - fee) * (order.premium / order.principal);
+      uint256 totalFee;
+      // iterate through each order a calculate the total lent and returned
+      for (uint256 i = 0; i < o.length; i++) {
+        Swivel.Order memory order = o[i];
+        // Require the Swivel order provided matches the underlying and maturity market provided    
+        require(order.maturity == m, 'swivel maturity != maturity');
+        require(order.underlying == u, 'swivel underlying != underlying');
+        // Determine the fee
+        uint256 fee = calculateFee(a[i]);
+        // Track accumulated fees
+        totalFee += fee;
+        // Sum the total amount lent to Swivel (amount of zc tokens to mint) minus fees
+        lent += a[i] - fee;
+        // Sum the total amount of premium paid from Swivel (amount of underlying to lend to yield)
+        returned += (a[i] - fee) * (order.premium / order.principal);
     }
     // Track accumulated fee
     fees[u] += totalFee;
@@ -167,6 +174,8 @@ contract Lender {
   /// @param r minimum amount to return, this puts a cap on allowed slippage
   /// @param d deadline is a timestamp by which the swap must be executed deadline is a timestamp by which the swap must be executed
   function lend(uint8 p, address u, uint256 m, address e, bytes32 i, uint256 a, uint256 r, uint256 d) public returns (uint256) {
+    // check the principal is element
+    require(p == uint8(MarketPlace.Principals.Element));
     // Get the principal token for this market for element
     address principal = IMarketPlace(marketPlace).markets(u, m, p);
 
@@ -213,34 +222,36 @@ contract Lender {
   /// @param d deadline is a timestamp by which the swap must be executed
   /// @return uint256 the amount of principal tokens lent out
   function lend(uint8 p, address u, uint256 m, uint256 a, uint256 r, uint256 d) public returns (uint256) {
-      // Instantiate market and tokens
-      address principal = IMarketPlace(marketPlace).markets(u, m, p); 
-      IPendleToken token = IPendleToken(principal);
+    // check the principal is pendle
+    require(p == uint8(MarketPlace.Principals.Pendle));
+    // Instantiate market and tokens
+    address principal = IMarketPlace(marketPlace).markets(u, m, p); 
+    IPendleToken token = IPendleToken(principal);
 
-      // confirm that we are in the correct market
-      require(token.yieldToken() == u, 'pendle underlying != underlying');
-      require(token.expiry() == m, 'pendle maturity != maturity');
+    // confirm that we are in the correct market
+    require(token.yieldToken() == u, 'pendle underlying != underlying');
+    require(token.expiry() == m, 'pendle maturity != maturity');
 
-      // Transfer funds from user to Illuminate
-      Safe.transferFrom(IErc20(u), msg.sender, address(this), a);
+    // Transfer funds from user to Illuminate
+    Safe.transferFrom(IErc20(u), msg.sender, address(this), a);
 
-      // Add the accumulated fees to the total
-      fees[u] += calculateFee(a);
+    // Add the accumulated fees to the total
+    fees[u] += calculateFee(a);
 
-      address[] memory path = new address[](2);
-      path[0] = u;
-      path[1] = principal;
+    address[] memory path = new address[](2);
+    path[0] = u;
+    path[1] = principal;
 
-      // Swap on the Pendle Router using the provided market and params
-      uint256 returned = IPendle(pendleAddr).swapExactTokensForTokens(a - calculateFee(a), r, path, address(this), d)[0];
+    // Swap on the Pendle Router using the provided market and params
+    uint256 returned = IPendle(pendleAddr).swapExactTokensForTokens(a - calculateFee(a), r, path, address(this), d)[0];
 
-      // Mint Illuminate zero coupons
-      address illuminateToken = zcToken(u, m);
-      IZcToken(illuminateToken).mint(msg.sender, returned);
+    // Mint Illuminate zero coupons
+    address illuminateToken = zcToken(u, m);
+    IZcToken(illuminateToken).mint(msg.sender, returned);
 
-      emit Lend(p, u, m, returned);
+    emit Lend(p, u, m, returned);
 
-      return returned;
+    return returned;
   }
 
   /// @dev lend method signature for tempus
@@ -255,30 +266,33 @@ contract Lender {
   /// @param d deadline is a timestamp by which the swap must be executed
   /// @return uint256 the amount of principal tokens lent out
   function lend(uint8 p, address u, uint256 m, uint256 a, uint256 r, address x, address t, uint256 d) public returns (uint256) {
-      // Instantiate market and tokens
-      address principal = IMarketPlace(marketPlace).markets(u, m, p);
-      require(ITempus(principal).yieldBearingToken() == IErc20Metadata(u), 'tempus underlying != underlying');
-      require(ITempus(principal).maturityTime() == m, 'tempus maturity != maturity');
+    // check the principal is tempus
+    require(p == uint8(MarketPlace.Principals.Tempus));
 
-      // Get the underlying token
-      IErc20 underlyingToken = IErc20(u);
+    // Instantiate market and tokens
+    address principal = IMarketPlace(marketPlace).markets(u, m, p);
+    require(ITempus(principal).yieldBearingToken() == IErc20Metadata(u), 'tempus underlying != underlying');
+    require(ITempus(principal).maturityTime() == m, 'tempus maturity != maturity');
 
-      // Transfer funds from user to Illuminate, Scope to avoid stack limit
-      Safe.transferFrom(underlyingToken, msg.sender, address(this), a);
+    // Get the underlying token
+    IErc20 underlyingToken = IErc20(u);
 
-      // Add the accumulated fees to the total
-      fees[u] += calculateFee(a);
+    // Transfer funds from user to Illuminate, Scope to avoid stack limit
+    Safe.transferFrom(underlyingToken, msg.sender, address(this), a);
 
-      // Swap on the Tempus Router using the provided market and params
-      IZcToken illuminateToken = IZcToken(zcToken(u, m));
-      uint256 returned = ITempus(tempusAddr).depositAndFix(Any(x), Any(t), a - calculateFee(a), true, r, d) - illuminateToken.balanceOf(address(this));
+    // Add the accumulated fees to the total
+    fees[u] += calculateFee(a);
 
-      // Mint Illuminate zero coupons
-      illuminateToken.mint(msg.sender, returned);
+    // Swap on the Tempus Router using the provided market and params
+    IZcToken illuminateToken = IZcToken(zcToken(u, m));
+    uint256 returned = ITempus(tempusAddr).depositAndFix(Any(x), Any(t), a - calculateFee(a), true, r, d) - illuminateToken.balanceOf(address(this));
 
-      emit Lend(p, u, m, returned);
+    // Mint Illuminate zero coupons
+    illuminateToken.mint(msg.sender, returned);
 
-      return returned;
+    emit Lend(p, u, m, returned);
+
+    return returned;
   }
 
   /// @dev lend method signature for sense
@@ -292,6 +306,9 @@ contract Lender {
   /// @param r minimum number of tokens to lend (sets a limit on the order)
   /// @return uint256 the amount of principal tokens lent out
   function lend(uint8 p, address u, uint256 m, address x, address s, uint128 a, uint256 r) public returns (uint256) {
+    // check the principal is sense
+    require(p == uint8(MarketPlace.Principals.Sense));
+
     // Get the principal token for this market for this market
     ISenseToken token = ISenseToken(IMarketPlace(marketPlace).markets(u, m, p));
 
@@ -334,31 +351,34 @@ contract Lender {
   /// @param i the id of the pool
   /// @return uint256 the amount of principal tokens lent out
   function lend(uint8 p, address u, uint256 m, uint256 a, uint256 r, address pool, uint256 i) public returns (uint256) {
-      // Instantiate market and tokens
-      address principal = IMarketPlace(marketPlace).markets(u, m, p);
-      require(IAPWineToken(principal).getPTAddress() == u, "apwine principle != principle");
+    // check the principal is apwine
+    require(p == uint8(MarketPlace.Principals.Apwine));
 
-      // Transfer funds from user to Illuminate    
-      Safe.transferFrom(IErc20(u), msg.sender, address(this), a);   
+    // Instantiate market and tokens
+    address principal = IMarketPlace(marketPlace).markets(u, m, p);
+    require(IAPWineToken(principal).getPTAddress() == u, "apwine principle != principle");
 
-      // Determine the fee
-      uint256 fee = calculateFee(a);
+    // Transfer funds from user to Illuminate    
+    Safe.transferFrom(IErc20(u), msg.sender, address(this), a);   
 
-      // Add the accumulated fees to the total
-      fees[u] += fee;
+    // Determine the fee
+    uint256 fee = calculateFee(a);
 
-      // Determine the amount lent after fees
-      uint256 lent = a - fee;
+    // Add the accumulated fees to the total
+    fees[u] += fee;
 
-      // Swap on the APWine Pool using the provided market and params
-      uint256 returned = IAPWineRouter(pool).swapExactAmountIn(i, 1, lent, 0, r, address(this));
+    // Determine the amount lent after fees
+    uint256 lent = a - fee;
 
-      // Mint Illuminate zero coupons
-      IZcToken(zcToken(u, m)).mint(msg.sender, returned);
+    // Swap on the APWine Pool using the provided market and params
+    uint256 returned = IAPWineRouter(pool).swapExactAmountIn(i, 1, lent, 0, r, address(this));
 
-      emit Lend(p, u, m, returned);
+    // Mint Illuminate zero coupons
+    IZcToken(zcToken(u, m)).mint(msg.sender, returned);
 
-      return returned;
+    emit Lend(p, u, m, returned);
+
+    return returned;
   }
 
   /// @dev lend method signature for Notional
@@ -368,38 +388,39 @@ contract Lender {
   /// @param a amount of principal tokens to lend
   /// @return uint256 the amount of principal tokens lent out
   function lend(uint8 p, address u, uint256 m, uint256 a) public returns (uint256) {
-      // Instantiate market and tokens
-      address principal = IMarketPlace(marketPlace).markets(u, m, p);
+    // check the principal is notional
+    require(p == uint8(MarketPlace.Principals.Notional));
 
-      INotional token = INotional(principal); 
-      
-      // Verify that the maturity matches up
-      require(token.getMaturity() == m, "notional maturity != maturity");
-      // Verify that the underlying matches up
-      (IErc20 underlying,) = token.getUnderlyingToken();
-      require(address(underlying) == u, "notional underlying != underlying");
+    // Instantiate market and tokens
+    address principal = IMarketPlace(marketPlace).markets(u, m, p);
+
+    INotional token = INotional(principal); 
+    
+    // Verify that the maturity matches up
+    require(token.getMaturity() == m, "notional maturity != maturity");
+    // Verify that the underlying matches up
+    (IErc20 underlying,) = token.getUnderlyingToken();
+    require(address(underlying) == u, "notional underlying != underlying");
 
 
-      // Transfer funds from user to Illuminate
-      Safe.transferFrom(IErc20(u), msg.sender, address(this), a);
+    // Transfer funds from user to Illuminate
+    Safe.transferFrom(IErc20(u), msg.sender, address(this), a);
 
-      // Add the accumulated fees to the total
-      uint256 fee = calculateFee(a);
-      fees[u] += fee;
+    // Add the accumulated fees to the total
+    uint256 fee = calculateFee(a);
+    fees[u] += fee;
 
-      // Swap on the Notional Token wrapper
-      uint256 returned = token.deposit(a - fee, address(this));
+    // Swap on the Notional Token wrapper
+    uint256 returned = token.deposit(a - fee, address(this));
 
-      // Mint Illuminate zero coupons
-      address illuminateToken = zcToken(u, m);
-      IZcToken(illuminateToken).mint(msg.sender, returned);
+    // Mint Illuminate zero coupons
+    address illuminateToken = zcToken(u, m);
+    IZcToken(illuminateToken).mint(msg.sender, returned);
 
-      emit Lend(p, u, m, returned);
+    emit Lend(p, u, m, returned);
 
-      return returned;
+    return returned;
   }
-
-
 
   /// @notice transfers excess funds to yield pool after principal tokens have been lent out
   /// @dev this method is only used by the yield, illuminate and swivel protocols

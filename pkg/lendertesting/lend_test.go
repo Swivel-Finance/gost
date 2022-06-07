@@ -364,7 +364,7 @@ func (s *lendTestSuite) TestLendSwivel() {
 	s.ZcToken.MintReturns(true)
 	s.Env.Blockchain.Commit()
 
-	tx, err = s.Lender.Lend1(3, s.Dep.Erc20Address, TEST_MATURITY, s.Dep.YieldAddress, ORDERS, AMOUNTS, COMPONENTS)
+	tx, err = s.Lender.Lend1(1, s.Dep.Erc20Address, TEST_MATURITY, s.Dep.YieldAddress, ORDERS, AMOUNTS, COMPONENTS)
 	assert.Nil(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
@@ -634,7 +634,7 @@ func (s *lendTestSuite) TestLendNotional() {
 	s.Notional.DepositReturns(lent)
 	s.Env.Blockchain.Commit()
 
-	tx, err := s.Lender.Lend4(7, s.Dep.Erc20Address, maturity, amount)
+	tx, err := s.Lender.Lend4(8, s.Dep.Erc20Address, maturity, amount)
 	assert.NoError(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()

@@ -378,7 +378,7 @@ func (s *redeemTestSuite) TestSenseRedeem() {
 	amount := big.NewInt(1000)
 	adapter := s.Env.User1.Opts.From
 	maturity := big.NewInt(9999999)
-	principal := uint8(4)
+	principal := uint8(6)
 
 	s.MarketPlace.PrincipalTokenReturns(s.Dep.SenseTokenAddress)
 	s.MarketPlace.ZcTokenReturns(s.Dep.ZcTokenAddress)
