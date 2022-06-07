@@ -53,6 +53,9 @@ contract Redeemer {
   /// @dev Illuminate burns its tokens prior to redemption, unlike APWine and
   /// Tempus, which withdraw their tokens after transferring the underlying to 
   /// the redeem contract
+  /// @dev We can avoid a require check on the principal at the start of this
+  /// redeem because there is no common business logic executed before the
+  /// protocol specific code is executed.
   /// @param p value of a specific principal according to the Illuminate Principals Enum
   /// @param u the underlying token being redeemed
   /// @param m the maturity of the market being redeemed
@@ -100,12 +103,10 @@ contract Redeemer {
     address principal = IMarketPlace(marketPlace).markets(u, m, p);
 
     // Make sure we have the correct principal
-    if (p != uint8(MarketPlace.Principals.Swivel) &&
-        p != uint8(MarketPlace.Principals.Element) &&
-        p != uint8(MarketPlace.Principals.Yield) &&
-        p != uint8(MarketPlace.Principals.Notional)) {
-        revert("Invalid principal");
-    }
+    require(p == uint8(MarketPlace.Principals.Swivel) ||
+        p == uint8(MarketPlace.Principals.Element) ||
+        p == uint8(MarketPlace.Principals.Yield) ||
+        p == uint8(MarketPlace.Principals.Notional), "Invalid principal");
 
     // The amount redeemed should be the balance of the principal token held by the illuminate contract
     uint256 amount = IErc20(principal).balanceOf(marketPlace);
@@ -173,7 +174,6 @@ contract Redeemer {
     address self = address(this);
 
     // Get the balance of tokens to be redeemed by the user
-    // TODO: This is probably incorrect
     uint256 amount = token.balanceOf(self);
 
     // Transfer the user's tokens to the redeem contract
