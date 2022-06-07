@@ -117,12 +117,12 @@ contract Lender {
   /// @param p value of a specific principal according to the Illuminate Principals Enum
   /// @param u address of an underlying asset
   /// @param m maturity (timestamp) of the market
+  /// @param a array of amounts of underlying tokens lent to each order in the orders array
   /// @param y yield pool
   /// @param o array of swivel orders being filled
-  /// @param a array of amounts of underlying tokens lent to each order in the orders array
   /// @param s array of signatures for each order in the orders array
   /// @return uint256 the amount of principal tokens lent out
-  function lend(uint8 p, address u, uint256 m, address y, Swivel.Order[] calldata o, uint256[] calldata a, Swivel.Components[] calldata s) public returns (uint256) {
+  function lend(uint8 p, address u, uint256 m, uint256[] calldata a, address y, Swivel.Order[] calldata o, Swivel.Components[] calldata s) public returns (uint256) {
     // check the principal is swivel
     require(p == uint8(MarketPlace.Principals.Swivel));
 
