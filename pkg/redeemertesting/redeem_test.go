@@ -221,9 +221,6 @@ func (s *redeemTestSuite) SetupSuite() {
 
 	s.Redeemer.SetMarketPlaceAddress(s.Dep.MarketplaceAddress)
 	s.Env.Blockchain.Commit()
-
-	s.Redeemer.SetLenderAddress(s.Dep.LenderAddress)
-	s.Env.Blockchain.Commit()
 }
 
 func (s *redeemTestSuite) TestAPWineRedeem() {

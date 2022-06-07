@@ -186,18 +186,18 @@ func Deploy(e *Env) (*Dep, error) {
 
 	e.Blockchain.Commit()
 
-	redeemerAddress, _, redeemerContract, redeemerErr := redeemer.DeployRedeemer(e.Owner.Opts, e.Blockchain, swivelAddress, pAddress, tAddress, apAddress)
-
-	if redeemerErr != nil {
-		return nil, redeemerErr
-	}
-
-	e.Blockchain.Commit()
-
 	lenderAddress, _, lenderContract, lenderErr := lender.DeployLender(e.Owner.Opts, e.Blockchain, swivelAddress, pAddress, tAddress)
 
 	if lenderErr != nil {
 		return nil, lenderErr
+	}
+
+	e.Blockchain.Commit()
+
+	redeemerAddress, _, redeemerContract, redeemerErr := redeemer.DeployRedeemer(e.Owner.Opts, e.Blockchain, lenderAddress, swivelAddress, pAddress, tAddress, apAddress)
+
+	if redeemerErr != nil {
+		return nil, redeemerErr
 	}
 
 	e.Blockchain.Commit()
