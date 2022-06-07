@@ -173,7 +173,6 @@ contract Redeemer {
     address self = address(this);
 
     // Get the balance of tokens to be redeemed by the user
-    // TODO: This is probably incorrect
     uint256 amount = token.balanceOf(self);
 
     // Transfer the user's tokens to the redeem contract
