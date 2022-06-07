@@ -20,12 +20,14 @@ contract Redeemer {
   event Redeem(uint8 principal, address indexed underlying, uint256 indexed maturity, uint256 amount);  
 
   /// @notice Initializes the Redeemer contract
+  /// @param l: the lender contract
   /// @param s: the swivel contract
   /// @param p: the pendle contract
   /// @param t: the tempus contract
   /// @param a: the apwine contract
-  constructor(address s, address p, address t, address a) {
+  constructor(address l, address s, address p, address t, address a) {
     admin = msg.sender;
+    lender = l;
     swivelAddr = s;
     pendleAddr = p;
     tempusAddr = t;
@@ -39,12 +41,6 @@ contract Redeemer {
   function setMarketPlaceAddress(address m) authorized(admin) external returns (bool) {
     require(marketPlace == address(0));
     marketPlace = m;
-    return true;
-  }
-
-  function setLenderAddress(address l) authorized(admin) external returns (bool) {
-    require(lender == address(0));
-    lender = l;
     return true;
   }
 
