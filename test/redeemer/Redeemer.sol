@@ -197,6 +197,7 @@ contract Redeemer {
   /// @param f address from where the underlying asset will be burned
   /// @param t address to where the underlying asset will be transferred
   /// @param a amount of the underlying asset to be burned
+  /// @return bool true if the underlying asset was burned successfully
   function authRedeem(address u, uint256 m, address f, address t, uint256 a) authorized(IMarketPlace(marketPlace).markets(u, m, 0)) public returns (bool) {
     // Get the principal token for the given market
     IZcToken pt = IZcToken(IMarketPlace(marketPlace).markets(u, m, 0));
@@ -211,7 +212,6 @@ contract Redeemer {
     // Transfer the original underlying token back to the user
     Safe.transfer(IErc20(u), t, a);
   }
-
 
   modifier authorized(address a) {
     require(msg.sender == a, 'sender must be authorized');
