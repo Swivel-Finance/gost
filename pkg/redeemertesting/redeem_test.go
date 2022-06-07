@@ -7,6 +7,7 @@ import (
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
+	"github.com/swivel-finance/gost/test/lender"
 	"github.com/swivel-finance/gost/test/mocks"
 	"github.com/swivel-finance/gost/test/redeemer"
 )
@@ -33,6 +34,7 @@ type redeemTestSuite struct {
 	ElementToken *mocks.ElementTokenSession
 	Notional     *mocks.NotionalSession
 	Redeemer     *redeemer.RedeemerSession
+	Lender       *lender.LenderSession
 }
 
 func (s *redeemTestSuite) SetupSuite() {
@@ -218,6 +220,9 @@ func (s *redeemTestSuite) SetupSuite() {
 	}
 
 	s.Redeemer.SetMarketPlaceAddress(s.Dep.MarketplaceAddress)
+	s.Env.Blockchain.Commit()
+
+	s.Redeemer.SetLenderAddress(s.Dep.LenderAddress)
 	s.Env.Blockchain.Commit()
 }
 

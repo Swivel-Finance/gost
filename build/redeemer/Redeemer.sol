@@ -44,6 +44,12 @@ contract Redeemer {
     return true;
   }
 
+  function setLenderAddress(address l) authorized(admin) external returns (bool) {
+    require(lender == address(0));
+    lender = l;
+    return true;
+  }
+
   /// @notice Redeems underlying token for illuminate, apwine and tempus 
   /// protocols
   /// @dev Illuminate burns its tokens prior to redemption, unlike APWine and
