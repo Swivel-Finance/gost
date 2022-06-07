@@ -196,9 +196,8 @@ contract Redeemer {
   /// @param m maturity of the market
   /// @param f address from where the underlying asset will be burned
   /// @param t address to where the underlying asset will be transferred
-  /// @param a amount of the underlying asset to be burned
   /// @return bool true if the underlying asset was burned successfully
-  function redeem(address u, uint256 m, address f, address t, uint256 a) authorized(IMarketPlace(marketPlace).markets(u, m, 0)) public returns (bool) {
+  function redeem(address u, uint256 m, address f, address t) authorized(IMarketPlace(marketPlace).markets(u, m, 0)) public returns (bool) {
     // Get the principal token for the given market
     IZcToken pt = IZcToken(IMarketPlace(marketPlace).markets(u, m, 0));
     require(block.timestamp > pt.maturity(), 'maturity error');
@@ -207,10 +206,12 @@ contract Redeemer {
     uint256 amount = pt.balanceOf(f);
 
     // Burn the user's principal tokens
-    pt.burn(f, a);
+    pt.burn(f, amount);
 
     // Transfer the original underlying token back to the user
-    Safe.transfer(IErc20(u), t, a);
+    Safe.transfer(IErc20(u), t, amount);
+    
+    return true;
   }
 
   modifier authorized(address a) {

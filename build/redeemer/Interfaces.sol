@@ -19,6 +19,7 @@ interface IZcToken {
 	function mint(address, uint256) external returns (bool);
 	function balanceOf(address) external returns (uint256);
 	function burn(address, uint256) external;
+  function maturity() external view returns (uint256);
 }
 
 interface IAPWine {
