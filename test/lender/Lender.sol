@@ -169,11 +169,11 @@ contract Lender {
   /// @param u address of an underlying asset
   /// @param m maturity (timestamp) of the market
   /// @param a amount of principal tokens to lend
-  /// @param e element pool that is lent to
-  /// @param i the id of the pool
   /// @param r minimum amount to return, this puts a cap on allowed slippage
   /// @param d deadline is a timestamp by which the swap must be executed deadline is a timestamp by which the swap must be executed
-  function lend(uint8 p, address u, uint256 m, uint256 a, address e, bytes32 i, uint256 r, uint256 d) public returns (uint256) {
+  /// @param e element pool that is lent to
+  /// @param i the id of the pool
+  function lend(uint8 p, address u, uint256 m, uint256 a, uint256 r, uint256 d, address e, bytes32 i) public returns (uint256) {
     // check the principal is element
     require(p == uint8(MarketPlace.Principals.Element));
     // Get the principal token for this market for element
@@ -261,11 +261,11 @@ contract Lender {
   /// @param m maturity (timestamp) of the market
   /// @param a amount of principal tokens to lend
   /// @param r minimum amount to return when executing the swap (sets a limit to slippage)
-  /// @param x tempus amm that executes the swap
-  /// @param t tempus pool that houses the underlying principal tokens
   /// @param d deadline is a timestamp by which the swap must be executed
+  /// @param t tempus pool that houses the underlying principal tokens
+  /// @param x tempus amm that executes the swap
   /// @return uint256 the amount of principal tokens lent out
-  function lend(uint8 p, address u, uint256 m, uint256 a, uint256 r, address x, address t, uint256 d) public returns (uint256) {
+  function lend(uint8 p, address u, uint256 m, uint256 a, uint256 r, uint256 d, address t, address x) public returns (uint256) {
     // check the principal is tempus
     require(p == uint8(MarketPlace.Principals.Tempus));
 
@@ -301,11 +301,11 @@ contract Lender {
   /// @param u address of an underlying asset
   /// @param m maturity (timestamp) of the market
   /// @param a amount of underlying tokens to lend
+  /// @param r minimum number of tokens to lend (sets a limit on the order)
   /// @param x amm that is used to conduct the swap
   /// @param s contract that holds the principal token for this market
-  /// @param r minimum number of tokens to lend (sets a limit on the order)
   /// @return uint256 the amount of principal tokens lent out
-  function lend(uint8 p, address u, uint256 m, uint128 a, address x, address s, uint256 r) public returns (uint256) {
+  function lend(uint8 p, address u, uint256 m, uint128 a, uint256 r, address x, address s) public returns (uint256) {
     // check the principal is sense
     require(p == uint8(MarketPlace.Principals.Sense));
 
