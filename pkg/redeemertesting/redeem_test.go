@@ -563,9 +563,6 @@ func (s *redeemTestSuite) TestContractRedeem() {
 	s.Env.Blockchain.AdjustTime(time.Duration(maturity.Int64()+1) * time.Second)
 	s.Env.Blockchain.Commit()
 
-	s.ZcToken.BalanceOfReturns(amount)
-	s.Env.Blockchain.Commit()
-
 	s.Erc20.TransferReturns(true)
 	s.Env.Blockchain.Commit()
 
@@ -579,14 +576,12 @@ func (s *redeemTestSuite) TestContractRedeem() {
 	// assert.NoError(err)
 	// assert.NotNil(tx)
 	// s.Env.Blockchain.Commit()
-	tx, err := s.Dep.Redeemer.Redeem3(
-		&bind.TransactOpts{
-			From: s.Dep.ZcTokenAddress,
-		},
+	tx, err := s.Redeemer.AuthRedeem(
 		s.Dep.Erc20Address,
 		maturity,
 		s.Env.User1.Opts.From,
 		s.Env.User2.Opts.From,
+		amount,
 	)
 	assert.NoError(err)
 	assert.NotNil(tx)
