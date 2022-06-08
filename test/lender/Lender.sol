@@ -89,11 +89,11 @@ contract Lender {
         p == uint8(MarketPlace.Principals.Yield));
 
     // uses yield token interface...
-    IYield yToken = IYield(y);
+    IYield pool = IYield(y);
 
     // the yield token must match the market pair
-    require(address(yToken.base()) == u, 'yield base != underlying');
-    require(yToken.maturity() == m, 'yield maturity != maturity');
+    require(address(pool.base()) == u, 'yield base != underlying');
+    require(pool.maturity() == m, 'yield maturity != maturity');
 
     // transfer from user to illuminate
     Safe.transferFrom(IErc20(u), msg.sender, address(this), a);
