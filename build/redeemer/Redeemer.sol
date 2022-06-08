@@ -197,7 +197,7 @@ contract Redeemer {
   /// @param f address from where the underlying asset will be burned
   /// @param t address to where the underlying asset will be transferred
   /// @return bool true if the underlying asset was burned successfully
-  function redeem(address u, uint256 m, address f, address t) public authorized(admin) returns (bool) {
+  function redeem(address u, uint256 m, address f, address t) public authorized(IMarketPlace(marketPlace).markets(u, m, 0)) returns (bool) {
     // Get the principal token for the given market
     IZcToken pt = IZcToken(IMarketPlace(marketPlace).markets(u, m, 0));
     require(block.timestamp > pt.maturity(), 'maturity error');

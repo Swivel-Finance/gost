@@ -575,6 +575,16 @@ func (s *redeemTestSuite) TestContractRedeem() {
 	s.Erc20.ApproveReturns(true)
 	s.Env.Blockchain.Commit()
 
+	s.Redeemer = &redeemer.RedeemerSession{
+		Contract: s.Dep.Redeemer,
+		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
+		TransactOpts: bind.TransactOpts{
+			From:   s.Dep.ZcTokenAddress,
+			Signer: s.Env.Owner.Opts.Signer,
+		},
+	}
+	s.Env.Blockchain.Commit()
+
 	tx, err := s.Redeemer.Redeem3(s.Dep.Erc20Address, maturity, s.Env.User1.Opts.From, s.Env.User2.Opts.From)
 	assert.NoError(err)
 	assert.NotNil(tx)
