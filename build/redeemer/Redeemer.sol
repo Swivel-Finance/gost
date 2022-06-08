@@ -190,7 +190,7 @@ contract Redeemer {
   }
 
 
-  /// @notice implements the redeem method for the contract to fulfil the 
+  /// @notice implements the redeem method for the contract to fulfill the 
   /// ERC-5095 interface
   /// @param u address of the underlying asset
   /// @param m maturity of the market
