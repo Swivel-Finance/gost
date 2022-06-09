@@ -189,6 +189,28 @@ contract Redeemer {
     return true;
   }
 
+
+  /// @notice implements the redeem method for the contract to fulfill the 
+  /// ERC-5095 interface
+  /// @param u address of the underlying asset
+  /// @param m maturity of the market
+  /// @param f address from where the underlying asset will be burned
+  /// @param t address to where the underlying asset will be transferred
+  /// @param a amount of the underlying asset to be burned and sent to the to
+  /// @return bool true if the underlying asset was burned successfully
+  function authRedeem(address u, uint256 m, address f, address t, uint256 a) public authorized(IMarketPlace(marketPlace).markets(u, m, 0)) returns (bool) {
+    // Get the principal token for the given market
+    IZcToken pt = IZcToken(IMarketPlace(marketPlace).markets(u, m, 0));
+    require(block.timestamp > pt.maturity(), 'maturity error');
+
+    // Burn the user's principal tokens
+    pt.burn(f, a);
+
+    // Transfer the original underlying token back to the user
+    Safe.transfer(IErc20(u), t, a);
+    return true;
+  }
+
   modifier authorized(address a) {
     require(msg.sender == a, 'sender must be authorized');
     _;

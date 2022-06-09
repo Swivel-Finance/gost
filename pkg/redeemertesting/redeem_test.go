@@ -3,6 +3,7 @@ package redeemertesting
 import (
 	"math/big"
 	test "testing"
+	"time"
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/stretchr/testify/assert"
@@ -545,6 +546,53 @@ func (s *redeemTestSuite) TestNotionalRedeem() {
 	assert.NoError(err)
 	assert.Equal(amount, underlyingTransfer.Amount)
 	assert.Equal(s.Dep.RedeemerAddress, underlyingTransfer.To)
+}
+
+func (s *redeemTestSuite) TestContractRedeem() {
+	assert := assert.New(s.T())
+
+	amount := big.NewInt(1000)
+	maturity := big.NewInt(9999999)
+
+	s.MarketPlace.ZcTokenSpoofReturns(s.Env.Owner.Opts.From)
+	s.Env.Blockchain.Commit()
+
+	s.MarketPlace.ZcTokenReturns(s.Dep.ZcTokenAddress)
+	s.Env.Blockchain.Commit()
+
+	s.ZcToken.MaturityReturns(maturity)
+	s.Env.Blockchain.Commit()
+
+	s.Env.Blockchain.AdjustTime(time.Duration(maturity.Int64()+1) * time.Second)
+	s.Env.Blockchain.Commit()
+
+	s.Erc20.TransferReturns(true)
+	s.Env.Blockchain.Commit()
+
+	s.Erc20.Approve(s.Env.User1.Opts.From, amount)
+	s.Env.Blockchain.Commit()
+
+	s.Erc20.ApproveReturns(true)
+	s.Env.Blockchain.Commit()
+
+	_, err := s.Redeemer.AuthRedeem(
+		s.Dep.Erc20Address,
+		maturity,
+		s.Env.User1.Opts.From,
+		s.Env.User2.Opts.From,
+		amount,
+	)
+	assert.NoError(err)
+	s.Env.Blockchain.Commit()
+
+	// verify that the mocked functions were called as expected
+	burnCall, err := s.ZcToken.BurnCalled(s.Env.User1.Opts.From)
+	assert.NoError(err)
+	assert.Equal(amount, burnCall)
+
+	underlyingTransfer, err := s.Erc20.TransferCalled(s.Env.User2.Opts.From)
+	assert.NoError(err)
+	assert.Equal(amount, underlyingTransfer)
 }
 
 func TestRedeemSuite(t *test.T) {
