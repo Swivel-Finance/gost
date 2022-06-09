@@ -2,7 +2,7 @@
 
 pragma solidity 0.8.13;
 
-import "./Interfaces.sol";
+import './Interfaces.sol';
 
 library Element {
     // TODO are these established element names? kind? not type? etc...

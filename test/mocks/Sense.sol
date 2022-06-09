@@ -15,8 +15,7 @@ contract Sense {
     }
 
     uint256 private swapUnderlyingForPTsReturn;
-    mapping(address => SwapUnderlyingForPTsArgs)
-        public swapUnderlyingForPTsCalled;
+    mapping(address => SwapUnderlyingForPTsArgs) public swapUnderlyingForPTsCalled;
     mapping(address => RedeemArgs) public redeemCalled;
 
     function swapUnderlyingForPTsReturns(uint256 s) external {

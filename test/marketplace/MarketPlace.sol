@@ -2,9 +2,9 @@
 
 pragma solidity 0.8.13;
 
-import "./Interfaces.sol";
-import "./ZcToken.sol";
-import "./Safe.sol";
+import './Interfaces.sol';
+import './ZcToken.sol';
+import './Safe.sol';
 
 contract MarketPlace {
     /// @notice the available principals
@@ -56,10 +56,7 @@ contract MarketPlace {
         string calldata s,
         uint8 d
     ) external authorized(admin) returns (bool) {
-        require(
-            markets[u][m][uint256(Principals.Illuminate)] == address(0),
-            "market exists"
-        );
+        require(markets[u][m][uint256(Principals.Illuminate)] == address(0), 'market exists');
 
         // deploy an illuminate token with this new market
         // NOTE: ATM is using name as symbol args
@@ -67,17 +64,7 @@ contract MarketPlace {
 
         // the market will have the illuminate principal as its zeroth item, thus t should have Principals[1] as [0]
         // TODO we could choose to put illuminate last in
-        address[9] memory market = [
-            iToken,
-            t[0],
-            t[1],
-            t[2],
-            t[3],
-            t[4],
-            t[5],
-            t[6],
-            t[7]
-        ];
+        address[9] memory market = [iToken, t[0], t[1], t[2], t[3], t[4], t[5], t[6], t[7]];
 
         // max is the maximum integer value for a 256 unsighed integer
         uint256 max = 2**256 - 1;
@@ -96,7 +83,7 @@ contract MarketPlace {
     }
 
     modifier authorized(address a) {
-        require(msg.sender == a, "sender must be authorized");
+        require(msg.sender == a, 'sender must be authorized');
         _;
     }
 }

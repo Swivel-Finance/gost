@@ -27,13 +27,7 @@ contract APWine {
         uint256 m,
         address to
     ) external returns (uint256) {
-        swapExactAmountInCalled[to] = SwapExactAmountInArgs(
-            i,
-            tokenIn,
-            tokenOut,
-            a,
-            m
-        );
+        swapExactAmountInCalled[to] = SwapExactAmountInArgs(i, tokenIn, tokenOut, a, m);
         return swapExactAmountInReturn;
     }
 

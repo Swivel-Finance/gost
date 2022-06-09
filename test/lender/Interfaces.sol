@@ -2,8 +2,8 @@
 
 pragma solidity 0.8.13;
 
-import "./Swivel.sol"; // library of swivel specific constructs
-import "./Element.sol"; // library of Element specific constructs
+import './Swivel.sol'; // library of swivel specific constructs
+import './Element.sol'; // library of Element specific constructs
 
 interface Any {}
 

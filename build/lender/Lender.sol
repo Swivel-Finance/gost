@@ -2,12 +2,12 @@
 
 pragma solidity 0.8.13;
 
-import "./Interfaces.sol";
-import "./MarketPlace.sol"; // library of market place specific constructs
-import "./Swivel.sol"; // library of swivel specific constructs
-import "./Element.sol"; // library of element specific constructs
-import "./Safe.sol";
-import "./Cast.sol";
+import './Interfaces.sol';
+import './MarketPlace.sol'; // library of market place specific constructs
+import './Swivel.sol'; // library of swivel specific constructs
+import './Element.sol'; // library of element specific constructs
+import './Safe.sol';
+import './Cast.sol';
 
 contract Lender {
     address public admin;
@@ -23,18 +23,8 @@ contract Lender {
     /// @notice maps underlying tokens to the amount of fees accumulated for that token
     mapping(address => uint256) public fees;
 
-    event Lend(
-        uint8 principal,
-        address indexed underlying,
-        uint256 indexed maturity,
-        uint256 returned
-    );
-    event Mint(
-        uint8 principal,
-        address indexed underlying,
-        uint256 indexed maturity,
-        uint256 amount
-    );
+    event Lend(uint8 principal, address indexed underlying, uint256 indexed maturity, uint256 returned);
+    event Mint(uint8 principal, address indexed underlying, uint256 indexed maturity, uint256 amount);
 
     /// @notice Initializes the Lender contract
     /// @dev the ctor sets a default value for the feenominator
@@ -65,11 +55,7 @@ contract Lender {
     /// addresses of all the fixed rate markets
     /// @param m: the address of the marketplace contract
     /// @return bool true if the address was set, false otherwise
-    function setMarketPlaceAddress(address m)
-        external
-        authorized(admin)
-        returns (bool)
-    {
+    function setMarketPlaceAddress(address m) external authorized(admin) returns (bool) {
         require(marketPlace == address(0));
         marketPlace = m;
         return true;
@@ -116,17 +102,14 @@ contract Lender {
         address y
     ) public returns (uint256) {
         // check the principal is illuminate or yield
-        require(
-            p == uint8(MarketPlace.Principals.Illuminate) ||
-                p == uint8(MarketPlace.Principals.Yield)
-        );
+        require(p == uint8(MarketPlace.Principals.Illuminate) || p == uint8(MarketPlace.Principals.Yield));
 
         // uses yield token interface...
         IYield pool = IYield(y);
 
         // the yield token must match the market pair
-        require(address(pool.base()) == u, "yield base != underlying");
-        require(pool.maturity() == m, "yield maturity != maturity");
+        require(address(pool.base()) == u, 'yield base != underlying');
+        require(pool.maturity() == m, 'yield maturity != maturity');
 
         // transfer from user to illuminate
         Safe.transferFrom(IErc20(u), msg.sender, address(this), a);
@@ -178,11 +161,8 @@ contract Lender {
             for (uint256 i = 0; i < o.length; i++) {
                 Swivel.Order memory order = o[i];
                 // Require the Swivel order provided matches the underlying and maturity market provided
-                require(order.maturity == m, "swivel maturity != maturity");
-                require(
-                    order.underlying == u,
-                    "swivel underlying != underlying"
-                );
+                require(order.maturity == m, 'swivel maturity != maturity');
+                require(order.underlying == u, 'swivel underlying != underlying');
                 // Determine the fee
                 uint256 fee = calculateFee(a[i]);
                 // Track accumulated fees
@@ -232,14 +212,8 @@ contract Lender {
         address principal = IMarketPlace(marketPlace).markets(u, m, p);
 
         // the element token must match the market pair
-        require(
-            IElementToken(principal).underlying() == u,
-            "element underlying != underlying"
-        );
-        require(
-            IElementToken(principal).unlockTimestamp() == m,
-            "element maturity != maturity"
-        );
+        require(IElementToken(principal).underlying() == u, 'element underlying != underlying');
+        require(IElementToken(principal).unlockTimestamp() == m, 'element maturity != maturity');
 
         // Transfer underlying token from user to illuminate
         Safe.transferFrom(IErc20(u), msg.sender, address(this), a);
@@ -256,7 +230,7 @@ contract Lender {
         });
 
         Element.SingleSwap memory swap = Element.SingleSwap({
-            userData: "0x00000000000000000000000000000000000000000000000000000000000000",
+            userData: '0x00000000000000000000000000000000000000000000000000000000000000',
             poolId: i,
             amount: a - calculateFee(a),
             kind: Element.SwapKind.In,
@@ -294,8 +268,8 @@ contract Lender {
         IPendleToken token = IPendleToken(principal);
 
         // confirm that we are in the correct market
-        require(token.yieldToken() == u, "pendle underlying != underlying");
-        require(token.expiry() == m, "pendle maturity != maturity");
+        require(token.yieldToken() == u, 'pendle underlying != underlying');
+        require(token.expiry() == m, 'pendle maturity != maturity');
 
         // Transfer funds from user to Illuminate
         Safe.transferFrom(IErc20(u), msg.sender, address(this), a);
@@ -308,13 +282,7 @@ contract Lender {
         path[1] = principal;
 
         // Swap on the Pendle Router using the provided market and params
-        uint256 returned = IPendle(pendleAddr).swapExactTokensForTokens(
-            a - calculateFee(a),
-            r,
-            path,
-            address(this),
-            d
-        )[0];
+        uint256 returned = IPendle(pendleAddr).swapExactTokensForTokens(a - calculateFee(a), r, path, address(this), d)[0];
 
         // Mint Illuminate zero coupons
         address illuminateToken = zcToken(u, m);
@@ -351,14 +319,8 @@ contract Lender {
 
         // Instantiate market and tokens
         address principal = IMarketPlace(marketPlace).markets(u, m, p);
-        require(
-            ITempus(principal).yieldBearingToken() == IErc20Metadata(u),
-            "tempus underlying != underlying"
-        );
-        require(
-            ITempus(principal).maturityTime() == m,
-            "tempus maturity != maturity"
-        );
+        require(ITempus(principal).yieldBearingToken() == IErc20Metadata(u), 'tempus underlying != underlying');
+        require(ITempus(principal).maturityTime() == m, 'tempus maturity != maturity');
 
         // Get the underlying token
         IErc20 underlyingToken = IErc20(u);
@@ -371,14 +333,8 @@ contract Lender {
 
         // Swap on the Tempus Router using the provided market and params
         IZcToken illuminateToken = IZcToken(zcToken(u, m));
-        uint256 returned = ITempus(tempusAddr).depositAndFix(
-            Any(x),
-            Any(t),
-            a - calculateFee(a),
-            true,
-            r,
-            d
-        ) - illuminateToken.balanceOf(address(this));
+        uint256 returned = ITempus(tempusAddr).depositAndFix(Any(x), Any(t), a - calculateFee(a), true, r, d) -
+            illuminateToken.balanceOf(address(this));
 
         // Mint Illuminate zero coupons
         illuminateToken.mint(msg.sender, returned);
@@ -411,12 +367,10 @@ contract Lender {
         require(p == uint8(MarketPlace.Principals.Sense));
 
         // Get the principal token for this market for this market
-        ISenseToken token = ISenseToken(
-            IMarketPlace(marketPlace).markets(u, m, p)
-        );
+        ISenseToken token = ISenseToken(IMarketPlace(marketPlace).markets(u, m, p));
 
         // Verify that the underlying matches up
-        require(token.underlying() == u, "sense underlying != underlying");
+        require(token.underlying() == u, 'sense underlying != underlying');
 
         // Determine the fee
         uint256 fee = calculateFee(a);
@@ -467,10 +421,7 @@ contract Lender {
 
         // Instantiate market and tokens
         address principal = IMarketPlace(marketPlace).markets(u, m, p);
-        require(
-            IAPWineToken(principal).getPTAddress() == u,
-            "apwine principle != principle"
-        );
+        require(IAPWineToken(principal).getPTAddress() == u, 'apwine principle != principle');
 
         // Transfer funds from user to Illuminate
         Safe.transferFrom(IErc20(u), msg.sender, address(this), a);
@@ -485,14 +436,7 @@ contract Lender {
         uint256 lent = a - fee;
 
         // Swap on the APWine Pool using the provided market and params
-        uint256 returned = IAPWineRouter(pool).swapExactAmountIn(
-            i,
-            1,
-            lent,
-            0,
-            r,
-            address(this)
-        );
+        uint256 returned = IAPWineRouter(pool).swapExactAmountIn(i, 1, lent, 0, r, address(this));
 
         // Mint Illuminate zero coupons
         IZcToken(zcToken(u, m)).mint(msg.sender, returned);
@@ -523,10 +467,10 @@ contract Lender {
         INotional token = INotional(principal);
 
         // Verify that the maturity matches up
-        require(token.getMaturity() == m, "notional maturity != maturity");
+        require(token.getMaturity() == m, 'notional maturity != maturity');
         // Verify that the underlying matches up
         (IErc20 underlying, ) = token.getUnderlyingToken();
-        require(address(underlying) == u, "notional underlying != underlying");
+        require(address(underlying) == u, 'notional underlying != underlying');
 
         // Transfer funds from user to Illuminate
         Safe.transferFrom(IErc20(u), msg.sender, address(this), a);
@@ -609,7 +553,7 @@ contract Lender {
     }
 
     modifier authorized(address a) {
-        require(msg.sender == a, "sender must be authorized");
+        require(msg.sender == a, 'sender must be authorized');
         _;
     }
 }

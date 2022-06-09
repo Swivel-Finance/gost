@@ -5,7 +5,7 @@
 
 pragma solidity 0.8.13;
 
-import {IErc20} from "./Interfaces.sol";
+import {IErc20} from './Interfaces.sol';
 
 /**
   @notice Safe ETH and ERC20 transfer library that gracefully handles missing return values.
@@ -31,18 +31,9 @@ library Safe {
             let pointer := mload(0x40)
 
             // Write the abi-encoded calldata to memory piece by piece:
-            mstore(
-                pointer,
-                0x23b872dd00000000000000000000000000000000000000000000000000000000
-            ) // Begin with the function selector.
-            mstore(
-                add(pointer, 4),
-                and(f, 0xffffffffffffffffffffffffffffffffffffffff)
-            ) // Mask and append the "from" argument.
-            mstore(
-                add(pointer, 36),
-                and(t, 0xffffffffffffffffffffffffffffffffffffffff)
-            ) // Mask and append the "to" argument.
+            mstore(pointer, 0x23b872dd00000000000000000000000000000000000000000000000000000000) // Begin with the function selector.
+            mstore(add(pointer, 4), and(f, 0xffffffffffffffffffffffffffffffffffffffff)) // Mask and append the "from" argument.
+            mstore(add(pointer, 36), and(t, 0xffffffffffffffffffffffffffffffffffffffff)) // Mask and append the "to" argument.
             mstore(add(pointer, 68), a) // Finally append the "amount" argument. No mask as it's a full 32 byte value.
 
             // Call the token and store if it succeeded or not.
@@ -50,7 +41,7 @@ library Safe {
             result := call(gas(), e, 0, pointer, 100, 0, 0)
         }
 
-        require(success(result), "transfer from failed");
+        require(success(result), 'transfer from failed');
     }
 
     /// @param e Erc20 token to execute the call with
@@ -68,14 +59,8 @@ library Safe {
             let pointer := mload(0x40)
 
             // Write the abi-encoded calldata to memory piece by piece:
-            mstore(
-                pointer,
-                0xa9059cbb00000000000000000000000000000000000000000000000000000000
-            ) // Begin with the function selector.
-            mstore(
-                add(pointer, 4),
-                and(t, 0xffffffffffffffffffffffffffffffffffffffff)
-            ) // Mask and append the "to" argument.
+            mstore(pointer, 0xa9059cbb00000000000000000000000000000000000000000000000000000000) // Begin with the function selector.
+            mstore(add(pointer, 4), and(t, 0xffffffffffffffffffffffffffffffffffffffff)) // Mask and append the "to" argument.
             mstore(add(pointer, 36), a) // Finally append the "amount" argument. No mask as it's a full 32 byte value.
 
             // Call the token and store if it succeeded or not.
@@ -83,7 +68,7 @@ library Safe {
             result := call(gas(), e, 0, pointer, 68, 0, 0)
         }
 
-        require(success(result), "transfer failed");
+        require(success(result), 'transfer failed');
     }
 
     /// @notice normalize the acceptable values of true or null vs the unacceptable value of false (or something malformed)

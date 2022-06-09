@@ -41,7 +41,15 @@ interface IErc2612 {
      * https://eips.ethereum.org/EIPS/eip-2612#specification[relevant EIP
      * section].
      */
-    function permit(address o, address spender, uint256 a, uint256 d, uint8 v, bytes32 r, bytes32 s) external;
+    function permit(
+        address o,
+        address spender,
+        uint256 a,
+        uint256 d,
+        uint8 v,
+        bytes32 r,
+        bytes32 s
+    ) external;
 
     /**
      * @dev Returns the current ERC2612 nonce for `owner`. This value must be

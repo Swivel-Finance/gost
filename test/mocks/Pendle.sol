@@ -17,8 +17,7 @@ contract Pendle {
 
     uint256[] private swapExactTokensForTokensReturn;
 
-    mapping(address => SwapExactTokensForTokensArgs)
-        public swapExactTokensForTokensCalled;
+    mapping(address => SwapExactTokensForTokensArgs) public swapExactTokensForTokensCalled;
     mapping(address => RredeemAfterExpiryArgs) public redeemAfterExpiryCalled;
 
     function swapExactTokensForTokensReturns(uint256[] memory r) external {
@@ -32,12 +31,7 @@ contract Pendle {
         address t,
         uint256 d
     ) external returns (uint256[] memory) {
-        swapExactTokensForTokensCalled[t] = SwapExactTokensForTokensArgs(
-            a,
-            m,
-            p,
-            d
-        );
+        swapExactTokensForTokensCalled[t] = SwapExactTokensForTokensArgs(a, m, p, d);
         return swapExactTokensForTokensReturn;
     }
 
