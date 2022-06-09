@@ -2,9 +2,9 @@
 
 pragma solidity 0.8.13;
 
-import './Interfaces.sol';
-import './MarketPlace.sol';
-import './Safe.sol';
+import "./Interfaces.sol";
+import "./MarketPlace.sol";
+import "./Safe.sol";
 
 contract Redeemer {
     address public admin;
@@ -17,7 +17,12 @@ contract Redeemer {
     address public tempusAddr;
     address public apwineAddr;
 
-    event Redeem(uint8 principal, address indexed underlying, uint256 indexed maturity, uint256 amount);
+    event Redeem(
+        uint8 principal,
+        address indexed underlying,
+        uint256 indexed maturity,
+        uint256 amount
+    );
 
     /// @notice Initializes the Redeemer contract
     /// @param l: the lender contract
@@ -44,13 +49,21 @@ contract Redeemer {
     /// addresses of all the fixed rate markets
     /// @param m the address of the marketplace contract
     /// @return bool true if the address was set, false otherwise
-    function setMarketPlaceAddress(address m) external authorized(admin) returns (bool) {
+    function setMarketPlaceAddress(address m)
+        external
+        authorized(admin)
+        returns (bool)
+    {
         require(marketPlace == address(0));
         marketPlace = m;
         return true;
     }
 
-    function setLenderAddress(address l) external authorized(admin) returns (bool) {
+    function setLenderAddress(address l)
+        external
+        authorized(admin)
+        returns (bool)
+    {
         require(lender == address(0));
         lender = l;
         return true;
@@ -98,7 +111,7 @@ contract Redeemer {
             // Transfer the original underlying token back to the user
             Safe.transferFrom(IErc20(u), lender, address(this), amount);
         } else {
-            revert('Invalid principal');
+            revert("Invalid principal");
         }
 
         emit Redeem(0, u, m, amount);
@@ -125,7 +138,7 @@ contract Redeemer {
                 p == uint8(MarketPlace.Principals.Element) ||
                 p == uint8(MarketPlace.Principals.Yield) ||
                 p == uint8(MarketPlace.Principals.Notional),
-            'Invalid principal'
+            "Invalid principal"
         );
 
         // The amount redeemed should be the balance of the principal token held by the illuminate contract
@@ -229,10 +242,14 @@ contract Redeemer {
         address f,
         address t,
         uint256 a
-    ) public authorized(IMarketPlace(marketPlace).markets(u, m, 0)) returns (bool) {
+    )
+        public
+        authorized(IMarketPlace(marketPlace).markets(u, m, 0))
+        returns (bool)
+    {
         // Get the principal token for the given market
         IZcToken pt = IZcToken(IMarketPlace(marketPlace).markets(u, m, 0));
-        require(block.timestamp > pt.maturity(), 'maturity error');
+        require(block.timestamp > pt.maturity(), "maturity error");
 
         // Burn the user's principal tokens
         pt.burn(f, a);
@@ -243,7 +260,7 @@ contract Redeemer {
     }
 
     modifier authorized(address a) {
-        require(msg.sender == a, 'sender must be authorized');
+        require(msg.sender == a, "sender must be authorized");
         _;
     }
 }
