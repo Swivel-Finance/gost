@@ -12,9 +12,13 @@ contract MarketPlace {
     address private zcTokenReturn;
     address private authZcTokenReturn;
 
-    bool public isAuthorized;
+    bool public isAuthorized = false;
 
     mapping (address => MarketsArgs) public marketsCalled;
+
+    function setIsAuthorized(bool a) public {
+        isAuthorized = a;
+    }
 
     function principalTokenReturns(address p) external {
         princialTokenReturn = p;

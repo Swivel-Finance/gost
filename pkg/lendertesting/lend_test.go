@@ -394,7 +394,7 @@ func (s *lendTestSuite) TestLendSwivel() {
 func (s *lendTestSuite) TestLendElement() {
 	assert := assert.New(s.T())
 
-	s.MarketPlace.ZcTokenReturns(s.Dep.ZcTokenAddress)
+	s.MarketPlace.ZcTokenReturns(s.Dep.ZcTokenAddress, false)
 	s.MarketPlace.PrincipalTokenReturns(s.Dep.ElementTokenAddress)
 	s.Env.Blockchain.Commit()
 
@@ -456,7 +456,7 @@ func (s *lendTestSuite) TestLendPendle() {
 	s.ZcToken.MintReturns(true)
 	s.Env.Blockchain.Commit()
 
-	s.MarketPlace.ZcTokenReturns(s.Dep.ZcTokenAddress)
+	s.MarketPlace.ZcTokenReturns(s.Dep.ZcTokenAddress, false)
 	s.MarketPlace.PrincipalTokenReturns(s.Dep.PendleTokenAddress)
 
 	amount := big.NewInt(100)
@@ -481,7 +481,7 @@ func (s *lendTestSuite) TestLendPendle() {
 func (s *lendTestSuite) TestLendTempus() {
 	assert := assert.New(s.T())
 
-	s.MarketPlace.ZcTokenReturns(s.Dep.ZcTokenAddress)
+	s.MarketPlace.ZcTokenReturns(s.Dep.ZcTokenAddress, false)
 	s.MarketPlace.PrincipalTokenReturns(s.Dep.TempusAddress)
 	s.Env.Blockchain.Commit()
 
@@ -529,7 +529,7 @@ func (s *lendTestSuite) TestLendTempus() {
 
 func (s *lendTestSuite) TestLendSense() {
 	assert := assert.New(s.T())
-	s.MarketPlace.ZcTokenReturns(s.Dep.ZcTokenAddress)
+	s.MarketPlace.ZcTokenReturns(s.Dep.ZcTokenAddress, false)
 	s.MarketPlace.PrincipalTokenReturns(s.Dep.SenseTokenAddress)
 	s.Env.Blockchain.Commit()
 
@@ -570,7 +570,7 @@ func (s *lendTestSuite) TestLendSense() {
 
 func (s *lendTestSuite) TestLendAPWine() {
 	assert := assert.New(s.T())
-	s.MarketPlace.ZcTokenReturns(s.Dep.ZcTokenAddress)
+	s.MarketPlace.ZcTokenReturns(s.Dep.ZcTokenAddress, false)
 	s.MarketPlace.PrincipalTokenReturns(s.Dep.APWineTokenAddress)
 	s.Env.Blockchain.Commit()
 
@@ -609,7 +609,7 @@ func (s *lendTestSuite) TestLendAPWine() {
 
 func (s *lendTestSuite) TestLendNotional() {
 	assert := assert.New(s.T())
-	s.MarketPlace.ZcTokenReturns(s.Dep.ZcTokenAddress)
+	s.MarketPlace.ZcTokenReturns(s.Dep.ZcTokenAddress, false)
 	s.MarketPlace.PrincipalTokenReturns(s.Dep.NotionalAddress)
 	s.Env.Blockchain.Commit()
 
