@@ -2,12 +2,18 @@
 
 pragma solidity 0.8.13;
 
-
 interface IErc20 {
-	function approve(address, uint256) external returns (bool);
-	function transfer(address, uint256) external returns (bool);
-	function balanceOf(address) external returns (uint256);
-	function transferFrom(address, address, uint256) external returns (bool);
+    function approve(address, uint256) external returns (bool);
+
+    function transfer(address, uint256) external returns (bool);
+
+    function balanceOf(address) external returns (uint256);
+
+    function transferFrom(
+        address,
+        address,
+        uint256
+    ) external returns (bool);
 }
 
 contract Notional {
@@ -23,8 +29,8 @@ contract Notional {
     uint256 private depositReturn;
     uint256 private maxRedeemReturn;
 
-    mapping (address => TransferFromArgs) public transferFromCalled;
-    mapping (address => uint256) public depositCalled;
+    mapping(address => TransferFromArgs) public transferFromCalled;
+    mapping(address => uint256) public depositCalled;
     address public balanceOfCalled;
     address public maxRedeemCalled;
 
@@ -57,7 +63,11 @@ contract Notional {
         transferFromReturn = b;
     }
 
-    function transferFrom(address f, address t, uint256 a) public returns (bool) {
+    function transferFrom(
+        address f,
+        address t,
+        uint256 a
+    ) public returns (bool) {
         TransferFromArgs memory args;
         args.to = t;
         args.amount = a;

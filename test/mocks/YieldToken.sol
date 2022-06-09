@@ -19,9 +19,9 @@ contract YieldToken {
     bool private transferFromReturn;
 
     address public balanceOfCalled;
-    mapping (address => TransferFromArgs) public transferFromCalled;
-    mapping (address => uint256) public withdrawPrincipalCalled;
-    mapping (address => RedeemArgs) public redeemCalled;
+    mapping(address => TransferFromArgs) public transferFromCalled;
+    mapping(address => uint256) public withdrawPrincipalCalled;
+    mapping(address => RedeemArgs) public redeemCalled;
 
     function unlockTimestampReturns(uint256 u) external {
         unlockTimestampReturn = u;
@@ -34,7 +34,7 @@ contract YieldToken {
     function unlockTimestamp() external view returns (uint256) {
         return unlockTimestampReturn;
     }
-    
+
     function underlying() external view returns (address) {
         return underlyingReturn;
     }
@@ -52,7 +52,11 @@ contract YieldToken {
         transferFromReturn = b;
     }
 
-    function transferFrom(address f, address t, uint256 a) public returns (bool) {
+    function transferFrom(
+        address f,
+        address t,
+        uint256 a
+    ) public returns (bool) {
         TransferFromArgs memory args;
         args.to = t;
         args.amount = a;
@@ -60,7 +64,11 @@ contract YieldToken {
         return transferFromReturn;
     }
 
-    function redeem(address t, address f, uint256 a) external {
+    function redeem(
+        address t,
+        address f,
+        uint256 a
+    ) external {
         RedeemArgs memory args;
         args.from = f;
         args.amount = a;

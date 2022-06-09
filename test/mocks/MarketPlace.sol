@@ -12,7 +12,7 @@ contract MarketPlace {
     address private zcTokenReturn;
     address private zcTokenReturnSpoof;
 
-    mapping (address => MarketsArgs) public marketsCalled;
+    mapping(address => MarketsArgs) public marketsCalled;
 
     function principalTokenReturns(address p) external {
         princialTokenReturn = p;
@@ -26,7 +26,11 @@ contract MarketPlace {
         zcTokenReturnSpoof = s;
     }
 
-    function markets(address u, uint256 m, uint8 p) external returns (address) {
+    function markets(
+        address u,
+        uint256 m,
+        uint8 p
+    ) external returns (address) {
         marketsCalled[u] = MarketsArgs(m, p);
         address spoofed = zcTokenReturnSpoof;
         if (p == 0) {

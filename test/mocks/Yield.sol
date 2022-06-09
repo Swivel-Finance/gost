@@ -3,10 +3,17 @@
 pragma solidity 0.8.13;
 
 interface IErc20 {
-	function approve(address, uint256) external returns (bool);
-	function transfer(address, uint256) external returns (bool);
-	function balanceOf(address) external returns (uint256);
-	function transferFrom(address, address, uint256) external returns (bool);
+    function approve(address, uint256) external returns (bool);
+
+    function transfer(address, uint256) external returns (bool);
+
+    function balanceOf(address) external returns (uint256);
+
+    function transferFrom(
+        address,
+        address,
+        uint256
+    ) external returns (bool);
 }
 
 contract Yield {
@@ -16,7 +23,7 @@ contract Yield {
     uint128 private sellBasePreviewReturn;
 
     // mapping of arguments sent to sellBase. key is the passed in address.
-    mapping (address => uint256) public sellBaseCalled;
+    mapping(address => uint256) public sellBaseCalled;
     uint128 public sellBasePreviewCalled;
 
     function base() external view returns (IErc20) {
@@ -33,7 +40,7 @@ contract Yield {
 
     function maturityReturns(uint32 m) external {
         maturityReturn = m;
-    } 
+    }
 
     function sellBaseReturns(uint128 r) external {
         sellBaseReturn = r;

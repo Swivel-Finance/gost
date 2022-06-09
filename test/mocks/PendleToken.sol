@@ -13,7 +13,7 @@ contract PendleToken {
     bool private transferFromReturn;
     uint256 private balanceOfReturn;
 
-    mapping (address => TransferFromArgs) public transferFromCalled;
+    mapping(address => TransferFromArgs) public transferFromCalled;
     address public balanceOfCalled;
 
     function yieldTokenReturns(address a) external {
@@ -45,7 +45,11 @@ contract PendleToken {
         transferFromReturn = b;
     }
 
-    function transferFrom(address f, address t, uint256 a) public returns (bool) {
+    function transferFrom(
+        address f,
+        address t,
+        uint256 a
+    ) public returns (bool) {
         TransferFromArgs memory args;
         args.to = t;
         args.amount = a;

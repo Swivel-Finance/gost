@@ -62,7 +62,11 @@ interface IPErc20 {
      *
      * Emits a {Transfer} event.
      */
-    function transferFrom(address s, address r, uint256 a) external returns (bool);
+    function transferFrom(
+        address s,
+        address r,
+        uint256 a
+    ) external returns (bool);
 
     /**
      * @dev Emitted when `value` tokens are moved from one account (`from`) to

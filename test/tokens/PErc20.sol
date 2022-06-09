@@ -44,8 +44,8 @@ import './IPErc20.sol';
 
  */
 contract PErc20 is IPErc20 {
-    mapping (address => uint256) private balances;
-    mapping (address => mapping (address => uint256)) private allowances;
+    mapping(address => uint256) private balances;
+    mapping(address => mapping(address => uint256)) private allowances;
 
     uint8 public decimals;
     uint256 public totalSupply;
@@ -58,7 +58,11 @@ contract PErc20 is IPErc20 {
      * @param s Symbol of the token
      * @param d Decimals of the token
      */
-    constructor (string memory n, string memory s, uint8 d) {
+    constructor(
+        string memory n,
+        string memory s,
+        uint8 d
+    ) {
         name = n;
         symbol = s;
         decimals = d;
@@ -127,11 +131,15 @@ contract PErc20 is IPErc20 {
      * - the caller must have allowance for ``sender``'s tokens of at least
      * `amount`.
      */
-    function transferFrom(address s, address r, uint256 a) public virtual override returns (bool) {
+    function transferFrom(
+        address s,
+        address r,
+        uint256 a
+    ) public virtual override returns (bool) {
         _transfer(s, r, a);
 
         uint256 currentAllowance = allowances[s][msg.sender];
-        require(currentAllowance >= a, "erc20 transfer amount exceeds allowance");
+        require(currentAllowance >= a, 'erc20 transfer amount exceeds allowance');
         _approve(s, msg.sender, currentAllowance - a);
 
         return true;
@@ -160,7 +168,7 @@ contract PErc20 is IPErc20 {
      * @dev Atomically decreases the allowance granted to `spender` by the caller.
      * @param s The spender
      * @param a The amount subtracted
-     * 
+     *
      * This is an alternative to {approve} that can be used as a mitigation for
      * problems described in {IERC20-approve}.
      *
@@ -174,7 +182,7 @@ contract PErc20 is IPErc20 {
      */
     function decreaseAllowance(address s, uint256 a) public virtual returns (bool) {
         uint256 currentAllowance = allowances[msg.sender][s];
-        require(currentAllowance >= a, "erc20 decreased allowance below zero");
+        require(currentAllowance >= a, 'erc20 decreased allowance below zero');
         _approve(msg.sender, s, currentAllowance - a);
 
         return true;
@@ -197,12 +205,16 @@ contract PErc20 is IPErc20 {
      * - `recipient` cannot be the zero address.
      * - `sender` must have a balance of at least `amount`.
      */
-    function _transfer(address s, address r, uint256 a) internal virtual {
-        require(s != address(0), "erc20 transfer from the zero address");
-        require(r != address(0), "erc20 transfer to the zero address");
+    function _transfer(
+        address s,
+        address r,
+        uint256 a
+    ) internal virtual {
+        require(s != address(0), 'erc20 transfer from the zero address');
+        require(r != address(0), 'erc20 transfer to the zero address');
 
         uint256 senderBalance = balances[s];
-        require(senderBalance >= a, "erc20 transfer amount exceeds balance");
+        require(senderBalance >= a, 'erc20 transfer amount exceeds balance');
         balances[s] = senderBalance - a;
         balances[r] += a;
 
@@ -221,7 +233,7 @@ contract PErc20 is IPErc20 {
      * - `recipient` cannot be the zero address.
      */
     function _mint(address r, uint256 a) internal virtual {
-        require(r != address(0), "erc20 mint to the zero address");
+        require(r != address(0), 'erc20 mint to the zero address');
 
         totalSupply += a;
         balances[r] += a;
@@ -242,10 +254,10 @@ contract PErc20 is IPErc20 {
      * - `owner` must have at least `amount` tokens.
      */
     function _burn(address o, uint256 a) internal virtual {
-        require(o != address(0), "erc20 burn from the zero address");
+        require(o != address(0), 'erc20 burn from the zero address');
 
         uint256 accountBalance = balances[o];
-        require(accountBalance >= a, "erc20 burn amount exceeds balance");
+        require(accountBalance >= a, 'erc20 burn amount exceeds balance');
         balances[o] = accountBalance - a;
         totalSupply -= a;
 
@@ -268,9 +280,13 @@ contract PErc20 is IPErc20 {
      * - `owner` cannot be the zero address.
      * - `spender` cannot be the zero address.
      */
-    function _approve(address o, address s, uint256 a) internal virtual {
-        require(o != address(0), "erc20 approve from the zero address");
-        require(s != address(0), "erc20 approve to the zero address");
+    function _approve(
+        address o,
+        address s,
+        uint256 a
+    ) internal virtual {
+        require(o != address(0), 'erc20 approve from the zero address');
+        require(s != address(0), 'erc20 approve to the zero address');
 
         allowances[o][s] = a;
         emit Approval(o, s, a);
