@@ -10,34 +10,34 @@ contract MarketPlace {
 
     address private princialTokenReturn;
     address private zcTokenReturn;
-    address private authZcTokenReturn;
+    address private spoof;
 
-    bool public isAuthorized = false;
+    bool public spoofing = false;
 
     mapping (address => MarketsArgs) public marketsCalled;
 
-    function setIsAuthorized(bool a) public {
-        isAuthorized = a;
+    function isSpoofing(bool a) public {
+        spoofing = a;
     }
 
     function principalTokenReturns(address p) external {
         princialTokenReturn = p;
     }
 
-    function zcTokenReturns(address z, bool authorized) external {
-        if (authorized) {
-            authZcTokenReturn = z;
-        } else {
-            zcTokenReturn = z;
-        }
+    function zcTokenReturns(address z) external {
+        zcTokenReturn = z;
+    }
+
+    function spoofingReturns(address s) external {
+        spoof = s;
     }
 
     function markets(address u, uint256 m, uint8 p) external returns (address) {
         marketsCalled[u] = MarketsArgs(m, p);
         if (p == 0) {
-          if (isAuthorized) {
-            isAuthorized = false;
-            return authZcTokenReturn;
+          if (spoofing) {
+            spoofing = false;
+            return spoof;
           }
           return zcTokenReturn;
         }

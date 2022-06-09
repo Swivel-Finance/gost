@@ -201,6 +201,7 @@ contract Redeemer {
   function authRedeem(address u, uint256 m, address f, address t, uint256 a) public authorized(IMarketPlace(marketPlace).markets(u, m, 0)) returns (bool) {
     // Get the principal token for the given market
     IZcToken pt = IZcToken(IMarketPlace(marketPlace).markets(u, m, 0));
+    require(1 == 2, "got here");
     require(block.timestamp > pt.maturity(), 'maturity error');
 
     // Burn the user's principal tokens
