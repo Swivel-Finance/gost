@@ -401,6 +401,10 @@ func (s *redeemTestSuite) TestSenseRedeem() {
 	s.Env.Blockchain.Commit()
 
 	// verify that the mocked functions were called as expected
+	balanceOfCalled, err := s.SenseToken.BalanceOfCalled()
+	assert.NoError(err)
+	assert.Equal(s.Dep.MarketplaceAddress, balanceOfCalled)
+
 	redeemCall, err := s.Sense.RedeemCalled(adapter)
 	assert.NoError(err)
 	assert.Equal(maturity, redeemCall.Maturity)
