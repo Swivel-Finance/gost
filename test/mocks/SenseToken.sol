@@ -12,7 +12,7 @@ contract SenseToken {
     bool private transferFromReturn;
     uint256 private balanceOfReturn;
 
-    mapping (address => TransferFromArgs) public transferFromCalled;
+    mapping(address => TransferFromArgs) public transferFromCalled;
     address public balanceOfCalled;
 
     function underlyingReturns(address a) external {
@@ -36,7 +36,11 @@ contract SenseToken {
         transferFromReturn = b;
     }
 
-    function transferFrom(address f, address t, uint256 a) public returns (bool) {
+    function transferFrom(
+        address f,
+        address t,
+        uint256 a
+    ) public returns (bool) {
         TransferFromArgs memory args;
         args.to = t;
         args.amount = a;

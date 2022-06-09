@@ -12,15 +12,28 @@ contract APWine {
     }
     uint256 private swapExactAmountInReturn;
 
-    mapping (address => uint256) public withdrawCalled;
-    mapping (address => SwapExactAmountInArgs) public swapExactAmountInCalled;
+    mapping(address => uint256) public withdrawCalled;
+    mapping(address => SwapExactAmountInArgs) public swapExactAmountInCalled;
 
     function swapExactAmountInReturns(uint256 s) external {
         swapExactAmountInReturn = s;
     }
 
-    function swapExactAmountIn(uint256 i, uint256 tokenIn, uint256 a, uint256 tokenOut, uint256 m, address to) external returns (uint256) {
-        swapExactAmountInCalled[to] = SwapExactAmountInArgs(i, tokenIn, tokenOut, a, m);
+    function swapExactAmountIn(
+        uint256 i,
+        uint256 tokenIn,
+        uint256 a,
+        uint256 tokenOut,
+        uint256 m,
+        address to
+    ) external returns (uint256) {
+        swapExactAmountInCalled[to] = SwapExactAmountInArgs(
+            i,
+            tokenIn,
+            tokenOut,
+            a,
+            m
+        );
         return swapExactAmountInReturn;
     }
 

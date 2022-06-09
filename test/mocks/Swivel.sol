@@ -29,19 +29,19 @@ contract Swivel {
     bool private initateReturn;
     bool private redeemZcTokenReturn;
 
-    mapping (address => uint256) public initiateCalledAmount;
-    mapping (address => uint8) public initiateCalledSignature;
-    mapping (address => RedeemZcTokenArgs) public redeemZcTokenCalled;
+    mapping(address => uint256) public initiateCalledAmount;
+    mapping(address => uint8) public initiateCalledSignature;
+    mapping(address => RedeemZcTokenArgs) public redeemZcTokenCalled;
 
     function initiateReturns(bool i) external {
         initateReturn = i;
     }
 
     function initiate(
-        Order[] calldata o, 
-        uint256[] calldata a, 
-        Components[] calldata s) 
-    external returns (bool) {
+        Order[] calldata o,
+        uint256[] calldata a,
+        Components[] calldata s
+    ) external returns (bool) {
         for (uint256 i = 0; i < o.length; i++) {
             initiateCalledAmount[o[i].maker] = a[i];
             initiateCalledSignature[o[i].maker] = s[i].v;
@@ -53,7 +53,11 @@ contract Swivel {
         redeemZcTokenReturn = a;
     }
 
-    function redeemZcToken(address u, uint256 m, uint256 a) external returns (bool) {
+    function redeemZcToken(
+        address u,
+        uint256 m,
+        uint256 a
+    ) external returns (bool) {
         redeemZcTokenCalled[u] = RedeemZcTokenArgs(a, m);
         return redeemZcTokenReturn;
     }

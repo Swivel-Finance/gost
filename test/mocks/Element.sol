@@ -2,7 +2,10 @@
 
 pragma solidity 0.8.13;
 
-enum SwapKind { In, Out }
+enum SwapKind {
+    In,
+    Out
+}
 
 interface Any {}
 
@@ -33,14 +36,19 @@ contract Element {
 
     uint256 private swapReturn;
 
-    mapping (address => SwapArgs) public swapCalled;
-    mapping (address => uint256) public withdrawPrincipalCalled;
+    mapping(address => SwapArgs) public swapCalled;
+    mapping(address => uint256) public withdrawPrincipalCalled;
 
     function swapReturns(uint256 s) external {
         swapReturn = s;
     }
 
-    function swap(SingleSwap memory s, FundManagement memory f, uint256 l, uint256 d) external returns (uint256) {
+    function swap(
+        SingleSwap memory s,
+        FundManagement memory f,
+        uint256 l,
+        uint256 d
+    ) external returns (uint256) {
         swapCalled[f.sender] = SwapArgs(f.recipient, s.amount, l, d);
         return swapReturn;
     }

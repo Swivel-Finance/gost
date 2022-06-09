@@ -9,9 +9,9 @@ contract APWineToken {
         uint256 amount;
     }
     // mapping of arguments sent to transfer. key is the passed in address.
-    mapping (address => uint256) public transferCalled;
+    mapping(address => uint256) public transferCalled;
     // mapping of arguments sent to transferFrom. key is passed from address.
-    mapping (address => TransferFromArgs) public transferFromCalled;
+    mapping(address => TransferFromArgs) public transferFromCalled;
 
     // balanceOf does not require a mapping.
     address public balanceOfCalled;
@@ -50,7 +50,11 @@ contract APWineToken {
         transferReturn = b;
     }
 
-    function transferFrom(address f, address t, uint256 a) public returns (bool) {
+    function transferFrom(
+        address f,
+        address t,
+        uint256 a
+    ) public returns (bool) {
         TransferFromArgs memory args;
         args.to = t;
         args.amount = a;
