@@ -27,10 +27,10 @@ var (
 )
 
 // MarketPlaceABI is the input ABI used to generate the binding from.
-const MarketPlaceABI = "[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"u\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"m\",\"type\":\"uint256\"},{\"internalType\":\"uint8\",\"name\":\"p\",\"type\":\"uint8\"}],\"name\":\"markets\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"marketsCalled\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"maturity\",\"type\":\"uint256\"},{\"internalType\":\"uint8\",\"name\":\"precision\",\"type\":\"uint8\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"p\",\"type\":\"address\"}],\"name\":\"principalTokenReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"z\",\"type\":\"address\"}],\"name\":\"zcTokenReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]"
+const MarketPlaceABI = "[{\"inputs\":[],\"name\":\"isAuthorized\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"u\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"m\",\"type\":\"uint256\"},{\"internalType\":\"uint8\",\"name\":\"p\",\"type\":\"uint8\"}],\"name\":\"markets\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"marketsCalled\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"maturity\",\"type\":\"uint256\"},{\"internalType\":\"uint8\",\"name\":\"precision\",\"type\":\"uint8\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"p\",\"type\":\"address\"}],\"name\":\"principalTokenReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"z\",\"type\":\"address\"},{\"internalType\":\"bool\",\"name\":\"authorized\",\"type\":\"bool\"}],\"name\":\"zcTokenReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]"
 
 // MarketPlaceBin is the compiled bytecode used for deploying new contracts.
-var MarketPlaceBin = "0x608060405234801561001057600080fd5b50610482806100206000396000f3fe608060405234801561001057600080fd5b506004361061004c5760003560e01c80632db46d281461005157806368f8d56014610082578063ca1695f01461009e578063f3ec0d2c146100ce575b600080fd5b61006b600480360381019061006691906102ec565b6100ea565b60405161007992919061034e565b60405180910390f35b61009c600480360381019061009791906102ec565b61011b565b005b6100b860048036038101906100b391906103cf565b61015f565b6040516100c59190610431565b60405180910390f35b6100e860048036038101906100e391906102ec565b610246565b005b60026020528060005260406000206000915090508060000154908060010160009054906101000a900460ff16905082565b80600160006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555050565b600060405180604001604052808481526020018360ff16815250600260008673ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1681526020019081526020016000206000820151816000015560208201518160010160006101000a81548160ff021916908360ff16021790555090505060008260ff160361021b57600160009054906101000a900473ffffffffffffffffffffffffffffffffffffffff16905061023f565b60008054906101000a900473ffffffffffffffffffffffffffffffffffffffff1690505b9392505050565b806000806101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555050565b600080fd5b600073ffffffffffffffffffffffffffffffffffffffff82169050919050565b60006102b98261028e565b9050919050565b6102c9816102ae565b81146102d457600080fd5b50565b6000813590506102e6816102c0565b92915050565b60006020828403121561030257610301610289565b5b6000610310848285016102d7565b91505092915050565b6000819050919050565b61032c81610319565b82525050565b600060ff82169050919050565b61034881610332565b82525050565b60006040820190506103636000830185610323565b610370602083018461033f565b9392505050565b61038081610319565b811461038b57600080fd5b50565b60008135905061039d81610377565b92915050565b6103ac81610332565b81146103b757600080fd5b50565b6000813590506103c9816103a3565b92915050565b6000806000606084860312156103e8576103e7610289565b5b60006103f6868287016102d7565b93505060206104078682870161038e565b9250506040610418868287016103ba565b9150509250925092565b61042b816102ae565b82525050565b60006020820190506104466000830184610422565b9291505056fea26469706673582212206c71b63fe6cd6b3444be52836c4252021434631a6d744d0b2a02b1e27e08ff0f64736f6c634300080d0033"
+var MarketPlaceBin = "0x608060405234801561001057600080fd5b506105ed806100206000396000f3fe608060405234801561001057600080fd5b50600436106100575760003560e01c80632db46d281461005c57806357e6c2f41461008d5780636b079fbf146100ab578063ca1695f0146100c7578063f3ec0d2c146100f7575b600080fd5b610076600480360381019061007191906103b5565b610113565b604051610084929190610417565b60405180910390f35b610095610144565b6040516100a2919061045b565b60405180910390f35b6100c560048036038101906100c091906104a2565b610157565b005b6100e160048036038101906100dc919061053a565b6101e9565b6040516100ee919061059c565b60405180910390f35b610111600480360381019061010c91906103b5565b61030f565b005b60036020528060005260406000206000915090508060000154908060010160009054906101000a900460ff16905082565b600260149054906101000a900460ff1681565b80156101a35781600260006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff1602179055506101e5565b81600160006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff1602179055505b5050565b600060405180604001604052808481526020018360ff16815250600360008673ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1681526020019081526020016000206000820151816000015560208201518160010160006101000a81548160ff021916908360ff16021790555090505060008260ff16036102e457600260149054906101000a900460ff16156102ba57600260009054906101000a900473ffffffffffffffffffffffffffffffffffffffff169050610308565b600160009054906101000a900473ffffffffffffffffffffffffffffffffffffffff169050610308565b60008054906101000a900473ffffffffffffffffffffffffffffffffffffffff1690505b9392505050565b806000806101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555050565b600080fd5b600073ffffffffffffffffffffffffffffffffffffffff82169050919050565b600061038282610357565b9050919050565b61039281610377565b811461039d57600080fd5b50565b6000813590506103af81610389565b92915050565b6000602082840312156103cb576103ca610352565b5b60006103d9848285016103a0565b91505092915050565b6000819050919050565b6103f5816103e2565b82525050565b600060ff82169050919050565b610411816103fb565b82525050565b600060408201905061042c60008301856103ec565b6104396020830184610408565b9392505050565b60008115159050919050565b61045581610440565b82525050565b6000602082019050610470600083018461044c565b92915050565b61047f81610440565b811461048a57600080fd5b50565b60008135905061049c81610476565b92915050565b600080604083850312156104b9576104b8610352565b5b60006104c7858286016103a0565b92505060206104d88582860161048d565b9150509250929050565b6104eb816103e2565b81146104f657600080fd5b50565b600081359050610508816104e2565b92915050565b610517816103fb565b811461052257600080fd5b50565b6000813590506105348161050e565b92915050565b60008060006060848603121561055357610552610352565b5b6000610561868287016103a0565b9350506020610572868287016104f9565b925050604061058386828701610525565b9150509250925092565b61059681610377565b82525050565b60006020820190506105b1600083018461058d565b9291505056fea2646970667358221220700e7529d1cd41bfd9bdceaa85685a4de21dd0f318495e4d6a86ee050c3c880f64736f6c634300080d0033"
 
 // DeployMarketPlace deploys a new Ethereum contract, binding an instance of MarketPlace to it.
 func DeployMarketPlace(auth *bind.TransactOpts, backend bind.ContractBackend) (common.Address, *types.Transaction, *MarketPlace, error) {
@@ -188,6 +188,37 @@ func (_MarketPlace *MarketPlaceTransactorRaw) Transact(opts *bind.TransactOpts, 
 	return _MarketPlace.Contract.contract.Transact(opts, method, params...)
 }
 
+// IsAuthorized is a free data retrieval call binding the contract method 0x57e6c2f4.
+//
+// Solidity: function isAuthorized() view returns(bool)
+func (_MarketPlace *MarketPlaceCaller) IsAuthorized(opts *bind.CallOpts) (bool, error) {
+	var out []interface{}
+	err := _MarketPlace.contract.Call(opts, &out, "isAuthorized")
+
+	if err != nil {
+		return *new(bool), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(bool)).(*bool)
+
+	return out0, err
+
+}
+
+// IsAuthorized is a free data retrieval call binding the contract method 0x57e6c2f4.
+//
+// Solidity: function isAuthorized() view returns(bool)
+func (_MarketPlace *MarketPlaceSession) IsAuthorized() (bool, error) {
+	return _MarketPlace.Contract.IsAuthorized(&_MarketPlace.CallOpts)
+}
+
+// IsAuthorized is a free data retrieval call binding the contract method 0x57e6c2f4.
+//
+// Solidity: function isAuthorized() view returns(bool)
+func (_MarketPlace *MarketPlaceCallerSession) IsAuthorized() (bool, error) {
+	return _MarketPlace.Contract.IsAuthorized(&_MarketPlace.CallOpts)
+}
+
 // MarketsCalled is a free data retrieval call binding the contract method 0x2db46d28.
 //
 // Solidity: function marketsCalled(address ) view returns(uint256 maturity, uint8 precision)
@@ -272,23 +303,23 @@ func (_MarketPlace *MarketPlaceTransactorSession) PrincipalTokenReturns(p common
 	return _MarketPlace.Contract.PrincipalTokenReturns(&_MarketPlace.TransactOpts, p)
 }
 
-// ZcTokenReturns is a paid mutator transaction binding the contract method 0x68f8d560.
+// ZcTokenReturns is a paid mutator transaction binding the contract method 0x6b079fbf.
 //
-// Solidity: function zcTokenReturns(address z) returns()
-func (_MarketPlace *MarketPlaceTransactor) ZcTokenReturns(opts *bind.TransactOpts, z common.Address) (*types.Transaction, error) {
-	return _MarketPlace.contract.Transact(opts, "zcTokenReturns", z)
+// Solidity: function zcTokenReturns(address z, bool authorized) returns()
+func (_MarketPlace *MarketPlaceTransactor) ZcTokenReturns(opts *bind.TransactOpts, z common.Address, authorized bool) (*types.Transaction, error) {
+	return _MarketPlace.contract.Transact(opts, "zcTokenReturns", z, authorized)
 }
 
-// ZcTokenReturns is a paid mutator transaction binding the contract method 0x68f8d560.
+// ZcTokenReturns is a paid mutator transaction binding the contract method 0x6b079fbf.
 //
-// Solidity: function zcTokenReturns(address z) returns()
-func (_MarketPlace *MarketPlaceSession) ZcTokenReturns(z common.Address) (*types.Transaction, error) {
-	return _MarketPlace.Contract.ZcTokenReturns(&_MarketPlace.TransactOpts, z)
+// Solidity: function zcTokenReturns(address z, bool authorized) returns()
+func (_MarketPlace *MarketPlaceSession) ZcTokenReturns(z common.Address, authorized bool) (*types.Transaction, error) {
+	return _MarketPlace.Contract.ZcTokenReturns(&_MarketPlace.TransactOpts, z, authorized)
 }
 
-// ZcTokenReturns is a paid mutator transaction binding the contract method 0x68f8d560.
+// ZcTokenReturns is a paid mutator transaction binding the contract method 0x6b079fbf.
 //
-// Solidity: function zcTokenReturns(address z) returns()
-func (_MarketPlace *MarketPlaceTransactorSession) ZcTokenReturns(z common.Address) (*types.Transaction, error) {
-	return _MarketPlace.Contract.ZcTokenReturns(&_MarketPlace.TransactOpts, z)
+// Solidity: function zcTokenReturns(address z, bool authorized) returns()
+func (_MarketPlace *MarketPlaceTransactorSession) ZcTokenReturns(z common.Address, authorized bool) (*types.Transaction, error) {
+	return _MarketPlace.Contract.ZcTokenReturns(&_MarketPlace.TransactOpts, z, authorized)
 }

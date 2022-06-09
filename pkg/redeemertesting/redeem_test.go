@@ -1,15 +1,11 @@
 package redeemertesting
 
 import (
-	"context"
-	"log"
 	"math/big"
 	test "testing"
 	"time"
 
-	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
-	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 	"github.com/swivel-finance/gost/test/lender"
@@ -240,7 +236,7 @@ func (s *redeemTestSuite) TestAPWineRedeem() {
 	principal := uint8(7)
 
 	s.MarketPlace.PrincipalTokenReturns(s.Dep.APWineTokenAddress)
-	s.MarketPlace.ZcTokenReturns(s.Dep.ZcTokenAddress)
+	s.MarketPlace.ZcTokenReturns(s.Dep.ZcTokenAddress, false)
 	s.Env.Blockchain.Commit()
 
 	s.APWineToken.TransferFromReturns(true)
@@ -281,7 +277,7 @@ func (s *redeemTestSuite) TestTempusRedeem() {
 	prinicipal := uint8(5)
 
 	s.MarketPlace.PrincipalTokenReturns(s.Dep.TempusTokenAddress)
-	s.MarketPlace.ZcTokenReturns(s.Dep.ZcTokenAddress)
+	s.MarketPlace.ZcTokenReturns(s.Dep.ZcTokenAddress, false)
 	s.Env.Blockchain.Commit()
 
 	s.TempusToken.TransferFromReturns(true)
@@ -320,7 +316,7 @@ func (s *redeemTestSuite) TestIlluminateRedeem() {
 	principal := uint8(0)
 
 	s.MarketPlace.PrincipalTokenReturns(s.Dep.ZcTokenAddress)
-	s.MarketPlace.ZcTokenReturns(s.Dep.ZcTokenAddress)
+	s.MarketPlace.ZcTokenReturns(s.Dep.ZcTokenAddress, false)
 	s.Env.Blockchain.Commit()
 
 	s.ZcToken.TransferFromReturns(true)
@@ -357,7 +353,7 @@ func (s *redeemTestSuite) TestPendleRedeem() {
 	principal := uint8(4)
 
 	s.MarketPlace.PrincipalTokenReturns(s.Dep.PendleTokenAddress)
-	s.MarketPlace.ZcTokenReturns(s.Dep.ZcTokenAddress)
+	s.MarketPlace.ZcTokenReturns(s.Dep.ZcTokenAddress, false)
 
 	s.PendleToken.BalanceOfReturns(amount)
 	s.Env.Blockchain.Commit()
@@ -391,7 +387,7 @@ func (s *redeemTestSuite) TestSenseRedeem() {
 	principal := uint8(6)
 
 	s.MarketPlace.PrincipalTokenReturns(s.Dep.SenseTokenAddress)
-	s.MarketPlace.ZcTokenReturns(s.Dep.ZcTokenAddress)
+	s.MarketPlace.ZcTokenReturns(s.Dep.ZcTokenAddress, false)
 
 	s.SenseToken.BalanceOfReturns(amount)
 	s.Env.Blockchain.Commit()
@@ -424,7 +420,7 @@ func (s *redeemTestSuite) TestSwivelRedeem() {
 	principal := uint8(1)
 
 	s.MarketPlace.PrincipalTokenReturns(s.Dep.ZcTokenAddress)
-	s.MarketPlace.ZcTokenReturns(s.Dep.ZcTokenAddress)
+	s.MarketPlace.ZcTokenReturns(s.Dep.ZcTokenAddress, false)
 
 	s.ZcToken.BalanceOfReturns(amount)
 	s.Env.Blockchain.Commit()
@@ -460,7 +456,7 @@ func (s *redeemTestSuite) TestElementRedeem() {
 	principal := uint8(3)
 
 	s.MarketPlace.PrincipalTokenReturns(s.Dep.ElementTokenAddress)
-	s.MarketPlace.ZcTokenReturns(s.Dep.ZcTokenAddress)
+	s.MarketPlace.ZcTokenReturns(s.Dep.ZcTokenAddress, false)
 
 	s.ElementToken.BalanceOfReturns(amount)
 	s.Env.Blockchain.Commit()
@@ -492,7 +488,7 @@ func (s *redeemTestSuite) TestYieldRedeem() {
 	principal := uint8(2)
 
 	s.MarketPlace.PrincipalTokenReturns(s.Dep.YieldTokenAddress)
-	s.MarketPlace.ZcTokenReturns(s.Dep.ZcTokenAddress)
+	s.MarketPlace.ZcTokenReturns(s.Dep.ZcTokenAddress, false)
 
 	s.YieldToken.BalanceOfReturns(amount)
 	s.Env.Blockchain.Commit()
@@ -525,7 +521,7 @@ func (s *redeemTestSuite) TestNotionalRedeem() {
 	principal := uint8(8)
 
 	s.MarketPlace.PrincipalTokenReturns(s.Dep.NotionalAddress)
-	s.MarketPlace.ZcTokenReturns(s.Dep.ZcTokenAddress)
+	s.MarketPlace.ZcTokenReturns(s.Dep.ZcTokenAddress, false)
 
 	s.Notional.MaxRedeemReturns(amount)
 	s.Env.Blockchain.Commit()
@@ -558,7 +554,10 @@ func (s *redeemTestSuite) TestContractRedeem() {
 	amount := big.NewInt(1000)
 	maturity := big.NewInt(9999999)
 
-	s.MarketPlace.ZcTokenReturns(s.Dep.ZcTokenAddress)
+	s.MarketPlace.ZcTokenReturns(s.Dep.ZcTokenAddress, false)
+	s.Env.Blockchain.Commit()
+
+	s.MarketPlace.ZcTokenReturns(s.Dep.RedeemerAddress, true)
 	s.Env.Blockchain.Commit()
 
 	s.ZcToken.MaturityReturns(maturity)
@@ -576,49 +575,14 @@ func (s *redeemTestSuite) TestContractRedeem() {
 	s.Erc20.ApproveReturns(true)
 	s.Env.Blockchain.Commit()
 
-	// Create an authorized transactor and spend 1 unicorn
-	auth, err := bind.NewKeyedTransactorWithChainID(
-		s.Env.Owner.PK,
-		s.Env.Blockchain.Blockchain().Config().ChainID,
-	)
-	if err != nil {
-		log.Fatalf("Failed to create authorized transactor: %v", err)
-	}
-
-	data, _ := abi.ABI{}.Pack(
-		"authRedeem",
+	_, err := s.Redeemer.AuthRedeem(
 		s.Dep.Erc20Address,
 		maturity,
 		s.Env.User1.Opts.From,
 		s.Env.User2.Opts.From,
 		amount,
 	)
-
-	nonce, _ := s.Env.Blockchain.PendingNonceAt(context.Background(), s.Env.Owner.Opts.From)
-	gasLimit := uint64(21000)
-	gasPrice, err := s.Env.Blockchain.SuggestGasPrice(context.Background())
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	txn := &types.LegacyTx{
-		Nonce:    nonce,
-		Gas:      gasLimit,
-		GasPrice: gasPrice,
-		To:       &s.Dep.RedeemerAddress,
-		Data:     data,
-	}
-	transaction := types.NewTx(txn)
-
-	signedTx, err := types.SignTx(transaction, types.HomesteadSigner{}, s.Env.Owner.PK)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	err = s.Env.Blockchain.SendTransaction(context.Background(), signedTx)
-	if err != nil {
-		log.Fatal(err)
-	}
+	assert.NoError(err)
 	s.Env.Blockchain.Commit()
 
 	// verify that the mocked functions were called as expected

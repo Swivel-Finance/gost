@@ -10,6 +10,9 @@ contract MarketPlace {
 
     address private princialTokenReturn;
     address private zcTokenReturn;
+    address private authZcTokenReturn;
+
+    bool public isAuthorized;
 
     mapping (address => MarketsArgs) public marketsCalled;
 
@@ -17,13 +20,21 @@ contract MarketPlace {
         princialTokenReturn = p;
     }
 
-    function zcTokenReturns(address z) external {
-        zcTokenReturn = z;
+    function zcTokenReturns(address z, bool authorized) external {
+        if (authorized) {
+            authZcTokenReturn = z;
+        } else {
+            zcTokenReturn = z;
+        }
     }
 
     function markets(address u, uint256 m, uint8 p) external returns (address) {
         marketsCalled[u] = MarketsArgs(m, p);
         if (p == 0) {
+          if (isAuthorized) {
+            isAuthorized = false;
+            return authZcTokenReturn;
+          }
           return zcTokenReturn;
         }
         return princialTokenReturn;
