@@ -43,6 +43,7 @@ type Dep struct {
 	ElementTokenAddress common.Address
 	Notional            *mocks.Notional
 	NotionalAddress     common.Address
+	LenderAddress       common.Address
 }
 
 func Deploy(e *Env) (*Dep, error) {
@@ -183,7 +184,7 @@ func Deploy(e *Env) (*Dep, error) {
 
 	e.Blockchain.Commit()
 
-	redeemerAddress, _, redeemerContract, redeemerErr := redeemer.DeployRedeemer(e.Owner.Opts, e.Blockchain, swivelAddress, pAddress, tAddress, apAddress)
+	redeemerAddress, _, redeemerContract, redeemerErr := redeemer.DeployRedeemer(e.Owner.Opts, e.Blockchain, LENDER_ADDRESS, swivelAddress, pAddress, tAddress, apAddress)
 
 	if redeemerErr != nil {
 		return nil, redeemerErr
@@ -204,7 +205,6 @@ func Deploy(e *Env) (*Dep, error) {
 		Swivel:              swivelContract,
 		MarketplaceAddress:  mpAddress,
 		Marketplace:         mpContract,
-		RedeemerAddress:     redeemerAddress,
 		APWine:              apContract,
 		APWineAddress:       apAddress,
 		APWineToken:         aptContract,
@@ -227,6 +227,8 @@ func Deploy(e *Env) (*Dep, error) {
 		ElementTokenAddress: etAddress,
 		Notional:            nContract,
 		NotionalAddress:     nAddress,
+		LenderAddress:       LENDER_ADDRESS,
 		Redeemer:            redeemerContract,
+		RedeemerAddress:     redeemerAddress,
 	}, nil
 }

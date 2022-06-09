@@ -38,6 +38,29 @@ library Safe {
     require(success(result), "transfer from failed");
   }
 
+  /// @param e Erc20 token to execute the call with
+  /// @param t To address
+  /// @param a Amount being transferred
+  function transfer(IErc20 e, address t, uint256 a) internal {
+    bool result;
+
+    assembly {
+      // Get a pointer to some free memory.
+      let pointer := mload(0x40)
+
+      // Write the abi-encoded calldata to memory piece by piece:
+      mstore(pointer, 0xa9059cbb00000000000000000000000000000000000000000000000000000000) // Begin with the function selector.
+      mstore(add(pointer, 4), and(t, 0xffffffffffffffffffffffffffffffffffffffff)) // Mask and append the "to" argument.
+      mstore(add(pointer, 36), a) // Finally append the "amount" argument. No mask as it's a full 32 byte value.
+
+      // Call the token and store if it succeeded or not.
+      // We use 68 because the calldata length is 4 + 32 * 2.
+      result := call(gas(), e, 0, pointer, 68, 0, 0)
+    }
+
+    require(success(result), "transfer failed");
+  }
+
   /// @notice normalize the acceptable values of true or null vs the unacceptable value of false (or something malformed)
   /// @param r Return value from the assembly `call()` to Erc20['selector']
   function success(bool r) private pure returns (bool) {

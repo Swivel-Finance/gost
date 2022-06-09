@@ -11,6 +11,7 @@ contract ZcToken {
     bool private mintReturn;
     bool private transferFromReturn;
     uint256 private balanceOfReturn;
+    uint256 private maturityReturn;
 
     mapping (address => TransferFromArgs) public transferFromCalled;
     mapping (address => uint256) public mintCalled;
@@ -50,5 +51,13 @@ contract ZcToken {
         args.amount = a;
         transferFromCalled[f] = args;
         return transferFromReturn;
+    }
+
+    function maturityReturns(uint256 m) public {
+      maturityReturn = m;
+    }
+
+    function maturity() external view returns (uint256) {
+      return maturityReturn;
     }
 }
