@@ -172,14 +172,11 @@ contract Redeemer {
     // Get the principal token for the given market
     IErc20 token = IErc20(IMarketPlace(marketPlace).markets(u, m, p));
 
-    // Set the redeemer contract address
-    address self = address(this);
-
     // Get the balance of tokens to be redeemed by the user
-    uint256 amount = token.balanceOf(self);
+    uint256 amount = token.balanceOf(marketPlace);
 
     // Transfer the user's tokens to the redeem contract
-    Safe.transferFrom(token, lender, self, amount);
+    Safe.transferFrom(token, lender, address(this), amount);
 
     // Redeem the tokens from the sense contract
     ISense(d).redeem(o, m, amount);
