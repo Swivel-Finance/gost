@@ -19,8 +19,6 @@ contract Lender {
   address public tempusAddr;
 
   uint256 public feenominator;
-
-  /// @notice maps underlying tokens to the amount of fees accumulated for that token
   mapping(address => uint256) public fees;
 
   event Lend(uint8 principal, address indexed underlying, uint256 indexed maturity, uint256 returned);
