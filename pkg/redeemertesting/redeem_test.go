@@ -554,10 +554,13 @@ func (s *redeemTestSuite) TestContractRedeem() {
 	amount := big.NewInt(1000)
 	maturity := big.NewInt(9999999)
 
+	s.MarketPlace.SetIsAuthorized(true)
+	s.Env.Blockchain.Commit()
+
 	s.MarketPlace.ZcTokenReturns(s.Dep.ZcTokenAddress, false)
 	s.Env.Blockchain.Commit()
 
-	s.MarketPlace.ZcTokenReturns(s.Dep.RedeemerAddress, true)
+	s.MarketPlace.ZcTokenReturns(s.Env.Owner.Opts.From, true)
 	s.Env.Blockchain.Commit()
 
 	s.ZcToken.MaturityReturns(maturity)
