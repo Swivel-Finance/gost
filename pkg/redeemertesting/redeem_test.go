@@ -563,9 +563,6 @@ func (s *redeemTestSuite) TestContractRedeem() {
 	s.MarketPlace.ZcTokenReturns(s.Dep.ZcTokenAddress)
 	s.Env.Blockchain.Commit()
 
-	s.MarketPlace.ZcTokenReturns(s.Env.Owner.Opts.From)
-	s.Env.Blockchain.Commit()
-
 	s.ZcToken.MaturityReturns(maturity)
 	s.Env.Blockchain.Commit()
 

@@ -10,7 +10,7 @@ contract MarketPlace {
 
     address private princialTokenReturn;
     address private zcTokenReturn;
-    address private spoof;
+    address private spoofReturn;
 
     bool public spoofing = false;
 
@@ -29,7 +29,7 @@ contract MarketPlace {
     }
 
     function spoofingReturns(address s) external {
-        spoof = s;
+        spoofReturn = s;
     }
 
     function markets(address u, uint256 m, uint8 p) external returns (address) {
@@ -37,7 +37,7 @@ contract MarketPlace {
         if (p == 0) {
           if (spoofing) {
             spoofing = false;
-            return spoof;
+            return spoofReturn;
           }
           return zcTokenReturn;
         }
