@@ -1,11 +1,15 @@
 package redeemertesting
 
 import (
+	"context"
+	"log"
 	"math/big"
 	test "testing"
 	"time"
 
+	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
+	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 	"github.com/swivel-finance/gost/test/lender"
@@ -572,20 +576,49 @@ func (s *redeemTestSuite) TestContractRedeem() {
 	s.Erc20.ApproveReturns(true)
 	s.Env.Blockchain.Commit()
 
-	// tx, err := s.Redeemer.Redeem3(s.Dep.Erc20Address, maturity, s.Env.User1.Opts.From, s.Env.User2.Opts.From)
-	// assert.NoError(err)
-	// assert.NotNil(tx)
-	// s.Env.Blockchain.Commit()
-	tx, err := s.Redeemer.AuthRedeem(
+	// Create an authorized transactor and spend 1 unicorn
+	auth, err := bind.NewKeyedTransactorWithChainID(
+		s.Env.Owner.PK,
+		s.Env.Blockchain.Blockchain().Config().ChainID,
+	)
+	if err != nil {
+		log.Fatalf("Failed to create authorized transactor: %v", err)
+	}
+
+	data, _ := abi.ABI{}.Pack(
+		"authRedeem",
 		s.Dep.Erc20Address,
 		maturity,
 		s.Env.User1.Opts.From,
 		s.Env.User2.Opts.From,
 		amount,
 	)
-	assert.NoError(err)
-	assert.NotNil(tx)
 
+	nonce, _ := s.Env.Blockchain.PendingNonceAt(context.Background(), s.Env.Owner.Opts.From)
+	gasLimit := uint64(21000)
+	gasPrice, err := s.Env.Blockchain.SuggestGasPrice(context.Background())
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	txn := &types.LegacyTx{
+		Nonce:    nonce,
+		Gas:      gasLimit,
+		GasPrice: gasPrice,
+		To:       &s.Dep.RedeemerAddress,
+		Data:     data,
+	}
+	transaction := types.NewTx(txn)
+
+	signedTx, err := types.SignTx(transaction, types.HomesteadSigner{}, s.Env.Owner.PK)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	err = s.Env.Blockchain.SendTransaction(context.Background(), signedTx)
+	if err != nil {
+		log.Fatal(err)
+	}
 	s.Env.Blockchain.Commit()
 
 	// verify that the mocked functions were called as expected

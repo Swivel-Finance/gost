@@ -212,7 +212,7 @@ contract Redeemer {
   }
 
   modifier authorized(address a) {
-    //require(msg.sender == a, 'sender must be authorized');
+    require(msg.sender == a, 'sender must be authorized');
     _;
   }
 }
