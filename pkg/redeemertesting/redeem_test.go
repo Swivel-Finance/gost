@@ -554,10 +554,7 @@ func (s *redeemTestSuite) TestContractRedeem() {
 	amount := big.NewInt(1000)
 	maturity := big.NewInt(9999999)
 
-	s.MarketPlace.IsSpoofing(true)
-	s.Env.Blockchain.Commit()
-
-	s.MarketPlace.SpoofingReturns(s.Env.Owner.Opts.From)
+	s.MarketPlace.ZcTokenSpoofReturns(s.Env.Owner.Opts.From)
 	s.Env.Blockchain.Commit()
 
 	s.MarketPlace.ZcTokenReturns(s.Dep.ZcTokenAddress)

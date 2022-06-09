@@ -29,9 +29,12 @@ contract MarketPlace {
     function markets(address u, uint256 m, uint8 p) external returns (address) {
         marketsCalled[u] = MarketsArgs(m, p);
         address spoofed = zcTokenReturnSpoof;
-        if (spoofed != address(0)) {
-            zcTokenReturnSpoof = address(0);
-            return spoofed;
+        if (p == 0) {
+            if (spoofed != address(0)) {
+                zcTokenReturnSpoof = address(0);
+                return spoofed;
+            }
+            return zcTokenReturn;
         }
         return princialTokenReturn;
     }
