@@ -9,6 +9,8 @@ import (
 type Dep struct {
 	Erc20Address       common.Address
 	Erc20              *mocks.Erc20
+	PoolAddress        common.Address
+	Pool               *mocks.Pool
 	RedeemerAddress    common.Address
 	MarketPlaceAddress common.Address
 	MarketPlace        *marketplace.MarketPlace
@@ -26,6 +28,13 @@ func Deploy(e *Env) (*Dep, error) {
 
 	rAddr := common.HexToAddress("0x123")
 
+	poolAddress, _, poolContract, poolErr := mocks.DeployPool(e.Owner.Opts, e.Blockchain)
+	if poolErr != nil {
+		return nil, poolErr
+	}
+
+	e.Blockchain.Commit()
+
 	mpAddress, _, mpContract, mpErr := marketplace.DeployMarketPlace(e.Owner.Opts, e.Blockchain, rAddr)
 	if mpErr != nil {
 		return nil, mpErr
@@ -36,6 +45,8 @@ func Deploy(e *Env) (*Dep, error) {
 	return &Dep{
 		Erc20Address:       ercAddress,
 		Erc20:              ercContract,
+		Pool:               poolContract,
+		PoolAddress:        poolAddress,
 		RedeemerAddress:    rAddr,
 		MarketPlaceAddress: mpAddress,
 		MarketPlace:        mpContract,

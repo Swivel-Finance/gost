@@ -17,6 +17,7 @@ type marketplaceTestSuite struct {
 	Env         *Env
 	Dep         *Dep
 	Erc20       *mocks.Erc20Session
+	Pool        *mocks.PoolSession
 	MarketPlace *marketplace.MarketPlaceSession
 }
 
@@ -33,6 +34,15 @@ func (s *marketplaceTestSuite) SetupSuite() {
 	// binding owner to both, kind of why it exists - but could be any of the env wallets
 	s.Erc20 = &mocks.Erc20Session{
 		Contract: s.Dep.Erc20,
+		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
+		TransactOpts: bind.TransactOpts{
+			From:   s.Env.Owner.Opts.From,
+			Signer: s.Env.Owner.Opts.Signer,
+		},
+	}
+
+	s.Pool = &mocks.PoolSession{
+		Contract: s.Dep.Pool,
 		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
 		TransactOpts: bind.TransactOpts{
 			From:   s.Env.Owner.Opts.From,
@@ -107,6 +117,28 @@ func (s *marketplaceTestSuite) TestCreateMarket() {
 	approved, err := s.Erc20.ApproveCalled(s.Dep.RedeemerAddress)
 	assert.Nil(err)
 	assert.Equal(approved, max)
+}
+
+func (s *marketplaceTestSuite) TestBuyPt() {
+	assert := assert.New(s.T())
+	// stub the erc approve to return true or safe will revert
+	s.Erc20.ApproveReturns(true)
+
+	s.Env.Blockchain.Commit()
+
+	maturity := big.NewInt(100000)
+
+	// a fixed len array of 7 as illuminate is set in the method...
+	principals := [8]common.Address{
+		s.Dep.Erc20Address,
+		s.Dep.Erc20Address,
+		s.Dep.Erc20Address,
+		s.Dep.Erc20Address,
+		s.Dep.Erc20Address,
+		s.Dep.Erc20Address,
+		s.Dep.Erc20Address,
+		s.Dep.Erc20Address,
+	}
 }
 
 func TestIlluminateSuite(t *test.T) {
