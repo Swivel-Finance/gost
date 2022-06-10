@@ -34,6 +34,8 @@ contract MarketPlace {
     address public admin;
     /// @notice address of the deployed redeemer contract
     address public immutable redeemer;
+    /// @notice flag that determines if pools may be used
+    bool public paused;
 
     event CreateMarket(address indexed underlying, uint256 indexed maturity);
 
@@ -114,7 +116,7 @@ contract MarketPlace {
         address u,
         uint256 m,
         uint128 a
-    ) external returns (uint128) {
+    ) external unpaused returns (uint128) {
         IPool pool = IPool(pools[u][m][p]);
         Safe.transfer(IErc20(address(pool.PT())), address(pool), a);
         return pool.sellPT(msg.sender, pool.sellPTPreview(a));
@@ -131,7 +133,7 @@ contract MarketPlace {
         address u,
         uint256 m,
         uint128 a
-    ) external returns (uint128) {
+    ) external unpaused returns (uint128) {
         IPool pool = IPool(pools[u][m][p]);
         Safe.transfer(IErc20(address(pool.underlying())), address(pool), a);
         return pool.buyPT(msg.sender, pool.buyPTPreview(a), a);
@@ -148,7 +150,7 @@ contract MarketPlace {
         address u,
         uint256 m,
         uint128 a
-    ) external returns (uint128) {
+    ) external unpaused returns (uint128) {
         IPool pool = IPool(pools[u][m][p]);
         Safe.transfer(IErc20(address(pool.underlying())), address(pool), a);
         return pool.sellUnderlying(msg.sender, pool.sellUnderlyingPreview(a));
@@ -165,7 +167,7 @@ contract MarketPlace {
         address u,
         uint256 m,
         uint128 a
-    ) external returns (uint128) {
+    ) external unpaused returns (uint128) {
         IPool pool = IPool(pools[u][m][p]);
         Safe.transfer(IErc20(address(pool.PT())), address(pool), a);
         return pool.buyUnderlying(msg.sender, pool.buyUnderlyingPreview(a), a);
@@ -173,6 +175,11 @@ contract MarketPlace {
 
     modifier authorized(address a) {
         require(msg.sender == a, 'sender must be authorized');
+        _;
+    }
+
+    modifier unpaused() {
+        require(!paused, 'markets are paused');
         _;
     }
 }
