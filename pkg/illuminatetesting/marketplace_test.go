@@ -139,6 +139,8 @@ func (s *marketplaceTestSuite) TestBuyPt() {
 		s.Dep.Erc20Address,
 		s.Dep.Erc20Address,
 	}
+
+	s.MarketPlace.PoolsReturns(s.Dep.Erc20Address, maturity, big.NewInt(0))
 }
 
 func TestIlluminateSuite(t *test.T) {
