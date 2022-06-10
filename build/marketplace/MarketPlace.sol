@@ -86,23 +86,6 @@ contract MarketPlace {
         return true;
     }
 
-    /// @notice sells the PT for the PT via the pool
-    /// @param p enum value of the principal token
-    /// @param u address of the underlying asset
-    /// @param m maturity (timestamp) of the market
-    /// @param a amount of PT to swap
-    /// @return uint128 amount of PT bought
-    function sellPT(
-        uint8 p,
-        address u,
-        uint256 m,
-        uint128 a
-    ) external returns (uint128) {
-        IPool pool = IPool(pools[u][m][p]);
-        Safe.transfer(IErc20(address(pool.PT())), address(pool), a);
-        return pool.sellPT(msg.sender, pool.sellPTPreview(a));
-    }
-
     /// @notice sets the address for a pool
     /// @param p enum value of the principal token
     /// @param u address of the underlying asset
@@ -118,6 +101,23 @@ contract MarketPlace {
         require(pools[u][m][p] == address(0), 'pool exists');
         pools[u][m][p] = a;
         return true;
+    }
+
+    /// @notice sells the PT for the PT via the pool
+    /// @param p enum value of the principal token
+    /// @param u address of the underlying asset
+    /// @param m maturity (timestamp) of the market
+    /// @param a amount of PT to swap
+    /// @return uint128 amount of PT bought
+    function sellPT(
+        uint8 p,
+        address u,
+        uint256 m,
+        uint128 a
+    ) external returns (uint128) {
+        IPool pool = IPool(pools[u][m][p]);
+        Safe.transfer(IErc20(address(pool.PT())), address(pool), a);
+        return pool.sellPT(msg.sender, pool.sellPTPreview(a));
     }
 
     /// @notice buys the underlying for the PT via the pool
