@@ -44,6 +44,8 @@ interface IErc5095 {
 interface IPool {
     function PT() external returns (IErc5095);
 
+    function underlying() external returns (address);
+
     function sellUnderlying(address, uint128) external returns (uint128);
 
     function buyUnderlying(

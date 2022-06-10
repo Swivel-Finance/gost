@@ -8,7 +8,8 @@ import './Safe.sol';
 
 contract MarketPlace {
     /// @notice the available principals
-    /// @dev the order of this enum is used to select protocols from the markets mapping
+    /// @dev the order of this enum is used to select protocols from the markets
+    /// mapping
     /// @dev e.g. Illuminate => 0, Swivel => 1, and so on
     enum Principals {
         Illuminate,
@@ -22,10 +23,13 @@ contract MarketPlace {
         Notional
     }
 
-    /// markets are defined by a market pair which point to a fixed length array of principal token addresses.
-    /// the principal tokens those addresses represent correspond to their Principals enum value, thus the
-    /// array should be ordered in that way
+    /// markets are defined by a market pair which point to a fixed length array
+    /// of principal token addresses. The principal tokens those addresses
+    /// represent correspond to their Principals enum value, thus the array
+    /// should be ordered in that way
     mapping(address => mapping(uint256 => address[9])) public markets;
+
+    mapping(address => mapping(uint256 => address[9])) public pools;
 
     address public admin;
     /// @notice address of the deployed redeemer contract
@@ -80,6 +84,54 @@ contract MarketPlace {
         emit CreateMarket(u, m);
 
         return true;
+    }
+
+    // a = the amount of PT sold
+    function sellPT(
+        uint8 p,
+        address u,
+        uint256 m,
+        uint128 a
+    ) external returns (uint128 returned) {
+        IPool pool = IPool(pools[u][m][p]);
+        Safe.transfer(IErc20(address(pool.PT())), address(pool), a);
+        return pool.sellPT(msg.sender, pool.sellPTPreview(a));
+    }
+
+    // a = the amount of PT bought
+    function buyPT(
+        uint8 p,
+        address u,
+        uint256 m,
+        uint128 a
+    ) external returns (uint128 returned) {
+        IPool pool = IPool(pools[u][m][p]);
+        Safe.transfer(IErc20(address(pool.underlying())), address(pool), a);
+        return pool.buyPT(msg.sender, pool.buyPTPreview(a), a);
+    }
+
+    // a = the amount of underlying sold
+    function sellUnderlying(
+        uint8 p,
+        address u,
+        uint256 m,
+        uint128 a
+    ) external returns (uint128 returned) {
+        IPool pool = IPool(pools[u][m][p]);
+        Safe.transfer(IErc20(address(pool.underlying())), address(pool), a);
+        return pool.sellUnderlying(msg.sender, pool.sellUnderlyingPreview(a));
+    }
+
+    // a = the amount of underlying bought
+    function buyUnderlying(
+        uint8 p,
+        address u,
+        uint256 m,
+        uint128 a
+    ) external returns (uint128 returned) {
+        IPool pool = IPool(pools[u][m][p]);
+        Safe.transfer(IErc20(address(pool.PT())), address(pool), a);
+        return pool.buyUnderlying(msg.sender, pool.buyUnderlyingPreview(a), a);
     }
 
     modifier authorized(address a) {

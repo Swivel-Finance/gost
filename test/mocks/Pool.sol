@@ -49,6 +49,7 @@ contract Pool {
     }
 
     IErc5095 private PTReturn;
+    address private underlyingReturn;
     uint128 private sellUnderlyingReturn;
     uint128 private buyUnderlyingReturn;
     uint128 private sellPTReturn;
@@ -77,6 +78,14 @@ contract Pool {
 
     function sellUnderlyingReturns(uint128 s) public {
         sellUnderlyingReturn = s;
+    }
+
+    function underlyingReturns(address u) public {
+        underlyingReturn = u;
+    }
+
+    function underlying() public view returns (address) {
+        return underlyingReturn;
     }
 
     function sellUnderlying(address t, uint128 m) external returns (uint128) {
