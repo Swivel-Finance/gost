@@ -71,7 +71,7 @@ contract Pool {
         PTReturn = IErc5095(p);
     }
 
-    function PT() external returns (IErc5095) {
+    function PT() external view returns (IErc5095) {
         return PTReturn;
     }
 
