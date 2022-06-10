@@ -132,6 +132,9 @@ func (s *marketplaceTestSuite) TestBuyPt() {
 	s.MarketPlace.SetPool(0, s.Dep.Erc20Address, maturity, s.Dep.PoolAddress)
 	s.Env.Blockchain.Commit()
 
+	s.Pool.UnderlyingReturns(s.Dep.Erc20Address)
+	s.Env.Blockchain.Commit()
+
 	s.Erc20.TransferReturns(true)
 	s.Env.Blockchain.Commit()
 
@@ -151,6 +154,58 @@ func (s *marketplaceTestSuite) TestBuyPt() {
 	assert.Nil(err)
 	assert.Equal(returnAmount, buyPtOut.PtOut)
 	assert.Equal(amount, buyPtOut.Min)
+
+	previewedAmount, err := s.Pool.BuyPTPreviewCalled()
+	assert.Nil(err)
+	assert.Equal(amount, previewedAmount)
+
+	transferAmount, err := s.Erc20.TransferCalled(s.Dep.PoolAddress)
+	assert.Nil(err)
+	assert.Equal(amount, transferAmount)
+}
+
+func (s *marketplaceTestSuite) TestSellPt() {
+	assert := assert.New(s.T())
+
+	s.Erc20.ApproveReturns(true)
+	s.Env.Blockchain.Commit()
+
+	maturity := big.NewInt(100000)
+	amount := big.NewInt(1000000000000000000)
+	returnAmount := new(big.Int).Sub(amount, big.NewInt(5))
+
+	s.MarketPlace.SetPool(0, s.Dep.Erc20Address, maturity, s.Dep.PoolAddress)
+	s.Env.Blockchain.Commit()
+
+	s.Pool.PTReturns(s.Dep.Erc20Address)
+	s.Env.Blockchain.Commit()
+
+	s.Erc20.TransferReturns(true)
+	s.Env.Blockchain.Commit()
+
+	s.Pool.SellPTReturns(returnAmount)
+	s.Env.Blockchain.Commit()
+
+	s.Pool.SellPTPreviewReturns(returnAmount)
+	s.Env.Blockchain.Commit()
+
+	tx, err := s.MarketPlace.SellPT(0, s.Dep.Erc20Address, maturity, amount)
+	assert.NoError(err)
+	assert.NotNil(tx)
+	s.Env.Blockchain.Commit()
+
+	// verify methods were called as expected
+	sellPtOut, err := s.Pool.SellPTCalled(s.Env.Owner.Opts.From)
+	assert.Nil(err)
+	assert.Equal(returnAmount, sellPtOut)
+
+	previewedAmount, err := s.Pool.SellPTPreviewCalled()
+	assert.Nil(err)
+	assert.Equal(amount, previewedAmount)
+
+	transferAmount, err := s.Erc20.TransferCalled(s.Dep.PoolAddress)
+	assert.Nil(err)
+	assert.Equal(amount, transferAmount)
 }
 
 func TestIlluminateSuite(t *test.T) {
