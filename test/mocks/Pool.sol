@@ -147,7 +147,7 @@ contract Pool {
         return sellPTPreviewCalled;
     }
 
-    function buyPTPReviewReturns(uint128 o) public {
+    function buyPTPreviewReturns(uint128 o) public {
         buyPTPreviewReturn = o;
     }
 

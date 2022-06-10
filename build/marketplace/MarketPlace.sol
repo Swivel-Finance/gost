@@ -132,6 +132,7 @@ contract MarketPlace {
         uint256 m,
         uint128 a
     ) external returns (uint128) {
+        require(1 == 2, 'got here');
         IPool pool = IPool(pools[u][m][p]);
         Safe.transfer(IErc20(address(pool.underlying())), address(pool), a);
         return pool.buyPT(msg.sender, pool.buyPTPreview(a), a);

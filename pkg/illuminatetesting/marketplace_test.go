@@ -121,26 +121,32 @@ func (s *marketplaceTestSuite) TestCreateMarket() {
 
 func (s *marketplaceTestSuite) TestBuyPt() {
 	assert := assert.New(s.T())
-	// stub the erc approve to return true or safe will revert
-	s.Erc20.ApproveReturns(true)
 
+	s.Erc20.ApproveReturns(true)
 	s.Env.Blockchain.Commit()
 
 	maturity := big.NewInt(100000)
+	amount := big.NewInt(1000000000000000000)
+	returnAmount := new(big.Int).Sub(amount, big.NewInt(5))
 
-	// a fixed len array of 7 as illuminate is set in the method...
-	principals := [8]common.Address{
-		s.Dep.Erc20Address,
-		s.Dep.Erc20Address,
-		s.Dep.Erc20Address,
-		s.Dep.Erc20Address,
-		s.Dep.Erc20Address,
-		s.Dep.Erc20Address,
-		s.Dep.Erc20Address,
-		s.Dep.Erc20Address,
-	}
+	s.MarketPlace.SetPool(0, s.Dep.Erc20Address, maturity, s.Dep.PoolAddress)
+	s.Env.Blockchain.Commit()
 
-	s.MarketPlace.PoolsReturns(s.Dep.Erc20Address, maturity, big.NewInt(0))
+	s.Erc20.TransferReturns(true)
+	s.Env.Blockchain.Commit()
+
+	s.Pool.BuyPTPreviewReturns(returnAmount)
+	s.Env.Blockchain.Commit()
+
+	_, err := s.Pool.BuyPT(s.Dep.Erc20Address, maturity, amount)
+	assert.NoError(err)
+	s.Env.Blockchain.Commit()
+
+	// verify methods were called as expected
+	buyPtOut, err := s.Pool.BuyPTCalled(s.Env.Owner.Opts.From)
+	assert.Nil(err)
+	assert.Equal(returnAmount, buyPtOut.PtOut)
+	assert.Equal(amount, buyPtOut.Min)
 }
 
 func TestIlluminateSuite(t *test.T) {
