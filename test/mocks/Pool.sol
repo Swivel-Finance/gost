@@ -128,23 +128,31 @@ contract Pool {
         return buyPTReturn;
     }
 
+    function sellUnderlyingPreviewReturns(uint128 s) public {
+        sellUnderlyingPreviewReturn = s;
+    }
+
     function sellUnderlyingPreview(uint128 u) external returns (uint128) {
         sellUnderlyingPreviewCalled = u;
-        return sellUnderlyingPreviewCalled;
+        return sellUnderlyingPreviewReturn;
+    }
+
+    function buyUnderlyingPreviewReturns(uint128 p) public {
+        buyUnderlyingPreviewReturn = p;
     }
 
     function buyUnderlyingPreview(uint128 u) external returns (uint128) {
         buyUnderlyingPreviewCalled = u;
-        return buyUnderlyingPreviewCalled;
+        return buyUnderlyingPreviewReturn;
     }
 
-    function sellPTPReviewReturns(uint128 i) public {
+    function sellPTPreviewReturns(uint128 i) public {
         sellPTPreviewReturn = i;
     }
 
     function sellPTPreview(uint128 i) external returns (uint128) {
         sellPTPreviewCalled = i;
-        return sellPTPreviewCalled;
+        return sellPTPreviewReturn;
     }
 
     function buyPTPreviewReturns(uint128 o) public {
@@ -153,6 +161,6 @@ contract Pool {
 
     function buyPTPreview(uint128 o) external returns (uint128) {
         buyPTPreviewCalled = o;
-        return buyPTPreviewCalled;
+        return buyPTPreviewReturn;
     }
 }

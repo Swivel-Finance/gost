@@ -135,11 +135,15 @@ func (s *marketplaceTestSuite) TestBuyPt() {
 	s.Erc20.TransferReturns(true)
 	s.Env.Blockchain.Commit()
 
+	s.Pool.BuyPTReturns(returnAmount)
+	s.Env.Blockchain.Commit()
+
 	s.Pool.BuyPTPreviewReturns(returnAmount)
 	s.Env.Blockchain.Commit()
 
-	_, err := s.Pool.BuyPT(s.Dep.Erc20Address, maturity, amount)
+	tx, err := s.MarketPlace.BuyPT(0, s.Dep.Erc20Address, maturity, amount)
 	assert.NoError(err)
+	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
 
 	// verify methods were called as expected
