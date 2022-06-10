@@ -86,49 +86,69 @@ contract MarketPlace {
         return true;
     }
 
-    // a = the amount of PT sold
+    /// @notice sells the PT for the PT via the pool
+    /// @param p enum value of the principal token
+    /// @param u address of the underlying asset
+    /// @param m maturity (timestamp) of the market
+    /// @param a amount of PT to swap
+    /// @return uint128 amount of PT bought
     function sellPT(
         uint8 p,
         address u,
         uint256 m,
         uint128 a
-    ) external returns (uint128 returned) {
+    ) external returns (uint128) {
         IPool pool = IPool(pools[u][m][p]);
         Safe.transfer(IErc20(address(pool.PT())), address(pool), a);
         return pool.sellPT(msg.sender, pool.sellPTPreview(a));
     }
 
-    // a = the amount of PT bought
+    /// @notice buys the underlying for the PT via the pool
+    /// @param p enum value of the principal token
+    /// @param u address of the underlying asset
+    /// @param m maturity (timestamp) of the market
+    /// @param a amount of underlying tokens to sell
+    /// @return uint128 amount of PT received
     function buyPT(
         uint8 p,
         address u,
         uint256 m,
         uint128 a
-    ) external returns (uint128 returned) {
+    ) external returns (uint128) {
         IPool pool = IPool(pools[u][m][p]);
         Safe.transfer(IErc20(address(pool.underlying())), address(pool), a);
         return pool.buyPT(msg.sender, pool.buyPTPreview(a), a);
     }
 
-    // a = the amount of underlying sold
+    /// @notice sells the underlying for the PT via the pool
+    /// @param p enum value of the principal token
+    /// @param u address of the underlying asset
+    /// @param m maturity (timestamp) of the market
+    /// @param a amount of underlying to swap
+    /// @return uint128 amount of underlying sold
     function sellUnderlying(
         uint8 p,
         address u,
         uint256 m,
         uint128 a
-    ) external returns (uint128 returned) {
+    ) external returns (uint128) {
         IPool pool = IPool(pools[u][m][p]);
         Safe.transfer(IErc20(address(pool.underlying())), address(pool), a);
         return pool.sellUnderlying(msg.sender, pool.sellUnderlyingPreview(a));
     }
 
-    // a = the amount of underlying bought
+    /// @notice buys the underlying for the PT via the pool
+    /// @param p enum value of the principal token
+    /// @param u address of the underlying asset
+    /// @param m maturity (timestamp) of the market
+    /// @param a amount of PT to swap
+    /// @return uint128 amount of underlying bought
     function buyUnderlying(
         uint8 p,
         address u,
         uint256 m,
         uint128 a
-    ) external returns (uint128 returned) {
+    ) external returns (uint128) {
         IPool pool = IPool(pools[u][m][p]);
         Safe.transfer(IErc20(address(pool.PT())), address(pool), a);
         return pool.buyUnderlying(msg.sender, pool.buyUnderlyingPreview(a), a);
