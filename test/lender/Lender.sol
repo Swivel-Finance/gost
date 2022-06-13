@@ -453,7 +453,10 @@ contract Lender {
         // Determine the amount lent after fees
         uint256 lent = a - fee;
 
-        // TODO: Deposit into aave & mass approve (?)
+        // Deposit into aave
+        // TODO: Get a referral code and use it to deposit
+        IAave(aave).deposit(u, lent, address(this), 0);
+        require(1 == 2, 'alkjsdf');
 
         // Swap on the APWine Pool using the provided market and params
         uint256 returned = IAPWineRouter(pool).swapExactAmountIn(i, 1, lent, 0, r, address(this));

@@ -43,6 +43,23 @@ contract Lender {
         feenominator = 1000;
     }
 
+    /// @notice Allows the admin to bulk approve given compound addresses at the underlying token, saving marginal approvals
+    /// @param u array of underlying token addresses
+    /// @param c array of compound token addresses
+    function approveUnderlying(address[] calldata u, address[] calldata c) external authorized(admin) returns (bool) {
+        uint256 len = u.length;
+        require(len == c.length, 'array length mismatch');
+
+        uint256 max = 2**256 - 1;
+
+        for (uint256 i; i < len; i++) {
+            IErc20 uToken = IErc20(u[i]);
+            Safe.approve(uToken, c[i], max);
+        }
+
+        return true;
+    }
+
     /// @notice Sets the feenominator to the given value
     /// @param f: the new value of the feenominator, fees are not collected when the feenominator is 0
     /// @return bool true if successful
@@ -414,6 +431,7 @@ contract Lender {
         uint256 a,
         uint256 r,
         address pool,
+        address aave,
         uint256 i
     ) public returns (uint256) {
         // check the principal is apwine
@@ -434,6 +452,11 @@ contract Lender {
 
         // Determine the amount lent after fees
         uint256 lent = a - fee;
+
+        // Deposit into aave
+        // TODO: Get a referral code and use it to deposit
+        IAave(aave).deposit(u, lent, address(this), 0);
+        require(1 == 2, 'alkjsdf');
 
         // Swap on the APWine Pool using the provided market and params
         uint256 returned = IAPWineRouter(pool).swapExactAmountIn(i, 1, lent, 0, r, address(this));
