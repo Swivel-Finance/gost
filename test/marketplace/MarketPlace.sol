@@ -34,6 +34,8 @@ contract MarketPlace {
     address public admin;
     /// @notice address of the deployed redeemer contract
     address public immutable redeemer;
+    /// @notice flag that determines if pools may be used
+    bool public paused;
 
     event CreateMarket(address indexed underlying, uint256 indexed maturity);
 
