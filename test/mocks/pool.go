@@ -27,10 +27,10 @@ var (
 )
 
 // PoolABI is the input ABI used to generate the binding from.
-const PoolABI = "[{\"inputs\":[],\"name\":\"PT\",\"outputs\":[{\"internalType\":\"contractIErc5095\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"p\",\"type\":\"address\"}],\"name\":\"PTReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"t\",\"type\":\"address\"},{\"internalType\":\"uint128\",\"name\":\"p\",\"type\":\"uint128\"},{\"internalType\":\"uint128\",\"name\":\"m\",\"type\":\"uint128\"}],\"name\":\"buyPT\",\"outputs\":[{\"internalType\":\"uint128\",\"name\":\"\",\"type\":\"uint128\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"buyPTCalled\",\"outputs\":[{\"internalType\":\"uint128\",\"name\":\"ptOut\",\"type\":\"uint128\"},{\"internalType\":\"uint128\",\"name\":\"min\",\"type\":\"uint128\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint128\",\"name\":\"o\",\"type\":\"uint128\"}],\"name\":\"buyPTPreview\",\"outputs\":[{\"internalType\":\"uint128\",\"name\":\"\",\"type\":\"uint128\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"buyPTPreviewCalled\",\"outputs\":[{\"internalType\":\"uint128\",\"name\":\"\",\"type\":\"uint128\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint128\",\"name\":\"o\",\"type\":\"uint128\"}],\"name\":\"buyPTPreviewReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint128\",\"name\":\"b\",\"type\":\"uint128\"}],\"name\":\"buyPTReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"t\",\"type\":\"address\"},{\"internalType\":\"uint128\",\"name\":\"u\",\"type\":\"uint128\"},{\"internalType\":\"uint128\",\"name\":\"m\",\"type\":\"uint128\"}],\"name\":\"buyUnderlying\",\"outputs\":[{\"internalType\":\"uint128\",\"name\":\"\",\"type\":\"uint128\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"buyUnderlyingCalled\",\"outputs\":[{\"internalType\":\"uint128\",\"name\":\"amount\",\"type\":\"uint128\"},{\"internalType\":\"uint128\",\"name\":\"min\",\"type\":\"uint128\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint128\",\"name\":\"u\",\"type\":\"uint128\"}],\"name\":\"buyUnderlyingPreview\",\"outputs\":[{\"internalType\":\"uint128\",\"name\":\"\",\"type\":\"uint128\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"buyUnderlyingPreviewCalled\",\"outputs\":[{\"internalType\":\"uint128\",\"name\":\"\",\"type\":\"uint128\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint128\",\"name\":\"p\",\"type\":\"uint128\"}],\"name\":\"buyUnderlyingPreviewReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint128\",\"name\":\"b\",\"type\":\"uint128\"}],\"name\":\"buyUnderlyingReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"t\",\"type\":\"address\"},{\"internalType\":\"uint128\",\"name\":\"m\",\"type\":\"uint128\"}],\"name\":\"sellPT\",\"outputs\":[{\"internalType\":\"uint128\",\"name\":\"\",\"type\":\"uint128\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"sellPTCalled\",\"outputs\":[{\"internalType\":\"uint128\",\"name\":\"\",\"type\":\"uint128\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint128\",\"name\":\"i\",\"type\":\"uint128\"}],\"name\":\"sellPTPreview\",\"outputs\":[{\"internalType\":\"uint128\",\"name\":\"\",\"type\":\"uint128\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"sellPTPreviewCalled\",\"outputs\":[{\"internalType\":\"uint128\",\"name\":\"\",\"type\":\"uint128\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint128\",\"name\":\"i\",\"type\":\"uint128\"}],\"name\":\"sellPTPreviewReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint128\",\"name\":\"s\",\"type\":\"uint128\"}],\"name\":\"sellPTReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"t\",\"type\":\"address\"},{\"internalType\":\"uint128\",\"name\":\"m\",\"type\":\"uint128\"}],\"name\":\"sellUnderlying\",\"outputs\":[{\"internalType\":\"uint128\",\"name\":\"\",\"type\":\"uint128\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"sellUnderlyingCalled\",\"outputs\":[{\"internalType\":\"uint128\",\"name\":\"\",\"type\":\"uint128\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint128\",\"name\":\"u\",\"type\":\"uint128\"}],\"name\":\"sellUnderlyingPreview\",\"outputs\":[{\"internalType\":\"uint128\",\"name\":\"\",\"type\":\"uint128\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"sellUnderlyingPreviewCalled\",\"outputs\":[{\"internalType\":\"uint128\",\"name\":\"\",\"type\":\"uint128\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint128\",\"name\":\"s\",\"type\":\"uint128\"}],\"name\":\"sellUnderlyingPreviewReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint128\",\"name\":\"s\",\"type\":\"uint128\"}],\"name\":\"sellUnderlyingReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"underlying\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"u\",\"type\":\"address\"}],\"name\":\"underlyingReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]"
+const PoolABI = "[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"t\",\"type\":\"address\"},{\"internalType\":\"uint128\",\"name\":\"p\",\"type\":\"uint128\"},{\"internalType\":\"uint128\",\"name\":\"m\",\"type\":\"uint128\"}],\"name\":\"buyPrincipalToken\",\"outputs\":[{\"internalType\":\"uint128\",\"name\":\"\",\"type\":\"uint128\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"buyPrincipalTokenCalled\",\"outputs\":[{\"internalType\":\"uint128\",\"name\":\"PrincipalTokenOut\",\"type\":\"uint128\"},{\"internalType\":\"uint128\",\"name\":\"min\",\"type\":\"uint128\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint128\",\"name\":\"o\",\"type\":\"uint128\"}],\"name\":\"buyPrincipalTokenPreview\",\"outputs\":[{\"internalType\":\"uint128\",\"name\":\"\",\"type\":\"uint128\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"buyPrincipalTokenPreviewCalled\",\"outputs\":[{\"internalType\":\"uint128\",\"name\":\"\",\"type\":\"uint128\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint128\",\"name\":\"o\",\"type\":\"uint128\"}],\"name\":\"buyPrincipalTokenPreviewReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint128\",\"name\":\"b\",\"type\":\"uint128\"}],\"name\":\"buyPrincipalTokenReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"t\",\"type\":\"address\"},{\"internalType\":\"uint128\",\"name\":\"u\",\"type\":\"uint128\"},{\"internalType\":\"uint128\",\"name\":\"m\",\"type\":\"uint128\"}],\"name\":\"buyUnderlying\",\"outputs\":[{\"internalType\":\"uint128\",\"name\":\"\",\"type\":\"uint128\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"buyUnderlyingCalled\",\"outputs\":[{\"internalType\":\"uint128\",\"name\":\"amount\",\"type\":\"uint128\"},{\"internalType\":\"uint128\",\"name\":\"min\",\"type\":\"uint128\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint128\",\"name\":\"u\",\"type\":\"uint128\"}],\"name\":\"buyUnderlyingPreview\",\"outputs\":[{\"internalType\":\"uint128\",\"name\":\"\",\"type\":\"uint128\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"buyUnderlyingPreviewCalled\",\"outputs\":[{\"internalType\":\"uint128\",\"name\":\"\",\"type\":\"uint128\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint128\",\"name\":\"p\",\"type\":\"uint128\"}],\"name\":\"buyUnderlyingPreviewReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint128\",\"name\":\"b\",\"type\":\"uint128\"}],\"name\":\"buyUnderlyingReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"principalToken\",\"outputs\":[{\"internalType\":\"contractIErc5095\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"p\",\"type\":\"address\"}],\"name\":\"principalTokenReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"t\",\"type\":\"address\"},{\"internalType\":\"uint128\",\"name\":\"m\",\"type\":\"uint128\"}],\"name\":\"sellPrincipalToken\",\"outputs\":[{\"internalType\":\"uint128\",\"name\":\"\",\"type\":\"uint128\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"sellPrincipalTokenCalled\",\"outputs\":[{\"internalType\":\"uint128\",\"name\":\"\",\"type\":\"uint128\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint128\",\"name\":\"i\",\"type\":\"uint128\"}],\"name\":\"sellPrincipalTokenPreview\",\"outputs\":[{\"internalType\":\"uint128\",\"name\":\"\",\"type\":\"uint128\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"sellPrincipalTokenPreviewCalled\",\"outputs\":[{\"internalType\":\"uint128\",\"name\":\"\",\"type\":\"uint128\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint128\",\"name\":\"i\",\"type\":\"uint128\"}],\"name\":\"sellPrincipalTokenPreviewReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint128\",\"name\":\"s\",\"type\":\"uint128\"}],\"name\":\"sellPrincipalTokenReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"t\",\"type\":\"address\"},{\"internalType\":\"uint128\",\"name\":\"m\",\"type\":\"uint128\"}],\"name\":\"sellUnderlying\",\"outputs\":[{\"internalType\":\"uint128\",\"name\":\"\",\"type\":\"uint128\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"sellUnderlyingCalled\",\"outputs\":[{\"internalType\":\"uint128\",\"name\":\"\",\"type\":\"uint128\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint128\",\"name\":\"u\",\"type\":\"uint128\"}],\"name\":\"sellUnderlyingPreview\",\"outputs\":[{\"internalType\":\"uint128\",\"name\":\"\",\"type\":\"uint128\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"sellUnderlyingPreviewCalled\",\"outputs\":[{\"internalType\":\"uint128\",\"name\":\"\",\"type\":\"uint128\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint128\",\"name\":\"s\",\"type\":\"uint128\"}],\"name\":\"sellUnderlyingPreviewReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint128\",\"name\":\"s\",\"type\":\"uint128\"}],\"name\":\"sellUnderlyingReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"underlying\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"u\",\"type\":\"address\"}],\"name\":\"underlyingReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]"
 
 // PoolBin is the compiled bytecode used for deploying new contracts.
-var PoolBin = "0x608060405234801561001057600080fd5b506111fc806100206000396000f3fe608060405234801561001057600080fd5b50600436106101c45760003560e01c80637c7870ca116100f9578063d9b03f8811610097578063e78a9b0c11610071578063e78a9b0c1461053f578063e7ba67741461056f578063f038a50f1461058b578063f332ea5e146105a7576101c4565b8063d9b03f88146104c0578063e42b16cb146104f1578063e463854d1461050f576101c4565b8063a367e786116100d3578063a367e78614610438578063c45be1f214610454578063cf66288d14610484578063d94073d4146104a2576101c4565b80637c7870ca146103ba57806387c09bbc146103d85780639a7402ac14610408576101c4565b80636045eae41161016657806370691fbd1161014057806370691fbd146103365780637123a5c414610352578063757b2b761461036e57806376a912531461038a576101c4565b80636045eae4146102ca5780636f307dc3146102fa5780636fccc08714610318576101c4565b8063463a861e116101a2578063463a861e1461023157806347048271146102615780634b266e281461027d5780635c9f16b614610299576101c4565b806308e1cff5146101c95780630e861cd6146101e55780633e23209114610201575b600080fd5b6101e360048036038101906101de9190610f84565b6105d7565b005b6101ff60048036038101906101fa9190610f84565b610613565b005b61021b6004803603810190610216919061100f565b61064f565b604051610228919061105e565b60405180910390f35b61024b60048036038101906102469190611079565b6106ee565b604051610258919061105e565b60405180910390f35b61027b60048036038101906102769190610f84565b61071d565b005b61029760048036038101906102929190610f84565b610759565b005b6102b360048036038101906102ae9190611079565b610795565b6040516102c19291906110a6565b60405180910390f35b6102e460048036038101906102df91906110cf565b6107f1565b6040516102f1919061105e565b60405180910390f35b610302610914565b60405161030f9190611131565b60405180910390f35b61032061093e565b60405161032d919061105e565b60405180910390f35b610350600480360381019061034b9190611079565b610960565b005b61036c60048036038101906103679190610f84565b6109a3565b005b61038860048036038101906103839190610f84565b6109df565b005b6103a4600480360381019061039f9190610f84565b610a1b565b6040516103b1919061105e565b60405180910390f35b6103c2610a7c565b6040516103cf919061105e565b60405180910390f35b6103f260048036038101906103ed9190610f84565b610a9e565b6040516103ff919061105e565b60405180910390f35b610422600480360381019061041d9190611079565b610aff565b60405161042f919061105e565b60405180910390f35b610452600480360381019061044d9190610f84565b610b2e565b005b61046e6004803603810190610469919061100f565b610b6a565b60405161047b919061105e565b60405180910390f35b61048c610c09565b604051610499919061105e565b60405180910390f35b6104aa610c2b565b6040516104b791906111ab565b60405180910390f35b6104da60048036038101906104d59190611079565b610c54565b6040516104e89291906110a6565b60405180910390f35b6104f9610cb0565b604051610506919061105e565b60405180910390f35b61052960048036038101906105249190610f84565b610cd2565b604051610536919061105e565b60405180910390f35b610559600480360381019061055491906110cf565b610d33565b604051610566919061105e565b60405180910390f35b61058960048036038101906105849190611079565b610e56565b005b6105a560048036038101906105a09190610f84565b610e9a565b005b6105c160048036038101906105bc9190610f84565b610ed6565b6040516105ce919061105e565b60405180910390f35b80600260106101000a8154816fffffffffffffffffffffffffffffffff02191690836fffffffffffffffffffffffffffffffff16021790555050565b80600560106101000a8154816fffffffffffffffffffffffffffffffff02191690836fffffffffffffffffffffffffffffffff16021790555050565b600081600660008573ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060006101000a8154816fffffffffffffffffffffffffffffffff02191690836fffffffffffffffffffffffffffffffff160217905550600260009054906101000a90046fffffffffffffffffffffffffffffffff16905092915050565b60066020528060005260406000206000915054906101000a90046fffffffffffffffffffffffffffffffff1681565b80600560006101000a8154816fffffffffffffffffffffffffffffffff02191690836fffffffffffffffffffffffffffffffff16021790555050565b80600460006101000a8154816fffffffffffffffffffffffffffffffff02191690836fffffffffffffffffffffffffffffffff16021790555050565b60096020528060005260406000206000915090508060000160009054906101000a90046fffffffffffffffffffffffffffffffff16908060000160109054906101000a90046fffffffffffffffffffffffffffffffff16905082565b60006040518060400160405280846fffffffffffffffffffffffffffffffff168152602001836fffffffffffffffffffffffffffffffff16815250600960008673ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060008201518160000160006101000a8154816fffffffffffffffffffffffffffffffff02191690836fffffffffffffffffffffffffffffffff16021790555060208201518160000160106101000a8154816fffffffffffffffffffffffffffffffff02191690836fffffffffffffffffffffffffffffffff160217905550905050600360109054906101000a90046fffffffffffffffffffffffffffffffff1690509392505050565b6000600160009054906101000a900473ffffffffffffffffffffffffffffffffffffffff16905090565b600a60109054906101000a90046fffffffffffffffffffffffffffffffff1681565b806000806101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555050565b80600360006101000a8154816fffffffffffffffffffffffffffffffff02191690836fffffffffffffffffffffffffffffffff16021790555050565b80600260006101000a8154816fffffffffffffffffffffffffffffffff02191690836fffffffffffffffffffffffffffffffff16021790555050565b600081600a60106101000a8154816fffffffffffffffffffffffffffffffff02191690836fffffffffffffffffffffffffffffffff160217905550600460109054906101000a90046fffffffffffffffffffffffffffffffff169050919050565b600b60009054906101000a90046fffffffffffffffffffffffffffffffff1681565b600081600b60106101000a8154816fffffffffffffffffffffffffffffffff02191690836fffffffffffffffffffffffffffffffff160217905550600560109054906101000a90046fffffffffffffffffffffffffffffffff169050919050565b60086020528060005260406000206000915054906101000a90046fffffffffffffffffffffffffffffffff1681565b80600360106101000a8154816fffffffffffffffffffffffffffffffff02191690836fffffffffffffffffffffffffffffffff16021790555050565b600081600860008573ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060006101000a8154816fffffffffffffffffffffffffffffffff02191690836fffffffffffffffffffffffffffffffff160217905550600360009054906101000a90046fffffffffffffffffffffffffffffffff16905092915050565b600b60109054906101000a90046fffffffffffffffffffffffffffffffff1681565b60008060009054906101000a900473ffffffffffffffffffffffffffffffffffffffff16905090565b60076020528060005260406000206000915090508060000160009054906101000a90046fffffffffffffffffffffffffffffffff16908060000160109054906101000a90046fffffffffffffffffffffffffffffffff16905082565b600a60009054906101000a90046fffffffffffffffffffffffffffffffff1681565b600081600b60006101000a8154816fffffffffffffffffffffffffffffffff02191690836fffffffffffffffffffffffffffffffff160217905550600560009054906101000a90046fffffffffffffffffffffffffffffffff169050919050565b60006040518060400160405280846fffffffffffffffffffffffffffffffff168152602001836fffffffffffffffffffffffffffffffff16815250600760008673ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060008201518160000160006101000a8154816fffffffffffffffffffffffffffffffff02191690836fffffffffffffffffffffffffffffffff16021790555060208201518160000160106101000a8154816fffffffffffffffffffffffffffffffff02191690836fffffffffffffffffffffffffffffffff160217905550905050600260109054906101000a90046fffffffffffffffffffffffffffffffff1690509392505050565b80600160006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555050565b80600460106101000a8154816fffffffffffffffffffffffffffffffff02191690836fffffffffffffffffffffffffffffffff16021790555050565b600081600a60006101000a8154816fffffffffffffffffffffffffffffffff02191690836fffffffffffffffffffffffffffffffff160217905550600460009054906101000a90046fffffffffffffffffffffffffffffffff169050919050565b600080fd5b60006fffffffffffffffffffffffffffffffff82169050919050565b610f6181610f3c565b8114610f6c57600080fd5b50565b600081359050610f7e81610f58565b92915050565b600060208284031215610f9a57610f99610f37565b5b6000610fa884828501610f6f565b91505092915050565b600073ffffffffffffffffffffffffffffffffffffffff82169050919050565b6000610fdc82610fb1565b9050919050565b610fec81610fd1565b8114610ff757600080fd5b50565b60008135905061100981610fe3565b92915050565b6000806040838503121561102657611025610f37565b5b600061103485828601610ffa565b925050602061104585828601610f6f565b9150509250929050565b61105881610f3c565b82525050565b6000602082019050611073600083018461104f565b92915050565b60006020828403121561108f5761108e610f37565b5b600061109d84828501610ffa565b91505092915050565b60006040820190506110bb600083018561104f565b6110c8602083018461104f565b9392505050565b6000806000606084860312156110e8576110e7610f37565b5b60006110f686828701610ffa565b935050602061110786828701610f6f565b925050604061111886828701610f6f565b9150509250925092565b61112b81610fd1565b82525050565b60006020820190506111466000830184611122565b92915050565b6000819050919050565b600061117161116c61116784610fb1565b61114c565b610fb1565b9050919050565b600061118382611156565b9050919050565b600061119582611178565b9050919050565b6111a58161118a565b82525050565b60006020820190506111c0600083018461119c565b9291505056fea264697066735822122090b736b2445df37a4c0871371caa916ae810401c9b269899a4820f0b1c2b53b764736f6c634300080d0033"
+var PoolBin = "0x608060405234801561001057600080fd5b506111fc806100206000396000f3fe608060405234801561001057600080fd5b50600436106101c45760003560e01c80639d92bc2f116100f9578063e42b16cb11610097578063e7ba677411610071578063e7ba677414610553578063f038a50f1461056f578063f332ea5e1461058b578063f3ec0d2c146105bb576101c4565b8063e42b16cb146104d4578063e525edce146104f2578063e78a9b0c14610523576101c4565b8063c59964b3116100d3578063c59964b314610439578063c9c917d714610455578063d9b03f8814610485578063dbc162de146104b6576101c4565b80639d92bc2f146103bd578063b03ceb15146103ed578063b45d88011461041d576101c4565b80634b266e28116101665780636fccc087116101405780636fccc08714610337578063757b2b761461035557806376a91253146103715780639b9c9fde146103a1576101c4565b80634b266e28146102e1578063556dd440146102fd5780636f307dc314610319576101c4565b806315c49330116101a257806315c49330146102455780633e23209114610263578063435bf33114610293578063463a861e146102b1576101c4565b806308e1cff5146101c95780630a7e546e146101e5578063134df58b14610215575b600080fd5b6101e360048036038101906101de9190610f84565b6105d7565b005b6101ff60048036038101906101fa9190610f84565b610613565b60405161020c9190610fc0565b60405180910390f35b61022f600480360381019061022a9190611039565b610674565b60405161023c9190610fc0565b60405180910390f35b61024d610713565b60405161025a9190610fc0565b60405180910390f35b61027d60048036038101906102789190611039565b610735565b60405161028a9190610fc0565b60405180910390f35b61029b6107d4565b6040516102a89190610fc0565b60405180910390f35b6102cb60048036038101906102c69190611079565b6107f6565b6040516102d89190610fc0565b60405180910390f35b6102fb60048036038101906102f69190610f84565b610825565b005b61031760048036038101906103129190610f84565b610861565b005b61032161089d565b60405161032e91906110b5565b60405180910390f35b61033f6108c7565b60405161034c9190610fc0565b60405180910390f35b61036f600480360381019061036a9190610f84565b6108e9565b005b61038b60048036038101906103869190610f84565b610925565b6040516103989190610fc0565b60405180910390f35b6103bb60048036038101906103b69190610f84565b610986565b005b6103d760048036038101906103d29190611079565b6109c2565b6040516103e49190610fc0565b60405180910390f35b610407600480360381019061040291906110d0565b6109f1565b6040516104149190610fc0565b60405180910390f35b61043760048036038101906104329190610f84565b610b14565b005b610453600480360381019061044e9190610f84565b610b50565b005b61046f600480360381019061046a9190610f84565b610b8c565b60405161047c9190610fc0565b60405180910390f35b61049f600480360381019061049a9190611079565b610bed565b6040516104ad929190611123565b60405180910390f35b6104be610c49565b6040516104cb91906111ab565b60405180910390f35b6104dc610c72565b6040516104e99190610fc0565b60405180910390f35b61050c60048036038101906105079190611079565b610c94565b60405161051a929190611123565b60405180910390f35b61053d600480360381019061053891906110d0565b610cf0565b60405161054a9190610fc0565b60405180910390f35b61056d60048036038101906105689190611079565b610e13565b005b61058960048036038101906105849190610f84565b610e57565b005b6105a560048036038101906105a09190610f84565b610e93565b6040516105b29190610fc0565b60405180910390f35b6105d560048036038101906105d09190611079565b610ef4565b005b80600260106101000a8154816fffffffffffffffffffffffffffffffff02191690836fffffffffffffffffffffffffffffffff16021790555050565b600081600b60006101000a8154816fffffffffffffffffffffffffffffffff02191690836fffffffffffffffffffffffffffffffff160217905550600560009054906101000a90046fffffffffffffffffffffffffffffffff169050919050565b600081600860008573ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060006101000a8154816fffffffffffffffffffffffffffffffff02191690836fffffffffffffffffffffffffffffffff160217905550600360009054906101000a90046fffffffffffffffffffffffffffffffff16905092915050565b600b60009054906101000a90046fffffffffffffffffffffffffffffffff1681565b600081600660008573ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060006101000a8154816fffffffffffffffffffffffffffffffff02191690836fffffffffffffffffffffffffffffffff160217905550600260009054906101000a90046fffffffffffffffffffffffffffffffff16905092915050565b600b60109054906101000a90046fffffffffffffffffffffffffffffffff1681565b60066020528060005260406000206000915054906101000a90046fffffffffffffffffffffffffffffffff1681565b80600460006101000a8154816fffffffffffffffffffffffffffffffff02191690836fffffffffffffffffffffffffffffffff16021790555050565b80600560106101000a8154816fffffffffffffffffffffffffffffffff02191690836fffffffffffffffffffffffffffffffff16021790555050565b6000600160009054906101000a900473ffffffffffffffffffffffffffffffffffffffff16905090565b600a60109054906101000a90046fffffffffffffffffffffffffffffffff1681565b80600260006101000a8154816fffffffffffffffffffffffffffffffff02191690836fffffffffffffffffffffffffffffffff16021790555050565b600081600a60106101000a8154816fffffffffffffffffffffffffffffffff02191690836fffffffffffffffffffffffffffffffff160217905550600460109054906101000a90046fffffffffffffffffffffffffffffffff169050919050565b80600560006101000a8154816fffffffffffffffffffffffffffffffff02191690836fffffffffffffffffffffffffffffffff16021790555050565b60086020528060005260406000206000915054906101000a90046fffffffffffffffffffffffffffffffff1681565b60006040518060400160405280846fffffffffffffffffffffffffffffffff168152602001836fffffffffffffffffffffffffffffffff16815250600960008673ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060008201518160000160006101000a8154816fffffffffffffffffffffffffffffffff02191690836fffffffffffffffffffffffffffffffff16021790555060208201518160000160106101000a8154816fffffffffffffffffffffffffffffffff02191690836fffffffffffffffffffffffffffffffff160217905550905050600360109054906101000a90046fffffffffffffffffffffffffffffffff1690509392505050565b80600360106101000a8154816fffffffffffffffffffffffffffffffff02191690836fffffffffffffffffffffffffffffffff16021790555050565b80600360006101000a8154816fffffffffffffffffffffffffffffffff02191690836fffffffffffffffffffffffffffffffff16021790555050565b600081600b60106101000a8154816fffffffffffffffffffffffffffffffff02191690836fffffffffffffffffffffffffffffffff160217905550600560109054906101000a90046fffffffffffffffffffffffffffffffff169050919050565b60076020528060005260406000206000915090508060000160009054906101000a90046fffffffffffffffffffffffffffffffff16908060000160109054906101000a90046fffffffffffffffffffffffffffffffff16905082565b60008060009054906101000a900473ffffffffffffffffffffffffffffffffffffffff16905090565b600a60009054906101000a90046fffffffffffffffffffffffffffffffff1681565b60096020528060005260406000206000915090508060000160009054906101000a90046fffffffffffffffffffffffffffffffff16908060000160109054906101000a90046fffffffffffffffffffffffffffffffff16905082565b60006040518060400160405280846fffffffffffffffffffffffffffffffff168152602001836fffffffffffffffffffffffffffffffff16815250600760008673ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060008201518160000160006101000a8154816fffffffffffffffffffffffffffffffff02191690836fffffffffffffffffffffffffffffffff16021790555060208201518160000160106101000a8154816fffffffffffffffffffffffffffffffff02191690836fffffffffffffffffffffffffffffffff160217905550905050600260109054906101000a90046fffffffffffffffffffffffffffffffff1690509392505050565b80600160006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555050565b80600460106101000a8154816fffffffffffffffffffffffffffffffff02191690836fffffffffffffffffffffffffffffffff16021790555050565b600081600a60006101000a8154816fffffffffffffffffffffffffffffffff02191690836fffffffffffffffffffffffffffffffff160217905550600460009054906101000a90046fffffffffffffffffffffffffffffffff169050919050565b806000806101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555050565b600080fd5b60006fffffffffffffffffffffffffffffffff82169050919050565b610f6181610f3c565b8114610f6c57600080fd5b50565b600081359050610f7e81610f58565b92915050565b600060208284031215610f9a57610f99610f37565b5b6000610fa884828501610f6f565b91505092915050565b610fba81610f3c565b82525050565b6000602082019050610fd56000830184610fb1565b92915050565b600073ffffffffffffffffffffffffffffffffffffffff82169050919050565b600061100682610fdb565b9050919050565b61101681610ffb565b811461102157600080fd5b50565b6000813590506110338161100d565b92915050565b600080604083850312156110505761104f610f37565b5b600061105e85828601611024565b925050602061106f85828601610f6f565b9150509250929050565b60006020828403121561108f5761108e610f37565b5b600061109d84828501611024565b91505092915050565b6110af81610ffb565b82525050565b60006020820190506110ca60008301846110a6565b92915050565b6000806000606084860312156110e9576110e8610f37565b5b60006110f786828701611024565b935050602061110886828701610f6f565b925050604061111986828701610f6f565b9150509250925092565b60006040820190506111386000830185610fb1565b6111456020830184610fb1565b9392505050565b6000819050919050565b600061117161116c61116784610fdb565b61114c565b610fdb565b9050919050565b600061118382611156565b9050919050565b600061119582611178565b9050919050565b6111a58161118a565b82525050565b60006020820190506111c0600083018461119c565b9291505056fea264697066735822122098645af94df8bb9dda1b9cad004d7053c7e604d4aefcf2a7d8ddc067c8c7d5d764736f6c634300080d0033"
 
 // DeployPool deploys a new Ethereum contract, binding an instance of Pool to it.
 func DeployPool(auth *bind.TransactOpts, backend bind.ContractBackend) (common.Address, *types.Transaction, *Pool, error) {
@@ -188,85 +188,54 @@ func (_Pool *PoolTransactorRaw) Transact(opts *bind.TransactOpts, method string,
 	return _Pool.Contract.contract.Transact(opts, method, params...)
 }
 
-// PT is a free data retrieval call binding the contract method 0xd94073d4.
+// BuyPrincipalTokenCalled is a free data retrieval call binding the contract method 0xe525edce.
 //
-// Solidity: function PT() view returns(address)
-func (_Pool *PoolCaller) PT(opts *bind.CallOpts) (common.Address, error) {
-	var out []interface{}
-	err := _Pool.contract.Call(opts, &out, "PT")
-
-	if err != nil {
-		return *new(common.Address), err
-	}
-
-	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
-
-	return out0, err
-
-}
-
-// PT is a free data retrieval call binding the contract method 0xd94073d4.
-//
-// Solidity: function PT() view returns(address)
-func (_Pool *PoolSession) PT() (common.Address, error) {
-	return _Pool.Contract.PT(&_Pool.CallOpts)
-}
-
-// PT is a free data retrieval call binding the contract method 0xd94073d4.
-//
-// Solidity: function PT() view returns(address)
-func (_Pool *PoolCallerSession) PT() (common.Address, error) {
-	return _Pool.Contract.PT(&_Pool.CallOpts)
-}
-
-// BuyPTCalled is a free data retrieval call binding the contract method 0x5c9f16b6.
-//
-// Solidity: function buyPTCalled(address ) view returns(uint128 ptOut, uint128 min)
-func (_Pool *PoolCaller) BuyPTCalled(opts *bind.CallOpts, arg0 common.Address) (struct {
-	PtOut *big.Int
-	Min   *big.Int
+// Solidity: function buyPrincipalTokenCalled(address ) view returns(uint128 PrincipalTokenOut, uint128 min)
+func (_Pool *PoolCaller) BuyPrincipalTokenCalled(opts *bind.CallOpts, arg0 common.Address) (struct {
+	PrincipalTokenOut *big.Int
+	Min               *big.Int
 }, error) {
 	var out []interface{}
-	err := _Pool.contract.Call(opts, &out, "buyPTCalled", arg0)
+	err := _Pool.contract.Call(opts, &out, "buyPrincipalTokenCalled", arg0)
 
 	outstruct := new(struct {
-		PtOut *big.Int
-		Min   *big.Int
+		PrincipalTokenOut *big.Int
+		Min               *big.Int
 	})
 
-	outstruct.PtOut = out[0].(*big.Int)
+	outstruct.PrincipalTokenOut = out[0].(*big.Int)
 	outstruct.Min = out[1].(*big.Int)
 
 	return *outstruct, err
 
 }
 
-// BuyPTCalled is a free data retrieval call binding the contract method 0x5c9f16b6.
+// BuyPrincipalTokenCalled is a free data retrieval call binding the contract method 0xe525edce.
 //
-// Solidity: function buyPTCalled(address ) view returns(uint128 ptOut, uint128 min)
-func (_Pool *PoolSession) BuyPTCalled(arg0 common.Address) (struct {
-	PtOut *big.Int
-	Min   *big.Int
+// Solidity: function buyPrincipalTokenCalled(address ) view returns(uint128 PrincipalTokenOut, uint128 min)
+func (_Pool *PoolSession) BuyPrincipalTokenCalled(arg0 common.Address) (struct {
+	PrincipalTokenOut *big.Int
+	Min               *big.Int
 }, error) {
-	return _Pool.Contract.BuyPTCalled(&_Pool.CallOpts, arg0)
+	return _Pool.Contract.BuyPrincipalTokenCalled(&_Pool.CallOpts, arg0)
 }
 
-// BuyPTCalled is a free data retrieval call binding the contract method 0x5c9f16b6.
+// BuyPrincipalTokenCalled is a free data retrieval call binding the contract method 0xe525edce.
 //
-// Solidity: function buyPTCalled(address ) view returns(uint128 ptOut, uint128 min)
-func (_Pool *PoolCallerSession) BuyPTCalled(arg0 common.Address) (struct {
-	PtOut *big.Int
-	Min   *big.Int
+// Solidity: function buyPrincipalTokenCalled(address ) view returns(uint128 PrincipalTokenOut, uint128 min)
+func (_Pool *PoolCallerSession) BuyPrincipalTokenCalled(arg0 common.Address) (struct {
+	PrincipalTokenOut *big.Int
+	Min               *big.Int
 }, error) {
-	return _Pool.Contract.BuyPTCalled(&_Pool.CallOpts, arg0)
+	return _Pool.Contract.BuyPrincipalTokenCalled(&_Pool.CallOpts, arg0)
 }
 
-// BuyPTPreviewCalled is a free data retrieval call binding the contract method 0xcf66288d.
+// BuyPrincipalTokenPreviewCalled is a free data retrieval call binding the contract method 0x435bf331.
 //
-// Solidity: function buyPTPreviewCalled() view returns(uint128)
-func (_Pool *PoolCaller) BuyPTPreviewCalled(opts *bind.CallOpts) (*big.Int, error) {
+// Solidity: function buyPrincipalTokenPreviewCalled() view returns(uint128)
+func (_Pool *PoolCaller) BuyPrincipalTokenPreviewCalled(opts *bind.CallOpts) (*big.Int, error) {
 	var out []interface{}
-	err := _Pool.contract.Call(opts, &out, "buyPTPreviewCalled")
+	err := _Pool.contract.Call(opts, &out, "buyPrincipalTokenPreviewCalled")
 
 	if err != nil {
 		return *new(*big.Int), err
@@ -278,18 +247,18 @@ func (_Pool *PoolCaller) BuyPTPreviewCalled(opts *bind.CallOpts) (*big.Int, erro
 
 }
 
-// BuyPTPreviewCalled is a free data retrieval call binding the contract method 0xcf66288d.
+// BuyPrincipalTokenPreviewCalled is a free data retrieval call binding the contract method 0x435bf331.
 //
-// Solidity: function buyPTPreviewCalled() view returns(uint128)
-func (_Pool *PoolSession) BuyPTPreviewCalled() (*big.Int, error) {
-	return _Pool.Contract.BuyPTPreviewCalled(&_Pool.CallOpts)
+// Solidity: function buyPrincipalTokenPreviewCalled() view returns(uint128)
+func (_Pool *PoolSession) BuyPrincipalTokenPreviewCalled() (*big.Int, error) {
+	return _Pool.Contract.BuyPrincipalTokenPreviewCalled(&_Pool.CallOpts)
 }
 
-// BuyPTPreviewCalled is a free data retrieval call binding the contract method 0xcf66288d.
+// BuyPrincipalTokenPreviewCalled is a free data retrieval call binding the contract method 0x435bf331.
 //
-// Solidity: function buyPTPreviewCalled() view returns(uint128)
-func (_Pool *PoolCallerSession) BuyPTPreviewCalled() (*big.Int, error) {
-	return _Pool.Contract.BuyPTPreviewCalled(&_Pool.CallOpts)
+// Solidity: function buyPrincipalTokenPreviewCalled() view returns(uint128)
+func (_Pool *PoolCallerSession) BuyPrincipalTokenPreviewCalled() (*big.Int, error) {
+	return _Pool.Contract.BuyPrincipalTokenPreviewCalled(&_Pool.CallOpts)
 }
 
 // BuyUnderlyingCalled is a free data retrieval call binding the contract method 0xd9b03f88.
@@ -365,12 +334,43 @@ func (_Pool *PoolCallerSession) BuyUnderlyingPreviewCalled() (*big.Int, error) {
 	return _Pool.Contract.BuyUnderlyingPreviewCalled(&_Pool.CallOpts)
 }
 
-// SellPTCalled is a free data retrieval call binding the contract method 0x9a7402ac.
+// PrincipalToken is a free data retrieval call binding the contract method 0xdbc162de.
 //
-// Solidity: function sellPTCalled(address ) view returns(uint128)
-func (_Pool *PoolCaller) SellPTCalled(opts *bind.CallOpts, arg0 common.Address) (*big.Int, error) {
+// Solidity: function principalToken() view returns(address)
+func (_Pool *PoolCaller) PrincipalToken(opts *bind.CallOpts) (common.Address, error) {
 	var out []interface{}
-	err := _Pool.contract.Call(opts, &out, "sellPTCalled", arg0)
+	err := _Pool.contract.Call(opts, &out, "principalToken")
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
+}
+
+// PrincipalToken is a free data retrieval call binding the contract method 0xdbc162de.
+//
+// Solidity: function principalToken() view returns(address)
+func (_Pool *PoolSession) PrincipalToken() (common.Address, error) {
+	return _Pool.Contract.PrincipalToken(&_Pool.CallOpts)
+}
+
+// PrincipalToken is a free data retrieval call binding the contract method 0xdbc162de.
+//
+// Solidity: function principalToken() view returns(address)
+func (_Pool *PoolCallerSession) PrincipalToken() (common.Address, error) {
+	return _Pool.Contract.PrincipalToken(&_Pool.CallOpts)
+}
+
+// SellPrincipalTokenCalled is a free data retrieval call binding the contract method 0x9d92bc2f.
+//
+// Solidity: function sellPrincipalTokenCalled(address ) view returns(uint128)
+func (_Pool *PoolCaller) SellPrincipalTokenCalled(opts *bind.CallOpts, arg0 common.Address) (*big.Int, error) {
+	var out []interface{}
+	err := _Pool.contract.Call(opts, &out, "sellPrincipalTokenCalled", arg0)
 
 	if err != nil {
 		return *new(*big.Int), err
@@ -382,26 +382,26 @@ func (_Pool *PoolCaller) SellPTCalled(opts *bind.CallOpts, arg0 common.Address) 
 
 }
 
-// SellPTCalled is a free data retrieval call binding the contract method 0x9a7402ac.
+// SellPrincipalTokenCalled is a free data retrieval call binding the contract method 0x9d92bc2f.
 //
-// Solidity: function sellPTCalled(address ) view returns(uint128)
-func (_Pool *PoolSession) SellPTCalled(arg0 common.Address) (*big.Int, error) {
-	return _Pool.Contract.SellPTCalled(&_Pool.CallOpts, arg0)
+// Solidity: function sellPrincipalTokenCalled(address ) view returns(uint128)
+func (_Pool *PoolSession) SellPrincipalTokenCalled(arg0 common.Address) (*big.Int, error) {
+	return _Pool.Contract.SellPrincipalTokenCalled(&_Pool.CallOpts, arg0)
 }
 
-// SellPTCalled is a free data retrieval call binding the contract method 0x9a7402ac.
+// SellPrincipalTokenCalled is a free data retrieval call binding the contract method 0x9d92bc2f.
 //
-// Solidity: function sellPTCalled(address ) view returns(uint128)
-func (_Pool *PoolCallerSession) SellPTCalled(arg0 common.Address) (*big.Int, error) {
-	return _Pool.Contract.SellPTCalled(&_Pool.CallOpts, arg0)
+// Solidity: function sellPrincipalTokenCalled(address ) view returns(uint128)
+func (_Pool *PoolCallerSession) SellPrincipalTokenCalled(arg0 common.Address) (*big.Int, error) {
+	return _Pool.Contract.SellPrincipalTokenCalled(&_Pool.CallOpts, arg0)
 }
 
-// SellPTPreviewCalled is a free data retrieval call binding the contract method 0x7c7870ca.
+// SellPrincipalTokenPreviewCalled is a free data retrieval call binding the contract method 0x15c49330.
 //
-// Solidity: function sellPTPreviewCalled() view returns(uint128)
-func (_Pool *PoolCaller) SellPTPreviewCalled(opts *bind.CallOpts) (*big.Int, error) {
+// Solidity: function sellPrincipalTokenPreviewCalled() view returns(uint128)
+func (_Pool *PoolCaller) SellPrincipalTokenPreviewCalled(opts *bind.CallOpts) (*big.Int, error) {
 	var out []interface{}
-	err := _Pool.contract.Call(opts, &out, "sellPTPreviewCalled")
+	err := _Pool.contract.Call(opts, &out, "sellPrincipalTokenPreviewCalled")
 
 	if err != nil {
 		return *new(*big.Int), err
@@ -413,18 +413,18 @@ func (_Pool *PoolCaller) SellPTPreviewCalled(opts *bind.CallOpts) (*big.Int, err
 
 }
 
-// SellPTPreviewCalled is a free data retrieval call binding the contract method 0x7c7870ca.
+// SellPrincipalTokenPreviewCalled is a free data retrieval call binding the contract method 0x15c49330.
 //
-// Solidity: function sellPTPreviewCalled() view returns(uint128)
-func (_Pool *PoolSession) SellPTPreviewCalled() (*big.Int, error) {
-	return _Pool.Contract.SellPTPreviewCalled(&_Pool.CallOpts)
+// Solidity: function sellPrincipalTokenPreviewCalled() view returns(uint128)
+func (_Pool *PoolSession) SellPrincipalTokenPreviewCalled() (*big.Int, error) {
+	return _Pool.Contract.SellPrincipalTokenPreviewCalled(&_Pool.CallOpts)
 }
 
-// SellPTPreviewCalled is a free data retrieval call binding the contract method 0x7c7870ca.
+// SellPrincipalTokenPreviewCalled is a free data retrieval call binding the contract method 0x15c49330.
 //
-// Solidity: function sellPTPreviewCalled() view returns(uint128)
-func (_Pool *PoolCallerSession) SellPTPreviewCalled() (*big.Int, error) {
-	return _Pool.Contract.SellPTPreviewCalled(&_Pool.CallOpts)
+// Solidity: function sellPrincipalTokenPreviewCalled() view returns(uint128)
+func (_Pool *PoolCallerSession) SellPrincipalTokenPreviewCalled() (*big.Int, error) {
+	return _Pool.Contract.SellPrincipalTokenPreviewCalled(&_Pool.CallOpts)
 }
 
 // SellUnderlyingCalled is a free data retrieval call binding the contract method 0x463a861e.
@@ -520,109 +520,88 @@ func (_Pool *PoolCallerSession) Underlying() (common.Address, error) {
 	return _Pool.Contract.Underlying(&_Pool.CallOpts)
 }
 
-// PTReturns is a paid mutator transaction binding the contract method 0x70691fbd.
+// BuyPrincipalToken is a paid mutator transaction binding the contract method 0xb03ceb15.
 //
-// Solidity: function PTReturns(address p) returns()
-func (_Pool *PoolTransactor) PTReturns(opts *bind.TransactOpts, p common.Address) (*types.Transaction, error) {
-	return _Pool.contract.Transact(opts, "PTReturns", p)
+// Solidity: function buyPrincipalToken(address t, uint128 p, uint128 m) returns(uint128)
+func (_Pool *PoolTransactor) BuyPrincipalToken(opts *bind.TransactOpts, t common.Address, p *big.Int, m *big.Int) (*types.Transaction, error) {
+	return _Pool.contract.Transact(opts, "buyPrincipalToken", t, p, m)
 }
 
-// PTReturns is a paid mutator transaction binding the contract method 0x70691fbd.
+// BuyPrincipalToken is a paid mutator transaction binding the contract method 0xb03ceb15.
 //
-// Solidity: function PTReturns(address p) returns()
-func (_Pool *PoolSession) PTReturns(p common.Address) (*types.Transaction, error) {
-	return _Pool.Contract.PTReturns(&_Pool.TransactOpts, p)
+// Solidity: function buyPrincipalToken(address t, uint128 p, uint128 m) returns(uint128)
+func (_Pool *PoolSession) BuyPrincipalToken(t common.Address, p *big.Int, m *big.Int) (*types.Transaction, error) {
+	return _Pool.Contract.BuyPrincipalToken(&_Pool.TransactOpts, t, p, m)
 }
 
-// PTReturns is a paid mutator transaction binding the contract method 0x70691fbd.
+// BuyPrincipalToken is a paid mutator transaction binding the contract method 0xb03ceb15.
 //
-// Solidity: function PTReturns(address p) returns()
-func (_Pool *PoolTransactorSession) PTReturns(p common.Address) (*types.Transaction, error) {
-	return _Pool.Contract.PTReturns(&_Pool.TransactOpts, p)
+// Solidity: function buyPrincipalToken(address t, uint128 p, uint128 m) returns(uint128)
+func (_Pool *PoolTransactorSession) BuyPrincipalToken(t common.Address, p *big.Int, m *big.Int) (*types.Transaction, error) {
+	return _Pool.Contract.BuyPrincipalToken(&_Pool.TransactOpts, t, p, m)
 }
 
-// BuyPT is a paid mutator transaction binding the contract method 0x6045eae4.
+// BuyPrincipalTokenPreview is a paid mutator transaction binding the contract method 0xc9c917d7.
 //
-// Solidity: function buyPT(address t, uint128 p, uint128 m) returns(uint128)
-func (_Pool *PoolTransactor) BuyPT(opts *bind.TransactOpts, t common.Address, p *big.Int, m *big.Int) (*types.Transaction, error) {
-	return _Pool.contract.Transact(opts, "buyPT", t, p, m)
+// Solidity: function buyPrincipalTokenPreview(uint128 o) returns(uint128)
+func (_Pool *PoolTransactor) BuyPrincipalTokenPreview(opts *bind.TransactOpts, o *big.Int) (*types.Transaction, error) {
+	return _Pool.contract.Transact(opts, "buyPrincipalTokenPreview", o)
 }
 
-// BuyPT is a paid mutator transaction binding the contract method 0x6045eae4.
+// BuyPrincipalTokenPreview is a paid mutator transaction binding the contract method 0xc9c917d7.
 //
-// Solidity: function buyPT(address t, uint128 p, uint128 m) returns(uint128)
-func (_Pool *PoolSession) BuyPT(t common.Address, p *big.Int, m *big.Int) (*types.Transaction, error) {
-	return _Pool.Contract.BuyPT(&_Pool.TransactOpts, t, p, m)
+// Solidity: function buyPrincipalTokenPreview(uint128 o) returns(uint128)
+func (_Pool *PoolSession) BuyPrincipalTokenPreview(o *big.Int) (*types.Transaction, error) {
+	return _Pool.Contract.BuyPrincipalTokenPreview(&_Pool.TransactOpts, o)
 }
 
-// BuyPT is a paid mutator transaction binding the contract method 0x6045eae4.
+// BuyPrincipalTokenPreview is a paid mutator transaction binding the contract method 0xc9c917d7.
 //
-// Solidity: function buyPT(address t, uint128 p, uint128 m) returns(uint128)
-func (_Pool *PoolTransactorSession) BuyPT(t common.Address, p *big.Int, m *big.Int) (*types.Transaction, error) {
-	return _Pool.Contract.BuyPT(&_Pool.TransactOpts, t, p, m)
+// Solidity: function buyPrincipalTokenPreview(uint128 o) returns(uint128)
+func (_Pool *PoolTransactorSession) BuyPrincipalTokenPreview(o *big.Int) (*types.Transaction, error) {
+	return _Pool.Contract.BuyPrincipalTokenPreview(&_Pool.TransactOpts, o)
 }
 
-// BuyPTPreview is a paid mutator transaction binding the contract method 0x87c09bbc.
+// BuyPrincipalTokenPreviewReturns is a paid mutator transaction binding the contract method 0x556dd440.
 //
-// Solidity: function buyPTPreview(uint128 o) returns(uint128)
-func (_Pool *PoolTransactor) BuyPTPreview(opts *bind.TransactOpts, o *big.Int) (*types.Transaction, error) {
-	return _Pool.contract.Transact(opts, "buyPTPreview", o)
+// Solidity: function buyPrincipalTokenPreviewReturns(uint128 o) returns()
+func (_Pool *PoolTransactor) BuyPrincipalTokenPreviewReturns(opts *bind.TransactOpts, o *big.Int) (*types.Transaction, error) {
+	return _Pool.contract.Transact(opts, "buyPrincipalTokenPreviewReturns", o)
 }
 
-// BuyPTPreview is a paid mutator transaction binding the contract method 0x87c09bbc.
+// BuyPrincipalTokenPreviewReturns is a paid mutator transaction binding the contract method 0x556dd440.
 //
-// Solidity: function buyPTPreview(uint128 o) returns(uint128)
-func (_Pool *PoolSession) BuyPTPreview(o *big.Int) (*types.Transaction, error) {
-	return _Pool.Contract.BuyPTPreview(&_Pool.TransactOpts, o)
+// Solidity: function buyPrincipalTokenPreviewReturns(uint128 o) returns()
+func (_Pool *PoolSession) BuyPrincipalTokenPreviewReturns(o *big.Int) (*types.Transaction, error) {
+	return _Pool.Contract.BuyPrincipalTokenPreviewReturns(&_Pool.TransactOpts, o)
 }
 
-// BuyPTPreview is a paid mutator transaction binding the contract method 0x87c09bbc.
+// BuyPrincipalTokenPreviewReturns is a paid mutator transaction binding the contract method 0x556dd440.
 //
-// Solidity: function buyPTPreview(uint128 o) returns(uint128)
-func (_Pool *PoolTransactorSession) BuyPTPreview(o *big.Int) (*types.Transaction, error) {
-	return _Pool.Contract.BuyPTPreview(&_Pool.TransactOpts, o)
+// Solidity: function buyPrincipalTokenPreviewReturns(uint128 o) returns()
+func (_Pool *PoolTransactorSession) BuyPrincipalTokenPreviewReturns(o *big.Int) (*types.Transaction, error) {
+	return _Pool.Contract.BuyPrincipalTokenPreviewReturns(&_Pool.TransactOpts, o)
 }
 
-// BuyPTPreviewReturns is a paid mutator transaction binding the contract method 0x0e861cd6.
+// BuyPrincipalTokenReturns is a paid mutator transaction binding the contract method 0xb45d8801.
 //
-// Solidity: function buyPTPreviewReturns(uint128 o) returns()
-func (_Pool *PoolTransactor) BuyPTPreviewReturns(opts *bind.TransactOpts, o *big.Int) (*types.Transaction, error) {
-	return _Pool.contract.Transact(opts, "buyPTPreviewReturns", o)
+// Solidity: function buyPrincipalTokenReturns(uint128 b) returns()
+func (_Pool *PoolTransactor) BuyPrincipalTokenReturns(opts *bind.TransactOpts, b *big.Int) (*types.Transaction, error) {
+	return _Pool.contract.Transact(opts, "buyPrincipalTokenReturns", b)
 }
 
-// BuyPTPreviewReturns is a paid mutator transaction binding the contract method 0x0e861cd6.
+// BuyPrincipalTokenReturns is a paid mutator transaction binding the contract method 0xb45d8801.
 //
-// Solidity: function buyPTPreviewReturns(uint128 o) returns()
-func (_Pool *PoolSession) BuyPTPreviewReturns(o *big.Int) (*types.Transaction, error) {
-	return _Pool.Contract.BuyPTPreviewReturns(&_Pool.TransactOpts, o)
+// Solidity: function buyPrincipalTokenReturns(uint128 b) returns()
+func (_Pool *PoolSession) BuyPrincipalTokenReturns(b *big.Int) (*types.Transaction, error) {
+	return _Pool.Contract.BuyPrincipalTokenReturns(&_Pool.TransactOpts, b)
 }
 
-// BuyPTPreviewReturns is a paid mutator transaction binding the contract method 0x0e861cd6.
+// BuyPrincipalTokenReturns is a paid mutator transaction binding the contract method 0xb45d8801.
 //
-// Solidity: function buyPTPreviewReturns(uint128 o) returns()
-func (_Pool *PoolTransactorSession) BuyPTPreviewReturns(o *big.Int) (*types.Transaction, error) {
-	return _Pool.Contract.BuyPTPreviewReturns(&_Pool.TransactOpts, o)
-}
-
-// BuyPTReturns is a paid mutator transaction binding the contract method 0xa367e786.
-//
-// Solidity: function buyPTReturns(uint128 b) returns()
-func (_Pool *PoolTransactor) BuyPTReturns(opts *bind.TransactOpts, b *big.Int) (*types.Transaction, error) {
-	return _Pool.contract.Transact(opts, "buyPTReturns", b)
-}
-
-// BuyPTReturns is a paid mutator transaction binding the contract method 0xa367e786.
-//
-// Solidity: function buyPTReturns(uint128 b) returns()
-func (_Pool *PoolSession) BuyPTReturns(b *big.Int) (*types.Transaction, error) {
-	return _Pool.Contract.BuyPTReturns(&_Pool.TransactOpts, b)
-}
-
-// BuyPTReturns is a paid mutator transaction binding the contract method 0xa367e786.
-//
-// Solidity: function buyPTReturns(uint128 b) returns()
-func (_Pool *PoolTransactorSession) BuyPTReturns(b *big.Int) (*types.Transaction, error) {
-	return _Pool.Contract.BuyPTReturns(&_Pool.TransactOpts, b)
+// Solidity: function buyPrincipalTokenReturns(uint128 b) returns()
+func (_Pool *PoolTransactorSession) BuyPrincipalTokenReturns(b *big.Int) (*types.Transaction, error) {
+	return _Pool.Contract.BuyPrincipalTokenReturns(&_Pool.TransactOpts, b)
 }
 
 // BuyUnderlying is a paid mutator transaction binding the contract method 0xe78a9b0c.
@@ -709,88 +688,109 @@ func (_Pool *PoolTransactorSession) BuyUnderlyingReturns(b *big.Int) (*types.Tra
 	return _Pool.Contract.BuyUnderlyingReturns(&_Pool.TransactOpts, b)
 }
 
-// SellPT is a paid mutator transaction binding the contract method 0xc45be1f2.
+// PrincipalTokenReturns is a paid mutator transaction binding the contract method 0xf3ec0d2c.
 //
-// Solidity: function sellPT(address t, uint128 m) returns(uint128)
-func (_Pool *PoolTransactor) SellPT(opts *bind.TransactOpts, t common.Address, m *big.Int) (*types.Transaction, error) {
-	return _Pool.contract.Transact(opts, "sellPT", t, m)
+// Solidity: function principalTokenReturns(address p) returns()
+func (_Pool *PoolTransactor) PrincipalTokenReturns(opts *bind.TransactOpts, p common.Address) (*types.Transaction, error) {
+	return _Pool.contract.Transact(opts, "principalTokenReturns", p)
 }
 
-// SellPT is a paid mutator transaction binding the contract method 0xc45be1f2.
+// PrincipalTokenReturns is a paid mutator transaction binding the contract method 0xf3ec0d2c.
 //
-// Solidity: function sellPT(address t, uint128 m) returns(uint128)
-func (_Pool *PoolSession) SellPT(t common.Address, m *big.Int) (*types.Transaction, error) {
-	return _Pool.Contract.SellPT(&_Pool.TransactOpts, t, m)
+// Solidity: function principalTokenReturns(address p) returns()
+func (_Pool *PoolSession) PrincipalTokenReturns(p common.Address) (*types.Transaction, error) {
+	return _Pool.Contract.PrincipalTokenReturns(&_Pool.TransactOpts, p)
 }
 
-// SellPT is a paid mutator transaction binding the contract method 0xc45be1f2.
+// PrincipalTokenReturns is a paid mutator transaction binding the contract method 0xf3ec0d2c.
 //
-// Solidity: function sellPT(address t, uint128 m) returns(uint128)
-func (_Pool *PoolTransactorSession) SellPT(t common.Address, m *big.Int) (*types.Transaction, error) {
-	return _Pool.Contract.SellPT(&_Pool.TransactOpts, t, m)
+// Solidity: function principalTokenReturns(address p) returns()
+func (_Pool *PoolTransactorSession) PrincipalTokenReturns(p common.Address) (*types.Transaction, error) {
+	return _Pool.Contract.PrincipalTokenReturns(&_Pool.TransactOpts, p)
 }
 
-// SellPTPreview is a paid mutator transaction binding the contract method 0xe463854d.
+// SellPrincipalToken is a paid mutator transaction binding the contract method 0x134df58b.
 //
-// Solidity: function sellPTPreview(uint128 i) returns(uint128)
-func (_Pool *PoolTransactor) SellPTPreview(opts *bind.TransactOpts, i *big.Int) (*types.Transaction, error) {
-	return _Pool.contract.Transact(opts, "sellPTPreview", i)
+// Solidity: function sellPrincipalToken(address t, uint128 m) returns(uint128)
+func (_Pool *PoolTransactor) SellPrincipalToken(opts *bind.TransactOpts, t common.Address, m *big.Int) (*types.Transaction, error) {
+	return _Pool.contract.Transact(opts, "sellPrincipalToken", t, m)
 }
 
-// SellPTPreview is a paid mutator transaction binding the contract method 0xe463854d.
+// SellPrincipalToken is a paid mutator transaction binding the contract method 0x134df58b.
 //
-// Solidity: function sellPTPreview(uint128 i) returns(uint128)
-func (_Pool *PoolSession) SellPTPreview(i *big.Int) (*types.Transaction, error) {
-	return _Pool.Contract.SellPTPreview(&_Pool.TransactOpts, i)
+// Solidity: function sellPrincipalToken(address t, uint128 m) returns(uint128)
+func (_Pool *PoolSession) SellPrincipalToken(t common.Address, m *big.Int) (*types.Transaction, error) {
+	return _Pool.Contract.SellPrincipalToken(&_Pool.TransactOpts, t, m)
 }
 
-// SellPTPreview is a paid mutator transaction binding the contract method 0xe463854d.
+// SellPrincipalToken is a paid mutator transaction binding the contract method 0x134df58b.
 //
-// Solidity: function sellPTPreview(uint128 i) returns(uint128)
-func (_Pool *PoolTransactorSession) SellPTPreview(i *big.Int) (*types.Transaction, error) {
-	return _Pool.Contract.SellPTPreview(&_Pool.TransactOpts, i)
+// Solidity: function sellPrincipalToken(address t, uint128 m) returns(uint128)
+func (_Pool *PoolTransactorSession) SellPrincipalToken(t common.Address, m *big.Int) (*types.Transaction, error) {
+	return _Pool.Contract.SellPrincipalToken(&_Pool.TransactOpts, t, m)
 }
 
-// SellPTPreviewReturns is a paid mutator transaction binding the contract method 0x47048271.
+// SellPrincipalTokenPreview is a paid mutator transaction binding the contract method 0x0a7e546e.
 //
-// Solidity: function sellPTPreviewReturns(uint128 i) returns()
-func (_Pool *PoolTransactor) SellPTPreviewReturns(opts *bind.TransactOpts, i *big.Int) (*types.Transaction, error) {
-	return _Pool.contract.Transact(opts, "sellPTPreviewReturns", i)
+// Solidity: function sellPrincipalTokenPreview(uint128 i) returns(uint128)
+func (_Pool *PoolTransactor) SellPrincipalTokenPreview(opts *bind.TransactOpts, i *big.Int) (*types.Transaction, error) {
+	return _Pool.contract.Transact(opts, "sellPrincipalTokenPreview", i)
 }
 
-// SellPTPreviewReturns is a paid mutator transaction binding the contract method 0x47048271.
+// SellPrincipalTokenPreview is a paid mutator transaction binding the contract method 0x0a7e546e.
 //
-// Solidity: function sellPTPreviewReturns(uint128 i) returns()
-func (_Pool *PoolSession) SellPTPreviewReturns(i *big.Int) (*types.Transaction, error) {
-	return _Pool.Contract.SellPTPreviewReturns(&_Pool.TransactOpts, i)
+// Solidity: function sellPrincipalTokenPreview(uint128 i) returns(uint128)
+func (_Pool *PoolSession) SellPrincipalTokenPreview(i *big.Int) (*types.Transaction, error) {
+	return _Pool.Contract.SellPrincipalTokenPreview(&_Pool.TransactOpts, i)
 }
 
-// SellPTPreviewReturns is a paid mutator transaction binding the contract method 0x47048271.
+// SellPrincipalTokenPreview is a paid mutator transaction binding the contract method 0x0a7e546e.
 //
-// Solidity: function sellPTPreviewReturns(uint128 i) returns()
-func (_Pool *PoolTransactorSession) SellPTPreviewReturns(i *big.Int) (*types.Transaction, error) {
-	return _Pool.Contract.SellPTPreviewReturns(&_Pool.TransactOpts, i)
+// Solidity: function sellPrincipalTokenPreview(uint128 i) returns(uint128)
+func (_Pool *PoolTransactorSession) SellPrincipalTokenPreview(i *big.Int) (*types.Transaction, error) {
+	return _Pool.Contract.SellPrincipalTokenPreview(&_Pool.TransactOpts, i)
 }
 
-// SellPTReturns is a paid mutator transaction binding the contract method 0x7123a5c4.
+// SellPrincipalTokenPreviewReturns is a paid mutator transaction binding the contract method 0x9b9c9fde.
 //
-// Solidity: function sellPTReturns(uint128 s) returns()
-func (_Pool *PoolTransactor) SellPTReturns(opts *bind.TransactOpts, s *big.Int) (*types.Transaction, error) {
-	return _Pool.contract.Transact(opts, "sellPTReturns", s)
+// Solidity: function sellPrincipalTokenPreviewReturns(uint128 i) returns()
+func (_Pool *PoolTransactor) SellPrincipalTokenPreviewReturns(opts *bind.TransactOpts, i *big.Int) (*types.Transaction, error) {
+	return _Pool.contract.Transact(opts, "sellPrincipalTokenPreviewReturns", i)
 }
 
-// SellPTReturns is a paid mutator transaction binding the contract method 0x7123a5c4.
+// SellPrincipalTokenPreviewReturns is a paid mutator transaction binding the contract method 0x9b9c9fde.
 //
-// Solidity: function sellPTReturns(uint128 s) returns()
-func (_Pool *PoolSession) SellPTReturns(s *big.Int) (*types.Transaction, error) {
-	return _Pool.Contract.SellPTReturns(&_Pool.TransactOpts, s)
+// Solidity: function sellPrincipalTokenPreviewReturns(uint128 i) returns()
+func (_Pool *PoolSession) SellPrincipalTokenPreviewReturns(i *big.Int) (*types.Transaction, error) {
+	return _Pool.Contract.SellPrincipalTokenPreviewReturns(&_Pool.TransactOpts, i)
 }
 
-// SellPTReturns is a paid mutator transaction binding the contract method 0x7123a5c4.
+// SellPrincipalTokenPreviewReturns is a paid mutator transaction binding the contract method 0x9b9c9fde.
 //
-// Solidity: function sellPTReturns(uint128 s) returns()
-func (_Pool *PoolTransactorSession) SellPTReturns(s *big.Int) (*types.Transaction, error) {
-	return _Pool.Contract.SellPTReturns(&_Pool.TransactOpts, s)
+// Solidity: function sellPrincipalTokenPreviewReturns(uint128 i) returns()
+func (_Pool *PoolTransactorSession) SellPrincipalTokenPreviewReturns(i *big.Int) (*types.Transaction, error) {
+	return _Pool.Contract.SellPrincipalTokenPreviewReturns(&_Pool.TransactOpts, i)
+}
+
+// SellPrincipalTokenReturns is a paid mutator transaction binding the contract method 0xc59964b3.
+//
+// Solidity: function sellPrincipalTokenReturns(uint128 s) returns()
+func (_Pool *PoolTransactor) SellPrincipalTokenReturns(opts *bind.TransactOpts, s *big.Int) (*types.Transaction, error) {
+	return _Pool.contract.Transact(opts, "sellPrincipalTokenReturns", s)
+}
+
+// SellPrincipalTokenReturns is a paid mutator transaction binding the contract method 0xc59964b3.
+//
+// Solidity: function sellPrincipalTokenReturns(uint128 s) returns()
+func (_Pool *PoolSession) SellPrincipalTokenReturns(s *big.Int) (*types.Transaction, error) {
+	return _Pool.Contract.SellPrincipalTokenReturns(&_Pool.TransactOpts, s)
+}
+
+// SellPrincipalTokenReturns is a paid mutator transaction binding the contract method 0xc59964b3.
+//
+// Solidity: function sellPrincipalTokenReturns(uint128 s) returns()
+func (_Pool *PoolTransactorSession) SellPrincipalTokenReturns(s *big.Int) (*types.Transaction, error) {
+	return _Pool.Contract.SellPrincipalTokenReturns(&_Pool.TransactOpts, s)
 }
 
 // SellUnderlying is a paid mutator transaction binding the contract method 0x3e232091.

@@ -43,37 +43,37 @@ contract Pool {
         uint128 min;
     }
 
-    struct BuyPTArgs {
-        uint128 ptOut;
+    struct BuyPrincipalTokenArgs {
+        uint128 PrincipalTokenOut;
         uint128 min;
     }
 
-    IErc5095 private PTReturn;
+    IErc5095 private PrincipalTokenReturn;
     address private underlyingReturn;
     uint128 private sellUnderlyingReturn;
     uint128 private buyUnderlyingReturn;
-    uint128 private sellPTReturn;
-    uint128 private buyPTReturn;
+    uint128 private sellPrincipalTokenReturn;
+    uint128 private buyPrincipalTokenReturn;
     uint128 private sellUnderlyingPreviewReturn;
     uint128 private buyUnderlyingPreviewReturn;
-    uint128 private sellPTPreviewReturn;
-    uint128 private buyPTPreviewReturn;
+    uint128 private sellPrincipalTokenPreviewReturn;
+    uint128 private buyPrincipalTokenPreviewReturn;
 
     mapping(address => uint128) public sellUnderlyingCalled;
     mapping(address => BuyUnderlyingArgs) public buyUnderlyingCalled;
-    mapping(address => uint128) public sellPTCalled;
-    mapping(address => BuyPTArgs) public buyPTCalled;
+    mapping(address => uint128) public sellPrincipalTokenCalled;
+    mapping(address => BuyPrincipalTokenArgs) public buyPrincipalTokenCalled;
     uint128 public sellUnderlyingPreviewCalled;
     uint128 public buyUnderlyingPreviewCalled;
-    uint128 public sellPTPreviewCalled;
-    uint128 public buyPTPreviewCalled;
+    uint128 public sellPrincipalTokenPreviewCalled;
+    uint128 public buyPrincipalTokenPreviewCalled;
 
-    function PTReturns(address p) public {
-        PTReturn = IErc5095(p);
+    function principalTokenReturns(address p) public {
+        PrincipalTokenReturn = IErc5095(p);
     }
 
-    function PT() external view returns (IErc5095) {
-        return PTReturn;
+    function principalToken() external view returns (IErc5095) {
+        return PrincipalTokenReturn;
     }
 
     function sellUnderlyingReturns(uint128 s) public {
@@ -106,26 +106,26 @@ contract Pool {
         return buyUnderlyingReturn;
     }
 
-    function sellPTReturns(uint128 s) public {
-        sellPTReturn = s;
+    function sellPrincipalTokenReturns(uint128 s) public {
+        sellPrincipalTokenReturn = s;
     }
 
-    function sellPT(address t, uint128 m) external returns (uint128) {
-        sellPTCalled[t] = m;
-        return sellPTReturn;
+    function sellPrincipalToken(address t, uint128 m) external returns (uint128) {
+        sellPrincipalTokenCalled[t] = m;
+        return sellPrincipalTokenReturn;
     }
 
-    function buyPTReturns(uint128 b) public {
-        buyPTReturn = b;
+    function buyPrincipalTokenReturns(uint128 b) public {
+        buyPrincipalTokenReturn = b;
     }
 
-    function buyPT(
+    function buyPrincipalToken(
         address t,
         uint128 p,
         uint128 m
     ) external returns (uint128) {
-        buyPTCalled[t] = BuyPTArgs(p, m);
-        return buyPTReturn;
+        buyPrincipalTokenCalled[t] = BuyPrincipalTokenArgs(p, m);
+        return buyPrincipalTokenReturn;
     }
 
     function sellUnderlyingPreviewReturns(uint128 s) public {
@@ -146,21 +146,21 @@ contract Pool {
         return buyUnderlyingPreviewReturn;
     }
 
-    function sellPTPreviewReturns(uint128 i) public {
-        sellPTPreviewReturn = i;
+    function sellPrincipalTokenPreviewReturns(uint128 i) public {
+        sellPrincipalTokenPreviewReturn = i;
     }
 
-    function sellPTPreview(uint128 i) external returns (uint128) {
-        sellPTPreviewCalled = i;
-        return sellPTPreviewReturn;
+    function sellPrincipalTokenPreview(uint128 i) external returns (uint128) {
+        sellPrincipalTokenPreviewCalled = i;
+        return sellPrincipalTokenPreviewReturn;
     }
 
-    function buyPTPreviewReturns(uint128 o) public {
-        buyPTPreviewReturn = o;
+    function buyPrincipalTokenPreviewReturns(uint128 o) public {
+        buyPrincipalTokenPreviewReturn = o;
     }
 
-    function buyPTPreview(uint128 o) external returns (uint128) {
-        buyPTPreviewCalled = o;
-        return buyPTPreviewReturn;
+    function buyPrincipalTokenPreview(uint128 o) external returns (uint128) {
+        buyPrincipalTokenPreviewCalled = o;
+        return buyPrincipalTokenPreviewReturn;
     }
 }

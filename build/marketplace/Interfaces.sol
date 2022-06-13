@@ -42,7 +42,7 @@ interface IErc5095 {
 }
 
 interface IPool {
-    function PT() external returns (IErc5095);
+    function principalToken() external returns (IErc5095);
 
     function underlying() external returns (address);
 
@@ -54,9 +54,9 @@ interface IPool {
         uint128
     ) external returns (uint128);
 
-    function sellPT(address to, uint128 min) external returns (uint128);
+    function sellPrincipalToken(address to, uint128 min) external returns (uint128);
 
-    function buyPT(
+    function buyPrincipalToken(
         address,
         uint128,
         uint128
@@ -66,7 +66,7 @@ interface IPool {
 
     function buyUnderlyingPreview(uint128) external returns (uint128);
 
-    function sellPTPreview(uint128) external returns (uint128);
+    function sellPrincipalTokenPreview(uint128) external returns (uint128);
 
-    function buyPTPreview(uint128) external returns (uint128);
+    function buyPrincipalTokenPreview(uint128) external returns (uint128);
 }
