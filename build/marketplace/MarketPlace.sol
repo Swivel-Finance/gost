@@ -8,7 +8,7 @@ import './Safe.sol';
 
 contract MarketPlace {
     /// @notice the available principals
-    /// @dev the order of this enum is used to select protocols from the markets
+    /// @dev the order of this enum is used to select principals from the markets
     /// mapping
     /// @dev e.g. Illuminate => 0, Swivel => 1, and so on
     enum Principals {
@@ -34,7 +34,7 @@ contract MarketPlace {
     address public admin;
     /// @notice address of the deployed redeemer contract
     address public immutable redeemer;
-    /// @notice flag that determines if a protocol's pool is available
+    /// @notice flag that determines if a principal's pool is available
     bool[9] public paused = [false, false, false, false, false, false, false, false, false];
 
     event CreateMarket(address indexed underlying, uint256 indexed maturity);
@@ -46,7 +46,7 @@ contract MarketPlace {
     }
 
     /// @notice creates a new market for the given underlying token and maturity
-    /// @notice all seven protocols should be provided in the order of their enum value
+    /// @notice all seven principals should be provided in the order of their enum value
     /// @param u address of an underlying asset
     /// @param m maturity (timestamp) of the market
     /// @param t principal token addresses for this market minus the illuminate principal (which is added here)
@@ -88,8 +88,8 @@ contract MarketPlace {
         return true;
     }
 
-    /// @notice allows the admin to pause a protocol's pools
-    /// @param p protocol's enum value
+    /// @notice allows the admin to pause a principal's pools
+    /// @param p principal's enum value
     /// @param s true if the pool should be paused, false otherwise
     /// @return bool true if successful
     function pause(uint8 p, bool s) external authorized(admin) returns (bool) {
@@ -188,7 +188,7 @@ contract MarketPlace {
     }
 
     modifier unpaused(uint8 p) {
-        require(!paused[p], 'markets are paused');
+        require(!paused[p], 'principal is paused');
         _;
     }
 }
