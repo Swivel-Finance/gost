@@ -9,21 +9,14 @@ contract Aave {
         uint256 minimumAmount;
     }
 
-    bool private depositReturn;
-
     mapping(address => DepositArgs) public depositCalled;
-
-    function depositReturns(bool b) external {
-        depositReturn = b;
-    }
 
     function depsoit(
         address a,
         address b,
         uint256 amount,
         uint16 r
-    ) external returns (bool) {
+    ) external {
         depositCalled[a] = DepositArgs(b, amount, r);
-        return depositReturn;
     }
 }

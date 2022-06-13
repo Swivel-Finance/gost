@@ -151,5 +151,5 @@ interface IAave {
         uint256,
         address,
         uint16
-    ) external returns (uint256);
+    ) external;
 }
