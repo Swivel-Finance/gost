@@ -17,9 +17,11 @@ contract MarketPlace {
     address private zcTokenReturn;
     address private zcTokenReturnSpoof;
     address private poolsReturn;
+    bool private pausedReturn;
 
     mapping(address => MarketsArgs) public marketsCalled;
     mapping(address => PoolsArgs) public poolsCalled;
+    uint8 public pausedCalled;
 
     function principalTokenReturns(address p) external {
         princialTokenReturn = p;
@@ -61,5 +63,14 @@ contract MarketPlace {
     ) external returns (address) {
         poolsCalled[u] = PoolsArgs(m, p);
         return poolsReturn;
+    }
+
+    function pausedReturns(bool p) public {
+        pausedReturn = p;
+    }
+
+    function paused(uint8 p) external returns (bool) {
+        pausedCalled = p;
+        return pausedReturn;
     }
 }

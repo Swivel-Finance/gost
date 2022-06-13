@@ -189,6 +189,9 @@ func (s *marketplaceTestSuite) TestSellPt() {
 	s.Pool.SellPrincipalTokenPreviewReturns(returnAmount)
 	s.Env.Blockchain.Commit()
 
+	s.MarketPlace.Pause(0, false)
+	s.Env.Blockchain.Commit()
+
 	tx, err := s.MarketPlace.SellPrincipalToken(0, s.Dep.Erc20Address, maturity, amount)
 	assert.NoError(err)
 	assert.NotNil(tx)
@@ -295,6 +298,19 @@ func (s *marketplaceTestSuite) TestSellUnderlying() {
 	transferAmount, err := s.Erc20.TransferCalled(s.Dep.PoolAddress)
 	assert.Nil(err)
 	assert.Equal(amount, transferAmount)
+}
+
+func (s *marketplaceTestSuite) TestPasuedPools() {
+	assert := assert.New(s.T())
+
+	s.MarketPlace.Pause(0, true)
+	s.Env.Blockchain.Commit()
+
+	maturity := big.NewInt(100000)
+	amount := big.NewInt(1000000000000000000)
+	tx, err := s.MarketPlace.SellUnderlying(0, s.Dep.Erc20Address, maturity, amount)
+	assert.Error(err)
+	assert.Nil(tx)
 }
 
 func TestIlluminateSuite(t *test.T) {

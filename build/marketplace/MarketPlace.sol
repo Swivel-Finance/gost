@@ -8,7 +8,7 @@ import './Safe.sol';
 
 contract MarketPlace {
     /// @notice the available principals
-    /// @dev the order of this enum is used to select protocols from the markets
+    /// @dev the order of this enum is used to select principals from the markets
     /// mapping
     /// @dev e.g. Illuminate => 0, Swivel => 1, and so on
     enum Principals {
@@ -34,8 +34,8 @@ contract MarketPlace {
     address public admin;
     /// @notice address of the deployed redeemer contract
     address public immutable redeemer;
-    /// @notice flag that determines if pools may be used
-    bool public paused;
+    /// @notice flag that determines if a principal's pool is available
+    bool[9] public paused = [false, false, false, false, false, false, false, false, false];
 
     event CreateMarket(address indexed underlying, uint256 indexed maturity);
 
@@ -46,7 +46,7 @@ contract MarketPlace {
     }
 
     /// @notice creates a new market for the given underlying token and maturity
-    /// @notice all seven protocols should be provided in the order of their enum value
+    /// @notice all seven principals should be provided in the order of their enum value
     /// @param u address of an underlying asset
     /// @param m maturity (timestamp) of the market
     /// @param t principal token addresses for this market minus the illuminate principal (which is added here)
@@ -88,6 +88,15 @@ contract MarketPlace {
         return true;
     }
 
+    /// @notice allows the admin to pause a principal's pools
+    /// @param p principal's enum value
+    /// @param s true if the pool should be paused, false otherwise
+    /// @return bool true if successful
+    function pause(uint8 p, bool s) external authorized(admin) returns (bool) {
+        paused[p] = s;
+        return true;
+    }
+
     /// @notice sets the address for a pool
     /// @param p enum value of the principal token
     /// @param u address of the underlying asset
@@ -116,7 +125,7 @@ contract MarketPlace {
         address u,
         uint256 m,
         uint128 a
-    ) external returns (uint128) {
+    ) external unpaused(p) returns (uint128) {
         IPool pool = IPool(pools[u][m][p]);
         Safe.transfer(IErc20(address(pool.principalToken())), address(pool), a);
         return pool.sellPrincipalToken(msg.sender, pool.sellPrincipalTokenPreview(a));
@@ -133,7 +142,7 @@ contract MarketPlace {
         address u,
         uint256 m,
         uint128 a
-    ) external returns (uint128) {
+    ) external unpaused(p) returns (uint128) {
         IPool pool = IPool(pools[u][m][p]);
         Safe.transfer(IErc20(address(pool.underlying())), address(pool), a);
         return pool.buyPrincipalToken(msg.sender, pool.buyPrincipalTokenPreview(a), a);
@@ -150,7 +159,7 @@ contract MarketPlace {
         address u,
         uint256 m,
         uint128 a
-    ) external returns (uint128) {
+    ) external unpaused(p) returns (uint128) {
         IPool pool = IPool(pools[u][m][p]);
         Safe.transfer(IErc20(address(pool.underlying())), address(pool), a);
         return pool.sellUnderlying(msg.sender, pool.sellUnderlyingPreview(a));
@@ -167,7 +176,7 @@ contract MarketPlace {
         address u,
         uint256 m,
         uint128 a
-    ) external returns (uint128) {
+    ) external unpaused(p) returns (uint128) {
         IPool pool = IPool(pools[u][m][p]);
         Safe.transfer(IErc20(address(pool.principalToken())), address(pool), a);
         return pool.buyUnderlying(msg.sender, pool.buyUnderlyingPreview(a), a);
@@ -175,6 +184,11 @@ contract MarketPlace {
 
     modifier authorized(address a) {
         require(msg.sender == a, 'sender must be authorized');
+        _;
+    }
+
+    modifier unpaused(uint8 p) {
+        require(!paused[p], 'principal is paused');
         _;
     }
 }
