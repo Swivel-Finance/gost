@@ -8,11 +8,18 @@ contract MarketPlace {
         uint8 precision;
     }
 
+    struct PoolsArgs {
+        uint256 maturity;
+        uint8 precision;
+    }
+
     address private princialTokenReturn;
     address private zcTokenReturn;
     address private zcTokenReturnSpoof;
+    address private poolsReturn;
 
     mapping(address => MarketsArgs) public marketsCalled;
+    mapping(address => PoolsArgs) public poolsCalled;
 
     function principalTokenReturns(address p) external {
         princialTokenReturn = p;
@@ -41,5 +48,18 @@ contract MarketPlace {
             return zcTokenReturn;
         }
         return princialTokenReturn;
+    }
+
+    function poolsReturns(address p) public {
+        poolsReturn = p;
+    }
+
+    function pools(
+        uint8 p,
+        address u,
+        uint256 m
+    ) external returns (address) {
+        poolsCalled[u] = PoolsArgs(m, p);
+        return poolsReturn;
     }
 }

@@ -17,6 +17,7 @@ type marketplaceTestSuite struct {
 	Env         *Env
 	Dep         *Dep
 	Erc20       *mocks.Erc20Session
+	Pool        *mocks.PoolSession
 	MarketPlace *marketplace.MarketPlaceSession
 }
 
@@ -33,6 +34,15 @@ func (s *marketplaceTestSuite) SetupSuite() {
 	// binding owner to both, kind of why it exists - but could be any of the env wallets
 	s.Erc20 = &mocks.Erc20Session{
 		Contract: s.Dep.Erc20,
+		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
+		TransactOpts: bind.TransactOpts{
+			From:   s.Env.Owner.Opts.From,
+			Signer: s.Env.Owner.Opts.Signer,
+		},
+	}
+
+	s.Pool = &mocks.PoolSession{
+		Contract: s.Dep.Pool,
 		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
 		TransactOpts: bind.TransactOpts{
 			From:   s.Env.Owner.Opts.From,
@@ -107,6 +117,184 @@ func (s *marketplaceTestSuite) TestCreateMarket() {
 	approved, err := s.Erc20.ApproveCalled(s.Dep.RedeemerAddress)
 	assert.Nil(err)
 	assert.Equal(approved, max)
+}
+
+func (s *marketplaceTestSuite) TestBuyPt() {
+	assert := assert.New(s.T())
+
+	s.Erc20.ApproveReturns(true)
+	s.Env.Blockchain.Commit()
+
+	maturity := big.NewInt(100000)
+	amount := big.NewInt(1000000000000000000)
+	returnAmount := new(big.Int).Sub(amount, big.NewInt(5))
+
+	s.MarketPlace.SetPool(0, s.Dep.Erc20Address, maturity, s.Dep.PoolAddress)
+	s.Env.Blockchain.Commit()
+
+	s.Pool.UnderlyingReturns(s.Dep.Erc20Address)
+	s.Env.Blockchain.Commit()
+
+	s.Erc20.TransferReturns(true)
+	s.Env.Blockchain.Commit()
+
+	s.Pool.BuyPrincipalTokenReturns(returnAmount)
+	s.Env.Blockchain.Commit()
+
+	s.Pool.BuyPrincipalTokenPreviewReturns(returnAmount)
+	s.Env.Blockchain.Commit()
+
+	tx, err := s.MarketPlace.BuyPrincipalToken(0, s.Dep.Erc20Address, maturity, amount)
+	assert.NoError(err)
+	assert.NotNil(tx)
+	s.Env.Blockchain.Commit()
+
+	// verify methods were called as expected
+	buyPtOut, err := s.Pool.BuyPrincipalTokenCalled(s.Env.Owner.Opts.From)
+	assert.Nil(err)
+	assert.Equal(returnAmount, buyPtOut.PrincipalTokenOut)
+	assert.Equal(amount, buyPtOut.Min)
+
+	previewedAmount, err := s.Pool.BuyPrincipalTokenPreviewCalled()
+	assert.Nil(err)
+	assert.Equal(amount, previewedAmount)
+
+	transferAmount, err := s.Erc20.TransferCalled(s.Dep.PoolAddress)
+	assert.Nil(err)
+	assert.Equal(amount, transferAmount)
+}
+
+func (s *marketplaceTestSuite) TestSellPt() {
+	assert := assert.New(s.T())
+
+	s.Erc20.ApproveReturns(true)
+	s.Env.Blockchain.Commit()
+
+	maturity := big.NewInt(100000)
+	amount := big.NewInt(1000000000000000000)
+	returnAmount := new(big.Int).Sub(amount, big.NewInt(5))
+
+	s.MarketPlace.SetPool(0, s.Dep.Erc20Address, maturity, s.Dep.PoolAddress)
+	s.Env.Blockchain.Commit()
+
+	s.Pool.PrincipalTokenReturns(s.Dep.Erc20Address)
+	s.Env.Blockchain.Commit()
+
+	s.Erc20.TransferReturns(true)
+	s.Env.Blockchain.Commit()
+
+	s.Pool.SellPrincipalTokenReturns(returnAmount)
+	s.Env.Blockchain.Commit()
+
+	s.Pool.SellPrincipalTokenPreviewReturns(returnAmount)
+	s.Env.Blockchain.Commit()
+
+	tx, err := s.MarketPlace.SellPrincipalToken(0, s.Dep.Erc20Address, maturity, amount)
+	assert.NoError(err)
+	assert.NotNil(tx)
+	s.Env.Blockchain.Commit()
+
+	// verify methods were called as expected
+	sellPtOut, err := s.Pool.SellPrincipalTokenCalled(s.Env.Owner.Opts.From)
+	assert.Nil(err)
+	assert.Equal(returnAmount, sellPtOut)
+
+	previewedAmount, err := s.Pool.SellPrincipalTokenPreviewCalled()
+	assert.Nil(err)
+	assert.Equal(amount, previewedAmount)
+
+	transferAmount, err := s.Erc20.TransferCalled(s.Dep.PoolAddress)
+	assert.Nil(err)
+	assert.Equal(amount, transferAmount)
+}
+
+func (s *marketplaceTestSuite) TestBuyUnderlying() {
+	assert := assert.New(s.T())
+
+	s.Erc20.ApproveReturns(true)
+	s.Env.Blockchain.Commit()
+
+	maturity := big.NewInt(100000)
+	amount := big.NewInt(1000000000000000000)
+	returnAmount := new(big.Int).Sub(amount, big.NewInt(5))
+
+	s.MarketPlace.SetPool(0, s.Dep.Erc20Address, maturity, s.Dep.PoolAddress)
+	s.Env.Blockchain.Commit()
+
+	s.Pool.PrincipalTokenReturns(s.Dep.Erc20Address)
+	s.Env.Blockchain.Commit()
+
+	s.Erc20.TransferReturns(true)
+	s.Env.Blockchain.Commit()
+
+	s.Pool.BuyUnderlyingReturns(returnAmount)
+	s.Env.Blockchain.Commit()
+
+	s.Pool.BuyUnderlyingPreviewReturns(returnAmount)
+	s.Env.Blockchain.Commit()
+
+	tx, err := s.MarketPlace.BuyUnderlying(0, s.Dep.Erc20Address, maturity, amount)
+	assert.NoError(err)
+	assert.NotNil(tx)
+	s.Env.Blockchain.Commit()
+
+	// verify methods were called as expected
+	buyPtOut, err := s.Pool.BuyUnderlyingCalled(s.Env.Owner.Opts.From)
+	assert.Nil(err)
+	assert.Equal(returnAmount, buyPtOut.Amount)
+	assert.Equal(amount, buyPtOut.Min)
+
+	previewedAmount, err := s.Pool.BuyUnderlyingPreviewCalled()
+	assert.Nil(err)
+	assert.Equal(amount, previewedAmount)
+
+	transferAmount, err := s.Erc20.TransferCalled(s.Dep.PoolAddress)
+	assert.Nil(err)
+	assert.Equal(amount, transferAmount)
+}
+
+func (s *marketplaceTestSuite) TestSellUnderlying() {
+	assert := assert.New(s.T())
+
+	s.Erc20.ApproveReturns(true)
+	s.Env.Blockchain.Commit()
+
+	maturity := big.NewInt(100000)
+	amount := big.NewInt(1000000000000000000)
+	returnAmount := new(big.Int).Sub(amount, big.NewInt(5))
+
+	s.MarketPlace.SetPool(0, s.Dep.Erc20Address, maturity, s.Dep.PoolAddress)
+	s.Env.Blockchain.Commit()
+
+	s.Pool.UnderlyingReturns(s.Dep.Erc20Address)
+	s.Env.Blockchain.Commit()
+
+	s.Erc20.TransferReturns(true)
+	s.Env.Blockchain.Commit()
+
+	s.Pool.SellUnderlyingReturns(returnAmount)
+	s.Env.Blockchain.Commit()
+
+	s.Pool.SellUnderlyingPreviewReturns(returnAmount)
+	s.Env.Blockchain.Commit()
+
+	tx, err := s.MarketPlace.SellUnderlying(0, s.Dep.Erc20Address, maturity, amount)
+	assert.NoError(err)
+	assert.NotNil(tx)
+	s.Env.Blockchain.Commit()
+
+	// verify methods were called as expected
+	sellPtOut, err := s.Pool.SellUnderlyingCalled(s.Env.Owner.Opts.From)
+	assert.Nil(err)
+	assert.Equal(returnAmount, sellPtOut)
+
+	previewedAmount, err := s.Pool.SellUnderlyingPreviewCalled()
+	assert.Nil(err)
+	assert.Equal(amount, previewedAmount)
+
+	transferAmount, err := s.Erc20.TransferCalled(s.Dep.PoolAddress)
+	assert.Nil(err)
+	assert.Equal(amount, transferAmount)
 }
 
 func TestIlluminateSuite(t *test.T) {
