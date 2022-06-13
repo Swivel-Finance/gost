@@ -260,7 +260,7 @@ func (s *redeemTestSuite) TestAPWineRedeem() {
 
 	vaultCalled, err := s.APWineToken.BalanceOfCalled()
 	assert.NoError(err)
-	assert.Equal(owner, vaultCalled)
+	assert.Equal(s.Dep.LenderAddress, vaultCalled)
 
 	underlyingTransfer, err := s.Erc20.TransferFromCalled(s.Dep.LenderAddress)
 	assert.NoError(err)
@@ -301,6 +301,10 @@ func (s *redeemTestSuite) TestTempusRedeem() {
 	assert.True(redeemCall.Yield.Cmp(big.NewInt(0)) == 0)
 	assert.Equal(s.Dep.RedeemerAddress, redeemCall.Recipient)
 
+	balanceOfCalled, err := s.TempusToken.BalanceOfCalled()
+	assert.NoError(err)
+	assert.Equal(s.Dep.LenderAddress, balanceOfCalled)
+
 	underlyingTransfer, err := s.Erc20.TransferFromCalled(s.Dep.LenderAddress)
 	assert.NoError(err)
 	assert.Equal(amount, underlyingTransfer.Amount)
@@ -338,6 +342,10 @@ func (s *redeemTestSuite) TestIlluminateRedeem() {
 	assert.NoError(err)
 	assert.Equal(amount, burnCall)
 
+	balanceOfCalled, err := s.ZcToken.BalanceOfCalled()
+	assert.NoError(err)
+	assert.Equal(s.Dep.LenderAddress, balanceOfCalled)
+
 	underlyingTransfer, err := s.Erc20.TransferFromCalled(s.Dep.LenderAddress)
 	assert.NoError(err)
 	assert.Equal(amount, underlyingTransfer.Amount)
@@ -372,6 +380,10 @@ func (s *redeemTestSuite) TestPendleRedeem() {
 	assert.Equal(forgeId, redeemCall.ForgeId)
 	assert.Equal(maturity, redeemCall.Maturity)
 
+	balanceOfCalled, err := s.PendleToken.BalanceOfCalled()
+	assert.NoError(err)
+	assert.Equal(s.Dep.LenderAddress, balanceOfCalled)
+
 	underlyingTransfer, err := s.PendleToken.TransferFromCalled(s.Dep.LenderAddress)
 	assert.NoError(err)
 	assert.Equal(amount, underlyingTransfer.Amount)
@@ -403,7 +415,7 @@ func (s *redeemTestSuite) TestSenseRedeem() {
 	// verify that the mocked functions were called as expected
 	balanceOfCalled, err := s.SenseToken.BalanceOfCalled()
 	assert.NoError(err)
-	assert.Equal(s.Dep.MarketplaceAddress, balanceOfCalled)
+	assert.Equal(s.Dep.LenderAddress, balanceOfCalled)
 
 	redeemCall, err := s.Sense.RedeemCalled(adapter)
 	assert.NoError(err)
@@ -446,6 +458,10 @@ func (s *redeemTestSuite) TestSwivelRedeem() {
 	assert.Equal(maturity, call.Maturity)
 	assert.Equal(amount, call.Amount)
 
+	balanceOfCalled, err := s.ZcToken.BalanceOfCalled()
+	assert.NoError(err)
+	assert.Equal(s.Dep.LenderAddress, balanceOfCalled)
+
 	underlyingTransfer, err := s.ZcToken.TransferFromCalled(s.Dep.LenderAddress)
 	assert.NoError(err)
 	assert.Equal(amount, underlyingTransfer.Amount)
@@ -477,6 +493,10 @@ func (s *redeemTestSuite) TestElementRedeem() {
 	withdrawnAmount, err := s.ElementToken.WithdrawPrincipalCalled(s.Dep.MarketplaceAddress)
 	assert.NoError(err)
 	assert.Equal(amount, withdrawnAmount)
+
+	balanceOfCalled, err := s.ElementToken.BalanceOfCalled()
+	assert.NoError(err)
+	assert.Equal(s.Dep.LenderAddress, balanceOfCalled)
 
 	underlyingTransfer, err := s.ElementToken.TransferFromCalled(s.Dep.LenderAddress)
 	assert.NoError(err)
@@ -510,6 +530,10 @@ func (s *redeemTestSuite) TestYieldRedeem() {
 	assert.NoError(err)
 	assert.Equal(amount, redeem.Amount)
 	assert.Equal(s.Dep.RedeemerAddress, redeem.From)
+
+	balanceOfCalled, err := s.YieldToken.BalanceOfCalled()
+	assert.NoError(err)
+	assert.Equal(s.Dep.LenderAddress, balanceOfCalled)
 
 	underlyingTransfer, err := s.YieldToken.TransferFromCalled(s.Dep.LenderAddress)
 	assert.NoError(err)
@@ -545,6 +569,10 @@ func (s *redeemTestSuite) TestNotionalRedeem() {
 	redeemer, err := s.Notional.MaxRedeemCalled()
 	assert.NoError(err)
 	assert.Equal(s.Dep.RedeemerAddress, redeemer)
+
+	balanceOfCalled, err := s.Notional.BalanceOfCalled()
+	assert.NoError(err)
+	assert.Equal(s.Dep.LenderAddress, balanceOfCalled)
 
 	underlyingTransfer, err := s.Notional.TransferFromCalled(s.Dep.LenderAddress)
 	assert.NoError(err)
