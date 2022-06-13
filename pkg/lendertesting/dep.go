@@ -37,6 +37,8 @@ type Dep struct {
 	APWineTokenAddress  common.Address
 	APWine              *mocks.APWine
 	APWineAddress       common.Address
+	Aave                *mocks.Aave
+	AaveAddress         common.Address
 	Notional            *mocks.Notional
 	NotionalAddress     common.Address
 }
@@ -153,6 +155,12 @@ func Deploy(e *Env) (*Dep, error) {
 		return nil, apErr
 	}
 
+	aaAddress, _, aaContract, aaErr := mocks.DeployAave(e.Owner.Opts, e.Blockchain)
+
+	if aaErr != nil {
+		return nil, aaErr
+	}
+
 	ntAddress, _, ntContract, ntErr := mocks.DeployNotional(e.Owner.Opts, e.Blockchain)
 
 	if ntErr != nil {
@@ -199,6 +207,8 @@ func Deploy(e *Env) (*Dep, error) {
 		APWineTokenAddress:  aptAddress,
 		APWineAddress:       apAddress,
 		APWine:              apContract,
+		AaveAddress:         aaAddress,
+		Aave:                aaContract,
 		NotionalAddress:     ntAddress,
 		Notional:            ntContract,
 	}, nil

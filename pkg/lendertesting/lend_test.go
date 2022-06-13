@@ -593,9 +593,7 @@ func (s *lendTestSuite) TestLendAPWine() {
 	minimumAmount := big.NewInt(34)
 	id := big.NewInt(1000)
 
-	aave := common.BigToAddress(big.NewInt(1)) //TODO: get this from the contract
-
-	tx, err := s.Lender.Lend4(7, s.Dep.Erc20Address, maturity, amount, minimumAmount, s.Dep.APWineAddress, aave, id)
+	tx, err := s.Lender.Lend4(7, s.Dep.Erc20Address, maturity, amount, minimumAmount, s.Dep.APWineAddress, s.Dep.AaveAddress, id)
 	assert.NoError(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
