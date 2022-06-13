@@ -129,7 +129,7 @@ contract Redeemer {
         );
 
         // The amount redeemed should be the balance of the principal token held by the illuminate contract
-        uint256 amount = IErc20(principal).balanceOf(marketPlace);
+        uint256 amount = IErc20(principal).balanceOf(lender);
 
         // Transfer the principal token from the marketplace contract to here
         Safe.transferFrom(IErc20(principal), lender, address(this), amount);
@@ -172,7 +172,7 @@ contract Redeemer {
         IErc20 token = IErc20(IMarketPlace(marketPlace).markets(u, m, p));
 
         // Get the balance of tokens to be redeemed by the user
-        uint256 amount = token.balanceOf(marketPlace);
+        uint256 amount = token.balanceOf(lender);
 
         // Transfer the user's tokens to the redeem contract
         Safe.transferFrom(token, lender, address(this), amount);
@@ -202,7 +202,7 @@ contract Redeemer {
         IErc20 token = IErc20(IMarketPlace(marketPlace).markets(u, m, p));
 
         // Get the balance of tokens to be redeemed by the user
-        uint256 amount = token.balanceOf(marketPlace);
+        uint256 amount = token.balanceOf(lender);
 
         // Transfer the user's tokens to the redeem contract
         Safe.transferFrom(token, lender, address(this), amount);
