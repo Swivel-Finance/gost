@@ -63,17 +63,17 @@ interface IYield {
 
 interface IPendle {
     function redeemAfterExpiry(
-        bytes32 forgeId,
-        address underlying,
-        uint256 maturity
+        bytes32,
+        address,
+        uint256
     ) external;
 }
 
 interface ISense {
     function redeem(
-        address adapter,
-        uint256 maturity,
-        uint256 amount
+        address,
+        uint256,
+        uint256
     ) external;
 }
 
@@ -87,9 +87,9 @@ interface IElementToken {
 
 interface IYieldToken {
     function redeem(
-        address from,
-        address to,
-        uint256 amount
+        address,
+        address,
+        uint256
     ) external;
 }
 
