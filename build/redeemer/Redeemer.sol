@@ -79,7 +79,7 @@ contract Redeemer {
         address principal = IMarketPlace(marketPlace).markets(u, m, p);
 
         // Get the amount of tokens to be redeemed from the principal token
-        uint256 amount = IErc20(principal).balanceOf(o);
+        uint256 amount = IErc20(principal).balanceOf(lender);
 
         // Transfer the underlying token to the redeem contract if it is not illuminate
         if (p != uint8(MarketPlace.Principals.Illuminate)) {
