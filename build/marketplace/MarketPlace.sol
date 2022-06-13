@@ -35,7 +35,7 @@ contract MarketPlace {
     /// @notice address of the deployed redeemer contract
     address public immutable redeemer;
     /// @notice flag that determines if a protocol's pool is available
-    mapping(uint8 => bool) public paused;
+    bool[9] public paused = [false, false, false, false, false, false, false, false, false];
 
     event CreateMarket(address indexed underlying, uint256 indexed maturity);
 
@@ -85,6 +85,15 @@ contract MarketPlace {
 
         emit CreateMarket(u, m);
 
+        return true;
+    }
+
+    /// @notice allows the admin to pause a protocol's pools
+    /// @param p protocol's enum value
+    /// @param s true if the pool should be paused, false otherwise
+    /// @return bool true if successful
+    function pause(uint8 p, bool s) external authorized(admin) returns (bool) {
+        paused[p] = s;
         return true;
     }
 
