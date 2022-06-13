@@ -6,12 +6,12 @@ contract Aave {
     struct DepositArgs {
         address onBehalfOf;
         uint256 amount;
-        uint256 minimumAmount;
+        uint16 referralCode;
     }
 
     mapping(address => DepositArgs) public depositCalled;
 
-    function depsoit(
+    function deposit(
         address a,
         uint256 amount,
         address b,

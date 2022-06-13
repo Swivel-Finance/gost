@@ -27,10 +27,10 @@ var (
 )
 
 // AaveABI is the input ABI used to generate the binding from.
-const AaveABI = "[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"depositCalled\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"onBehalfOf\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"minimumAmount\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"a\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"b\",\"type\":\"address\"},{\"internalType\":\"uint16\",\"name\":\"r\",\"type\":\"uint16\"}],\"name\":\"depsoit\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]"
+const AaveABI = "[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"a\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"b\",\"type\":\"address\"},{\"internalType\":\"uint16\",\"name\":\"r\",\"type\":\"uint16\"}],\"name\":\"deposit\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"depositCalled\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"onBehalfOf\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"internalType\":\"uint16\",\"name\":\"referralCode\",\"type\":\"uint16\"}],\"stateMutability\":\"view\",\"type\":\"function\"}]"
 
 // AaveBin is the compiled bytecode used for deploying new contracts.
-var AaveBin = "0x608060405234801561001057600080fd5b5061039c806100206000396000f3fe608060405234801561001057600080fd5b50600436106100365760003560e01c80630e741d941461003b578063d35147e414610057575b600080fd5b6100556004803603810190610050919061027d565b610089565b005b610071600480360381019061006c91906102e4565b610160565b6040516100809392919061032f565b60405180910390f35b60405180606001604052808373ffffffffffffffffffffffffffffffffffffffff1681526020018481526020018261ffff168152506000808673ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060008201518160000160006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff160217905550602082015181600101556040820151816002015590505050505050565b60006020528060005260406000206000915090508060000160009054906101000a900473ffffffffffffffffffffffffffffffffffffffff16908060010154908060020154905083565b600080fd5b600073ffffffffffffffffffffffffffffffffffffffff82169050919050565b60006101da826101af565b9050919050565b6101ea816101cf565b81146101f557600080fd5b50565b600081359050610207816101e1565b92915050565b6000819050919050565b6102208161020d565b811461022b57600080fd5b50565b60008135905061023d81610217565b92915050565b600061ffff82169050919050565b61025a81610243565b811461026557600080fd5b50565b60008135905061027781610251565b92915050565b60008060008060808587031215610297576102966101aa565b5b60006102a5878288016101f8565b94505060206102b68782880161022e565b93505060406102c7878288016101f8565b92505060606102d887828801610268565b91505092959194509250565b6000602082840312156102fa576102f96101aa565b5b6000610308848285016101f8565b91505092915050565b61031a816101cf565b82525050565b6103298161020d565b82525050565b60006060820190506103446000830186610311565b6103516020830185610320565b61035e6040830184610320565b94935050505056fea26469706673582212206a47a7a6a06abd582fdf79dc6ea98afa49042c7ca02cce8d9cc12f1c5306c16464736f6c634300080d0033"
+var AaveBin = "0x608060405234801561001057600080fd5b506103d2806100206000396000f3fe608060405234801561001057600080fd5b50600436106100365760003560e01c8063d35147e41461003b578063e8eda9df1461006d575b600080fd5b61005560048036038101906100509190610234565b610089565b604051610064939291906102a6565b60405180910390f35b61008760048036038101906100829190610335565b6100e1565b005b60006020528060005260406000206000915090508060000160009054906101000a900473ffffffffffffffffffffffffffffffffffffffff16908060010154908060020160009054906101000a900461ffff16905083565b60405180606001604052808373ffffffffffffffffffffffffffffffffffffffff1681526020018481526020018261ffff168152506000808673ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060008201518160000160006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff1602179055506020820151816001015560408201518160020160006101000a81548161ffff021916908361ffff16021790555090505050505050565b600080fd5b600073ffffffffffffffffffffffffffffffffffffffff82169050919050565b6000610201826101d6565b9050919050565b610211816101f6565b811461021c57600080fd5b50565b60008135905061022e81610208565b92915050565b60006020828403121561024a576102496101d1565b5b60006102588482850161021f565b91505092915050565b61026a816101f6565b82525050565b6000819050919050565b61028381610270565b82525050565b600061ffff82169050919050565b6102a081610289565b82525050565b60006060820190506102bb6000830186610261565b6102c8602083018561027a565b6102d56040830184610297565b949350505050565b6102e681610270565b81146102f157600080fd5b50565b600081359050610303816102dd565b92915050565b61031281610289565b811461031d57600080fd5b50565b60008135905061032f81610309565b92915050565b6000806000806080858703121561034f5761034e6101d1565b5b600061035d8782880161021f565b945050602061036e878288016102f4565b935050604061037f8782880161021f565b925050606061039087828801610320565b9150509295919450925056fea26469706673582212204a1d76525c6b996652c936a1b287636fa2e1e6275d56c1e7bbee31d3958b7f7d64736f6c634300080d0033"
 
 // DeployAave deploys a new Ethereum contract, binding an instance of Aave to it.
 func DeployAave(auth *bind.TransactOpts, backend bind.ContractBackend) (common.Address, *types.Transaction, *Aave, error) {
@@ -190,24 +190,24 @@ func (_Aave *AaveTransactorRaw) Transact(opts *bind.TransactOpts, method string,
 
 // DepositCalled is a free data retrieval call binding the contract method 0xd35147e4.
 //
-// Solidity: function depositCalled(address ) view returns(address onBehalfOf, uint256 amount, uint256 minimumAmount)
+// Solidity: function depositCalled(address ) view returns(address onBehalfOf, uint256 amount, uint16 referralCode)
 func (_Aave *AaveCaller) DepositCalled(opts *bind.CallOpts, arg0 common.Address) (struct {
-	OnBehalfOf    common.Address
-	Amount        *big.Int
-	MinimumAmount *big.Int
+	OnBehalfOf   common.Address
+	Amount       *big.Int
+	ReferralCode uint16
 }, error) {
 	var out []interface{}
 	err := _Aave.contract.Call(opts, &out, "depositCalled", arg0)
 
 	outstruct := new(struct {
-		OnBehalfOf    common.Address
-		Amount        *big.Int
-		MinimumAmount *big.Int
+		OnBehalfOf   common.Address
+		Amount       *big.Int
+		ReferralCode uint16
 	})
 
 	outstruct.OnBehalfOf = out[0].(common.Address)
 	outstruct.Amount = out[1].(*big.Int)
-	outstruct.MinimumAmount = out[2].(*big.Int)
+	outstruct.ReferralCode = out[2].(uint16)
 
 	return *outstruct, err
 
@@ -215,43 +215,43 @@ func (_Aave *AaveCaller) DepositCalled(opts *bind.CallOpts, arg0 common.Address)
 
 // DepositCalled is a free data retrieval call binding the contract method 0xd35147e4.
 //
-// Solidity: function depositCalled(address ) view returns(address onBehalfOf, uint256 amount, uint256 minimumAmount)
+// Solidity: function depositCalled(address ) view returns(address onBehalfOf, uint256 amount, uint16 referralCode)
 func (_Aave *AaveSession) DepositCalled(arg0 common.Address) (struct {
-	OnBehalfOf    common.Address
-	Amount        *big.Int
-	MinimumAmount *big.Int
+	OnBehalfOf   common.Address
+	Amount       *big.Int
+	ReferralCode uint16
 }, error) {
 	return _Aave.Contract.DepositCalled(&_Aave.CallOpts, arg0)
 }
 
 // DepositCalled is a free data retrieval call binding the contract method 0xd35147e4.
 //
-// Solidity: function depositCalled(address ) view returns(address onBehalfOf, uint256 amount, uint256 minimumAmount)
+// Solidity: function depositCalled(address ) view returns(address onBehalfOf, uint256 amount, uint16 referralCode)
 func (_Aave *AaveCallerSession) DepositCalled(arg0 common.Address) (struct {
-	OnBehalfOf    common.Address
-	Amount        *big.Int
-	MinimumAmount *big.Int
+	OnBehalfOf   common.Address
+	Amount       *big.Int
+	ReferralCode uint16
 }, error) {
 	return _Aave.Contract.DepositCalled(&_Aave.CallOpts, arg0)
 }
 
-// Depsoit is a paid mutator transaction binding the contract method 0x0e741d94.
+// Deposit is a paid mutator transaction binding the contract method 0xe8eda9df.
 //
-// Solidity: function depsoit(address a, uint256 amount, address b, uint16 r) returns()
-func (_Aave *AaveTransactor) Depsoit(opts *bind.TransactOpts, a common.Address, amount *big.Int, b common.Address, r uint16) (*types.Transaction, error) {
-	return _Aave.contract.Transact(opts, "depsoit", a, amount, b, r)
+// Solidity: function deposit(address a, uint256 amount, address b, uint16 r) returns()
+func (_Aave *AaveTransactor) Deposit(opts *bind.TransactOpts, a common.Address, amount *big.Int, b common.Address, r uint16) (*types.Transaction, error) {
+	return _Aave.contract.Transact(opts, "deposit", a, amount, b, r)
 }
 
-// Depsoit is a paid mutator transaction binding the contract method 0x0e741d94.
+// Deposit is a paid mutator transaction binding the contract method 0xe8eda9df.
 //
-// Solidity: function depsoit(address a, uint256 amount, address b, uint16 r) returns()
-func (_Aave *AaveSession) Depsoit(a common.Address, amount *big.Int, b common.Address, r uint16) (*types.Transaction, error) {
-	return _Aave.Contract.Depsoit(&_Aave.TransactOpts, a, amount, b, r)
+// Solidity: function deposit(address a, uint256 amount, address b, uint16 r) returns()
+func (_Aave *AaveSession) Deposit(a common.Address, amount *big.Int, b common.Address, r uint16) (*types.Transaction, error) {
+	return _Aave.Contract.Deposit(&_Aave.TransactOpts, a, amount, b, r)
 }
 
-// Depsoit is a paid mutator transaction binding the contract method 0x0e741d94.
+// Deposit is a paid mutator transaction binding the contract method 0xe8eda9df.
 //
-// Solidity: function depsoit(address a, uint256 amount, address b, uint16 r) returns()
-func (_Aave *AaveTransactorSession) Depsoit(a common.Address, amount *big.Int, b common.Address, r uint16) (*types.Transaction, error) {
-	return _Aave.Contract.Depsoit(&_Aave.TransactOpts, a, amount, b, r)
+// Solidity: function deposit(address a, uint256 amount, address b, uint16 r) returns()
+func (_Aave *AaveTransactorSession) Deposit(a common.Address, amount *big.Int, b common.Address, r uint16) (*types.Transaction, error) {
+	return _Aave.Contract.Deposit(&_Aave.TransactOpts, a, amount, b, r)
 }

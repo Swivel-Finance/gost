@@ -603,7 +603,16 @@ func (s *lendTestSuite) TestLendAPWine() {
 	minimumAmount := big.NewInt(34)
 	id := big.NewInt(1000)
 
-	tx, err := s.Lender.Lend4(7, s.Dep.Erc20Address, maturity, amount, minimumAmount, s.Dep.APWineAddress, s.Dep.AaveAddress, id)
+	tx, err := s.Lender.Lend4(
+		7,
+		s.Dep.Erc20Address,
+		maturity,
+		amount,
+		minimumAmount,
+		s.Dep.APWineAddress,
+		s.Dep.AaveAddress,
+		id,
+	)
 	assert.NoError(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
@@ -615,6 +624,12 @@ func (s *lendTestSuite) TestLendAPWine() {
 	assert.Equal(lent, swap.Amount)
 	assert.True(swap.TokenOut.Cmp(big.NewInt(0)) == 0)
 	assert.Equal(minimumAmount, swap.MinimumAmount)
+
+	depositCall, err := s.Aave.DepositCalled(s.Dep.Erc20Address)
+	assert.NoError(err)
+	assert.Equal(lent, depositCall.Amount)
+	assert.Equal(s.Dep.LenderAddress, depositCall.OnBehalfOf)
+	assert.Equal(uint16(0x0), depositCall.ReferralCode)
 }
 
 func (s *lendTestSuite) TestLendNotional() {
