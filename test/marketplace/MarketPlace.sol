@@ -109,15 +109,15 @@ contract MarketPlace {
     /// @param m maturity (timestamp) of the market
     /// @param a amount of PT to swap
     /// @return uint128 amount of PT bought
-    function sellPT(
+    function sellPrincipalToken(
         uint8 p,
         address u,
         uint256 m,
         uint128 a
     ) external returns (uint128) {
         IPool pool = IPool(pools[u][m][p]);
-        Safe.transfer(IErc20(address(pool.PT())), address(pool), a);
-        return pool.sellPT(msg.sender, pool.sellPTPreview(a));
+        Safe.transfer(IErc20(address(pool.principalToken())), address(pool), a);
+        return pool.sellPrincipalToken(msg.sender, pool.sellPrincipalTokenPreview(a));
     }
 
     /// @notice buys the underlying for the PT via the pool
@@ -126,7 +126,7 @@ contract MarketPlace {
     /// @param m maturity (timestamp) of the market
     /// @param a amount of underlying tokens to sell
     /// @return uint128 amount of PT received
-    function buyPT(
+    function buyPrincipalToken(
         uint8 p,
         address u,
         uint256 m,
@@ -134,7 +134,7 @@ contract MarketPlace {
     ) external returns (uint128) {
         IPool pool = IPool(pools[u][m][p]);
         Safe.transfer(IErc20(address(pool.underlying())), address(pool), a);
-        return pool.buyPT(msg.sender, pool.buyPTPreview(a), a);
+        return pool.buyPrincipalToken(msg.sender, pool.buyPrincipalTokenPreview(a), a);
     }
 
     /// @notice sells the underlying for the PT via the pool
@@ -167,7 +167,7 @@ contract MarketPlace {
         uint128 a
     ) external returns (uint128) {
         IPool pool = IPool(pools[u][m][p]);
-        Safe.transfer(IErc20(address(pool.PT())), address(pool), a);
+        Safe.transfer(IErc20(address(pool.principalToken())), address(pool), a);
         return pool.buyUnderlying(msg.sender, pool.buyUnderlyingPreview(a), a);
     }
 

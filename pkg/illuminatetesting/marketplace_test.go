@@ -138,24 +138,24 @@ func (s *marketplaceTestSuite) TestBuyPt() {
 	s.Erc20.TransferReturns(true)
 	s.Env.Blockchain.Commit()
 
-	s.Pool.BuyPTReturns(returnAmount)
+	s.Pool.BuyPrincipalTokenReturns(returnAmount)
 	s.Env.Blockchain.Commit()
 
-	s.Pool.BuyPTPreviewReturns(returnAmount)
+	s.Pool.BuyPrincipalTokenPreviewReturns(returnAmount)
 	s.Env.Blockchain.Commit()
 
-	tx, err := s.MarketPlace.BuyPT(0, s.Dep.Erc20Address, maturity, amount)
+	tx, err := s.MarketPlace.BuyPrincipalToken(0, s.Dep.Erc20Address, maturity, amount)
 	assert.NoError(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
 
 	// verify methods were called as expected
-	buyPtOut, err := s.Pool.BuyPTCalled(s.Env.Owner.Opts.From)
+	buyPtOut, err := s.Pool.BuyPrincipalTokenCalled(s.Env.Owner.Opts.From)
 	assert.Nil(err)
-	assert.Equal(returnAmount, buyPtOut.PtOut)
+	assert.Equal(returnAmount, buyPtOut.PrincipalTokenOut)
 	assert.Equal(amount, buyPtOut.Min)
 
-	previewedAmount, err := s.Pool.BuyPTPreviewCalled()
+	previewedAmount, err := s.Pool.BuyPrincipalTokenPreviewCalled()
 	assert.Nil(err)
 	assert.Equal(amount, previewedAmount)
 
@@ -177,29 +177,29 @@ func (s *marketplaceTestSuite) TestSellPt() {
 	s.MarketPlace.SetPool(0, s.Dep.Erc20Address, maturity, s.Dep.PoolAddress)
 	s.Env.Blockchain.Commit()
 
-	s.Pool.PTReturns(s.Dep.Erc20Address)
+	s.Pool.PrincipalTokenReturns(s.Dep.Erc20Address)
 	s.Env.Blockchain.Commit()
 
 	s.Erc20.TransferReturns(true)
 	s.Env.Blockchain.Commit()
 
-	s.Pool.SellPTReturns(returnAmount)
+	s.Pool.SellPrincipalTokenReturns(returnAmount)
 	s.Env.Blockchain.Commit()
 
-	s.Pool.SellPTPreviewReturns(returnAmount)
+	s.Pool.SellPrincipalTokenPreviewReturns(returnAmount)
 	s.Env.Blockchain.Commit()
 
-	tx, err := s.MarketPlace.SellPT(0, s.Dep.Erc20Address, maturity, amount)
+	tx, err := s.MarketPlace.SellPrincipalToken(0, s.Dep.Erc20Address, maturity, amount)
 	assert.NoError(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
 
 	// verify methods were called as expected
-	sellPtOut, err := s.Pool.SellPTCalled(s.Env.Owner.Opts.From)
+	sellPtOut, err := s.Pool.SellPrincipalTokenCalled(s.Env.Owner.Opts.From)
 	assert.Nil(err)
 	assert.Equal(returnAmount, sellPtOut)
 
-	previewedAmount, err := s.Pool.SellPTPreviewCalled()
+	previewedAmount, err := s.Pool.SellPrincipalTokenPreviewCalled()
 	assert.Nil(err)
 	assert.Equal(amount, previewedAmount)
 
@@ -221,7 +221,7 @@ func (s *marketplaceTestSuite) TestBuyUnderlying() {
 	s.MarketPlace.SetPool(0, s.Dep.Erc20Address, maturity, s.Dep.PoolAddress)
 	s.Env.Blockchain.Commit()
 
-	s.Pool.PTReturns(s.Dep.Erc20Address)
+	s.Pool.PrincipalTokenReturns(s.Dep.Erc20Address)
 	s.Env.Blockchain.Commit()
 
 	s.Erc20.TransferReturns(true)
