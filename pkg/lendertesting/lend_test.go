@@ -30,6 +30,7 @@ type lendTestSuite struct {
 	SenseToken   *mocks.SenseTokenSession
 	APWineToken  *mocks.APWineTokenSession
 	APWine       *mocks.APWineSession
+	Aave         *mocks.AaveSession
 	Notional     *mocks.NotionalSession
 	Lender       *lender.LenderSession
 }
@@ -164,6 +165,15 @@ func (s *lendTestSuite) SetupSuite() {
 
 	s.APWine = &mocks.APWineSession{
 		Contract: s.Dep.APWine,
+		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
+		TransactOpts: bind.TransactOpts{
+			From:   s.Env.Owner.Opts.From,
+			Signer: s.Env.Owner.Opts.Signer,
+		},
+	}
+
+	s.Aave = &mocks.AaveSession{
+		Contract: s.Dep.Aave,
 		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
 		TransactOpts: bind.TransactOpts{
 			From:   s.Env.Owner.Opts.From,
