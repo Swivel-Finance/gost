@@ -138,7 +138,8 @@ library Safe {
                          INTERNAL HELPER LOGIC
     //////////////////////////////////////////////////////////////*/
 
-    function didLastOptionalReturnCallSucceed(bool callStatus) private pure returns (bool success) {
+    function didLastOptionalReturnCallSucceed(bool callStatus) private pure returns (bool) {
+        bool result;
         assembly {
             // Get how many bytes the call returned.
             let returnDataSize := returndatasize()
@@ -158,16 +159,18 @@ library Safe {
                 returndatacopy(0, 0, returnDataSize)
 
                 // Set success to whether it returned true.
-                success := iszero(iszero(mload(0)))
+                result := iszero(iszero(mload(0)))
             }
             case 0 {
                 // There was no return data.
-                success := 1
+                result := 1
             }
             default {
                 // It returned some malformed input.
-                success := 0
+                result := 0
             }
         }
+
+        return result;
     }
 }

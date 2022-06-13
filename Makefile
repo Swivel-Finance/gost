@@ -14,6 +14,7 @@
 .PHONY: compile_solidity_mock_element_token compile_go_mock_element_token compile_mock_element_token
 .PHONY: compile_solidity_mock_marketplace compile_go_mock_marketplace compile_mock_marketplace
 .PHONY: compile_solidity_mock_pool compile_go_mock_pool compile_mock_pool
+.PHONY: compile_solidity_mock_aave compile_go_mock_aave compile_mock_aave
 .PHONY: compile_mock_deps
 .PHONY: compile_mocks
 
@@ -219,9 +220,19 @@ compile_go_mock_pool:
 
 compile_mock_pool: compile_mock_pool compile_solidity_mock_pool compile_go_mock_pool
 
+compile_solidity_mock_aave:
+	@echo "compiling Mock Aave solidity source into abi and bin files"
+	solc -o ./test/mocks --abi --bin --overwrite ./test/mocks/Aave.sol
+
+compile_go_mock_aave:
+	@echo "compiling abi and bin files to golang"
+	abigen --abi ./test/mocks/Aave.abi --bin ./test/mocks/Aave.bin -pkg mocks -type Aave -out ./test/mocks/aave.go 
+
+compile_mock_aave: compile_mock_aave compile_solidity_mock_aave compile_go_mock_aave
+
 compile_mock_deps: compile_mock_erc compile_mock_zc_token
 
-compile_mocks: compile_mock_deps compile_mock_marketplace compile_mock_swivel compile_mock_yield compile_mock_yield_token compile_mock_element compile_mock_pendle compile_mock_tempus compile_mock_sense compile_mock_sense_token compile_mock_apwine compile_mock_tempus_token compile_mock_notional compile_mock_pool
+compile_mocks: compile_mock_deps compile_mock_marketplace compile_mock_swivel compile_mock_yield compile_mock_yield_token compile_mock_element compile_mock_pendle compile_mock_tempus compile_mock_sense compile_mock_sense_token compile_mock_apwine compile_mock_tempus_token compile_mock_notional compile_mock_pool compile_mock_aave
 
 # Real Tokens
 compile_solidity_zct:
