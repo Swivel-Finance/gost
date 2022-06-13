@@ -54,7 +54,7 @@ interface IPool {
         uint128
     ) external returns (uint128);
 
-    function sellPrincipalToken(address to, uint128 min) external returns (uint128);
+    function sellPrincipalToken(address, uint128) external returns (uint128);
 
     function buyPrincipalToken(
         address,
