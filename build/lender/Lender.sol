@@ -46,17 +46,17 @@ contract Lender {
     /// @notice Bulk approves the usage of addresses at the given ERC20 addresses
     /// @notice The lengths of the inputs must match because the arrays are paired by index
     /// @param u array of ERC20 token addresses that will be approved on
-    /// @param c array of addresses that will be approved
+    /// @param a array of addresses that will be approved
     /// @return true if successful
-    function approve(address[] calldata u, address[] calldata c) external authorized(admin) returns (bool) {
+    function approve(address[] calldata u, address[] calldata a) external authorized(admin) returns (bool) {
         uint256 len = u.length;
-        require(len == c.length, 'array length mismatch');
+        require(len == a.length, 'array length mismatch');
 
         uint256 max = 2**256 - 1;
 
         for (uint256 i; i < len; i++) {
             IErc20 uToken = IErc20(u[i]);
-            Safe.approve(uToken, c[i], max);
+            Safe.approve(uToken, a[i], max);
         }
 
         return true;
