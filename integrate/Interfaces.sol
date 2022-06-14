@@ -5,6 +5,8 @@ pragma solidity 0.8.13;
 import './Swivel.sol';
 import './Element.sol';
 
+import './Redeemer.sol';
+
 interface IPErc20 {
     function balanceOf(address) external view returns (uint256);
 
@@ -25,9 +27,13 @@ interface IPErc20 {
 }
 
 interface IZcToken is IPErc20 {
-    function burn(address, uint256) external returns (bool);
-
     function mint(address, uint256) external returns (bool);
+
+    function balanceOf(address) external returns (uint256);
+
+    function burn(address, uint256) external;
+
+    function maturity() external returns (uint256);
 }
 
 interface IErc2612 {
@@ -147,6 +153,12 @@ interface ISwivel {
         uint256[] calldata,
         Swivel.Components[] calldata
     ) external returns (bool);
+
+    function redeemZcToken(
+        address u,
+        uint256 m,
+        uint256 a
+    ) external returns (bool);
 }
 
 // we'll use ...Token for interfaces that are Erc20s
@@ -159,6 +171,8 @@ interface IYield {
     function sellBase(address, uint128) external returns (uint128);
 
     function sellBasePreview(uint128) external returns (uint128);
+
+    function redeem(address to, uint256 amount) external returns (uint256);
 }
 
 interface IElement {
@@ -174,6 +188,8 @@ interface IElementToken {
     function unlockTimestamp() external returns (uint256);
 
     function underlying() external returns (address);
+
+    function withdrawPrincipal(uint256 amount, address destination) external;
 }
 
 interface ISense {
@@ -183,6 +199,12 @@ interface ISense {
         uint256,
         uint256
     ) external returns (uint256);
+
+    function redeem(
+        address,
+        uint256,
+        uint256
+    ) external;
 }
 
 interface ISenseToken {
@@ -203,6 +225,12 @@ interface IPendle {
         address,
         uint256
     ) external returns (uint256[] memory amounts);
+
+    function redeemAfterExpiry(
+        bytes32,
+        address,
+        uint256
+    ) external;
 }
 
 interface ITempus {
@@ -218,6 +246,13 @@ interface ITempus {
         uint256,
         uint256
     ) external returns (uint256);
+
+    function redeemToBacking(
+        address,
+        uint256,
+        uint256,
+        address
+    ) external;
 }
 
 interface IAPWineRouter {
@@ -241,6 +276,8 @@ interface INotional {
     function getMaturity() external view returns (uint40);
 
     function deposit(uint256 a, address r) external returns (uint256);
+
+    function maxRedeem(address) external returns (uint256);
 }
 
 interface IAave {
@@ -249,5 +286,17 @@ interface IAave {
         uint256,
         address,
         uint16
+    ) external;
+}
+
+interface IAPWine {
+    function withdraw(address, uint256) external;
+}
+
+interface IYieldToken {
+    function redeem(
+        address,
+        address,
+        uint256
     ) external;
 }
