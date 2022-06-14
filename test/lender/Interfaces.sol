@@ -144,3 +144,12 @@ interface INotional {
 
     function deposit(uint256 a, address r) external returns (uint256);
 }
+
+interface IAave {
+    function deposit(
+        address,
+        uint256,
+        address,
+        uint16
+    ) external;
+}

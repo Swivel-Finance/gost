@@ -43,6 +43,25 @@ contract Lender {
         feenominator = 1000;
     }
 
+    /// @notice Bulk approves the usage of addresses at the given ERC20 addresses
+    /// @notice The lengths of the inputs must match because the arrays are paired by index
+    /// @param u array of ERC20 token addresses that will be approved on
+    /// @param a array of addresses that will be approved
+    /// @return true if successful
+    function approve(address[] calldata u, address[] calldata a) external authorized(admin) returns (bool) {
+        uint256 len = u.length;
+        require(len == a.length, 'array length mismatch');
+
+        uint256 max = 2**256 - 1;
+
+        for (uint256 i; i < len; i++) {
+            IErc20 uToken = IErc20(u[i]);
+            Safe.approve(uToken, a[i], max);
+        }
+
+        return true;
+    }
+
     /// @notice Sets the feenominator to the given value
     /// @param f: the new value of the feenominator, fees are not collected when the feenominator is 0
     /// @return bool true if successful
@@ -414,6 +433,7 @@ contract Lender {
         uint256 a,
         uint256 r,
         address pool,
+        address aave,
         uint256 i
     ) public returns (uint256) {
         // check the principal is apwine
@@ -434,6 +454,10 @@ contract Lender {
 
         // Determine the amount lent after fees
         uint256 lent = a - fee;
+
+        // Deposit into aave
+        // TODO: Get a referral code and use it to deposit
+        IAave(aave).deposit(u, lent, address(this), 0);
 
         // Swap on the APWine Pool using the provided market and params
         uint256 returned = IAPWineRouter(pool).swapExactAmountIn(i, 1, lent, 0, r, address(this));
