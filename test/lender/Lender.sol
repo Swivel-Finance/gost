@@ -43,10 +43,12 @@ contract Lender {
         feenominator = 1000;
     }
 
-    /// @notice Allows the admin to bulk approve given compound addresses at the underlying token, saving marginal approvals
-    /// @param u array of underlying token addresses
-    /// @param c array of compound token addresses
-    function approveUnderlying(address[] calldata u, address[] calldata c) external authorized(admin) returns (bool) {
+    /// @notice Bulk approves the usage of addresses at the given ERC20 addresses
+    /// @notice The lengths of the inputs must match because the arrays are paired by index
+    /// @param u array of ERC20 token addresses that will be approved on
+    /// @param c array of addresses that will be approved
+    /// @return true if successful
+    function approve(address[] calldata u, address[] calldata c) external authorized(admin) returns (bool) {
         uint256 len = u.length;
         require(len == c.length, 'array length mismatch');
 
