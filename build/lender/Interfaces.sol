@@ -83,6 +83,10 @@ interface ISenseToken {
     function underlying() external returns (address);
 }
 
+interface ISenseAMM {
+    function maturity() external returns (uint256);
+}
+
 interface IZcToken {
     function mint(address, uint256) external returns (bool);
 

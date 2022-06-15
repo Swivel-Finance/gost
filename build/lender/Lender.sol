@@ -371,6 +371,9 @@ contract Lender {
     }
 
     /// @dev lend method signature for sense
+    /// @dev sense provides a [divider] contract that splits [target] assets (underlying)
+    /// into PTs and YTs. Each [target] asset has a [series] of contracts, each
+    /// identifiable by their [maturity].
     /// @notice Can be called before maturity to lend to Sense while minting Illuminate tokens
     /// @param p value of a specific principal according to the Illuminate Principals Enum
     /// @param u address of an underlying asset
@@ -397,6 +400,9 @@ contract Lender {
 
         // Verify that the underlying matches up
         require(token.underlying() == u, 'sense underlying != underlying');
+
+        // Verify that the maturity matches up
+        require(ISenseAMM(x).maturity() <= m, 'sense maturity != maturity');
 
         // Determine the fee
         uint256 fee = calculateFee(a);
