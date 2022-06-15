@@ -28,7 +28,7 @@ type lendTestSuite struct {
 	Tempus       *mocks.TempusSession
 	Sense        *mocks.SenseSession
 	SenseToken   *mocks.SenseTokenSession
-	Sense AMM *mocks.SenseAMMSession
+	SenseAMM     *mocks.SenseAMMSession
 	APWineToken  *mocks.APWineTokenSession
 	APWine       *mocks.APWineSession
 	Aave         *mocks.AaveSession
@@ -148,6 +148,15 @@ func (s *lendTestSuite) SetupSuite() {
 
 	s.SenseToken = &mocks.SenseTokenSession{
 		Contract: s.Dep.SenseToken,
+		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
+		TransactOpts: bind.TransactOpts{
+			From:   s.Env.Owner.Opts.From,
+			Signer: s.Env.Owner.Opts.Signer,
+		},
+	}
+
+	s.SenseAMM = &mocks.SenseAMMSession{
+		Contract: s.Dep.SenseAmm,
 		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
 		TransactOpts: bind.TransactOpts{
 			From:   s.Env.Owner.Opts.From,
