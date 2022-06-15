@@ -54,9 +54,12 @@ contract Lender {
 
         uint256 max = 2**256 - 1;
 
-        for (uint256 i; i < len; i++) {
+        for (uint256 i; i < len; ) {
             IErc20 uToken = IErc20(u[i]);
             Safe.approve(uToken, a[i], max);
+            unchecked {
+                i++;
+            }
         }
 
         return true;
@@ -177,7 +180,8 @@ contract Lender {
         {
             uint256 totalFee;
             // iterate through each order a calculate the total lent and returned
-            for (uint256 i = 0; i < o.length; i++) {
+            uint256 length = o.length;
+            for (uint256 i = 0; i < length; ) {
                 Swivel.Order memory order = o[i];
                 // Require the Swivel order provided matches the underlying and maturity market provided
                 require(order.maturity == m, 'swivel maturity != maturity');
@@ -190,6 +194,10 @@ contract Lender {
                 lent += a[i] - fee;
                 // Sum the total amount of premium paid from Swivel (amount of underlying to lend to yield)
                 returned += (a[i] - fee) * (order.premium / order.principal);
+
+                unchecked {
+                    i++;
+                }
             }
             // Track accumulated fee
             fees[u] += totalFee;
