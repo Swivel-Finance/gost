@@ -589,7 +589,7 @@ func (s *lendTestSuite) TestLendAPWine() {
 	s.MarketPlace.PrincipalTokenReturns(s.Dep.APWineTokenAddress)
 	s.Env.Blockchain.Commit()
 
-	s.APWineToken.GetPTAddressReturns(s.Dep.Erc20Address)
+	s.APWineToken.GetUnderlyingOfIBTAddressReturns(s.Dep.Erc20Address)
 	s.Env.Blockchain.Commit()
 
 	s.Erc20.TransferFromReturns(true)

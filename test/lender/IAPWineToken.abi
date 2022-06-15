@@ -1,1 +1,1 @@
-[{"inputs":[],"name":"getPTAddress","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"}]
+[{"inputs":[],"name":"getUnderlyingOfIBTAddress","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"}]

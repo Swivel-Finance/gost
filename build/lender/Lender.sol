@@ -454,7 +454,7 @@ contract Lender {
 
         // Instantiate market and tokens
         address principal = IMarketPlace(marketPlace).markets(u, m, p);
-        require(IAPWineToken(principal).getPTAddress() == u, 'apwine principle != principle');
+        require(IAPWineToken(principal).getUnderlyingOfIBTAddress() == u, 'apwine principle != principle');
 
         // Transfer funds from user to Illuminate
         Safe.transferFrom(IErc20(u), msg.sender, address(this), a);

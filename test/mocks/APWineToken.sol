@@ -16,7 +16,8 @@ contract APWineToken {
     // balanceOf does not require a mapping.
     address public balanceOfCalled;
 
-    address private getPTAddressReturn;
+    address private getUnderlyingOfIBTAddressReturn;
+
     // a uint to return for balanceOf calls
     uint256 private balanceOfReturn;
     // a boolean flag which allows us to dictate the return of transfer().
@@ -24,12 +25,12 @@ contract APWineToken {
     // a boolean flag which allows us to dictate the return of transferFrom().
     bool private transferFromReturn;
 
-    function getPTAddressReturns(address a) external {
-        getPTAddressReturn = a;
+    function getUnderlyingOfIBTAddressReturns(address a) external {
+        getUnderlyingOfIBTAddressReturn = a;
     }
 
-    function getPTAddress() external view returns (address) {
-        return getPTAddressReturn;
+    function getUnderlyingOfIBTAddress() external view returns (address) {
+        return getUnderlyingOfIBTAddressReturn;
     }
 
     function balanceOfReturns(uint256 b) public {

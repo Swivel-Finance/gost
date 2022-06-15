@@ -138,7 +138,7 @@ interface IAPWineRouter {
 }
 
 interface IAPWineToken {
-    function getPTAddress() external view returns (address);
+    function getUnderlyingOfIBTAddress() external view returns (address);
 }
 
 interface INotional {
