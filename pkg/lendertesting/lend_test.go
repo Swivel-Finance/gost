@@ -28,7 +28,6 @@ type lendTestSuite struct {
 	Tempus       *mocks.TempusSession
 	Sense        *mocks.SenseSession
 	SenseToken   *mocks.SenseTokenSession
-	SenseAMM     *mocks.SenseAMMSession
 	APWineToken  *mocks.APWineTokenSession
 	APWine       *mocks.APWineSession
 	Aave         *mocks.AaveSession
@@ -148,15 +147,6 @@ func (s *lendTestSuite) SetupSuite() {
 
 	s.SenseToken = &mocks.SenseTokenSession{
 		Contract: s.Dep.SenseToken,
-		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
-		TransactOpts: bind.TransactOpts{
-			From:   s.Env.Owner.Opts.From,
-			Signer: s.Env.Owner.Opts.Signer,
-		},
-	}
-
-	s.SenseAMM = &mocks.SenseAMMSession{
-		Contract: s.Dep.SenseAmm,
 		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
 		TransactOpts: bind.TransactOpts{
 			From:   s.Env.Owner.Opts.From,
@@ -549,6 +539,15 @@ func (s *lendTestSuite) TestLendTempus() {
 
 func (s *lendTestSuite) TestLendSense() {
 	assert := assert.New(s.T())
+
+	maturity := big.NewInt(12094201240)
+	adapter := common.HexToAddress("0x1234")
+	amount := big.NewInt(1032)
+	swapReturns := big.NewInt(12345)
+	fee := new(big.Int).Div(amount, big.NewInt(FEENOMINATOR))
+	lent := new(big.Int).Sub(amount, fee)
+	minimumBought := big.NewInt(34)
+
 	s.MarketPlace.ZcTokenReturns(s.Dep.ZcTokenAddress)
 	s.MarketPlace.PrincipalTokenReturns(s.Dep.SenseTokenAddress)
 	s.Env.Blockchain.Commit()
@@ -559,21 +558,17 @@ func (s *lendTestSuite) TestLendSense() {
 	s.SenseToken.UnderlyingReturns(s.Dep.Erc20Address)
 	s.Env.Blockchain.Commit()
 
+	s.Sense.MaturityReturns(maturity)
+	s.Env.Blockchain.Commit()
+
 	s.Erc20.TransferFromReturns(true)
 	s.Env.Blockchain.Commit()
 
-	s.Sense.SwapUnderlyingForPTsReturns(big.NewInt(12345))
+	s.Sense.SwapUnderlyingForPTsReturns(swapReturns)
 	s.Env.Blockchain.Commit()
 
 	s.ZcToken.MintReturns(true)
 	s.Env.Blockchain.Commit()
-
-	maturity := big.NewInt(12094201240)
-	adapter := common.HexToAddress("0x1234")
-	amount := big.NewInt(1032)
-	fee := new(big.Int).Div(amount, big.NewInt(FEENOMINATOR))
-	lent := new(big.Int).Sub(amount, fee)
-	minimumBought := big.NewInt(34)
 
 	tx, err := s.Lender.Lend1(6, s.Dep.Erc20Address, maturity, amount, minimumBought, s.Dep.SenseAddress, adapter)
 	assert.NoError(err)

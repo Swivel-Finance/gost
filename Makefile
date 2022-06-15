@@ -11,7 +11,6 @@
 .PHONY: compile_solidity_mock_notional compile_go_mock_notional compile_mock_notional
 .PHONY: compile_solidity_mock_apwine compile_go_mock_apwine compile_mock_apwine
 .PHONY: compile_solidity_mock_sense_token compile_go_mock_sense_token compile_mock_sense_token
-.PHONY: compile_solidity_mock_sense_amm compile_go_mock_sense_amm compile_mock_sense_amm
 .PHONY: compile_solidity_mock_element_token compile_go_mock_element_token compile_mock_element_token
 .PHONY: compile_solidity_mock_marketplace compile_go_mock_marketplace compile_mock_marketplace
 .PHONY: compile_solidity_mock_pool compile_go_mock_pool compile_mock_pool
@@ -181,16 +180,6 @@ compile_go_mock_sense_token:
 
 compile_mock_sense_token: compile_solidity_mock_sense_token compile_go_mock_sense_token
 
-compile_solidity_mock_sense_amm:
-	@echo "compiling Mock SenseAMM solidity source into abi and bin files"
-	solc -o ./test/mocks --abi --bin --overwrite ./test/mocks/SenseAMM.sol
-
-compile_go_mock_sense_amm:
-	@echo "compiling abi and bin files to golang"
-	abigen --abi ./test/mocks/SenseAMM.abi --bin ./test/mocks/SenseAMM.bin -pkg mocks -type SenseAMM -out ./test/mocks/senseamm.go 
-
-compile_mock_sense_amm: compile_solidity_mock_sense_amm compile_go_mock_sense_amm
-
 compile_solidity_mock_apwine_token:
 	@echo "compiling Mock APWine Token solidity source into abi and bin files"
 	solc -o ./test/mocks --abi --bin --overwrite ./test/mocks/APWineToken.sol
@@ -243,7 +232,7 @@ compile_mock_aave: compile_mock_aave compile_solidity_mock_aave compile_go_mock_
 
 compile_mock_deps: compile_mock_erc compile_mock_zc_token
 
-compile_mocks: compile_mock_deps compile_mock_marketplace compile_mock_swivel compile_mock_yield compile_mock_yield_token compile_mock_element compile_mock_pendle compile_mock_tempus compile_mock_sense compile_mock_sense_token compile_mock_sense_amm compile_mock_apwine compile_mock_tempus_token compile_mock_notional compile_mock_pool compile_mock_aave
+compile_mocks: compile_mock_deps compile_mock_marketplace compile_mock_swivel compile_mock_yield compile_mock_yield_token compile_mock_element compile_mock_pendle compile_mock_tempus compile_mock_sense compile_mock_sense_token compile_mock_apwine compile_mock_tempus_token compile_mock_notional compile_mock_pool compile_mock_aave
 
 # Real Tokens
 compile_solidity_zct:

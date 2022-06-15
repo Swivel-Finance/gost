@@ -77,6 +77,8 @@ interface ISense {
         uint256,
         uint256
     ) external returns (uint256);
+
+    function maturity() external returns (uint256);
 }
 
 interface ISenseToken {
