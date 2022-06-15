@@ -28,6 +28,7 @@ type lendTestSuite struct {
 	Tempus       *mocks.TempusSession
 	Sense        *mocks.SenseSession
 	SenseToken   *mocks.SenseTokenSession
+	Sense AMM *mocks.SenseAMMSession
 	APWineToken  *mocks.APWineTokenSession
 	APWine       *mocks.APWineSession
 	Aave         *mocks.AaveSession
