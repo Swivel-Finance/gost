@@ -1,0 +1,16 @@
+## `IAPWineToken`
+
+
+
+
+
+
+### `getPTAddress() → address` (external)
+
+
+
+
+
+
+
+

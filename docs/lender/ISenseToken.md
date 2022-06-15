@@ -1,0 +1,16 @@
+## `ISenseToken`
+
+
+
+
+
+
+### `underlying() → address` (external)
+
+
+
+
+
+
+
+
