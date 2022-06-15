@@ -128,7 +128,7 @@ contract Lender {
 
         // the yield token must match the market pair
         require(address(pool.base()) == u, 'yield base != underlying');
-        require(pool.maturity() == m, 'yield maturity != maturity');
+        require(pool.maturity() <= m, 'yield maturity != maturity');
 
         // transfer from user to illuminate
         Safe.transferFrom(IErc20(u), msg.sender, address(this), a);
@@ -180,8 +180,8 @@ contract Lender {
             for (uint256 i = 0; i < o.length; i++) {
                 Swivel.Order memory order = o[i];
                 // Require the Swivel order provided matches the underlying and maturity market provided
-                require(order.maturity == m, 'swivel maturity != maturity');
                 require(order.underlying == u, 'swivel underlying != underlying');
+                require(order.maturity <= m, 'swivel maturity != maturity');
                 // Determine the fee
                 uint256 fee = calculateFee(a[i]);
                 // Track accumulated fees
@@ -232,7 +232,7 @@ contract Lender {
 
         // the element token must match the market pair
         require(IElementToken(principal).underlying() == u, 'element underlying != underlying');
-        require(IElementToken(principal).unlockTimestamp() == m, 'element maturity != maturity');
+        require(IElementToken(principal).unlockTimestamp() <= m, 'element maturity != maturity');
 
         // Transfer underlying token from user to illuminate
         Safe.transferFrom(IErc20(u), msg.sender, address(this), a);
@@ -288,7 +288,7 @@ contract Lender {
 
         // confirm that we are in the correct market
         require(token.yieldToken() == u, 'pendle underlying != underlying');
-        require(token.expiry() == m, 'pendle maturity != maturity');
+        require(token.expiry() <= m, 'pendle maturity != maturity');
 
         // Transfer funds from user to Illuminate
         Safe.transferFrom(IErc20(u), msg.sender, address(this), a);
@@ -339,7 +339,7 @@ contract Lender {
         // Instantiate market and tokens
         address principal = IMarketPlace(marketPlace).markets(u, m, p);
         require(ITempus(principal).yieldBearingToken() == IErc20Metadata(u), 'tempus underlying != underlying');
-        require(ITempus(principal).maturityTime() == m, 'tempus maturity != maturity');
+        require(ITempus(principal).maturityTime() <= m, 'tempus maturity != maturity');
 
         // Get the underlying token
         IErc20 underlyingToken = IErc20(u);
@@ -490,11 +490,11 @@ contract Lender {
 
         INotional token = INotional(principal);
 
-        // Verify that the maturity matches up
-        require(token.getMaturity() == m, 'notional maturity != maturity');
         // Verify that the underlying matches up
         (IErc20 underlying, ) = token.getUnderlyingToken();
         require(address(underlying) == u, 'notional underlying != underlying');
+        // Verify that the maturity matches up
+        require(token.getMaturity() <= m, 'notional maturity != maturity');
 
         // Transfer funds from user to Illuminate
         Safe.transferFrom(IErc20(u), msg.sender, address(this), a);
