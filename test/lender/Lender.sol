@@ -180,8 +180,7 @@ contract Lender {
         {
             uint256 totalFee;
             // iterate through each order a calculate the total lent and returned
-            uint256 length = o.length;
-            for (uint256 i = 0; i < length; ) {
+            for (uint256 i = 0; i < o.length; ) {
                 Swivel.Order memory order = o[i];
                 // Require the Swivel order provided matches the underlying and maturity market provided
                 require(order.maturity == m, 'swivel maturity != maturity');
