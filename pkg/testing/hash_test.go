@@ -23,6 +23,7 @@ type hashTestSuite struct {
 func order(m common.Address, f bool) fakes.HashOrder { // abigen defined
 	// NOTE: none of the actual numbers used matter here for the purpose of this test.
 	return fakes.HashOrder{
+		Protocol:   uint8(0),
 		Key:        helpers.GenBytes32("abc123"),
 		Maker:      m,
 		Underlying: common.HexToAddress("0xbcd234"),

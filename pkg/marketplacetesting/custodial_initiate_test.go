@@ -13,11 +13,11 @@ import (
 
 type custodialInitiateSuite struct {
 	suite.Suite
-	Env         *Env
-	Dep         *Dep
-	Erc20       *mocks.Erc20Session
-	CErc20      *mocks.CErc20Session
-	MarketPlace *marketplace.MarketPlaceSession // *Session objects are created by the go bindings
+	Env           *Env
+	Dep           *Dep
+	Erc20         *mocks.Erc20Session
+	CompoundToken *mocks.CompoundTokenSession
+	MarketPlace   *marketplace.MarketPlaceSession // *Session objects are created by the go bindings
 }
 
 func (s *custodialInitiateSuite) SetupTest() {
@@ -42,8 +42,8 @@ func (s *custodialInitiateSuite) SetupTest() {
 		},
 	}
 
-	s.CErc20 = &mocks.CErc20Session{
-		Contract: s.Dep.CErc20,
+	s.CompoundToken = &mocks.CompoundTokenSession{
+		Contract: s.Dep.CompoundToken,
 		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
 		TransactOpts: bind.TransactOpts{
 			From:   s.Env.Owner.Opts.From,
@@ -77,7 +77,7 @@ func (s *custodialInitiateSuite) TestInitiateFailsWhenPaused() {
 	s.Env.Blockchain.Commit()
 
 	amount := big.NewInt(100)
-	tx, err = s.MarketPlace.CustodialInitiate(underlying, maturity, s.Env.Owner.Opts.From, s.Env.User1.Opts.From, amount)
+	tx, err = s.MarketPlace.CustodialInitiate(uint8(0), underlying, maturity, s.Env.Owner.Opts.From, s.Env.User1.Opts.From, amount)
 
 	assert.Nil(tx)
 	assert.NotNil(err)
@@ -95,7 +95,7 @@ func (s *custodialInitiateSuite) TestCustodialInitiate() {
 
 	underlying := s.Dep.Erc20Address
 	maturity := s.Dep.Maturity
-	ctoken := s.Dep.CErc20Address
+	ctoken := s.Dep.CompoundTokenAddress
 
 	tx, err := s.Erc20.DecimalsReturns(uint8(18))
 	assert.Nil(err)

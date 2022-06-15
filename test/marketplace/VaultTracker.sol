@@ -23,6 +23,7 @@ contract VaultTracker {
   mapping (address => uint256) public transferNotionalFeeCalled;
 
   address public cTokenAddr;
+  address public adapterAddr;
   address public swivel;
   address public redeemInterestCalled;
   uint256 public matureVaultCalled;
@@ -41,9 +42,10 @@ contract VaultTracker {
   /// @param m maturity
   /// @param c cToken address
   /// @param s deployed swivel contract address
-  constructor(uint256 m, address c, address s) {
+  constructor(uint256 m, address c, address a, address s) {
     maturityReturn = m;
     cTokenAddr = c;
+    adapterAddr = a;
     swivel = s;
   }
 

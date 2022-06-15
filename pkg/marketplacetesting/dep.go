@@ -12,8 +12,8 @@ type Dep struct {
 	Erc20        *mocks.Erc20
 	Erc20Address common.Address
 
-	CErc20        *mocks.CErc20
-	CErc20Address common.Address
+	CompoundToken        *mocks.CompoundToken
+	CompoundTokenAddress common.Address
 
 	MarketPlaceAddress common.Address
 	MarketPlace        *marketplace.MarketPlace
@@ -25,10 +25,10 @@ type Dep struct {
 
 func Deploy(e *Env) (*Dep, error) {
 	maturity := big.NewInt(MATURITY)
-	cercAddress, _, cercContract, cercErr := mocks.DeployCErc20(e.Owner.Opts, e.Blockchain)
+	ctAddress, _, ctContract, ctErr := mocks.DeployCompoundToken(e.Owner.Opts, e.Blockchain)
 
-	if cercErr != nil {
-		return nil, cercErr
+	if ctErr != nil {
+		return nil, ctErr
 	}
 
 	e.Blockchain.Commit()
@@ -51,13 +51,13 @@ func Deploy(e *Env) (*Dep, error) {
 	e.Blockchain.Commit()
 
 	return &Dep{
-		MarketPlaceAddress: marketAddress,
-		MarketPlace:        marketContract,
-		CErc20Address:      cercAddress,
-		CErc20:             cercContract,
-		Erc20Address:       ercAddress,
-		Erc20:              ercContract,
-		SwivelAddress:      common.HexToAddress("0xAbC123"),
-		Maturity:           maturity,
+		MarketPlaceAddress:   marketAddress,
+		MarketPlace:          marketContract,
+		CompoundTokenAddress: ctAddress,
+		CompoundToken:        ctContract,
+		Erc20Address:         ercAddress,
+		Erc20:                ercContract,
+		SwivelAddress:        common.HexToAddress("0xAbC123"),
+		Maturity:             maturity,
 	}, nil
 }

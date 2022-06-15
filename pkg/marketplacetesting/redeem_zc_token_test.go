@@ -14,11 +14,11 @@ import (
 
 type redeemZcTokenSuite struct {
 	suite.Suite
-	Env         *Env
-	Dep         *Dep
-	Erc20       *mocks.Erc20Session
-	CErc20      *mocks.CErc20Session
-	MarketPlace *marketplace.MarketPlaceSession // *Session objects are created by the go bindings
+	Env           *Env
+	Dep           *Dep
+	Erc20         *mocks.Erc20Session
+	CompoundToken *mocks.CompoundTokenSession
+	MarketPlace   *marketplace.MarketPlaceSession // *Session objects are created by the go bindings
 }
 
 func (s *redeemZcTokenSuite) SetupTest() {

@@ -13,11 +13,11 @@ import (
 
 type vaultTransferFeeSuite struct {
 	suite.Suite
-	Env         *Env
-	Dep         *Dep
-	Erc20       *mocks.Erc20Session
-	CErc20      *mocks.CErc20Session
-	MarketPlace *marketplace.MarketPlaceSession
+	Env           *Env
+	Dep           *Dep
+	Erc20         *mocks.Erc20Session
+	CompoundToken *mocks.CompoundTokenSession
+	MarketPlace   *marketplace.MarketPlaceSession
 }
 
 func (s *vaultTransferFeeSuite) SetupTest() {

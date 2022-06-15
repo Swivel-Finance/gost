@@ -5,6 +5,7 @@ import (
 	test "testing"
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
+	"github.com/ethereum/go-ethereum/common"
 	assertions "github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 	"github.com/swivel-finance/gost/test/marketplace"
@@ -13,11 +14,11 @@ import (
 
 type custodialExitSuite struct {
 	suite.Suite
-	Env         *Env
-	Dep         *Dep
-	Erc20       *mocks.Erc20Session
-	CErc20      *mocks.CErc20Session
-	MarketPlace *marketplace.MarketPlaceSession // *Session objects are created by the go bindings
+	Env           *Env
+	Dep           *Dep
+	Erc20         *mocks.Erc20Session
+	CompoundToken *mocks.CompoundTokenSession
+	MarketPlace   *marketplace.MarketPlaceSession // *Session objects are created by the go bindings
 }
 
 func (s *custodialExitSuite) SetupTest() {
@@ -42,8 +43,8 @@ func (s *custodialExitSuite) SetupTest() {
 		},
 	}
 
-	s.CErc20 = &mocks.CErc20Session{
-		Contract: s.Dep.CErc20,
+	s.CompoundToken = &mocks.CompoundTokenSession{
+		Contract: s.Dep.CompoundToken,
 		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
 		TransactOpts: bind.TransactOpts{
 			From:   s.Env.Owner.Opts.From,
@@ -78,7 +79,7 @@ func (s *custodialExitSuite) TestExitFailsWhenPaused() {
 	s.Env.Blockchain.Commit()
 
 	amount := big.NewInt(100)
-	tx, err = s.MarketPlace.CustodialExit(s.Dep.Erc20Address, maturity, s.Env.Owner.Opts.From, s.Env.User1.Opts.From, amount)
+	tx, err = s.MarketPlace.CustodialExit(uint8(0), s.Dep.Erc20Address, maturity, s.Env.Owner.Opts.From, s.Env.User1.Opts.From, amount)
 	assert.Nil(tx)
 	assert.NotNil(err)
 	assert.Regexp("markets are paused", err.Error())
@@ -98,17 +99,18 @@ func (s *custodialExitSuite) TestCustodialExit() {
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
 
-	tx, err = s.CErc20.UnderlyingReturns(s.Dep.Erc20Address)
+	tx, err = s.CompoundToken.UnderlyingReturns(s.Dep.Erc20Address)
 	assert.Nil(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
 
 	maturity := s.Dep.Maturity
-	ctoken := s.Dep.CErc20Address
+	ctoken := s.Dep.CompoundTokenAddress
 
 	tx, err = s.MarketPlace.CreateMarket(
 		maturity,
 		ctoken,
+		common.HexToAddress("0x12345"),
 		"awesome market",
 		"AM",
 	)
@@ -121,7 +123,7 @@ func (s *custodialExitSuite) TestCustodialExit() {
 	user1Opts := s.Env.User1.Opts
 
 	// we should be able to fetch the market now...
-	market, err := s.MarketPlace.Markets(s.Dep.Erc20Address, maturity)
+	market, err := s.MarketPlace.Markets(uint8(0), s.Dep.Erc20Address, maturity)
 	assert.Nil(err)
 	assert.Equal(market.CTokenAddr, ctoken)
 
@@ -159,7 +161,7 @@ func (s *custodialExitSuite) TestCustodialExit() {
 	s.Env.Blockchain.Commit()
 
 	amount := big.NewInt(100)
-	tx, err = s.MarketPlace.CustodialExit(s.Dep.Erc20Address, maturity, ownerOpts.From, user1Opts.From, amount)
+	tx, err = s.MarketPlace.CustodialExit(uint8(0), s.Dep.Erc20Address, maturity, ownerOpts.From, user1Opts.From, amount)
 	assert.Nil(err)
 	assert.NotNil(tx)
 
@@ -186,17 +188,18 @@ func (s *custodialExitSuite) TestCustodialInitiateBurnFails() {
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
 
-	tx, err = s.CErc20.UnderlyingReturns(s.Dep.Erc20Address)
+	tx, err = s.CompoundToken.UnderlyingReturns(s.Dep.Erc20Address)
 	assert.Nil(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
 
 	maturity := s.Dep.Maturity
-	ctoken := s.Dep.CErc20Address
+	ctoken := s.Dep.CompoundTokenAddress
 
 	tx, err = s.MarketPlace.CreateMarket(
 		maturity,
 		ctoken,
+		common.HexToAddress("0x12345"),
 		"awesome market",
 		"AM",
 	)
@@ -209,7 +212,7 @@ func (s *custodialExitSuite) TestCustodialInitiateBurnFails() {
 	user1Opts := s.Env.User1.Opts
 
 	// we should be able to fetch the market now...
-	market, err := s.MarketPlace.Markets(s.Dep.Erc20Address, maturity)
+	market, err := s.MarketPlace.Markets(uint8(0), s.Dep.Erc20Address, maturity)
 	assert.Nil(err)
 	assert.Equal(market.CTokenAddr, ctoken)
 
@@ -247,7 +250,7 @@ func (s *custodialExitSuite) TestCustodialInitiateBurnFails() {
 	s.Env.Blockchain.Commit()
 
 	amount := big.NewInt(100)
-	tx, err = s.MarketPlace.CustodialExit(s.Dep.Erc20Address, maturity, ownerOpts.From, user1Opts.From, amount)
+	tx, err = s.MarketPlace.CustodialExit(uint8(0), s.Dep.Erc20Address, maturity, ownerOpts.From, user1Opts.From, amount)
 	assert.NotNil(err)
 	assert.Regexp("burn failed", err.Error())
 	assert.Nil(tx)
@@ -263,17 +266,18 @@ func (s *custodialExitSuite) TestCustodialInitiateRemoveNotionalFails() {
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
 
-	tx, err = s.CErc20.UnderlyingReturns(s.Dep.Erc20Address)
+	tx, err = s.CompoundToken.UnderlyingReturns(s.Dep.Erc20Address)
 	assert.Nil(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
 
 	maturity := s.Dep.Maturity
-	ctoken := s.Dep.CErc20Address
+	ctoken := s.Dep.CompoundTokenAddress
 
 	tx, err = s.MarketPlace.CreateMarket(
 		maturity,
 		ctoken,
+		common.HexToAddress("0x12345"),
 		"awesome market",
 		"AM",
 	)
@@ -286,7 +290,7 @@ func (s *custodialExitSuite) TestCustodialInitiateRemoveNotionalFails() {
 	user1Opts := s.Env.User1.Opts
 
 	// we should be able to fetch the market now...
-	market, err := s.MarketPlace.Markets(s.Dep.Erc20Address, maturity)
+	market, err := s.MarketPlace.Markets(uint8(0), s.Dep.Erc20Address, maturity)
 	assert.Nil(err)
 	assert.Equal(market.CTokenAddr, ctoken)
 
@@ -324,7 +328,7 @@ func (s *custodialExitSuite) TestCustodialInitiateRemoveNotionalFails() {
 	s.Env.Blockchain.Commit()
 
 	amount := big.NewInt(100)
-	tx, err = s.MarketPlace.CustodialExit(s.Dep.Erc20Address, maturity, ownerOpts.From, user1Opts.From, amount)
+	tx, err = s.MarketPlace.CustodialExit(uint8(0), s.Dep.Erc20Address, maturity, ownerOpts.From, user1Opts.From, amount)
 	assert.NotNil(err)
 	assert.Regexp("remove notional failed", err.Error())
 	assert.Nil(tx)
