@@ -80,6 +80,9 @@ First, install the `solidity-docgen` tool locally on your machine.
 Next, install the version of the tool for 0.8.13 solidity.
 `npm install -D solc-0.8@npm:solc@^0.8.13`
 
+This should install the `0.8.13` version of the tool in your home directory 
+(e.g. `~/node_modules/solc-0.8`)
+
 With that in place, you can generate docs for all of the contracts with the 
 following command:
 `npx solidity-docgen --solc-module ~/node_modules/solc-0.8 -i test/$DIRECTORY -o docs/$DIRECTORY`
