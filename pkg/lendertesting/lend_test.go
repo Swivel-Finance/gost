@@ -539,6 +539,15 @@ func (s *lendTestSuite) TestLendTempus() {
 
 func (s *lendTestSuite) TestLendSense() {
 	assert := assert.New(s.T())
+
+	maturity := big.NewInt(12094201240)
+	adapter := common.HexToAddress("0x1234")
+	amount := big.NewInt(1032)
+	swapReturns := big.NewInt(12345)
+	fee := new(big.Int).Div(amount, big.NewInt(FEENOMINATOR))
+	lent := new(big.Int).Sub(amount, fee)
+	minimumBought := big.NewInt(34)
+
 	s.MarketPlace.ZcTokenReturns(s.Dep.ZcTokenAddress)
 	s.MarketPlace.PrincipalTokenReturns(s.Dep.SenseTokenAddress)
 	s.Env.Blockchain.Commit()
@@ -549,21 +558,17 @@ func (s *lendTestSuite) TestLendSense() {
 	s.SenseToken.UnderlyingReturns(s.Dep.Erc20Address)
 	s.Env.Blockchain.Commit()
 
+	s.Sense.MaturityReturns(maturity)
+	s.Env.Blockchain.Commit()
+
 	s.Erc20.TransferFromReturns(true)
 	s.Env.Blockchain.Commit()
 
-	s.Sense.SwapUnderlyingForPTsReturns(big.NewInt(12345))
+	s.Sense.SwapUnderlyingForPTsReturns(swapReturns)
 	s.Env.Blockchain.Commit()
 
 	s.ZcToken.MintReturns(true)
 	s.Env.Blockchain.Commit()
-
-	maturity := big.NewInt(12094201240)
-	adapter := common.HexToAddress("0x1234")
-	amount := big.NewInt(1032)
-	fee := new(big.Int).Div(amount, big.NewInt(FEENOMINATOR))
-	lent := new(big.Int).Sub(amount, fee)
-	minimumBought := big.NewInt(34)
 
 	tx, err := s.Lender.Lend1(6, s.Dep.Erc20Address, maturity, amount, minimumBought, s.Dep.SenseAddress, adapter)
 	assert.NoError(err)
@@ -584,7 +589,7 @@ func (s *lendTestSuite) TestLendAPWine() {
 	s.MarketPlace.PrincipalTokenReturns(s.Dep.APWineTokenAddress)
 	s.Env.Blockchain.Commit()
 
-	s.APWineToken.GetPTAddressReturns(s.Dep.Erc20Address)
+	s.APWineToken.GetUnderlyingOfIBTAddressReturns(s.Dep.Erc20Address)
 	s.Env.Blockchain.Commit()
 
 	s.Erc20.TransferFromReturns(true)
