@@ -79,7 +79,6 @@ contract MarketPlace {
         for (uint8 i; i < 8; i++) {
             Safe.approve(IErc20(market[i]), redeemer, max);
         }
-
         // set the market
         markets[u][m] = market;
 
