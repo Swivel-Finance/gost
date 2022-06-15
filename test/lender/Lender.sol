@@ -10,6 +10,7 @@ import './Safe.sol';
 import './Cast.sol';
 
 contract Lender {
+    error Unauthorized();
     address public admin;
     address public marketPlace;
 
@@ -584,7 +585,10 @@ contract Lender {
     }
 
     modifier authorized(address a) {
-        require(msg.sender == a, 'sender must be authorized');
+        //require(msg.sender == a, 'sender must be authorized');
+        if (msg.sender != a) {
+            revert Unauthorized();
+        }
         _;
     }
 }
