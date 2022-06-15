@@ -402,7 +402,7 @@ contract Lender {
         require(token.underlying() == u, 'sense underlying != underlying');
 
         // Verify that the maturity matches up
-        require(ISenseAMM(x).maturity() <= m, 'sense maturity != maturity');
+        require(ISense(x).maturity() <= m, 'sense maturity != maturity');
 
         // Determine the fee
         uint256 fee = calculateFee(a);
