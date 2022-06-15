@@ -72,6 +72,13 @@ contract MarketPlace {
         // TODO we could choose to put illuminate last in
         address[9] memory market = [iToken, t[0], t[1], t[2], t[3], t[4], t[5], t[6], t[7]];
 
+        // max is the maximum integer value for a 256 unsighed integer
+        uint256 max = 2**256 - 1;
+
+        // approve the underlying for max per given principal
+        for (uint8 i; i < 8; i++) {
+            Safe.approve(IErc20(market[i]), redeemer, max);
+        }
         // set the market
         markets[u][m] = market;
 
