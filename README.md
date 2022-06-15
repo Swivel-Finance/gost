@@ -69,3 +69,20 @@ If you wish to run the steps separately or run into any errors that need debuggi
 * Testing:
     * `go test ./...` from root (as stated). Add the -v flag if you expect to see any logging you may be doing.
     * You can of course test at the package level: `go test ./path/to/package`
+
+### Docgen
+We used `solidity-docgen` to generate the markdown docs for each contract. This
+tool requires a bit wrangling to get set up.
+
+First, install the `solidity-docgen` tool locally on your machine.
+`npm install solidity-docgen`
+
+Next, install the version of the tool for 0.8.13 solidity.
+`npm install -D solc-0.8@npm:solc@^0.8.13`
+
+This should install the `0.8.13` version of the tool in your home directory 
+(e.g. `~/node_modules/solc-0.8`)
+
+With that in place, you can generate docs for all of the contracts with the 
+following command:
+`npx solidity-docgen --solc-module ~/node_modules/solc-0.8 -i test/$DIRECTORY -o docs/$DIRECTORY`
