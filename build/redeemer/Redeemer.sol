@@ -104,8 +104,10 @@ contract Redeemer {
         } else if (p == uint8(MarketPlace.Principals.Illuminate)) {
             // Get Illuminate's principal token
             IZcToken token = IZcToken(principal);
-            // Check that this is occurring after the token's maturity
-            require(block.timestamp > token.maturity());
+            // Make sure the market has matured
+            if (block.timestamp < token.maturity()) {
+                revert Invalid('not matured');
+            }
             // Burn the prinicipal token from illuminate
             token.burn(o, amount);
             // Transfer the original underlying token back to the user
