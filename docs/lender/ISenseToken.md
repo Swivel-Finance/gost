@@ -1,16 +1,15 @@
-## `ISenseToken`
+# 
+
+
+
+## underlying()
 
 
 
 
+**Params**
 
-
-### `underlying() → address` (external)
-
-
-
-
-
+**Returns**
 
 
 

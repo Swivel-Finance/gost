@@ -1,16 +1,15 @@
-## `IPendle`
+# 
+
+
+
+## redeemAfterExpiry(bytes32,address,uint256)
 
 
 
 
+**Params**
 
-
-### `redeemAfterExpiry(bytes32, address, uint256)` (external)
-
-
-
-
-
+**Returns**
 
 
 

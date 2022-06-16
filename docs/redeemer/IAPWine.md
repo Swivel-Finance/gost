@@ -1,16 +1,15 @@
-## `IAPWine`
+# 
+
+
+
+## withdraw(address,uint256)
 
 
 
 
+**Params**
 
-
-### `withdraw(address, uint256)` (external)
-
-
-
-
-
+**Returns**
 
 
 

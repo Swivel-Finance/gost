@@ -1,34 +1,42 @@
-## `IErc20`
+# 
+
+
+
+## approve(address,uint256)
 
 
 
 
+**Params**
 
+**Returns**
 
-### `approve(address, uint256) → bool` (external)
-
-
-
-
-
-### `transfer(address, uint256) → bool` (external)
+## transfer(address,uint256)
 
 
 
 
+**Params**
 
-### `balanceOf(address) → uint256` (external)
+**Returns**
 
-
-
-
-
-### `transferFrom(address, address, uint256) → bool` (external)
+## balanceOf(address)
 
 
 
 
+**Params**
 
+**Returns**
+
+## transferFrom(address,address,uint256)
+
+
+
+
+**Params**
+
+**Returns**
 
 
 

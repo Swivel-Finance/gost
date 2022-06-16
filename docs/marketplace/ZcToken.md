@@ -1,40 +1,60 @@
-## `ZcToken`
+# 
+
+
+
+## constructor(address,uint256,string,string,uint8)
 
 
 
 
+**Params**
+- `u`: Underlying
 
+- `m`: Maturity
 
-### `constructor(address u, uint256 m, string n, string s, uint8 d)` (public)
+- `n`: Name
 
+- `s`: Symbol
 
+- `d`: Decimals
 
+**Returns**
 
-
-### `approve(address s, uint256 a) → bool` (public)
-
-
-
-
-
-### `approveReturns(bool b)` (public)
-
-
-
-
-
-### `balanceOf(address a) → uint256` (public)
+## approve(address,uint256)
 
 
 
 
+**Params**
 
-### `balanceOfReturns(address u, uint256 a)` (public)
+**Returns**
+
+## approveReturns(bool)
 
 
 
 
+**Params**
 
+**Returns**
+
+## balanceOf(address)
+
+
+
+
+**Params**
+
+**Returns**
+
+## balanceOfReturns(address,uint256)
+
+
+
+
+**Params**
+
+**Returns**
 
 
 

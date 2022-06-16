@@ -1,0 +1,35 @@
+# {{natspec.title}}
+{{natspec.userdoc}}
+{{natspec.devdoc}}
+
+{{#each functions}}
+## {{signature}}
+
+{{natspec.userdoc}}
+{{natspec.devdoc}}
+
+**Params**
+{{#each natspec.params}}
+- `{{param}}`: {{description}}
+{{/each}}
+
+**Returns**
+{{#each natspec.returns}}
+- `{{param}}`: {{description}}
+{{/each}}
+
+{{/each}}
+
+
+{{#each events}}
+## `event` {{signature}}
+
+{{natspec.userdoc}}
+{{natspec.devdoc}}
+
+**Params**
+{{#each natspec.params}}
+- `{{param}}`: {{description}}
+{{/each}}
+
+{{/each}}

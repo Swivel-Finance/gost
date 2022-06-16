@@ -1,70 +1,96 @@
-## `IPool`
+# 
+
+
+
+## principalToken()
 
 
 
 
+**Params**
 
+**Returns**
 
-### `principalToken() → contract IErc5095` (external)
-
-
-
-
-
-### `underlying() → address` (external)
+## underlying()
 
 
 
 
+**Params**
 
-### `sellUnderlying(address, uint128) → uint128` (external)
+**Returns**
 
-
-
-
-
-### `buyUnderlying(address, uint128, uint128) → uint128` (external)
+## sellUnderlying(address,uint128)
 
 
 
 
+**Params**
 
-### `sellPrincipalToken(address, uint128) → uint128` (external)
+**Returns**
 
-
-
-
-
-### `buyPrincipalToken(address, uint128, uint128) → uint128` (external)
+## buyUnderlying(address,uint128,uint128)
 
 
 
 
+**Params**
 
-### `sellUnderlyingPreview(uint128) → uint128` (external)
+**Returns**
 
-
-
-
-
-### `buyUnderlyingPreview(uint128) → uint128` (external)
+## sellPrincipalToken(address,uint128)
 
 
 
 
+**Params**
 
-### `sellPrincipalTokenPreview(uint128) → uint128` (external)
+**Returns**
 
-
-
-
-
-### `buyPrincipalTokenPreview(uint128) → uint128` (external)
+## buyPrincipalToken(address,uint128,uint128)
 
 
 
 
+**Params**
 
+**Returns**
+
+## sellUnderlyingPreview(uint128)
+
+
+
+
+**Params**
+
+**Returns**
+
+## buyUnderlyingPreview(uint128)
+
+
+
+
+**Params**
+
+**Returns**
+
+## sellPrincipalTokenPreview(uint128)
+
+
+
+
+**Params**
+
+**Returns**
+
+## buyPrincipalTokenPreview(uint128)
+
+
+
+
+**Params**
+
+**Returns**
 
 
 

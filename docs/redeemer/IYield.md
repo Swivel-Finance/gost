@@ -1,16 +1,15 @@
-## `IYield`
+# 
+
+
+
+## redeem(address,uint256)
 
 
 
 
+**Params**
 
-
-### `redeem(address to, uint256 amount) → uint256` (external)
-
-
-
-
-
+**Returns**
 
 
 

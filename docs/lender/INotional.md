@@ -1,28 +1,33 @@
-## `INotional`
+# 
+
+
+
+## getUnderlyingToken()
 
 
 
 
+**Params**
 
+**Returns**
 
-### `getUnderlyingToken() → contract IErc20, int256` (external)
-
-
-
-
-
-### `getMaturity() → uint40` (external)
+## getMaturity()
 
 
 
 
+**Params**
 
-### `deposit(uint256 a, address r) → uint256` (external)
+**Returns**
+
+## deposit(uint256,address)
 
 
 
 
+**Params**
 
+**Returns**
 
 
 

@@ -1,16 +1,15 @@
-## `IMarketPlace`
+# 
+
+
+
+## markets(address,uint256,uint8)
 
 
 
 
+**Params**
 
-
-### `markets(address, uint256, uint8) → address` (external)
-
-
-
-
-
+**Returns**
 
 
 

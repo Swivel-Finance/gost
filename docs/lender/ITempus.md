@@ -1,28 +1,33 @@
-## `ITempus`
+# 
+
+
+
+## maturityTime()
 
 
 
 
+**Params**
 
+**Returns**
 
-### `maturityTime() → uint256` (external)
-
-
-
-
-
-### `yieldBearingToken() → contract IErc20Metadata` (external)
+## yieldBearingToken()
 
 
 
 
+**Params**
 
-### `depositAndFix(contract Any, contract Any, uint256, bool, uint256, uint256) → uint256` (external)
+**Returns**
+
+## depositAndFix(contract Any,contract Any,uint256,bool,uint256,uint256)
 
 
 
 
+**Params**
 
+**Returns**
 
 
 

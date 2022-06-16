@@ -1,16 +1,15 @@
-## `IAPWineToken`
+# 
+
+
+
+## getUnderlyingOfIBTAddress()
 
 
 
 
+**Params**
 
-
-### `getPTAddress() → address` (external)
-
-
-
-
-
+**Returns**
 
 
 

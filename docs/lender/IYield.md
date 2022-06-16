@@ -1,34 +1,42 @@
-## `IYield`
+# 
+
+
+
+## base()
 
 
 
 
+**Params**
 
+**Returns**
 
-### `base() → contract IErc20` (external)
-
-
-
-
-
-### `maturity() → uint32` (external)
+## maturity()
 
 
 
 
+**Params**
 
-### `sellBase(address, uint128) → uint128` (external)
+**Returns**
 
-
-
-
-
-### `sellBasePreview(uint128) → uint128` (external)
+## sellBase(address,uint128)
 
 
 
 
+**Params**
 
+**Returns**
+
+## sellBasePreview(uint128)
+
+
+
+
+**Params**
+
+**Returns**
 
 
 

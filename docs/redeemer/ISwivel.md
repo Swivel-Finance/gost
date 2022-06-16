@@ -1,16 +1,15 @@
-## `ISwivel`
+# 
+
+
+
+## redeemZcToken(address,uint256,uint256)
 
 
 
 
+**Params**
 
-
-### `redeemZcToken(address u, uint256 m, uint256 a) → bool` (external)
-
-
-
-
-
+**Returns**
 
 
 

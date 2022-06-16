@@ -1,22 +1,24 @@
-## `IElementToken`
+# 
+
+
+
+## unlockTimestamp()
 
 
 
 
+**Params**
 
+**Returns**
 
-### `unlockTimestamp() → uint256` (external)
-
-
-
-
-
-### `underlying() → address` (external)
+## underlying()
 
 
 
 
+**Params**
 
+**Returns**
 
 
 

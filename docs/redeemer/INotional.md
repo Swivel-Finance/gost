@@ -1,16 +1,15 @@
-## `INotional`
+# 
+
+
+
+## maxRedeem(address)
 
 
 
 
+**Params**
 
-
-### `maxRedeem(address) → uint256` (external)
-
-
-
-
-
+**Returns**
 
 
 

@@ -1,16 +1,15 @@
-## `IAave`
+# 
+
+
+
+## deposit(address,uint256,address,uint16)
 
 
 
 
+**Params**
 
-
-### `deposit(address, uint256, address, uint16)` (external)
-
-
-
-
-
+**Returns**
 
 
 

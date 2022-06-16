@@ -1,16 +1,15 @@
-## `IYieldToken`
+# 
+
+
+
+## redeem(address,address,uint256)
 
 
 
 
+**Params**
 
-
-### `redeem(address, address, uint256)` (external)
-
-
-
-
-
+**Returns**
 
 
 

@@ -1,22 +1,24 @@
-## `IPendleToken`
+# 
+
+
+
+## yieldToken()
 
 
 
 
+**Params**
 
+**Returns**
 
-### `yieldToken() → address` (external)
-
-
-
-
-
-### `expiry() → uint256` (external)
+## expiry()
 
 
 
 
+**Params**
 
+**Returns**
 
 
 

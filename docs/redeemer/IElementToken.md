@@ -1,28 +1,33 @@
-## `IElementToken`
+# 
+
+
+
+## unlockTimestamp()
 
 
 
 
+**Params**
 
+**Returns**
 
-### `unlockTimestamp() → uint256` (external)
-
-
-
-
-
-### `underlying() → address` (external)
+## underlying()
 
 
 
 
+**Params**
 
-### `withdrawPrincipal(uint256 amount, address destination)` (external)
+**Returns**
+
+## withdrawPrincipal(uint256,address)
 
 
 
 
+**Params**
 
+**Returns**
 
 
 

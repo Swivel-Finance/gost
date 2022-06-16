@@ -1,28 +1,69 @@
-## `IErc20Metadata`
+# 
+
+
+
+## name()
 
 
 
 
+**Params**
 
+**Returns**
 
-### `name() → string` (external)
-
-
-
-
-
-### `symbol() → string` (external)
+## symbol()
 
 
 
 
+**Params**
 
-### `decimals() → uint8` (external)
+**Returns**
+
+## decimals()
 
 
 
 
+**Params**
 
+**Returns**
+
+## approve(address,uint256)
+
+
+
+
+**Params**
+
+**Returns**
+
+## transfer(address,uint256)
+
+
+
+
+**Params**
+
+**Returns**
+
+## balanceOf(address)
+
+
+
+
+**Params**
+
+**Returns**
+
+## transferFrom(address,address,uint256)
+
+
+
+
+**Params**
+
+**Returns**
 
 
 
