@@ -12,7 +12,10 @@ import './Cast.sol';
 contract Lender {
     error Unauthorized();
     error MarketMismatch(string);
-    error InvalidPrincipal();
+    error MarketAlreadySet(address);
+    error InvalidPrincipal(uint8);
+    error ArrayLengthMismatch();
+
     address public admin;
     address public marketPlace;
 
@@ -83,7 +86,9 @@ contract Lender {
     /// @return true if successful
     function approve(address[] calldata u, address[] calldata a) external authorized(admin) returns (bool) {
         uint256 len = u.length;
-        require(len == a.length, 'array length mismatch');
+        if (len != a.length) {
+            revert ArrayLengthMismatch();
+        }
 
         uint256 max = 2**256 - 1;
 
@@ -111,7 +116,9 @@ contract Lender {
     /// @param m: the address of the marketplace contract
     /// @return bool true if the address was set, false otherwise
     function setMarketPlaceAddress(address m) external authorized(admin) returns (bool) {
-        require(marketPlace == address(0));
+        if (marketPlace != address(0)) {
+            revert MarketAlreadySet(marketPlace);
+        }
         marketPlace = m;
         return true;
     }
@@ -157,7 +164,9 @@ contract Lender {
         address y
     ) public returns (uint256) {
         // check the principal is illuminate or yield
-        require(p == uint8(MarketPlace.Principals.Illuminate) || p == uint8(MarketPlace.Principals.Yield));
+        if (p != uint8(MarketPlace.Principals.Illuminate) && p != uint8(MarketPlace.Principals.Yield)) {
+            revert InvalidPrincipal(p);
+        }
 
         // uses yield token interface...
         IYield pool = IYield(y);
@@ -206,7 +215,9 @@ contract Lender {
         Swivel.Components[] calldata s
     ) public returns (uint256) {
         // check the principal is swivel
-        require(p == uint8(MarketPlace.Principals.Swivel));
+        if (p != uint8(MarketPlace.Principals.Swivel)) {
+            revert InvalidPrincipal(p);
+        }
 
         // lent represents the number of underlying tokens lent
         uint256 lent;
@@ -272,7 +283,9 @@ contract Lender {
         bytes32 i
     ) public returns (uint256) {
         // check the principal is element
-        require(p == uint8(MarketPlace.Principals.Element));
+        if (p != uint8(MarketPlace.Principals.Element)) {
+            revert InvalidPrincipal(p);
+        }
         // Get the principal token for this market for element
         address principal = IMarketPlace(marketPlace).markets(u, m, p);
 
@@ -329,7 +342,9 @@ contract Lender {
         uint256 d
     ) public returns (uint256) {
         // check the principal is pendle
-        require(p == uint8(MarketPlace.Principals.Pendle));
+        if (p != uint8(MarketPlace.Principals.Pendle)) {
+            revert InvalidPrincipal(p);
+        }
         // Instantiate market and tokens
         address principal = IMarketPlace(marketPlace).markets(u, m, p);
         IPendleToken token = IPendleToken(principal);
@@ -385,7 +400,9 @@ contract Lender {
         address x
     ) public returns (uint256) {
         // check the principal is tempus
-        require(p == uint8(MarketPlace.Principals.Tempus));
+        if (p != uint8(MarketPlace.Principals.Tempus)) {
+            revert InvalidPrincipal(p);
+        }
 
         // Instantiate market and tokens
         address principal = IMarketPlace(marketPlace).markets(u, m, p);
@@ -440,7 +457,9 @@ contract Lender {
         address s
     ) public returns (uint256) {
         // check the principal is sense
-        require(p == uint8(MarketPlace.Principals.Sense));
+        if (p != uint8(MarketPlace.Principals.Sense)) {
+            revert InvalidPrincipal(p);
+        }
 
         // Get the principal token for this market for this market
         ISenseToken token = ISenseToken(IMarketPlace(marketPlace).markets(u, m, p));
@@ -498,7 +517,9 @@ contract Lender {
         uint256 i
     ) public returns (uint256) {
         // check the principal is apwine
-        require(p == uint8(MarketPlace.Principals.Apwine));
+        if (p != uint8(MarketPlace.Principals.Apwine)) {
+            revert InvalidPrincipal(p);
+        }
 
         // Instantiate market and tokens
         address principal = IMarketPlace(marketPlace).markets(u, m, p);
@@ -546,7 +567,9 @@ contract Lender {
         uint256 a
     ) public returns (uint256) {
         // check the principal is notional
-        require(p == uint8(MarketPlace.Principals.Notional));
+        if (p != uint8(MarketPlace.Principals.Notional)) {
+            revert InvalidPrincipal(p);
+        }
 
         // Instantiate market and tokens
         address principal = IMarketPlace(marketPlace).markets(u, m, p);
@@ -642,7 +665,6 @@ contract Lender {
     }
 
     modifier authorized(address a) {
-        //require(msg.sender == a, 'sender must be authorized');
         if (msg.sender != a) {
             revert Unauthorized();
         }
