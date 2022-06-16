@@ -11,6 +11,8 @@ import './IZcToken.sol';
 /// NOTE the OZStlye naming conventions are kept for the internal methods
 /// _burn and _mint as dangling underscores are generally not allowed.
 contract ZcToken is Erc2612, IZcToken {
+    error Unauthorized();
+
     address public immutable admin;
     address public immutable underlying;
     uint256 public immutable maturity;
@@ -48,7 +50,9 @@ contract ZcToken is Erc2612, IZcToken {
 
     /// @param a Admin address
     modifier authorized(address a) {
-        require(msg.sender == a, 'sender must be admin');
+        if (msg.sender != a) {
+            revert Unauthorized();
+        }
         _;
     }
 }
