@@ -23,6 +23,11 @@ contract MarketPlace {
         Notional
     }
 
+    error MarketExists(address, uint256);
+    error PoolExists(address, uint256, uint8);
+    error Unauthorized();
+    error Paused();
+
     /// markets are defined by a market pair which point to a fixed length array
     /// of principal token addresses. The principal tokens those addresses
     /// represent correspond to their Principals enum value, thus the array
@@ -63,7 +68,9 @@ contract MarketPlace {
         string calldata s,
         uint8 d
     ) external authorized(admin) returns (bool) {
-        require(markets[u][m][uint256(Principals.Illuminate)] == address(0), 'market exists');
+        if (markets[u][m][uint256(Principals.Illuminate)] != address(0)) {
+            revert MarketExists(u, m);
+        }
 
         // deploy an illuminate token with this new market
         // NOTE: ATM is using name as symbol args
@@ -112,7 +119,9 @@ contract MarketPlace {
         uint256 m,
         address a
     ) external authorized(admin) returns (bool) {
-        require(pools[u][m][p] == address(0), 'pool exists');
+        if (pools[u][m][p] != address(0)) {
+            revert PoolExists(u, m, p);
+        }
         pools[u][m][p] = a;
         return true;
     }
@@ -186,12 +195,16 @@ contract MarketPlace {
     }
 
     modifier authorized(address a) {
-        require(msg.sender == a, 'sender must be authorized');
+        if (msg.sender != a) {
+            revert Unauthorized();
+        }
         _;
     }
 
     modifier unpaused(uint8 p) {
-        require(!paused[p], 'principal is paused');
+        if (paused[p]) {
+            revert Paused();
+        }
         _;
     }
 }
