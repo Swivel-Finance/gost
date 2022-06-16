@@ -11,6 +11,8 @@ import './Cast.sol';
 
 contract Lender {
     error Unauthorized();
+    error MarketMismatch(string);
+    error InvalidPrincipal();
     address public admin;
     address public marketPlace;
 
@@ -161,8 +163,11 @@ contract Lender {
         IYield pool = IYield(y);
 
         // the yield token must match the market pair
-        require(address(pool.base()) == u, 'yield base != underlying');
-        require(pool.maturity() <= m, 'yield maturity != maturity');
+        if (address(pool.base()) != u) {
+            revert MarketMismatch('underlying');
+        } else if (pool.maturity() > m) {
+            revert MarketMismatch('maturity');
+        }
 
         // transfer from user to illuminate
         Safe.transferFrom(IErc20(u), msg.sender, address(this), a);
@@ -214,8 +219,11 @@ contract Lender {
             for (uint256 i = 0; i < o.length; ) {
                 Swivel.Order memory order = o[i];
                 // Require the Swivel order provided matches the underlying and maturity market provided
-                require(order.underlying == u, 'swivel underlying != underlying');
-                require(order.maturity <= m, 'swivel maturity != maturity');
+                if (order.underlying != u) {
+                    revert MarketMismatch('underlying');
+                } else if (order.maturity > m) {
+                    revert MarketMismatch('maturity');
+                }
                 // Determine the fee
                 uint256 fee = calculateFee(a[i]);
                 // Track accumulated fees
@@ -269,9 +277,11 @@ contract Lender {
         address principal = IMarketPlace(marketPlace).markets(u, m, p);
 
         // the element token must match the market pair
-        require(IElementToken(principal).underlying() == u, 'element underlying != underlying');
-        require(IElementToken(principal).unlockTimestamp() <= m, 'element maturity != maturity');
-
+        if (IElementToken(principal).underlying() != u) {
+            revert MarketMismatch('underlying');
+        } else if (IElementToken(principal).unlockTimestamp() > m) {
+            revert MarketMismatch('maturity');
+        }
         // Transfer underlying token from user to illuminate
         Safe.transferFrom(IErc20(u), msg.sender, address(this), a);
 
@@ -325,8 +335,11 @@ contract Lender {
         IPendleToken token = IPendleToken(principal);
 
         // confirm that we are in the correct market
-        require(token.yieldToken() == u, 'pendle underlying != underlying');
-        require(token.expiry() <= m, 'pendle maturity != maturity');
+        if (token.yieldToken() != u) {
+            revert MarketMismatch('underlying');
+        } else if (token.expiry() > m) {
+            revert MarketMismatch('maturity');
+        }
 
         // Transfer funds from user to Illuminate
         Safe.transferFrom(IErc20(u), msg.sender, address(this), a);
@@ -376,8 +389,11 @@ contract Lender {
 
         // Instantiate market and tokens
         address principal = IMarketPlace(marketPlace).markets(u, m, p);
-        require(ITempus(principal).yieldBearingToken() == IErc20Metadata(u), 'tempus underlying != underlying');
-        require(ITempus(principal).maturityTime() <= m, 'tempus maturity != maturity');
+        if (ITempus(principal).yieldBearingToken() != IErc20Metadata(u)) {
+            revert MarketMismatch('underlying');
+        } else if (ITempus(principal).maturityTime() > m) {
+            revert MarketMismatch('maturity');
+        }
 
         // Get the underlying token
         IErc20 underlyingToken = IErc20(u);
@@ -429,11 +445,12 @@ contract Lender {
         // Get the principal token for this market for this market
         ISenseToken token = ISenseToken(IMarketPlace(marketPlace).markets(u, m, p));
 
-        // Verify that the underlying matches up
-        require(token.underlying() == u, 'sense underlying != underlying');
-
-        // Verify that the maturity matches up
-        require(ISense(x).maturity() <= m, 'sense maturity != maturity');
+        // Verify that the underlying and maturity match up
+        if (token.underlying() != u) {
+            revert MarketMismatch('underlying');
+        } else if (ISense(x).maturity() > m) {
+            revert MarketMismatch('maturity');
+        }
 
         // Determine the fee
         uint256 fee = calculateFee(a);
@@ -485,7 +502,9 @@ contract Lender {
 
         // Instantiate market and tokens
         address principal = IMarketPlace(marketPlace).markets(u, m, p);
-        require(IAPWineToken(principal).getUnderlyingOfIBTAddress() == u, 'apwine principle != principle');
+        if (IAPWineToken(principal).getUnderlyingOfIBTAddress() != u) {
+            revert MarketMismatch('underlying');
+        }
 
         // Transfer funds from user to Illuminate
         Safe.transferFrom(IErc20(u), msg.sender, address(this), a);
@@ -534,11 +553,13 @@ contract Lender {
 
         INotional token = INotional(principal);
 
-        // Verify that the underlying matches up
+        // Verify that the underlying and maturity match up
         (IErc20 underlying, ) = token.getUnderlyingToken();
-        require(address(underlying) == u, 'notional underlying != underlying');
-        // Verify that the maturity matches up
-        require(token.getMaturity() <= m, 'notional maturity != maturity');
+        if (address(underlying) != u) {
+            revert MarketMismatch('underlying');
+        } else if (token.getMaturity() > m) {
+            revert MarketMismatch('maturity');
+        }
 
         // Transfer funds from user to Illuminate
         Safe.transferFrom(IErc20(u), msg.sender, address(this), a);
