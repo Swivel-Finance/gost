@@ -11,10 +11,9 @@ import './Cast.sol';
 
 contract Lender {
     error Unauthorized();
-    error MarketMismatch(string);
-    error MarketAlreadySet(address);
-    error InvalidPrincipal(uint8);
-    error ArrayLengthMismatch();
+    error NotEqual(string);
+    error Exists(address);
+    error Invalid(string);
 
     address public admin;
     address public marketPlace;
@@ -87,7 +86,7 @@ contract Lender {
     function approve(address[] calldata u, address[] calldata a) external authorized(admin) returns (bool) {
         uint256 len = u.length;
         if (len != a.length) {
-            revert ArrayLengthMismatch();
+            revert NotEqual('array length');
         }
 
         uint256 max = 2**256 - 1;
@@ -117,7 +116,7 @@ contract Lender {
     /// @return bool true if the address was set, false otherwise
     function setMarketPlaceAddress(address m) external authorized(admin) returns (bool) {
         if (marketPlace != address(0)) {
-            revert MarketAlreadySet(marketPlace);
+            revert Exists(marketPlace);
         }
         marketPlace = m;
         return true;
@@ -165,7 +164,7 @@ contract Lender {
     ) public returns (uint256) {
         // check the principal is illuminate or yield
         if (p != uint8(MarketPlace.Principals.Illuminate) && p != uint8(MarketPlace.Principals.Yield)) {
-            revert InvalidPrincipal(p);
+            revert Invalid('principal');
         }
 
         // uses yield token interface...
@@ -173,9 +172,9 @@ contract Lender {
 
         // the yield token must match the market pair
         if (address(pool.base()) != u) {
-            revert MarketMismatch('underlying');
+            revert NotEqual('underlying');
         } else if (pool.maturity() > m) {
-            revert MarketMismatch('maturity');
+            revert NotEqual('maturity');
         }
 
         // transfer from user to illuminate
@@ -216,7 +215,7 @@ contract Lender {
     ) public returns (uint256) {
         // check the principal is swivel
         if (p != uint8(MarketPlace.Principals.Swivel)) {
-            revert InvalidPrincipal(p);
+            revert Invalid('principal');
         }
 
         // lent represents the number of underlying tokens lent
@@ -231,9 +230,9 @@ contract Lender {
                 Swivel.Order memory order = o[i];
                 // Require the Swivel order provided matches the underlying and maturity market provided
                 if (order.underlying != u) {
-                    revert MarketMismatch('underlying');
+                    revert NotEqual('underlying');
                 } else if (order.maturity > m) {
-                    revert MarketMismatch('maturity');
+                    revert NotEqual('maturity');
                 }
                 // Determine the fee
                 uint256 fee = calculateFee(a[i]);
@@ -284,16 +283,16 @@ contract Lender {
     ) public returns (uint256) {
         // check the principal is element
         if (p != uint8(MarketPlace.Principals.Element)) {
-            revert InvalidPrincipal(p);
+            revert Invalid('principal');
         }
         // Get the principal token for this market for element
         address principal = IMarketPlace(marketPlace).markets(u, m, p);
 
         // the element token must match the market pair
         if (IElementToken(principal).underlying() != u) {
-            revert MarketMismatch('underlying');
+            revert NotEqual('underlying');
         } else if (IElementToken(principal).unlockTimestamp() > m) {
-            revert MarketMismatch('maturity');
+            revert NotEqual('maturity');
         }
         // Transfer underlying token from user to illuminate
         Safe.transferFrom(IErc20(u), msg.sender, address(this), a);
@@ -343,7 +342,7 @@ contract Lender {
     ) public returns (uint256) {
         // check the principal is pendle
         if (p != uint8(MarketPlace.Principals.Pendle)) {
-            revert InvalidPrincipal(p);
+            revert Invalid('principal');
         }
         // Instantiate market and tokens
         address principal = IMarketPlace(marketPlace).markets(u, m, p);
@@ -351,9 +350,9 @@ contract Lender {
 
         // confirm that we are in the correct market
         if (token.yieldToken() != u) {
-            revert MarketMismatch('underlying');
+            revert NotEqual('underlying');
         } else if (token.expiry() > m) {
-            revert MarketMismatch('maturity');
+            revert NotEqual('maturity');
         }
 
         // Transfer funds from user to Illuminate
@@ -401,15 +400,15 @@ contract Lender {
     ) public returns (uint256) {
         // check the principal is tempus
         if (p != uint8(MarketPlace.Principals.Tempus)) {
-            revert InvalidPrincipal(p);
+            revert Invalid('principal');
         }
 
         // Instantiate market and tokens
         address principal = IMarketPlace(marketPlace).markets(u, m, p);
         if (ITempus(principal).yieldBearingToken() != IErc20Metadata(u)) {
-            revert MarketMismatch('underlying');
+            revert NotEqual('underlying');
         } else if (ITempus(principal).maturityTime() > m) {
-            revert MarketMismatch('maturity');
+            revert NotEqual('maturity');
         }
 
         // Get the underlying token
@@ -458,7 +457,7 @@ contract Lender {
     ) public returns (uint256) {
         // check the principal is sense
         if (p != uint8(MarketPlace.Principals.Sense)) {
-            revert InvalidPrincipal(p);
+            revert Invalid('principal');
         }
 
         // Get the principal token for this market for this market
@@ -466,9 +465,9 @@ contract Lender {
 
         // Verify that the underlying and maturity match up
         if (token.underlying() != u) {
-            revert MarketMismatch('underlying');
+            revert NotEqual('underlying');
         } else if (ISense(x).maturity() > m) {
-            revert MarketMismatch('maturity');
+            revert NotEqual('maturity');
         }
 
         // Determine the fee
@@ -518,13 +517,13 @@ contract Lender {
     ) public returns (uint256) {
         // check the principal is apwine
         if (p != uint8(MarketPlace.Principals.Apwine)) {
-            revert InvalidPrincipal(p);
+            revert Invalid('principal');
         }
 
         // Instantiate market and tokens
         address principal = IMarketPlace(marketPlace).markets(u, m, p);
         if (IAPWineToken(principal).getUnderlyingOfIBTAddress() != u) {
-            revert MarketMismatch('underlying');
+            revert NotEqual('underlying');
         }
 
         // Transfer funds from user to Illuminate
@@ -568,7 +567,7 @@ contract Lender {
     ) public returns (uint256) {
         // check the principal is notional
         if (p != uint8(MarketPlace.Principals.Notional)) {
-            revert InvalidPrincipal(p);
+            revert Invalid('principal');
         }
 
         // Instantiate market and tokens
@@ -579,9 +578,9 @@ contract Lender {
         // Verify that the underlying and maturity match up
         (IErc20 underlying, ) = token.getUnderlyingToken();
         if (address(underlying) != u) {
-            revert MarketMismatch('underlying');
+            revert NotEqual('underlying');
         } else if (token.getMaturity() > m) {
-            revert MarketMismatch('maturity');
+            revert NotEqual('maturity');
         }
 
         // Transfer funds from user to Illuminate
