@@ -71,9 +71,6 @@ func (s *marketplaceTestSuite) TestConstruction() {
 func (s *marketplaceTestSuite) TestCreateMarket() {
 	assert := assert.New(s.T())
 
-	// stub the erc approve to return true or safe will revert
-	s.Erc20.ApproveReturns(true)
-
 	s.Env.Blockchain.Commit()
 
 	maturity := big.NewInt(100000)
@@ -107,16 +104,6 @@ func (s *marketplaceTestSuite) TestCreateMarket() {
 	swivPrincipal, err := s.MarketPlace.Markets(s.Dep.Erc20Address, maturity, big.NewInt(1))
 	assert.Nil(err)
 	assert.Equal(swivPrincipal, s.Dep.Erc20Address)
-
-	// should be the max amount approved in the contract...
-	max, exp := big.NewInt(2), big.NewInt(256)
-	max.Exp(max, exp, nil)
-	max.Sub(max, big.NewInt(1))
-
-	// we can see what was passed to approve on the last iteration of the for loop
-	approved, err := s.Erc20.ApproveCalled(s.Dep.RedeemerAddress)
-	assert.Nil(err)
-	assert.Equal(approved, max)
 }
 
 func (s *marketplaceTestSuite) TestBuyPt() {

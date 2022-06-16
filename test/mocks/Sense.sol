@@ -15,6 +15,8 @@ contract Sense {
     }
 
     uint256 private swapUnderlyingForPTsReturn;
+    uint256 private maturityReturn;
+
     mapping(address => SwapUnderlyingForPTsArgs) public swapUnderlyingForPTsCalled;
     mapping(address => RedeemArgs) public redeemCalled;
 
@@ -30,6 +32,14 @@ contract Sense {
     ) external returns (uint256) {
         swapUnderlyingForPTsCalled[sa] = SwapUnderlyingForPTsArgs(m, a, mb);
         return swapUnderlyingForPTsReturn;
+    }
+
+    function maturityReturns(uint256 m) external {
+        maturityReturn = m;
+    }
+
+    function maturity() public view returns (uint256) {
+        return maturityReturn;
     }
 
     function redeem(
