@@ -76,8 +76,11 @@ contract MarketPlace {
         uint256 max = 2**256 - 1;
 
         // approve the underlying for max per given principal
-        for (uint8 i; i < 8; i++) {
+        for (uint8 i; i < 8; ) {
             Safe.approve(IErc20(market[i]), redeemer, max);
+            unchecked {
+                i++;
+            }
         }
         // set the market
         markets[u][m] = market;
