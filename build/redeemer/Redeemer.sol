@@ -7,6 +7,11 @@ import './MarketPlace.sol';
 import './Safe.sol';
 
 contract Redeemer {
+    error NotMature();
+    error InvalidPrincipal(uint8);
+    error Unauthorized();
+    error AddressSet(string);
+
     address public admin;
     address public marketPlace;
     address public lender;
@@ -45,13 +50,17 @@ contract Redeemer {
     /// @param m the address of the marketplace contract
     /// @return bool true if the address was set, false otherwise
     function setMarketPlaceAddress(address m) external authorized(admin) returns (bool) {
-        require(marketPlace == address(0));
+        if (marketPlace != address(0)) {
+            revert AddressSet('marketplace');
+        }
         marketPlace = m;
         return true;
     }
 
     function setLenderAddress(address l) external authorized(admin) returns (bool) {
-        require(lender == address(0));
+        if (lender != address(0)) {
+            revert AddressSet('lender');
+        }
         lender = l;
         return true;
     }
@@ -103,7 +112,7 @@ contract Redeemer {
             // Transfer the original underlying token back to the user
             Safe.transferFrom(IErc20(u), lender, address(this), amount);
         } else {
-            revert('Invalid principal');
+            revert InvalidPrincipal(p);
         }
 
         emit Redeem(0, u, m, amount);
@@ -125,13 +134,14 @@ contract Redeemer {
         address principal = IMarketPlace(marketPlace).markets(u, m, p);
 
         // Make sure we have the correct principal
-        require(
-            p == uint8(MarketPlace.Principals.Swivel) ||
-                p == uint8(MarketPlace.Principals.Element) ||
-                p == uint8(MarketPlace.Principals.Yield) ||
-                p == uint8(MarketPlace.Principals.Notional),
-            'Invalid principal'
-        );
+        if (
+            p != uint8(MarketPlace.Principals.Swivel) &&
+            p != uint8(MarketPlace.Principals.Element) &&
+            p != uint8(MarketPlace.Principals.Yield) &&
+            p != uint8(MarketPlace.Principals.Notional)
+        ) {
+            revert InvalidPrincipal(p);
+        }
 
         // The amount redeemed should be the balance of the principal token held by the illuminate contract
         uint256 amount = IErc20(principal).balanceOf(lender);
@@ -141,7 +151,7 @@ contract Redeemer {
 
         if (p == uint8(MarketPlace.Principals.Swivel)) {
             // Redeems zc tokens to the sender's address
-            require((ISwivel(swivelAddr).redeemZcToken(u, m, amount)));
+            ISwivel(swivelAddr).redeemZcToken(u, m, amount);
         } else if (p == uint8(MarketPlace.Principals.Element)) {
             // Redeems principal tokens from element
             IElementToken(principal).withdrawPrincipal(amount, marketPlace);
@@ -171,7 +181,9 @@ contract Redeemer {
         bytes32 i
     ) public returns (bool) {
         // Check the principal is pendle
-        require(p == uint8(MarketPlace.Principals.Pendle));
+        if (p != uint8(MarketPlace.Principals.Pendle)) {
+            revert InvalidPrincipal(p);
+        }
 
         // Get the principal token that is being redeemed by the user
         IErc20 token = IErc20(IMarketPlace(marketPlace).markets(u, m, p));
@@ -201,7 +213,9 @@ contract Redeemer {
         address o
     ) public returns (bool) {
         // Check the principal is sense
-        require(p == uint8(MarketPlace.Principals.Sense));
+        if (p != uint8(MarketPlace.Principals.Sense)) {
+            revert InvalidPrincipal(p);
+        }
 
         // Get the principal token for the given market
         IErc20 token = IErc20(IMarketPlace(marketPlace).markets(u, m, p));
@@ -237,7 +251,11 @@ contract Redeemer {
     ) public authorized(IMarketPlace(marketPlace).markets(u, m, 0)) returns (bool) {
         // Get the principal token for the given market
         IZcToken pt = IZcToken(IMarketPlace(marketPlace).markets(u, m, 0));
-        require(block.timestamp > pt.maturity(), 'maturity error');
+
+        // Make sure the market has matured
+        if (block.timestamp < pt.maturity()) {
+            revert NotMature();
+        }
 
         // Burn the user's principal tokens
         pt.burn(f, a);
@@ -248,7 +266,9 @@ contract Redeemer {
     }
 
     modifier authorized(address a) {
-        require(msg.sender == a, 'sender must be authorized');
+        if (msg.sender != a) {
+            revert Unauthorized();
+        }
         _;
     }
 }
