@@ -7,10 +7,9 @@ import './MarketPlace.sol';
 import './Safe.sol';
 
 contract Redeemer {
-    error NotMature();
-    error InvalidPrincipal(uint8);
+    error Invalid(string);
     error Unauthorized();
-    error AddressSet(string);
+    error Exists(string);
 
     address public admin;
     address public marketPlace;
@@ -51,7 +50,7 @@ contract Redeemer {
     /// @return bool true if the address was set, false otherwise
     function setMarketPlaceAddress(address m) external authorized(admin) returns (bool) {
         if (marketPlace != address(0)) {
-            revert AddressSet('marketplace');
+            revert Exists('marketplace');
         }
         marketPlace = m;
         return true;
@@ -59,7 +58,7 @@ contract Redeemer {
 
     function setLenderAddress(address l) external authorized(admin) returns (bool) {
         if (lender != address(0)) {
-            revert AddressSet('lender');
+            revert Exists('lender');
         }
         lender = l;
         return true;
@@ -105,14 +104,16 @@ contract Redeemer {
         } else if (p == uint8(MarketPlace.Principals.Illuminate)) {
             // Get Illuminate's principal token
             IZcToken token = IZcToken(principal);
-            // Check that this is occurring after the token's maturity
-            require(block.timestamp > token.maturity());
+            // Make sure the market has matured
+            if (block.timestamp < token.maturity()) {
+                revert Invalid('not matured');
+            }
             // Burn the prinicipal token from illuminate
             token.burn(o, amount);
             // Transfer the original underlying token back to the user
             Safe.transferFrom(IErc20(u), lender, address(this), amount);
         } else {
-            revert InvalidPrincipal(p);
+            revert Invalid('principal');
         }
 
         emit Redeem(0, u, m, amount);
@@ -140,7 +141,7 @@ contract Redeemer {
             p != uint8(MarketPlace.Principals.Yield) &&
             p != uint8(MarketPlace.Principals.Notional)
         ) {
-            revert InvalidPrincipal(p);
+            revert Invalid('principal');
         }
 
         // The amount redeemed should be the balance of the principal token held by the illuminate contract
@@ -182,7 +183,7 @@ contract Redeemer {
     ) public returns (bool) {
         // Check the principal is pendle
         if (p != uint8(MarketPlace.Principals.Pendle)) {
-            revert InvalidPrincipal(p);
+            revert Invalid('principal');
         }
 
         // Get the principal token that is being redeemed by the user
@@ -214,7 +215,7 @@ contract Redeemer {
     ) public returns (bool) {
         // Check the principal is sense
         if (p != uint8(MarketPlace.Principals.Sense)) {
-            revert InvalidPrincipal(p);
+            revert Invalid('principal');
         }
 
         // Get the principal token for the given market
@@ -254,7 +255,7 @@ contract Redeemer {
 
         // Make sure the market has matured
         if (block.timestamp < pt.maturity()) {
-            revert NotMature();
+            revert Invalid('not matured');
         }
 
         // Burn the user's principal tokens

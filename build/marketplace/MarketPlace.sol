@@ -23,10 +23,9 @@ contract MarketPlace {
         Notional
     }
 
-    error MarketExists(address, uint256);
-    error PoolExists(address, uint256, uint8);
+    error Exists(string);
     error Unauthorized();
-    error Paused();
+    error Invalid(string);
 
     /// markets are defined by a market pair which point to a fixed length array
     /// of principal token addresses. The principal tokens those addresses
@@ -69,7 +68,7 @@ contract MarketPlace {
         uint8 d
     ) external authorized(admin) returns (bool) {
         if (markets[u][m][uint256(Principals.Illuminate)] != address(0)) {
-            revert MarketExists(u, m);
+            revert Exists('market already exists');
         }
 
         // deploy an illuminate token with this new market
@@ -120,7 +119,7 @@ contract MarketPlace {
         address a
     ) external authorized(admin) returns (bool) {
         if (pools[u][m][p] != address(0)) {
-            revert PoolExists(u, m, p);
+            revert Exists('pool already exists');
         }
         pools[u][m][p] = a;
         return true;
@@ -203,7 +202,7 @@ contract MarketPlace {
 
     modifier unpaused(uint8 p) {
         if (paused[p]) {
-            revert Paused();
+            revert Invalid('princpal paused');
         }
         _;
     }
