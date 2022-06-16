@@ -60,7 +60,7 @@ contract Redeemer {
     /// protocols
     /// @dev Illuminate burns its tokens prior to redemption, unlike APWine and
     /// Tempus, which withdraw their tokens after transferring the underlying to
-    /// the redeem contract. As a result, only Illunminate's redeem returns funds
+    /// the redeem contract. As a result, only Illuminate's redeem returns funds
     /// to the user.
     /// @dev We can avoid a require check on the principal at the start of this
     /// redeem because there is no common business logic executed before the
