@@ -4,6 +4,7 @@
 package mocks
 
 import (
+	"errors"
 	"math/big"
 	"strings"
 
@@ -17,6 +18,7 @@ import (
 
 // Reference imports to suppress errors if they are not otherwise used.
 var (
+	_ = errors.New
 	_ = big.NewInt
 	_ = strings.NewReader
 	_ = ethereum.NotFound
@@ -26,20 +28,31 @@ var (
 	_ = event.NewSubscription
 )
 
+// AaveMetaData contains all meta data concerning the Aave contract.
+var AaveMetaData = &bind.MetaData{
+	ABI: "[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"a\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"b\",\"type\":\"address\"},{\"internalType\":\"uint16\",\"name\":\"r\",\"type\":\"uint16\"}],\"name\":\"deposit\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"depositCalled\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"onBehalfOf\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"internalType\":\"uint16\",\"name\":\"referralCode\",\"type\":\"uint16\"}],\"stateMutability\":\"view\",\"type\":\"function\"}]",
+	Bin: "0x608060405234801561001057600080fd5b506103d2806100206000396000f3fe608060405234801561001057600080fd5b50600436106100365760003560e01c8063d35147e41461003b578063e8eda9df1461006d575b600080fd5b61005560048036038101906100509190610234565b610089565b604051610064939291906102a6565b60405180910390f35b61008760048036038101906100829190610335565b6100e1565b005b60006020528060005260406000206000915090508060000160009054906101000a900473ffffffffffffffffffffffffffffffffffffffff16908060010154908060020160009054906101000a900461ffff16905083565b60405180606001604052808373ffffffffffffffffffffffffffffffffffffffff1681526020018481526020018261ffff168152506000808673ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060008201518160000160006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff1602179055506020820151816001015560408201518160020160006101000a81548161ffff021916908361ffff16021790555090505050505050565b600080fd5b600073ffffffffffffffffffffffffffffffffffffffff82169050919050565b6000610201826101d6565b9050919050565b610211816101f6565b811461021c57600080fd5b50565b60008135905061022e81610208565b92915050565b60006020828403121561024a576102496101d1565b5b60006102588482850161021f565b91505092915050565b61026a816101f6565b82525050565b6000819050919050565b61028381610270565b82525050565b600061ffff82169050919050565b6102a081610289565b82525050565b60006060820190506102bb6000830186610261565b6102c8602083018561027a565b6102d56040830184610297565b949350505050565b6102e681610270565b81146102f157600080fd5b50565b600081359050610303816102dd565b92915050565b61031281610289565b811461031d57600080fd5b50565b60008135905061032f81610309565b92915050565b6000806000806080858703121561034f5761034e6101d1565b5b600061035d8782880161021f565b945050602061036e878288016102f4565b935050604061037f8782880161021f565b925050606061039087828801610320565b9150509295919450925056fea26469706673582212204a1d76525c6b996652c936a1b287636fa2e1e6275d56c1e7bbee31d3958b7f7d64736f6c634300080d0033",
+}
+
 // AaveABI is the input ABI used to generate the binding from.
-const AaveABI = "[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"a\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"b\",\"type\":\"address\"},{\"internalType\":\"uint16\",\"name\":\"r\",\"type\":\"uint16\"}],\"name\":\"deposit\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"depositCalled\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"onBehalfOf\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"internalType\":\"uint16\",\"name\":\"referralCode\",\"type\":\"uint16\"}],\"stateMutability\":\"view\",\"type\":\"function\"}]"
+// Deprecated: Use AaveMetaData.ABI instead.
+var AaveABI = AaveMetaData.ABI
 
 // AaveBin is the compiled bytecode used for deploying new contracts.
-var AaveBin = "0x608060405234801561001057600080fd5b506103d2806100206000396000f3fe608060405234801561001057600080fd5b50600436106100365760003560e01c8063d35147e41461003b578063e8eda9df1461006d575b600080fd5b61005560048036038101906100509190610234565b610089565b604051610064939291906102a6565b60405180910390f35b61008760048036038101906100829190610335565b6100e1565b005b60006020528060005260406000206000915090508060000160009054906101000a900473ffffffffffffffffffffffffffffffffffffffff16908060010154908060020160009054906101000a900461ffff16905083565b60405180606001604052808373ffffffffffffffffffffffffffffffffffffffff1681526020018481526020018261ffff168152506000808673ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060008201518160000160006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff1602179055506020820151816001015560408201518160020160006101000a81548161ffff021916908361ffff16021790555090505050505050565b600080fd5b600073ffffffffffffffffffffffffffffffffffffffff82169050919050565b6000610201826101d6565b9050919050565b610211816101f6565b811461021c57600080fd5b50565b60008135905061022e81610208565b92915050565b60006020828403121561024a576102496101d1565b5b60006102588482850161021f565b91505092915050565b61026a816101f6565b82525050565b6000819050919050565b61028381610270565b82525050565b600061ffff82169050919050565b6102a081610289565b82525050565b60006060820190506102bb6000830186610261565b6102c8602083018561027a565b6102d56040830184610297565b949350505050565b6102e681610270565b81146102f157600080fd5b50565b600081359050610303816102dd565b92915050565b61031281610289565b811461031d57600080fd5b50565b60008135905061032f81610309565b92915050565b6000806000806080858703121561034f5761034e6101d1565b5b600061035d8782880161021f565b945050602061036e878288016102f4565b935050604061037f8782880161021f565b925050606061039087828801610320565b9150509295919450925056fea26469706673582212204a1d76525c6b996652c936a1b287636fa2e1e6275d56c1e7bbee31d3958b7f7d64736f6c634300080d0033"
+// Deprecated: Use AaveMetaData.Bin instead.
+var AaveBin = AaveMetaData.Bin
 
 // DeployAave deploys a new Ethereum contract, binding an instance of Aave to it.
 func DeployAave(auth *bind.TransactOpts, backend bind.ContractBackend) (common.Address, *types.Transaction, *Aave, error) {
-	parsed, err := abi.JSON(strings.NewReader(AaveABI))
+	parsed, err := AaveMetaData.GetAbi()
 	if err != nil {
 		return common.Address{}, nil, nil, err
 	}
+	if parsed == nil {
+		return common.Address{}, nil, nil, errors.New("GetABI returned nil")
+	}
 
-	address, tx, contract, err := bind.DeployContract(auth, parsed, common.FromHex(AaveBin), backend)
+	address, tx, contract, err := bind.DeployContract(auth, *parsed, common.FromHex(AaveBin), backend)
 	if err != nil {
 		return common.Address{}, nil, nil, err
 	}
@@ -204,10 +217,13 @@ func (_Aave *AaveCaller) DepositCalled(opts *bind.CallOpts, arg0 common.Address)
 		Amount       *big.Int
 		ReferralCode uint16
 	})
+	if err != nil {
+		return *outstruct, err
+	}
 
-	outstruct.OnBehalfOf = out[0].(common.Address)
-	outstruct.Amount = out[1].(*big.Int)
-	outstruct.ReferralCode = out[2].(uint16)
+	outstruct.OnBehalfOf = *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+	outstruct.Amount = *abi.ConvertType(out[1], new(*big.Int)).(**big.Int)
+	outstruct.ReferralCode = *abi.ConvertType(out[2], new(uint16)).(*uint16)
 
 	return *outstruct, err
 
