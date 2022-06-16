@@ -49,7 +49,8 @@ contract MarketPlace {
     /// @notice all seven principals should be provided in the order of their enum value
     /// @param u address of an underlying asset
     /// @param m maturity (timestamp) of the market
-    /// @param t principal token addresses for this market minus the illuminate principal (which is added here)
+    /// @param t principal token addresses for this market minus the illuminate
+    /// principal (which is added here)
     /// @param n name for the illuminate token
     /// @param s symbol for the illuminate token
     /// @param d decimals for the illuminate token
