@@ -60,7 +60,8 @@ contract Redeemer {
     /// protocols
     /// @dev Illuminate burns its tokens prior to redemption, unlike APWine and
     /// Tempus, which withdraw their tokens after transferring the underlying to
-    /// the redeem contract
+    /// the redeem contract. As a result, only Illunminate's redeem returns funds
+    /// to the user.
     /// @dev We can avoid a require check on the principal at the start of this
     /// redeem because there is no common business logic executed before the
     /// protocol specific code is executed.
@@ -93,8 +94,12 @@ contract Redeemer {
             // Redeem the tokens from the tempus contract to illuminate
             ITempus(tempusAddr).redeemToBacking(o, amount, 0, address(this));
         } else if (p == uint8(MarketPlace.Principals.Illuminate)) {
+            // Get Illuminate's principal token
+            IZcToken token = IZcToken(principal);
+            // Check that this is occurring after the token's maturity
+            require(block.timestamp > token.maturity());
             // Burn the prinicipal token from illuminate
-            IZcToken(principal).burn(o, amount);
+            token.burn(o, amount);
             // Transfer the original underlying token back to the user
             Safe.transferFrom(IErc20(u), lender, address(this), amount);
         } else {

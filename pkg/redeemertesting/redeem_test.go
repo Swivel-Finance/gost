@@ -315,7 +315,7 @@ func (s *redeemTestSuite) TestIlluminateRedeem() {
 	assert := assert.New(s.T())
 
 	amount := big.NewInt(1000)
-	maturity := big.NewInt(9999999)
+	maturity := big.NewInt(int64(s.Env.Blockchain.Blockchain().CurrentHeader().Time) - 1)
 	owner := s.Env.User1.Opts.From
 	principal := uint8(0)
 
@@ -327,6 +327,9 @@ func (s *redeemTestSuite) TestIlluminateRedeem() {
 	s.Env.Blockchain.Commit()
 
 	s.ZcToken.BalanceOfReturns(amount)
+	s.Env.Blockchain.Commit()
+
+	s.ZcToken.MaturityReturns(maturity)
 	s.Env.Blockchain.Commit()
 
 	s.Erc20.TransferFromReturns(true)
