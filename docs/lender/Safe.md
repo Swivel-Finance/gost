@@ -1,47 +1,82 @@
-# 
+# Safe
+
+
 Safe ETH and ERC20 transfer library that gracefully handles missing return values.
   @author Modified from Gnosis (https://github.com/gnosis/gp-v2-contracts/blob/main/src/contracts/libraries/GPv2SafeERC20.sol)
   @dev Use with caution! Some functions in this library knowingly create dirty bits at the destination of the free memory pointer.
 
 
-## transfer(contract IErc20,address,uint256)
+## Contents
+<!-- START doctoc -->
+<!-- END doctoc -->
 
 
 
 
-**Params**
-- `e`: Erc20 token to execute the call with
+## Functions
 
-- `t`: To address
-
-- `a`: Amount being transferred
-
-**Returns**
-
-## transferFrom(contract IErc20,address,address,uint256)
+### transfer
+No description
 
 
+#### Declaration
+```solidity
+function transfer(
+contract IErc20 e,
+address t,
+uint256 a
+) internal
+```
+
+#### Modifiers:
+No modifiers
+
+#### Args:
+| Arg | Type | Description |
+| --- | --- | --- |
+|`e` | contract IErc20 | Erc20 token to execute the call with
+|`t` | address | To address
+|`a` | uint256 | Amount being transferred
+
+### transferFrom
+No description
 
 
-**Params**
-- `e`: Erc20 token to execute the call with
+#### Declaration
+```solidity
+function transferFrom(
+contract IErc20 e,
+address f,
+address t,
+uint256 a
+) internal
+```
 
-- `f`: From address
+#### Modifiers:
+No modifiers
 
-- `t`: To address
+#### Args:
+| Arg | Type | Description |
+| --- | --- | --- |
+|`e` | contract IErc20 | Erc20 token to execute the call with
+|`f` | address | From address
+|`t` | address | To address
+|`a` | uint256 | Amount being transferred
 
-- `a`: Amount being transferred
-
-**Returns**
-
-## approve(contract IErc20,address,uint256)
+### approve
+No description
 
 
+#### Declaration
+```solidity
+function approve(
+) internal
+```
+
+#### Modifiers:
+No modifiers
 
 
-**Params**
-
-**Returns**
 
 
 

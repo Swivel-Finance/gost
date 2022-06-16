@@ -1,42 +1,81 @@
-# 
-
-
-
-## base()
+# IYield
 
 
 
 
-**Params**
 
-**Returns**
-
-## maturity()
-
-
-
-
-**Params**
-
-**Returns**
-
-## sellBase(address,uint128)
+## Contents
+<!-- START doctoc -->
+<!-- END doctoc -->
 
 
 
 
-**Params**
+## Functions
 
-**Returns**
-
-## sellBasePreview(uint128)
-
+### base
+No description
 
 
+#### Declaration
+```solidity
+function base(
+) external returns
+(contract IErc20)
+```
 
-**Params**
+#### Modifiers:
+No modifiers
 
-**Returns**
+
+
+### maturity
+No description
+
+
+#### Declaration
+```solidity
+function maturity(
+) external returns
+(uint32)
+```
+
+#### Modifiers:
+No modifiers
+
+
+
+### sellBase
+No description
+
+
+#### Declaration
+```solidity
+function sellBase(
+) external returns
+(uint128)
+```
+
+#### Modifiers:
+No modifiers
+
+
+
+### sellBasePreview
+No description
+
+
+#### Declaration
+```solidity
+function sellBasePreview(
+) external returns
+(uint128)
+```
+
+#### Modifiers:
+No modifiers
+
+
 
 
 

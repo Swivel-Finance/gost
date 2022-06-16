@@ -24,11 +24,11 @@ contract Redeemer {
     event Redeem(uint8 principal, address indexed underlying, uint256 indexed maturity, uint256 amount);
 
     /// @notice Initializes the Redeemer contract
-    /// @param l: the lender contract
-    /// @param s: the swivel contract
-    /// @param p: the pendle contract
-    /// @param t: the tempus contract
-    /// @param a: the apwine contract
+    /// @param l the lender contract
+    /// @param s the swivel contract
+    /// @param p the pendle contract
+    /// @param t the tempus contract
+    /// @param a the apwine contract
     constructor(
         address l,
         address s,

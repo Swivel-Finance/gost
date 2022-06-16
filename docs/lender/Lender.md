@@ -1,375 +1,632 @@
-# 
+# Lender
 
 
 
-## constructor(address,address,address)
 
+
+## Contents
+<!-- START doctoc -->
+<!-- END doctoc -->
+
+## Globals
+
+> Note this contains internal vars as well due to a bug in the docgen procedure
+
+| Var | Type |
+| --- | --- |
+| admin | address |
+| marketPlace | address |
+| swivelAddr | address |
+| pendleAddr | address |
+| tempusAddr | address |
+| feenominator | uint256 |
+| fees | mapping(address => uint256) |
+
+
+## Modifiers
+
+### authorized
+No description
+
+
+#### Declaration
+```solidity
+modifier authorized
+```
+
+
+
+## Functions
+
+### constructor
 Initializes the Lender contract
 
-the ctor sets a default value for the feenominator
+> the ctor sets a default value for the feenominator
 
 
-**Params**
-- `the`: swivel contract
+#### Declaration
+```solidity
+function constructor(
+address the,
+address the,
+address the
+) public
+```
 
-- `the`: pendle contract
+#### Modifiers:
+No modifiers
 
-- `the`: tempus contract
+#### Args:
+| Arg | Type | Description |
+| --- | --- | --- |
+|`the` | address | swivel contract
+|`the` | address | pendle contract
+|`the` | address | tempus contract
 
-**Returns**
-
-## approve(address,uint256,address)
-
+### approve
 Approves the redeemer contract to spend the principal tokens held by
 the lender contract.
 
 
 
-**Params**
-- `underlying`: token's address, used to define the market being approved
+#### Declaration
+```solidity
+function approve(
+address underlying,
+uint256 maturity,
+address the
+) external authorized returns
+(bool)
+```
 
-- `maturity`: of the underlying token, used to define the market being approved
+#### Modifiers:
+| Modifier |
+| --- |
+| authorized |
 
-- `the`: address being approved, in this case the redeemer contract
+#### Args:
+| Arg | Type | Description |
+| --- | --- | --- |
+|`underlying` | address | token's address, used to define the market being approved
+|`maturity` | uint256 | of the underlying token, used to define the market being approved
+|`the` | address | address being approved, in this case the redeemer contract
 
-
-**Returns**
-- `bool`: true if the approval was successful, false otherwise
-
-## approve(address[],address[])
-
+#### Returns:
+| Type | Description |
+| --- | --- |
+|`bool` | true if the approval was successful, false otherwise
+### approve
 Bulk approves the usage of addresses at the given ERC20 addresses
 The lengths of the inputs must match because the arrays are paired by index
 
 
 
-**Params**
-- `u`: array of ERC20 token addresses that will be approved on
+#### Declaration
+```solidity
+function approve(
+address[] u,
+address[] a
+) external authorized returns
+(bool)
+```
 
-- `a`: array of addresses that will be approved
+#### Modifiers:
+| Modifier |
+| --- |
+| authorized |
 
+#### Args:
+| Arg | Type | Description |
+| --- | --- | --- |
+|`u` | address[] | array of ERC20 token addresses that will be approved on
+|`a` | address[] | array of addresses that will be approved
 
-**Returns**
-- `true`: if successful
-
-## setFee(uint256)
-
+#### Returns:
+| Type | Description |
+| --- | --- |
+|`true` | if successful
+### setFee
 Sets the feenominator to the given value
 
 
 
-**Params**
-- `the`: new value of the feenominator, fees are not collected when the feenominator is 0
+#### Declaration
+```solidity
+function setFee(
+uint256 the
+) external authorized returns
+(bool)
+```
 
+#### Modifiers:
+| Modifier |
+| --- |
+| authorized |
 
-**Returns**
-- `bool`: true if successful
+#### Args:
+| Arg | Type | Description |
+| --- | --- | --- |
+|`the` | uint256 | new value of the feenominator, fees are not collected when the feenominator is 0
 
-## setMarketPlaceAddress(address)
-
+#### Returns:
+| Type | Description |
+| --- | --- |
+|`bool` | true if successful
+### setMarketPlaceAddress
 Sets the address of the marketplace contract which contains the
 addresses of all the fixed rate markets
 
 
 
-**Params**
-- `the`: address of the marketplace contract
+#### Declaration
+```solidity
+function setMarketPlaceAddress(
+address the
+) external authorized returns
+(bool)
+```
 
+#### Modifiers:
+| Modifier |
+| --- |
+| authorized |
 
-**Returns**
-- `bool`: true if the address was set, false otherwise
+#### Args:
+| Arg | Type | Description |
+| --- | --- | --- |
+|`the` | address | address of the marketplace contract
 
-## mint(uint8,address,uint256,uint256)
-
+#### Returns:
+| Type | Description |
+| --- | --- |
+|`bool` | true if the address was set, false otherwise
+### mint
 mint swaps the sender's principal tokens for illuminate's zc tokens
 in effect, this opens a new fixed rate position for the sender on illuminate
 
-mint is uniform across all principals, thus there is no need for a 'minter'
+> mint is uniform across all principals, thus there is no need for a 'minter'
 
 
-**Params**
-- `p`: value of a specific principal according to the MarketPlace Principals Enum
+#### Declaration
+```solidity
+function mint(
+uint8 p,
+address u,
+uint256 m,
+uint256 a
+) public returns
+(bool)
+```
 
-- `u`: address of an underlying asset
+#### Modifiers:
+No modifiers
 
-- `m`: maturity (timestamp) of the market
+#### Args:
+| Arg | Type | Description |
+| --- | --- | --- |
+|`p` | uint8 | value of a specific principal according to the MarketPlace Principals Enum
+|`u` | address | address of an underlying asset
+|`m` | uint256 | maturity (timestamp) of the market
+|`a` | uint256 | amount being minted
 
-- `a`: amount being minted
-
-
-**Returns**
-- `bool`: true if the mint was successful, false otherwise
-
-## lend(uint8,address,uint256,uint256,address)
-
-
-lend method signature for both illuminate and yield
-
-
-**Params**
-- `p`: value of a specific principal according to the MarketPlace Principals Enum
-
-- `u`: address of an underlying asset
-
-- `m`: maturity (timestamp) of the market
-
-- `a`: amount of underlying tokens to lend
-
-- `y`: yield pool that will execute the swap for the principal token
+#### Returns:
+| Type | Description |
+| --- | --- |
+|`bool` | true if the mint was successful, false otherwise
+### lend
+No description
+> lend method signature for both illuminate and yield
 
 
-**Returns**
-- `uint256`: the amount of principal tokens lent out
+#### Declaration
+```solidity
+function lend(
+uint8 p,
+address u,
+uint256 m,
+uint256 a,
+address y
+) public returns
+(uint256)
+```
 
-## lend(uint8,address,uint256,uint256[],address,struct Swivel.Order[],struct Swivel.Components[])
+#### Modifiers:
+No modifiers
 
+#### Args:
+| Arg | Type | Description |
+| --- | --- | --- |
+|`p` | uint8 | value of a specific principal according to the MarketPlace Principals Enum
+|`u` | address | address of an underlying asset
+|`m` | uint256 | maturity (timestamp) of the market
+|`a` | uint256 | amount of underlying tokens to lend
+|`y` | address | yield pool that will execute the swap for the principal token
+
+#### Returns:
+| Type | Description |
+| --- | --- |
+|`uint256` | the amount of principal tokens lent out
+### lend
 lends to yield pool. remaining balance is sent to the yield pool
 TODO: this will change when we implement a check on the gas market
 
-lend method signature for swivel
+> lend method signature for swivel
 
 
-**Params**
-- `p`: value of a specific principal according to the Illuminate Principals Enum
+#### Declaration
+```solidity
+function lend(
+uint8 p,
+address u,
+uint256 m,
+uint256[] a,
+address y,
+struct Swivel.Order[] o,
+struct Swivel.Components[] s
+) public returns
+(uint256)
+```
 
-- `u`: address of an underlying asset
+#### Modifiers:
+No modifiers
 
-- `m`: maturity (timestamp) of the market
+#### Args:
+| Arg | Type | Description |
+| --- | --- | --- |
+|`p` | uint8 | value of a specific principal according to the Illuminate Principals Enum
+|`u` | address | address of an underlying asset
+|`m` | uint256 | maturity (timestamp) of the market
+|`a` | uint256[] | array of amounts of underlying tokens lent to each order in the orders array
+|`y` | address | yield pool
+|`o` | struct Swivel.Order[] | array of swivel orders being filled
+|`s` | struct Swivel.Components[] | array of signatures for each order in the orders array
 
-- `a`: array of amounts of underlying tokens lent to each order in the orders array
-
-- `y`: yield pool
-
-- `o`: array of swivel orders being filled
-
-- `s`: array of signatures for each order in the orders array
-
-
-**Returns**
-- `uint256`: the amount of principal tokens lent out
-
-## lend(uint8,address,uint256,uint256,uint256,uint256,address,bytes32)
-
-
-lend method signature for element
-
-
-**Params**
-- `p`: value of a specific principal according to the Illuminate Principals Enum
-
-- `u`: address of an underlying asset
-
-- `m`: maturity (timestamp) of the market
-
-- `a`: amount of principal tokens to lend
-
-- `r`: minimum amount to return, this puts a cap on allowed slippage
-
-- `d`: deadline is a timestamp by which the swap must be executed deadline is a timestamp by which the swap must be executed
-
-- `e`: element pool that is lent to
-
-- `i`: the id of the pool
-
-**Returns**
-
-## lend(uint8,address,uint256,uint256,uint256,uint256)
+#### Returns:
+| Type | Description |
+| --- | --- |
+|`uint256` | the amount of principal tokens lent out
+### lend
+No description
+> lend method signature for element
 
 
-lend method signature for pendle
+#### Declaration
+```solidity
+function lend(
+uint8 p,
+address u,
+uint256 m,
+uint256 a,
+uint256 r,
+uint256 d,
+address e,
+bytes32 i
+) public returns
+(uint256)
+```
+
+#### Modifiers:
+No modifiers
+
+#### Args:
+| Arg | Type | Description |
+| --- | --- | --- |
+|`p` | uint8 | value of a specific principal according to the Illuminate Principals Enum
+|`u` | address | address of an underlying asset
+|`m` | uint256 | maturity (timestamp) of the market
+|`a` | uint256 | amount of principal tokens to lend
+|`r` | uint256 | minimum amount to return, this puts a cap on allowed slippage
+|`d` | uint256 | deadline is a timestamp by which the swap must be executed deadline is a timestamp by which the swap must be executed
+|`e` | address | element pool that is lent to
+|`i` | bytes32 | the id of the pool
+
+### lend
+No description
+> lend method signature for pendle
 
 
-**Params**
-- `p`: value of a specific principal according to the Illuminate Principals Enum
+#### Declaration
+```solidity
+function lend(
+uint8 p,
+address u,
+uint256 m,
+uint256 a,
+uint256 r,
+uint256 d
+) public returns
+(uint256)
+```
 
-- `u`: address of an underlying asset
+#### Modifiers:
+No modifiers
 
-- `m`: maturity (timestamp) of the market
+#### Args:
+| Arg | Type | Description |
+| --- | --- | --- |
+|`p` | uint8 | value of a specific principal according to the Illuminate Principals Enum
+|`u` | address | address of an underlying asset
+|`m` | uint256 | maturity (timestamp) of the market
+|`a` | uint256 | amount of principal tokens to lend
+|`r` | uint256 | minimum amount to return, this puts a cap on allowed slippage
+|`d` | uint256 | deadline is a timestamp by which the swap must be executed
 
-- `a`: amount of principal tokens to lend
-
-- `r`: minimum amount to return, this puts a cap on allowed slippage
-
-- `d`: deadline is a timestamp by which the swap must be executed
-
-
-**Returns**
-- `uint256`: the amount of principal tokens lent out
-
-## lend(uint8,address,uint256,uint256,uint256,uint256,address,address)
-
+#### Returns:
+| Type | Description |
+| --- | --- |
+|`uint256` | the amount of principal tokens lent out
+### lend
 Can be called before maturity to lend to Tempus while minting Illuminate tokens
 
-lend method signature for tempus
+> lend method signature for tempus
 
 
-**Params**
-- `p`: value of a specific principal according to the Illuminate Principals Enum
+#### Declaration
+```solidity
+function lend(
+uint8 p,
+address u,
+uint256 m,
+uint256 a,
+uint256 r,
+uint256 d,
+address t,
+address x
+) public returns
+(uint256)
+```
 
-- `u`: address of an underlying asset
+#### Modifiers:
+No modifiers
 
-- `m`: maturity (timestamp) of the market
+#### Args:
+| Arg | Type | Description |
+| --- | --- | --- |
+|`p` | uint8 | value of a specific principal according to the Illuminate Principals Enum
+|`u` | address | address of an underlying asset
+|`m` | uint256 | maturity (timestamp) of the market
+|`a` | uint256 | amount of principal tokens to lend
+|`r` | uint256 | minimum amount to return when executing the swap (sets a limit to slippage)
+|`d` | uint256 | deadline is a timestamp by which the swap must be executed
+|`t` | address | tempus pool that houses the underlying principal tokens
+|`x` | address | tempus amm that executes the swap
 
-- `a`: amount of principal tokens to lend
-
-- `r`: minimum amount to return when executing the swap (sets a limit to slippage)
-
-- `d`: deadline is a timestamp by which the swap must be executed
-
-- `t`: tempus pool that houses the underlying principal tokens
-
-- `x`: tempus amm that executes the swap
-
-
-**Returns**
-- `uint256`: the amount of principal tokens lent out
-
-## lend(uint8,address,uint256,uint128,uint256,address,address)
-
+#### Returns:
+| Type | Description |
+| --- | --- |
+|`uint256` | the amount of principal tokens lent out
+### lend
 Can be called before maturity to lend to Sense while minting Illuminate tokens
 
-lend method signature for sense
+> lend method signature for sense
 sense provides a [divider] contract that splits [target] assets (underlying)
 into PTs and YTs. Each [target] asset has a [series] of contracts, each
 identifiable by their [maturity].
 
 
-**Params**
-- `p`: value of a specific principal according to the Illuminate Principals Enum
+#### Declaration
+```solidity
+function lend(
+uint8 p,
+address u,
+uint256 m,
+uint128 a,
+uint256 r,
+address x,
+address s
+) public returns
+(uint256)
+```
 
-- `u`: address of an underlying asset
+#### Modifiers:
+No modifiers
 
-- `m`: maturity (timestamp) of the market
+#### Args:
+| Arg | Type | Description |
+| --- | --- | --- |
+|`p` | uint8 | value of a specific principal according to the Illuminate Principals Enum
+|`u` | address | address of an underlying asset
+|`m` | uint256 | maturity (timestamp) of the market
+|`a` | uint128 | amount of underlying tokens to lend
+|`r` | uint256 | minimum number of tokens to lend (sets a limit on the order)
+|`x` | address | amm that is used to conduct the swap
+|`s` | address | contract that holds the principal token for this market
 
-- `a`: amount of underlying tokens to lend
-
-- `r`: minimum number of tokens to lend (sets a limit on the order)
-
-- `x`: amm that is used to conduct the swap
-
-- `s`: contract that holds the principal token for this market
-
-
-**Returns**
-- `uint256`: the amount of principal tokens lent out
-
-## lend(uint8,address,uint256,uint256,uint256,address,address,uint256)
-
+#### Returns:
+| Type | Description |
+| --- | --- |
+|`uint256` | the amount of principal tokens lent out
+### lend
 Can be called before maturity to lend to APWine while minting Illuminate tokens
 
 
 
-**Params**
-- `p`: value of a specific principal according to the Illuminate Principals Enum
+#### Declaration
+```solidity
+function lend(
+uint8 p,
+address u,
+uint256 m,
+uint256 a,
+uint256 r,
+address pool,
+address i
+) public returns
+(uint256)
+```
 
-- `u`: address of an underlying asset
+#### Modifiers:
+No modifiers
 
-- `m`: maturity (timestamp) of the market
+#### Args:
+| Arg | Type | Description |
+| --- | --- | --- |
+|`p` | uint8 | value of a specific principal according to the Illuminate Principals Enum
+|`u` | address | address of an underlying asset
+|`m` | uint256 | maturity (timestamp) of the market
+|`a` | uint256 | the amount of underlying tokens to lend
+|`r` | uint256 | the minimum amount of zero-coupon tokens to return accounting for slippage
+|`pool` | address | the address of a given APWine pool
+|`i` | address | the id of the pool
 
-- `a`: the amount of underlying tokens to lend
-
-- `r`: the minimum amount of zero-coupon tokens to return accounting for slippage
-
-- `pool`: the address of a given APWine pool
-
-- `i`: the id of the pool
-
-
-**Returns**
-- `uint256`: the amount of principal tokens lent out
-
-## lend(uint8,address,uint256,uint256)
-
-
-lend method signature for Notional
-
-
-**Params**
-- `p`: value of a specific principal according to the Illuminate Principals Enum
-
-- `u`: address of an underlying asset
-
-- `m`: maturity (timestamp) of the market
-
-- `a`: amount of principal tokens to lend
+#### Returns:
+| Type | Description |
+| --- | --- |
+|`uint256` | the amount of principal tokens lent out
+### lend
+No description
+> lend method signature for Notional
 
 
-**Returns**
-- `uint256`: the amount of principal tokens lent out
+#### Declaration
+```solidity
+function lend(
+uint8 p,
+address u,
+uint256 m,
+uint256 a
+) public returns
+(uint256)
+```
 
-## yield(address,address,uint256)
+#### Modifiers:
+No modifiers
 
+#### Args:
+| Arg | Type | Description |
+| --- | --- | --- |
+|`p` | uint8 | value of a specific principal according to the Illuminate Principals Enum
+|`u` | address | address of an underlying asset
+|`m` | uint256 | maturity (timestamp) of the market
+|`a` | uint256 | amount of principal tokens to lend
+
+#### Returns:
+| Type | Description |
+| --- | --- |
+|`uint256` | the amount of principal tokens lent out
+### yield
 transfers excess funds to yield pool after principal tokens have been lent out
 
-this method is only used by the yield, illuminate and swivel protocols
+> this method is only used by the yield, illuminate and swivel protocols
 
 
-**Params**
-- `u`: address of an underlying asset
+#### Declaration
+```solidity
+function yield(
+address u,
+address the,
+uint256 the
+) internal returns
+(uint256)
+```
 
-- `the`: yield pool to lend to
+#### Modifiers:
+No modifiers
 
-- `the`: amount of underlying tokens to lend
+#### Args:
+| Arg | Type | Description |
+| --- | --- | --- |
+|`u` | address | address of an underlying asset
+|`the` | address | yield pool to lend to
+|`the` | uint256 | amount of underlying tokens to lend
 
-
-**Returns**
-- `uint256`: the amount of tokens sent to the yield pool
-
-## withdraw(address)
-
+#### Returns:
+| Type | Description |
+| --- | --- |
+|`uint256` | the amount of tokens sent to the yield pool
+### withdraw
 Withdraws accumulated lending fees of the underlying token
 
 
 
-**Params**
-- `e`: Address of the underlying token to withdraw
+#### Declaration
+```solidity
+function withdraw(
+address e
+) external authorized returns
+(bool)
+```
 
+#### Modifiers:
+| Modifier |
+| --- |
+| authorized |
 
-**Returns**
-- `bool`: true if successful
+#### Args:
+| Arg | Type | Description |
+| --- | --- | --- |
+|`e` | address | Address of the underlying token to withdraw
 
-## calculateFee(uint256)
-
+#### Returns:
+| Type | Description |
+| --- | --- |
+|`bool` | true if successful
+### calculateFee
 This method returns the fee based on the amount passed to it. If
 feenominator is 0, then there is no fee.
 
 
 
-**Params**
-- `a`: Amount of underlying tokens to calculate the fee for
+#### Declaration
+```solidity
+function calculateFee(
+uint256 a
+) internal returns
+(uint256)
+```
 
+#### Modifiers:
+No modifiers
 
-**Returns**
-- `uint256`: The total for for the given amount
+#### Args:
+| Arg | Type | Description |
+| --- | --- | --- |
+|`a` | uint256 | Amount of underlying tokens to calculate the fee for
 
-## zcToken(address,uint256)
-
+#### Returns:
+| Type | Description |
+| --- | --- |
+|`uint256` | The total for for the given amount
+### zcToken
 retrieves the zc token for the given market
 
 
 
-**Params**
-- `u`: address of the underlying
+#### Declaration
+```solidity
+function zcToken(
+address u,
+uint256 m
+) internal returns
+(address)
+```
 
-- `m`: uint256 representing the maturity of the market
+#### Modifiers:
+No modifiers
+
+#### Args:
+| Arg | Type | Description |
+| --- | --- | --- |
+|`u` | address | address of the underlying
+|`m` | uint256 | uint256 representing the maturity of the market
+
+#### Returns:
+| Type | Description |
+| --- | --- |
+|`address` | of the zc token for the market
 
 
-**Returns**
-- `address`: of the zc token for the market
+## Events
 
-
-
-## `event` Lend(uint8,address,uint256,uint256)
-
-
-
-
-**Params**
-
-## `event` Mint(uint8,address,uint256,uint256)
+### Lend
+No description
 
 
 
 
-**Params**
+### Mint
+No description
+
+
+
 

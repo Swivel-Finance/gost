@@ -1,60 +1,116 @@
-# 
-
-
-
-## constructor(address,uint256,string,string,uint8)
+# ZcToken
 
 
 
 
-**Params**
-- `u`: Underlying
 
-- `m`: Maturity
+## Contents
+<!-- START doctoc -->
+<!-- END doctoc -->
 
-- `n`: Name
+## Globals
 
-- `s`: Symbol
+> Note this contains internal vars as well due to a bug in the docgen procedure
 
-- `d`: Decimals
-
-**Returns**
-
-## approve(address,uint256)
-
-
-
-
-**Params**
-
-**Returns**
-
-## approveReturns(bool)
+| Var | Type |
+| --- | --- |
+| approveCalled | mapping(address => uint256) |
+| name | string |
+| symbol | string |
+| decimals | uint8 |
 
 
 
+## Functions
 
-**Params**
-
-**Returns**
-
-## balanceOf(address)
+### constructor
+No description
 
 
+#### Declaration
+```solidity
+function constructor(
+address u,
+uint256 m,
+string n,
+string s,
+uint8 d
+) public
+```
+
+#### Modifiers:
+No modifiers
+
+#### Args:
+| Arg | Type | Description |
+| --- | --- | --- |
+|`u` | address | Underlying
+|`m` | uint256 | Maturity
+|`n` | string | Name
+|`s` | string | Symbol
+|`d` | uint8 | Decimals
+
+### approve
+No description
 
 
-**Params**
+#### Declaration
+```solidity
+function approve(
+) public returns
+(bool)
+```
 
-**Returns**
-
-## balanceOfReturns(address,uint256)
-
+#### Modifiers:
+No modifiers
 
 
 
-**Params**
+### approveReturns
+No description
 
-**Returns**
+
+#### Declaration
+```solidity
+function approveReturns(
+) public
+```
+
+#### Modifiers:
+No modifiers
+
+
+
+### balanceOf
+No description
+
+
+#### Declaration
+```solidity
+function balanceOf(
+) public returns
+(uint256)
+```
+
+#### Modifiers:
+No modifiers
+
+
+
+### balanceOfReturns
+No description
+
+
+#### Declaration
+```solidity
+function balanceOfReturns(
+) public
+```
+
+#### Modifiers:
+No modifiers
+
+
 
 
 

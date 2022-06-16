@@ -1,15 +1,33 @@
-# 
-
-
-
-## initiate(struct Swivel.Order[],uint256[],struct Swivel.Components[])
+# ISwivel
 
 
 
 
-**Params**
 
-**Returns**
+## Contents
+<!-- START doctoc -->
+<!-- END doctoc -->
+
+
+
+
+## Functions
+
+### initiate
+No description
+
+
+#### Declaration
+```solidity
+function initiate(
+) external returns
+(bool)
+```
+
+#### Modifiers:
+No modifiers
+
+
 
 
 

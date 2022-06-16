@@ -1,42 +1,81 @@
-# 
-
-
-
-## approve(address,uint256)
+# IErc20
 
 
 
 
-**Params**
 
-**Returns**
-
-## transfer(address,uint256)
-
-
-
-
-**Params**
-
-**Returns**
-
-## balanceOf(address)
+## Contents
+<!-- START doctoc -->
+<!-- END doctoc -->
 
 
 
 
-**Params**
+## Functions
 
-**Returns**
-
-## transferFrom(address,address,uint256)
-
+### approve
+No description
 
 
+#### Declaration
+```solidity
+function approve(
+) external returns
+(bool)
+```
 
-**Params**
+#### Modifiers:
+No modifiers
 
-**Returns**
+
+
+### transfer
+No description
+
+
+#### Declaration
+```solidity
+function transfer(
+) external returns
+(bool)
+```
+
+#### Modifiers:
+No modifiers
+
+
+
+### balanceOf
+No description
+
+
+#### Declaration
+```solidity
+function balanceOf(
+) external returns
+(uint256)
+```
+
+#### Modifiers:
+No modifiers
+
+
+
+### transferFrom
+No description
+
+
+#### Declaration
+```solidity
+function transferFrom(
+) external returns
+(bool)
+```
+
+#### Modifiers:
+No modifiers
+
+
 
 
 

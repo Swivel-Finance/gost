@@ -1,15 +1,33 @@
-# 
-
-
-
-## approve(address,uint256)
+# IErc20
 
 
 
 
-**Params**
 
-**Returns**
+## Contents
+<!-- START doctoc -->
+<!-- END doctoc -->
+
+
+
+
+## Functions
+
+### approve
+No description
+
+
+#### Declaration
+```solidity
+function approve(
+) external returns
+(bool)
+```
+
+#### Modifiers:
+No modifiers
+
+
 
 
 

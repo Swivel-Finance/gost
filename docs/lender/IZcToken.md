@@ -1,24 +1,49 @@
-# 
-
-
-
-## mint(address,uint256)
+# IZcToken
 
 
 
 
-**Params**
 
-**Returns**
-
-## balanceOf(address)
-
+## Contents
+<!-- START doctoc -->
+<!-- END doctoc -->
 
 
 
-**Params**
 
-**Returns**
+## Functions
+
+### mint
+No description
+
+
+#### Declaration
+```solidity
+function mint(
+) external returns
+(bool)
+```
+
+#### Modifiers:
+No modifiers
+
+
+
+### balanceOf
+No description
+
+
+#### Declaration
+```solidity
+function balanceOf(
+) external returns
+(uint256)
+```
+
+#### Modifiers:
+No modifiers
+
+
 
 
 

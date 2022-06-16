@@ -1,42 +1,80 @@
-# 
-
-
-
-## mint(address,uint256)
+# IZcToken
 
 
 
 
-**Params**
 
-**Returns**
-
-## balanceOf(address)
-
-
-
-
-**Params**
-
-**Returns**
-
-## burn(address,uint256)
+## Contents
+<!-- START doctoc -->
+<!-- END doctoc -->
 
 
 
 
-**Params**
+## Functions
 
-**Returns**
-
-## maturity()
-
+### mint
+No description
 
 
+#### Declaration
+```solidity
+function mint(
+) external returns
+(bool)
+```
 
-**Params**
+#### Modifiers:
+No modifiers
 
-**Returns**
+
+
+### balanceOf
+No description
+
+
+#### Declaration
+```solidity
+function balanceOf(
+) external returns
+(uint256)
+```
+
+#### Modifiers:
+No modifiers
+
+
+
+### burn
+No description
+
+
+#### Declaration
+```solidity
+function burn(
+) external
+```
+
+#### Modifiers:
+No modifiers
+
+
+
+### maturity
+No description
+
+
+#### Declaration
+```solidity
+function maturity(
+) external returns
+(uint256)
+```
+
+#### Modifiers:
+No modifiers
+
+
 
 
 

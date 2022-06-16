@@ -1,69 +1,65 @@
-# 
-
-
-
-## name()
+# IErc20Metadata
 
 
 
 
-**Params**
 
-**Returns**
-
-## symbol()
-
-
-
-
-**Params**
-
-**Returns**
-
-## decimals()
+## Contents
+<!-- START doctoc -->
+<!-- END doctoc -->
 
 
 
 
-**Params**
+## Functions
 
-**Returns**
-
-## approve(address,uint256)
-
+### name
+No description
 
 
+#### Declaration
+```solidity
+function name(
+) external returns
+(string)
+```
 
-**Params**
-
-**Returns**
-
-## transfer(address,uint256)
-
-
-
-
-**Params**
-
-**Returns**
-
-## balanceOf(address)
+#### Modifiers:
+No modifiers
 
 
 
-
-**Params**
-
-**Returns**
-
-## transferFrom(address,address,uint256)
+### symbol
+No description
 
 
+#### Declaration
+```solidity
+function symbol(
+) external returns
+(string)
+```
+
+#### Modifiers:
+No modifiers
 
 
-**Params**
 
-**Returns**
+### decimals
+No description
+
+
+#### Declaration
+```solidity
+function decimals(
+) external returns
+(uint8)
+```
+
+#### Modifiers:
+No modifiers
+
+
 
 
 

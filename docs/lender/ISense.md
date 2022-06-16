@@ -1,24 +1,49 @@
-# 
-
-
-
-## swapUnderlyingForPTs(address,uint256,uint256,uint256)
+# ISense
 
 
 
 
-**Params**
 
-**Returns**
-
-## maturity()
-
+## Contents
+<!-- START doctoc -->
+<!-- END doctoc -->
 
 
 
-**Params**
 
-**Returns**
+## Functions
+
+### swapUnderlyingForPTs
+No description
+
+
+#### Declaration
+```solidity
+function swapUnderlyingForPTs(
+) external returns
+(uint256)
+```
+
+#### Modifiers:
+No modifiers
+
+
+
+### maturity
+No description
+
+
+#### Declaration
+```solidity
+function maturity(
+) external returns
+(uint256)
+```
+
+#### Modifiers:
+No modifiers
+
+
 
 
 
