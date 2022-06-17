@@ -16,7 +16,7 @@ contract CompoundToken {
   uint256 private redeemUnderlyingReturn;
   /// @dev the last amount redeemUnderlying was called with
   uint256 public redeemUnderlyingCalled;
-  /// @dev allows us to dictate return from exchangeRateCurrent().
+
   address private underlyingReturn;
   /// @dev allows us to dictate return from exchangeRateCurrent().
   uint256 private exchangeRateCurrentReturn;

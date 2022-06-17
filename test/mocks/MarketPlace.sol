@@ -5,24 +5,26 @@ pragma solidity 0.8.13;
 /// @dev MarketPlace is a mock whose bindings are imported by unit tests in any pkg/*testing that needs it
 contract MarketPlace {
   struct MethodArgs {
+    address underlying;
     uint256 maturity;
     address one; // is sender or maker depending on method
     address two; // same as above
     uint256 amount;
   }
 
-  mapping (address => uint256) public cTokenAddressCalled;
-  mapping (address => MethodArgs) public custodialInitiateCalled;
-  mapping (address => MethodArgs) public custodialExitCalled;
-  mapping (address => MethodArgs) public p2pZcTokenExchangeCalled;
-  mapping (address => MethodArgs) public p2pVaultExchangeCalled;
-  mapping (address => MethodArgs) public mintZcTokenAddingNotionalCalled;
-  mapping (address => MethodArgs) public burnZcTokenRemovingNotionalCalled;
-  mapping (address => MethodArgs) public transferVaultNotionalFeeCalled;
-  mapping (address => MethodArgs) public redeemZcTokenCalled;
-  mapping (address => MethodArgs) public redeemVaultInterestCalled;
+  mapping (uint8 => MethodArgs) public cTokenAndAdapterAddressCalled;
+  mapping (uint8 => MethodArgs) public custodialInitiateCalled;
+  mapping (uint8 => MethodArgs) public custodialExitCalled;
+  mapping (uint8 => MethodArgs) public p2pZcTokenExchangeCalled;
+  mapping (uint8 => MethodArgs) public p2pVaultExchangeCalled;
+  mapping (uint8 => MethodArgs) public mintZcTokenAddingNotionalCalled;
+  mapping (uint8 => MethodArgs) public burnZcTokenRemovingNotionalCalled;
+  mapping (uint8 => MethodArgs) public transferVaultNotionalFeeCalled;
+  mapping (uint8 => MethodArgs) public redeemZcTokenCalled;
+  mapping (uint8 => MethodArgs) public redeemVaultInterestCalled;
 
   address private cTokenAddr;
+  address private adapterAddr;
   bool private custodialInitiateReturn;
   bool private custodialExitReturn;
   bool private p2pZcTokenExchangeReturn;
@@ -33,13 +35,17 @@ contract MarketPlace {
   uint256 private redeemZcTokenReturn;
   uint256 private redeemVaultInterestReturn;
 
-  function cTokenAddressReturns(address a) external {
-    cTokenAddr = a;
+  function cTokenAndAdapterAddressReturns(address c, address a) external {
+    cTokenAddr = c;
+    adapterAddr = a;
   }
 
-  function cTokenAddress(address u, uint256 m) external returns (address) {
-    cTokenAddressCalled[u] = m;
-    return cTokenAddr;
+  function cTokenAndAdapterAddress(uint8 p, address u, uint256 m) external returns (address, address) {
+    MethodArgs memory args; 
+    args.underlying = u;
+    args.maturity = m;
+    cTokenAndAdapterAddressCalled[p] = args;
+    return (cTokenAddr, adapterAddr);
   }
 
   function custodialInitiateReturns(bool b) external {
@@ -48,13 +54,14 @@ contract MarketPlace {
 
   // called by swivel IVFZI && IZFVI 
   // call with underlying, maturity, mint-target, add-notional-target and an amount
-  function custodialInitiate(address u, uint256 m, address o, address t, uint256 a) external returns (bool) {
+  function custodialInitiate(uint8 p, address u, uint256 m, address o, address t, uint256 a) external returns (bool) {
     MethodArgs memory args; 
+    args.underlying = u;
     args.maturity = m;
     args.one = o; // will be the recipient of minted zctoken
     args.two = t; // will be the recipient of added notional
     args.amount = a; // the amount of minted zctoken and notional added
-    custodialInitiateCalled[u] = args;
+    custodialInitiateCalled[p] = args;
 
     return custodialInitiateReturn;
   }
@@ -65,13 +72,14 @@ contract MarketPlace {
 
   // called by swivel EVFZE FF EZFVE
   // call with underlying, maturity, burn-target, remove-notional-target and an amount
-  function custodialExit(address u, uint256 m, address o, address t, uint256 a) external returns (bool) {
+  function custodialExit(uint8 p, address u, uint256 m, address o, address t, uint256 a) external returns (bool) {
     MethodArgs memory args; 
+    args.underlying = u;
     args.maturity = m;
     args.one = o; // will be the burn-from target
     args.two = t; // will be the remove-notional target
     args.amount = a; // zctoken burned, notional removed
-    custodialExitCalled[u] = args;
+    custodialExitCalled[p] = args;
 
     return custodialExitReturn;
   }
@@ -82,13 +90,14 @@ contract MarketPlace {
 
   // called by swivel IZFZE, EZFZI
   // call with underlying, maturity, transfer-from, transfer-to, amount
-  function p2pZcTokenExchange(address u, uint256 m, address o, address t, uint256 a) external returns (bool) {
+  function p2pZcTokenExchange(uint8 p, address u, uint256 m, address o, address t, uint256 a) external returns (bool) {
     MethodArgs memory args;
+    args.underlying = u;
     args.maturity = m;
     args.one = o;
     args.two = t;
     args.amount = a;
-    p2pZcTokenExchangeCalled[u] = args;
+    p2pZcTokenExchangeCalled[p] = args;
 
     return p2pZcTokenExchangeReturn;
   }
@@ -99,13 +108,14 @@ contract MarketPlace {
 
   // called by swivel IVFVE, EVFVI
   // call with underlying, maturity, remove-from, add-to, amount
-  function p2pVaultExchange(address u, uint256 m, address o, address t, uint256 a) external returns (bool) {
+  function p2pVaultExchange(uint8 p, address u, uint256 m, address o, address t, uint256 a) external returns (bool) {
     MethodArgs memory args;
+    args.underlying = u;
     args.maturity = m;
     args.one = o;
     args.two = t;
     args.amount = a;
-    p2pVaultExchangeCalled[u] = args;
+    p2pVaultExchangeCalled[p] = args;
 
     return p2pVaultExchangeReturn;
   }
@@ -115,12 +125,13 @@ contract MarketPlace {
   }
 
   // call with underlying, maturity, mint-to, amount
-  function mintZcTokenAddingNotional(address u, uint256 m, address t, uint256 a) external returns (bool) {
+  function mintZcTokenAddingNotional(uint8 p, address u, uint256 m, address t, uint256 a) external returns (bool) {
     MethodArgs memory args;
+    args.underlying = u;
     args.maturity = m;
     args.one = t;
     args.amount = a;
-    mintZcTokenAddingNotionalCalled[u] = args;
+    mintZcTokenAddingNotionalCalled[p] = args;
 
     return mintZcTokenAddingNotionalReturn;
   }
@@ -130,12 +141,13 @@ contract MarketPlace {
   }
 
   // call with underlying, maturity, mint-to, amount
-  function burnZcTokenRemovingNotional(address u, uint256 m, address t, uint256 a) external returns (bool) {
+  function burnZcTokenRemovingNotional(uint8 p, address u, uint256 m, address t, uint256 a) external returns (bool) {
     MethodArgs memory args;
+    args.underlying = u;
     args.maturity = m;
     args.one = t;
     args.amount = a;
-    burnZcTokenRemovingNotionalCalled[u] = args;
+    burnZcTokenRemovingNotionalCalled[p] = args;
 
     return burnZcTokenRemovingNotionalReturn;
   }
@@ -144,12 +156,13 @@ contract MarketPlace {
     transferVaultNotionalFeeReturn = b;
   }
 
-  function transferVaultNotionalFee(address u, uint256 m, address f, uint256 a) external returns (bool) {
+  function transferVaultNotionalFee(uint8 p, address u, uint256 m, address f, uint256 a) external returns (bool) {
     MethodArgs memory args;
+    args.underlying = u;
     args.maturity = m;
     args.one = f;
     args.amount = a;
-    transferVaultNotionalFeeCalled[u] = args;
+    transferVaultNotionalFeeCalled[p] = args;
 
     return transferVaultNotionalFeeReturn;
   }
@@ -158,12 +171,13 @@ contract MarketPlace {
     redeemZcTokenReturn = a;
   }
 
-  function redeemZcToken(address u, uint256 m, address t, uint256 a) external returns (uint256) {
+  function redeemZcToken(uint8 p, address u, uint256 m, address t, uint256 a) external returns (uint256) {
     MethodArgs memory args;
+    args.underlying = u;
     args.maturity = m;
     args.one = t;
     args.amount = a;
-    redeemZcTokenCalled[u] = args;
+    redeemZcTokenCalled[p] = args;
 
     return redeemZcTokenReturn;
   }
@@ -172,11 +186,12 @@ contract MarketPlace {
     redeemVaultInterestReturn = a;
   }
 
-  function redeemVaultInterest(address u, uint256 m, address t) external returns (uint256) {
+  function redeemVaultInterest(uint8 p, address u, uint256 m, address t) external returns (uint256) {
     MethodArgs memory args;
+    args.underlying = u;
     args.maturity = m;
     args.one = t;
-    redeemVaultInterestCalled[u] = args;
+    redeemVaultInterestCalled[p] = args;
 
     return redeemVaultInterestReturn;
   }

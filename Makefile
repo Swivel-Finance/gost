@@ -1,4 +1,5 @@
 .PHONY: compile_solidity_mock_erc compile_go_mock_erc compile_mock_erc
+.PHONY: compile_solidity_mock_compound compile_go_mock_compound compile_mock_compound
 .PHONY: compile_solidity_mock_compound_token compile_go_mock_compound_token compile_mock_compound_token
 .PHONY: compile_solidity_mock_marketplace compile_go_mock_marketplace
 .PHONY: compile_go_mock_vaulttracker compile_go_mock_zctoken
@@ -42,6 +43,16 @@ compile_go_mock_erc:
 
 compile_mock_erc: compile_solidity_mock_erc compile_go_mock_erc
 
+compile_solidity_mock_compound:
+	@echo "compiling Mock Compound adapter source into abi and bin files"
+	solc -o ./test/mocks --abi --bin --overwrite ./test/mocks/Compound.sol
+
+compile_go_mock_compound:
+	@echo "compiling abi and bin files to golang"
+	abigen --abi ./test/mocks/Compound.abi --bin ./test/mocks/Compound.bin -pkg mocks -type Compound -out ./test/mocks/compound.go 
+
+compile_mock_compound: compile_solidity_mock_compound compile_go_mock_compound
+
 compile_solidity_mock_compound_token:
 	@echo "compiling Mock Compound Token source into abi and bin files"
 	solc -o ./test/mocks --abi --bin --overwrite ./test/mocks/CompoundToken.sol
@@ -71,7 +82,7 @@ compile_go_mock_zctoken:
 	@echo "compiling abi and bin files to golang"
 	abigen --abi ./test/marketplace/ZcToken.abi --bin ./test/marketplace/ZcToken.bin -pkg mocks -type ZcToken -out ./test/mocks/zctoken.go
 
-compile_mocks: compile_mock_erc compile_mock_compound_token compile_mock_marketplace compile_go_mock_vaulttracker compile_go_mock_zctoken
+compile_mocks: compile_mock_erc compile_mock_compound compile_mock_compound_token compile_mock_marketplace compile_go_mock_vaulttracker compile_go_mock_zctoken
 
 # Real Tokens
 compile_solidity_zct:
