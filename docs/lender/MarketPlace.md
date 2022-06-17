@@ -1,37 +1,12 @@
-## `MarketPlace`
+# MarketPlace
 
 
 
 
 
-
-
-
-
-### `Principals`
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+## Contents
+<!-- START doctoc -->
+<!-- END doctoc -->
 
 
 

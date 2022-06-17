@@ -1,14 +1,47 @@
-## `ISense`
+# ISense
 
 
 
 
 
+## Contents
+<!-- START doctoc -->
+<!-- END doctoc -->
 
-### `swapUnderlyingForPTs(address, uint256, uint256, uint256) → uint256` (external)
 
 
 
+## Functions
+
+### swapUnderlyingForPTs
+No description
+
+
+#### Declaration
+```solidity
+function swapUnderlyingForPTs(
+) external returns
+(uint256)
+```
+
+#### Modifiers:
+No modifiers
+
+
+
+### maturity
+No description
+
+
+#### Declaration
+```solidity
+function maturity(
+) external returns
+(uint256)
+```
+
+#### Modifiers:
+No modifiers
 
 
 

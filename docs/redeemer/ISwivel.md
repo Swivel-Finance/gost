@@ -1,14 +1,31 @@
-## `ISwivel`
+# ISwivel
 
 
 
 
 
+## Contents
+<!-- START doctoc -->
+<!-- END doctoc -->
 
-### `redeemZcToken(address u, uint256 m, uint256 a) → bool` (external)
 
 
 
+## Functions
+
+### redeemZcToken
+No description
+
+
+#### Declaration
+```solidity
+function redeemZcToken(
+) external returns
+(bool)
+```
+
+#### Modifiers:
+No modifiers
 
 
 

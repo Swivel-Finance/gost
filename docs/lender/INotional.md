@@ -1,26 +1,63 @@
-## `INotional`
+# INotional
 
 
 
 
 
-
-### `getUnderlyingToken() → contract IErc20, int256` (external)
-
-
-
-
-
-### `getMaturity() → uint40` (external)
+## Contents
+<!-- START doctoc -->
+<!-- END doctoc -->
 
 
 
 
+## Functions
 
-### `deposit(uint256 a, address r) → uint256` (external)
+### getUnderlyingToken
+No description
+
+
+#### Declaration
+```solidity
+function getUnderlyingToken(
+) external returns
+(contract IErc20, int256)
+```
+
+#### Modifiers:
+No modifiers
 
 
 
+### getMaturity
+No description
+
+
+#### Declaration
+```solidity
+function getMaturity(
+) external returns
+(uint40)
+```
+
+#### Modifiers:
+No modifiers
+
+
+
+### deposit
+No description
+
+
+#### Declaration
+```solidity
+function deposit(
+) external returns
+(uint256)
+```
+
+#### Modifiers:
+No modifiers
 
 
 

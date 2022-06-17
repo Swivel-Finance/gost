@@ -1,68 +1,175 @@
-## `IPool`
+# IPool
 
 
 
 
 
-
-### `principalToken() → contract IErc5095` (external)
-
-
-
-
-
-### `underlying() → address` (external)
+## Contents
+<!-- START doctoc -->
+<!-- END doctoc -->
 
 
 
 
+## Functions
 
-### `sellUnderlying(address, uint128) → uint128` (external)
-
-
-
-
-
-### `buyUnderlying(address, uint128, uint128) → uint128` (external)
+### principalToken
+No description
 
 
+#### Declaration
+```solidity
+function principalToken(
+) external returns
+(contract IErc5095)
+```
 
-
-
-### `sellPrincipalToken(address, uint128) → uint128` (external)
-
-
-
-
-
-### `buyPrincipalToken(address, uint128, uint128) → uint128` (external)
+#### Modifiers:
+No modifiers
 
 
 
+### underlying
+No description
 
 
-### `sellUnderlyingPreview(uint128) → uint128` (external)
+#### Declaration
+```solidity
+function underlying(
+) external returns
+(address)
+```
 
-
-
-
-
-### `buyUnderlyingPreview(uint128) → uint128` (external)
-
-
-
-
-
-### `sellPrincipalTokenPreview(uint128) → uint128` (external)
-
+#### Modifiers:
+No modifiers
 
 
 
+### sellUnderlying
+No description
 
-### `buyPrincipalTokenPreview(uint128) → uint128` (external)
+
+#### Declaration
+```solidity
+function sellUnderlying(
+) external returns
+(uint128)
+```
+
+#### Modifiers:
+No modifiers
 
 
 
+### buyUnderlying
+No description
+
+
+#### Declaration
+```solidity
+function buyUnderlying(
+) external returns
+(uint128)
+```
+
+#### Modifiers:
+No modifiers
+
+
+
+### sellPrincipalToken
+No description
+
+
+#### Declaration
+```solidity
+function sellPrincipalToken(
+) external returns
+(uint128)
+```
+
+#### Modifiers:
+No modifiers
+
+
+
+### buyPrincipalToken
+No description
+
+
+#### Declaration
+```solidity
+function buyPrincipalToken(
+) external returns
+(uint128)
+```
+
+#### Modifiers:
+No modifiers
+
+
+
+### sellUnderlyingPreview
+No description
+
+
+#### Declaration
+```solidity
+function sellUnderlyingPreview(
+) external returns
+(uint128)
+```
+
+#### Modifiers:
+No modifiers
+
+
+
+### buyUnderlyingPreview
+No description
+
+
+#### Declaration
+```solidity
+function buyUnderlyingPreview(
+) external returns
+(uint128)
+```
+
+#### Modifiers:
+No modifiers
+
+
+
+### sellPrincipalTokenPreview
+No description
+
+
+#### Declaration
+```solidity
+function sellPrincipalTokenPreview(
+) external returns
+(uint128)
+```
+
+#### Modifiers:
+No modifiers
+
+
+
+### buyPrincipalTokenPreview
+No description
+
+
+#### Declaration
+```solidity
+function buyPrincipalTokenPreview(
+) external returns
+(uint128)
+```
+
+#### Modifiers:
+No modifiers
 
 
 

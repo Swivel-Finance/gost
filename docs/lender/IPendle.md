@@ -1,14 +1,31 @@
-## `IPendle`
+# IPendle
 
 
 
 
 
+## Contents
+<!-- START doctoc -->
+<!-- END doctoc -->
 
-### `swapExactTokensForTokens(uint256, uint256, address[], address, uint256) → uint256[] amounts` (external)
 
 
 
+## Functions
+
+### swapExactTokensForTokens
+No description
+
+
+#### Declaration
+```solidity
+function swapExactTokensForTokens(
+) external returns
+(uint256[] amounts)
+```
+
+#### Modifiers:
+No modifiers
 
 
 

@@ -1,14 +1,31 @@
-## `IErc20`
+# IErc20
 
 
 
 
 
+## Contents
+<!-- START doctoc -->
+<!-- END doctoc -->
 
-### `approve(address, uint256) → bool` (external)
 
 
 
+## Functions
+
+### approve
+No description
+
+
+#### Declaration
+```solidity
+function approve(
+) external returns
+(bool)
+```
+
+#### Modifiers:
+No modifiers
 
 
 

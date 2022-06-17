@@ -1,14 +1,31 @@
-## `ISwivel`
+# ISwivel
 
 
 
 
 
+## Contents
+<!-- START doctoc -->
+<!-- END doctoc -->
 
-### `initiate(struct Swivel.Order[], uint256[], struct Swivel.Components[]) → bool` (external)
 
 
 
+## Functions
+
+### initiate
+No description
+
+
+#### Declaration
+```solidity
+function initiate(
+) external returns
+(bool)
+```
+
+#### Modifiers:
+No modifiers
 
 
 

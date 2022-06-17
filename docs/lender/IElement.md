@@ -1,14 +1,31 @@
-## `IElement`
+# IElement
 
 
 
 
 
+## Contents
+<!-- START doctoc -->
+<!-- END doctoc -->
 
-### `swap(struct Element.SingleSwap, struct Element.FundManagement, uint256, uint256) → uint256` (external)
 
 
 
+## Functions
+
+### swap
+No description
+
+
+#### Declaration
+```solidity
+function swap(
+) external returns
+(uint256)
+```
+
+#### Modifiers:
+No modifiers
 
 
 

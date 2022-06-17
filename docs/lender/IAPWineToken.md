@@ -1,14 +1,31 @@
-## `IAPWineToken`
+# IAPWineToken
 
 
 
 
 
+## Contents
+<!-- START doctoc -->
+<!-- END doctoc -->
 
-### `getPTAddress() → address` (external)
 
 
 
+## Functions
+
+### getUnderlyingOfIBTAddress
+No description
+
+
+#### Declaration
+```solidity
+function getUnderlyingOfIBTAddress(
+) external returns
+(address)
+```
+
+#### Modifiers:
+No modifiers
 
 
 

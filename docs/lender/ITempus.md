@@ -1,26 +1,63 @@
-## `ITempus`
+# ITempus
 
 
 
 
 
-
-### `maturityTime() → uint256` (external)
-
-
-
-
-
-### `yieldBearingToken() → contract IErc20Metadata` (external)
+## Contents
+<!-- START doctoc -->
+<!-- END doctoc -->
 
 
 
 
+## Functions
 
-### `depositAndFix(contract Any, contract Any, uint256, bool, uint256, uint256) → uint256` (external)
+### maturityTime
+No description
+
+
+#### Declaration
+```solidity
+function maturityTime(
+) external returns
+(uint256)
+```
+
+#### Modifiers:
+No modifiers
 
 
 
+### yieldBearingToken
+No description
+
+
+#### Declaration
+```solidity
+function yieldBearingToken(
+) external returns
+(contract IErc20Metadata)
+```
+
+#### Modifiers:
+No modifiers
+
+
+
+### depositAndFix
+No description
+
+
+#### Declaration
+```solidity
+function depositAndFix(
+) external returns
+(uint256)
+```
+
+#### Modifiers:
+No modifiers
 
 
 

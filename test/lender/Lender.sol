@@ -33,9 +33,9 @@ contract Lender {
 
     /// @notice Initializes the Lender contract
     /// @dev the ctor sets a default value for the feenominator
-    /// @param s: the swivel contract
-    /// @param p: the pendle contract
-    /// @param t: the tempus contract
+    /// @param s the swivel contract
+    /// @param p the pendle contract
+    /// @param t the tempus contract
     constructor(
         address s,
         address p,
@@ -50,9 +50,9 @@ contract Lender {
 
     /// @notice Approves the redeemer contract to spend the principal tokens held by
     /// the lender contract.
-    /// @param u: underlying token's address, used to define the market being approved
-    /// @param m: maturity of the underlying token, used to define the market being approved
-    /// @param r: the address being approved, in this case the redeemer contract
+    /// @param u underlying token's address, used to define the market being approved
+    /// @param m maturity of the underlying token, used to define the market being approved
+    /// @param r the address being approved, in this case the redeemer contract
     /// @return bool true if the approval was successful, false otherwise
     function approve(
         address u,
@@ -103,7 +103,7 @@ contract Lender {
     }
 
     /// @notice Sets the feenominator to the given value
-    /// @param f: the new value of the feenominator, fees are not collected when the feenominator is 0
+    /// @param f the new value of the feenominator, fees are not collected when the feenominator is 0
     /// @return bool true if successful
     function setFee(uint256 f) external authorized(admin) returns (bool) {
         feenominator = f;
@@ -112,7 +112,7 @@ contract Lender {
 
     /// @notice Sets the address of the marketplace contract which contains the
     /// addresses of all the fixed rate markets
-    /// @param m: the address of the marketplace contract
+    /// @param m the address of the marketplace contract
     /// @return bool true if the address was set, false otherwise
     function setMarketPlaceAddress(address m) external authorized(admin) returns (bool) {
         if (marketPlace != address(0)) {
@@ -605,8 +605,8 @@ contract Lender {
     /// @notice transfers excess funds to yield pool after principal tokens have been lent out
     /// @dev this method is only used by the yield, illuminate and swivel protocols
     /// @param u address of an underlying asset
-    /// @param y: the yield pool to lend to
-    /// @param a: the amount of underlying tokens to lend
+    /// @param y the yield pool to lend to
+    /// @param a the amount of underlying tokens to lend
     /// @return uint256 the amount of tokens sent to the yield pool
     function yield(
         address u,

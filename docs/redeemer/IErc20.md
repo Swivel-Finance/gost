@@ -1,32 +1,79 @@
-## `IErc20`
+# IErc20
 
 
 
 
 
-
-### `approve(address, uint256) → bool` (external)
-
-
-
-
-
-### `transfer(address, uint256) → bool` (external)
+## Contents
+<!-- START doctoc -->
+<!-- END doctoc -->
 
 
 
 
+## Functions
 
-### `balanceOf(address) → uint256` (external)
-
-
-
-
-
-### `transferFrom(address, address, uint256) → bool` (external)
+### approve
+No description
 
 
+#### Declaration
+```solidity
+function approve(
+) external returns
+(bool)
+```
 
+#### Modifiers:
+No modifiers
+
+
+
+### transfer
+No description
+
+
+#### Declaration
+```solidity
+function transfer(
+) external returns
+(bool)
+```
+
+#### Modifiers:
+No modifiers
+
+
+
+### balanceOf
+No description
+
+
+#### Declaration
+```solidity
+function balanceOf(
+) external returns
+(uint256)
+```
+
+#### Modifiers:
+No modifiers
+
+
+
+### transferFrom
+No description
+
+
+#### Declaration
+```solidity
+function transferFrom(
+) external returns
+(bool)
+```
+
+#### Modifiers:
+No modifiers
 
 
 

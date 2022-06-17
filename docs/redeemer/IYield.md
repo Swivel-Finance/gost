@@ -1,14 +1,31 @@
-## `IYield`
+# IYield
 
 
 
 
 
+## Contents
+<!-- START doctoc -->
+<!-- END doctoc -->
 
-### `redeem(address to, uint256 amount) → uint256` (external)
 
 
 
+## Functions
+
+### redeem
+No description
+
+
+#### Declaration
+```solidity
+function redeem(
+) external returns
+(uint256)
+```
+
+#### Modifiers:
+No modifiers
 
 
 

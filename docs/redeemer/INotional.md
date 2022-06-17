@@ -1,14 +1,31 @@
-## `INotional`
+# INotional
 
 
 
 
 
+## Contents
+<!-- START doctoc -->
+<!-- END doctoc -->
 
-### `maxRedeem(address) → uint256` (external)
 
 
 
+## Functions
+
+### maxRedeem
+No description
+
+
+#### Declaration
+```solidity
+function maxRedeem(
+) external returns
+(uint256)
+```
+
+#### Modifiers:
+No modifiers
 
 
 

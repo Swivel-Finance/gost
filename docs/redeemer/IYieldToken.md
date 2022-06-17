@@ -1,14 +1,30 @@
-## `IYieldToken`
+# IYieldToken
 
 
 
 
 
+## Contents
+<!-- START doctoc -->
+<!-- END doctoc -->
 
-### `redeem(address, address, uint256)` (external)
 
 
 
+## Functions
+
+### redeem
+No description
+
+
+#### Declaration
+```solidity
+function redeem(
+) external
+```
+
+#### Modifiers:
+No modifiers
 
 
 

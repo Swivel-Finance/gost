@@ -1,14 +1,30 @@
-## `ITempus`
+# ITempus
 
 
 
 
 
+## Contents
+<!-- START doctoc -->
+<!-- END doctoc -->
 
-### `redeemToBacking(address, uint256, uint256, address)` (external)
 
 
 
+## Functions
+
+### redeemToBacking
+No description
+
+
+#### Declaration
+```solidity
+function redeemToBacking(
+) external
+```
+
+#### Modifiers:
+No modifiers
 
 
 

@@ -1,14 +1,30 @@
-## `IAPWine`
+# IAPWine
 
 
 
 
 
+## Contents
+<!-- START doctoc -->
+<!-- END doctoc -->
 
-### `withdraw(address, uint256)` (external)
 
 
 
+## Functions
+
+### withdraw
+No description
+
+
+#### Declaration
+```solidity
+function withdraw(
+) external
+```
+
+#### Modifiers:
+No modifiers
 
 
 

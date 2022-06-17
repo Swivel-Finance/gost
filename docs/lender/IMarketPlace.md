@@ -1,14 +1,31 @@
-## `IMarketPlace`
+# IMarketPlace
 
 
 
 
 
+## Contents
+<!-- START doctoc -->
+<!-- END doctoc -->
 
-### `markets(address, uint256, uint8) → address` (external)
 
 
 
+## Functions
+
+### markets
+No description
+
+
+#### Declaration
+```solidity
+function markets(
+) external returns
+(address)
+```
+
+#### Modifiers:
+No modifiers
 
 
 
