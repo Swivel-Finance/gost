@@ -47,9 +47,9 @@ Initializes the Lender contract
 #### Declaration
 ```solidity
 function constructor(
-address the,
-address the,
-address the
+address s,
+address p,
+address t
 ) public
 ```
 
@@ -59,9 +59,9 @@ No modifiers
 #### Args:
 | Arg | Type | Description |
 | --- | --- | --- |
-|`the` | address | swivel contract
-|`the` | address | pendle contract
-|`the` | address | tempus contract
+|`s` | address | the swivel contract
+|`p` | address | the pendle contract
+|`t` | address | the tempus contract
 
 ### approve
 Approves the redeemer contract to spend the principal tokens held by
@@ -72,9 +72,9 @@ the lender contract.
 #### Declaration
 ```solidity
 function approve(
-address underlying,
-uint256 maturity,
-address the
+address u,
+uint256 m,
+address r
 ) external authorized returns
 (bool)
 ```
@@ -87,9 +87,9 @@ address the
 #### Args:
 | Arg | Type | Description |
 | --- | --- | --- |
-|`underlying` | address | token's address, used to define the market being approved
-|`maturity` | uint256 | of the underlying token, used to define the market being approved
-|`the` | address | address being approved, in this case the redeemer contract
+|`u` | address | underlying token's address, used to define the market being approved
+|`m` | uint256 | maturity of the underlying token, used to define the market being approved
+|`r` | address | the address being approved, in this case the redeemer contract
 
 #### Returns:
 | Type | Description |
@@ -133,7 +133,7 @@ Sets the feenominator to the given value
 #### Declaration
 ```solidity
 function setFee(
-uint256 the
+uint256 f
 ) external authorized returns
 (bool)
 ```
@@ -146,7 +146,7 @@ uint256 the
 #### Args:
 | Arg | Type | Description |
 | --- | --- | --- |
-|`the` | uint256 | new value of the feenominator, fees are not collected when the feenominator is 0
+|`f` | uint256 | the new value of the feenominator, fees are not collected when the feenominator is 0
 
 #### Returns:
 | Type | Description |
@@ -161,7 +161,7 @@ addresses of all the fixed rate markets
 #### Declaration
 ```solidity
 function setMarketPlaceAddress(
-address the
+address m
 ) external authorized returns
 (bool)
 ```
@@ -174,7 +174,7 @@ address the
 #### Args:
 | Arg | Type | Description |
 | --- | --- | --- |
-|`the` | address | address of the marketplace contract
+|`m` | address | the address of the marketplace contract
 
 #### Returns:
 | Type | Description |
@@ -514,8 +514,8 @@ transfers excess funds to yield pool after principal tokens have been lent out
 ```solidity
 function yield(
 address u,
-address the,
-uint256 the
+address y,
+uint256 a
 ) internal returns
 (uint256)
 ```
@@ -527,8 +527,8 @@ No modifiers
 | Arg | Type | Description |
 | --- | --- | --- |
 |`u` | address | address of an underlying asset
-|`the` | address | yield pool to lend to
-|`the` | uint256 | amount of underlying tokens to lend
+|`y` | address | the yield pool to lend to
+|`a` | uint256 | the amount of underlying tokens to lend
 
 #### Returns:
 | Type | Description |
