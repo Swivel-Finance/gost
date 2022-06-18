@@ -28,39 +28,25 @@ interface IErc5095 {
 
     function previewWithdraw(uint256) external returns (uint256);
 
-    function withdraw(
-        uint256,
-        address,
-        address
-    ) external returns (uint256);
+    function withdraw(uint256, address, address) external returns (uint256);
 
-    function redeem(
-        uint256,
-        address,
-        address
-    ) external returns (uint256);
+    function redeem(uint256, address, address) external returns (uint256);
 }
 
 interface IPool {
     function principalToken() external returns (IErc5095);
 
+    function PT() external view returns (IErc5095);
+
     function underlying() external returns (address);
 
     function sellUnderlying(address, uint128) external returns (uint128);
 
-    function buyUnderlying(
-        address,
-        uint128,
-        uint128
-    ) external returns (uint128);
+    function buyUnderlying(address, uint128, uint128) external returns (uint128);
 
     function sellPrincipalToken(address, uint128) external returns (uint128);
 
-    function buyPrincipalToken(
-        address,
-        uint128,
-        uint128
-    ) external returns (uint128);
+    function buyPrincipalToken(address, uint128, uint128) external returns (uint128);
 
     function sellUnderlyingPreview(uint128) external returns (uint128);
 
@@ -69,4 +55,12 @@ interface IPool {
     function sellPrincipalTokenPreview(uint128) external returns (uint128);
 
     function buyPrincipalTokenPreview(uint128) external returns (uint128);
+
+    function mint(address, address, uint256, uint256) external returns (uint256, uint256, uint256);
+
+    function mintWithUnderlying(address, address, uint256, uint256, uint256) external returns (uint256, uint256, uint256);
+
+    function burn(address, address, uint256, uint256) external returns (uint256 ,uint256 ,uint256);
+
+    function burnForUnderlying(address, uint256, uint256) external returns (uint256, uint256);
 }
