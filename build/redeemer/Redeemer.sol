@@ -24,11 +24,11 @@ contract Redeemer {
     event Redeem(uint8 principal, address indexed underlying, uint256 indexed maturity, uint256 amount);
 
     /// @notice Initializes the Redeemer contract
-    /// @param l: the lender contract
-    /// @param s: the swivel contract
-    /// @param p: the pendle contract
-    /// @param t: the tempus contract
-    /// @param a: the apwine contract
+    /// @param l the lender contract
+    /// @param s the swivel contract
+    /// @param p the pendle contract
+    /// @param t the tempus contract
+    /// @param a the apwine contract
     constructor(
         address l,
         address s,
@@ -103,14 +103,19 @@ contract Redeemer {
             ITempus(tempusAddr).redeemToBacking(o, amount, 0, address(this));
         } else if (p == uint8(MarketPlace.Principals.Illuminate)) {
             // Get Illuminate's principal token
+            // TODO: Check this in audit, I don't think this is right
             IZcToken token = IZcToken(principal);
+
             // Make sure the market has matured
             if (block.timestamp < token.maturity()) {
                 revert Invalid('not matured');
             }
+
             // Burn the prinicipal token from illuminate
+            // TODO: check amount. Shouldn't it be the balance held by msg.sender?
             token.burn(o, amount);
-            // Transfer the original underlying token back to the user
+
+            // Transfer the original underlying token back to the redeemer
             Safe.transferFrom(IErc20(u), lender, address(this), amount);
         } else {
             revert Invalid('principal');
