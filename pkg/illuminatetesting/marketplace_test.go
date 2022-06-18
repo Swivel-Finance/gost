@@ -442,7 +442,7 @@ func (s *marketplaceTestSuite) TestSetIndividualMarket() {
 	maturity := big.NewInt(1000001)
 	pool := common.HexToAddress("0x0000000000000000000000000000000000000001")
 	principal := uint8(3)
-	tx, err := s.MarketPlace.SetMarket(principal, s.Dep.Erc20Address, maturity, pool)
+	tx, err := s.MarketPlace.SetPrincipal(principal, s.Dep.Erc20Address, maturity, pool)
 	assert.NoError(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()

@@ -55,7 +55,7 @@ contract MarketPlace {
     /// @param m maturity timestamp for the market
     /// @param a address of the new market
     /// @return bool true if successful
-    function setMarket(
+    function setPrincipal(
         uint8 p,
         address u,
         uint256 m,
@@ -238,8 +238,7 @@ contract MarketPlace {
         )
     {
         IPool pool = IPool(pools[u][m]);
-        address hello = pool.underlying();
-        Safe.transferFrom(IErc20(hello), msg.sender, address(pool), underlyingAmount);
+        Safe.transferFrom(IErc20(pool.underlying()), msg.sender, address(pool), underlyingAmount);
         Safe.transferFrom(IErc20(address(pool.PT())), msg.sender, address(pool), principalTokenAmount);
         return pool.mint(msg.sender, msg.sender, minRatio, maxRatio);
     }
@@ -254,7 +253,7 @@ contract MarketPlace {
     /// @param ptBought Amount of `PT` being bought in the Pool, from this we calculate how much underlying it will be taken in.
     /// @param minRatio Minimum ratio of underlying to PT in the pool.
     /// @param maxRatio Maximum ratio of underlying to PT in the pool.
-    /// @return uint256s The amount of liquidity tokens minted.
+    /// @return tokensMint The amount of liquidity tokens minted.
     function mintWithUnderlying(
         address u,
         uint256 m,
@@ -297,6 +296,7 @@ contract MarketPlace {
     }
 
     /// @dev Burn liquidity tokens in exchange for underlying.
+    /// @param u The token address that will be burned
     /// @param minRatio Minimum ratio of underlying to PT in the pool.
     /// @param maxRatio Minimum ratio of underlying to PT in the pool.
     /// @return uint256 The amount of lp tokens burned.
