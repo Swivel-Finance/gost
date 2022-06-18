@@ -55,12 +55,7 @@ contract MarketPlace {
     /// @param m maturity timestamp for the market
     /// @param a address of the new market
     /// @return bool true if successful
-    function setPrincipal(
-        uint8 p,
-        address u,
-        uint256 m,
-        address a
-    ) external authorized(admin) returns (bool) {
+    function setPrincipal(uint8 p, address u, uint256 m, address a) external authorized(admin) returns (bool) {
         if (markets[u][m][p] != address(0)) {
             revert Exists('Market already exists');
         }
@@ -78,14 +73,7 @@ contract MarketPlace {
     /// @param s symbol for the illuminate token
     /// @param d decimals for the illuminate token
     /// @return bool true if successful
-    function createMarket(
-        address u,
-        uint256 m,
-        address[8] memory t,
-        string calldata n,
-        string calldata s,
-        uint8 d
-    ) external authorized(admin) returns (bool) {
+    function createMarket(address u, uint256 m, address[8]  memory t,string calldata  n,string calldata  s,uint8 d) external authorized(admin) returns (bool) {
         if (markets[u][m][uint256(Principals.Illuminate)] != address(0)) {
             revert Exists('market already exists');
         }
@@ -130,11 +118,7 @@ contract MarketPlace {
     /// @param m maturity (timestamp) of the market
     /// @param a address of the pool
     /// @return bool true if successful
-    function setPool(
-        address u,
-        uint256 m,
-        address a
-    ) external authorized(admin) returns (bool) {
+    function setPool(address u, uint256 m, address a) external authorized(admin) returns (bool) {
         if (pools[u][m] != address(0)) {
             revert Exists('pool already exists');
         }
@@ -148,12 +132,7 @@ contract MarketPlace {
     /// @param m maturity (timestamp) of the market
     /// @param a amount of PT to swap
     /// @return uint128 amount of PT bought
-    function sellPrincipalToken(
-        uint8 p,
-        address u,
-        uint256 m,
-        uint128 a
-    ) external unpaused(p) returns (uint128) {
+    function sellPrincipalToken(uint8 p, address u, uint256 m, uint128 a) external unpaused(p) returns (uint128) {
         IPool pool = IPool(pools[u][m]);
         Safe.transfer(IErc20(address(pool.principalToken())), address(pool), a);
         return pool.sellPrincipalToken(msg.sender, pool.sellPrincipalTokenPreview(a));
@@ -165,12 +144,7 @@ contract MarketPlace {
     /// @param m maturity (timestamp) of the market
     /// @param a amount of underlying tokens to sell
     /// @return uint128 amount of PT received
-    function buyPrincipalToken(
-        uint8 p,
-        address u,
-        uint256 m,
-        uint128 a
-    ) external unpaused(p) returns (uint128) {
+    function buyPrincipalToken(uint8 p, address u, uint256 m, uint128 a) external unpaused(p) returns (uint128) {
         IPool pool = IPool(pools[u][m]);
         Safe.transfer(IErc20(address(pool.underlying())), address(pool), a);
         return pool.buyPrincipalToken(msg.sender, pool.buyPrincipalTokenPreview(a), a);
@@ -182,12 +156,7 @@ contract MarketPlace {
     /// @param m maturity (timestamp) of the market
     /// @param a amount of underlying to swap
     /// @return uint128 amount of underlying sold
-    function sellUnderlying(
-        uint8 p,
-        address u,
-        uint256 m,
-        uint128 a
-    ) external unpaused(p) returns (uint128) {
+    function sellUnderlying(uint8 p,address u,uint256 m,uint128 a) external unpaused(p) returns (uint128) {
         IPool pool = IPool(pools[u][m]);
         Safe.transfer(IErc20(address(pool.underlying())), address(pool), a);
         return pool.sellUnderlying(msg.sender, pool.sellUnderlyingPreview(a));
@@ -199,12 +168,7 @@ contract MarketPlace {
     /// @param m maturity (timestamp) of the market
     /// @param a amount of PT to swap
     /// @return uint128 amount of underlying bought
-    function buyUnderlying(
-        uint8 p,
-        address u,
-        uint256 m,
-        uint128 a
-    ) external unpaused(p) returns (uint128) {
+    function buyUnderlying(uint8 p, address u, uint256 m, uint128 a) external unpaused(p) returns (uint128) {
         IPool pool = IPool(pools[u][m]);
         Safe.transfer(IErc20(address(pool.principalToken())), address(pool), a);
         return pool.buyUnderlying(msg.sender, pool.buyUnderlyingPreview(a), a);
@@ -222,21 +186,7 @@ contract MarketPlace {
     /// @param minRatio Minimum ratio of underlying to PT in the pool.
     /// @param maxRatio Maximum ratio of underlying to PT in the pool.
     /// @return The amount of liquidity tokens minted.
-    function mint(
-        address u,
-        uint256 m,
-        uint256 underlyingAmount,
-        uint256 principalTokenAmount,
-        uint256 minRatio,
-        uint256 maxRatio
-    )
-        external
-        returns (
-            uint256,
-            uint256,
-            uint256
-        )
-    {
+    function mint(address u, uint256 m, uint256 underlyingAmount, uint256 principalTokenAmount, uint256 minRatio, uint256 maxRatio) external returns (uint256, uint256, uint256) {
         IPool pool = IPool(pools[u][m]);
         Safe.transferFrom(IErc20(pool.underlying()), msg.sender, address(pool), underlyingAmount);
         Safe.transferFrom(IErc20(address(pool.PT())), msg.sender, address(pool), principalTokenAmount);
@@ -254,21 +204,7 @@ contract MarketPlace {
     /// @param minRatio Minimum ratio of underlying to PT in the pool.
     /// @param maxRatio Maximum ratio of underlying to PT in the pool.
     /// @return tokensMint The amount of liquidity tokens minted.
-    function mintWithUnderlying(
-        address u,
-        uint256 m,
-        uint256 a,
-        uint256 ptBought,
-        uint256 minRatio,
-        uint256 maxRatio
-    )
-        external
-        returns (
-            uint256,
-            uint256,
-            uint256
-        )
-    {
+    function mintWithUnderlying(address u, uint256 m, uint256 a, uint256 ptBought, uint256 minRatio, uint256 maxRatio) external returns (uint256, uint256, uint256) {
         IPool pool = IPool(pools[u][m]);
         Safe.transferFrom(IErc20(address(pool.underlying())), msg.sender, address(pool), a);
         return pool.mintWithUnderlying(msg.sender, msg.sender, ptBought, minRatio, maxRatio);
@@ -279,19 +215,7 @@ contract MarketPlace {
     /// @param minRatio Minimum ratio of underlying to PT in the pool.
     /// @param maxRatio Maximum ratio of underlying to PT in the pool.
     /// @return uint256 The amount of tokens burned and returned (tokensBurned, underlyings, PTs).
-    function burn(
-        address u,
-        uint256 m,
-        uint256 minRatio,
-        uint256 maxRatio
-    )
-        external
-        returns (
-            uint256,
-            uint256,
-            uint256
-        )
-    {
+    function burn(address u, uint256 m, uint256 minRatio, uint256 maxRatio) external returns (uint256, uint256, uint256) {
         return IPool(pools[u][m]).burn(msg.sender, msg.sender, minRatio, maxRatio);
     }
 
@@ -301,13 +225,8 @@ contract MarketPlace {
     /// @param maxRatio Minimum ratio of underlying to PT in the pool.
     /// @return uint256 The amount of lp tokens burned.
     /// @return uint256 The amount of underlying tokens returned.
-    function burnForUnderlying(
-        address u,
-        uint256 m,
-        uint256 minRatio,
-        uint256 maxRatio
-    ) external returns (uint256, uint256) {
-        return IPool(pools[u][m]).burnForUnderlying(msg.sender, minRatio, maxRatio);
+    function burnForUnderlying(address u, uint256 m, uint256 minRatio, uint256 maxRatio) external returns (uint256, uint256) { 
+      return IPool(pools[u][m]).burnForUnderlying(msg.sender, minRatio, maxRatio);
     }
 
     modifier authorized(address a) {
