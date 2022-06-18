@@ -15,7 +15,7 @@ type transferNotionalFeeSuite struct {
 	suite.Suite
 	Env          *Env
 	Dep          *Dep
-	CErc20       *mocks.CErc20Session
+	Compounding  *mocks.CompoundSession
 	VaultTracker *vaulttracker.VaultTrackerSession
 }
 
@@ -31,8 +31,8 @@ func (s *transferNotionalFeeSuite) SetupTest() {
 	assert.Nil(err)
 	s.Env.Blockchain.Commit()
 
-	s.CErc20 = &mocks.CErc20Session{
-		Contract: s.Dep.CErc20,
+	s.Compounding = &mocks.CompoundSession{
+		Contract: s.Dep.Compounding,
 		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
 		TransactOpts: bind.TransactOpts{
 			From:   s.Env.Owner.Opts.From,
@@ -55,7 +55,7 @@ func (s *transferNotionalFeeSuite) TestTransferNotionalFee() {
 	assert := assertions.New(s.T())
 
 	rate1 := big.NewInt(1)
-	tx, err := s.CErc20.ExchangeRateCurrentReturns(rate1)
+	tx, err := s.Compounding.ExchangeRateReturns(rate1)
 	assert.Nil(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()

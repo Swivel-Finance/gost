@@ -14,11 +14,11 @@ import (
 
 type createMarketSuite struct {
 	suite.Suite
-	Env           *Env
-	Dep           *Dep
-	Erc20         *mocks.Erc20Session
-	CompoundToken *mocks.CompoundTokenSession
-	MarketPlace   *marketplace.MarketPlaceSession // *Session objects are created by the go bindings
+	Env         *Env
+	Dep         *Dep
+	Erc20       *mocks.Erc20Session
+	Compounding *mocks.CompoundSession
+	MarketPlace *marketplace.MarketPlaceSession // *Session objects are created by the go bindings
 }
 
 func (s *createMarketSuite) SetupSuite() {
@@ -41,8 +41,8 @@ func (s *createMarketSuite) SetupSuite() {
 		},
 	}
 
-	s.CompoundToken = &mocks.CompoundTokenSession{
-		Contract: s.Dep.CompoundToken,
+	s.Compounding = &mocks.CompoundSession{
+		Contract: s.Dep.Compounding,
 		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
 		TransactOpts: bind.TransactOpts{
 			From:   s.Env.Owner.Opts.From,
@@ -79,7 +79,7 @@ func (s *createMarketSuite) TestCreateFailsWhenPaused() {
 	tx, err = s.MarketPlace.CreateMarket(
 		maturity,
 		ctoken,
-		common.HexToAddress("0x12345"),
+		s.Dep.CompoundingAddress,
 		"nope",
 		"NM",
 	)
@@ -107,7 +107,7 @@ func (s *createMarketSuite) TestCreateMarket18Decimals() {
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
 
-	tx, err = s.CompoundToken.UnderlyingReturns(underlying)
+	tx, err = s.Compounding.UnderlyingReturns(underlying)
 	assert.Nil(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
@@ -117,7 +117,7 @@ func (s *createMarketSuite) TestCreateMarket18Decimals() {
 	tx, err = s.MarketPlace.CreateMarket(
 		maturity,
 		ctoken,
-		common.HexToAddress("0x12345"),
+		s.Dep.CompoundingAddress,
 		"awesome market",
 		"AM",
 	)
@@ -158,7 +158,7 @@ func (s *createMarketSuite) TestCreateMarket6Decimals() {
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
 
-	tx, err = s.CompoundToken.UnderlyingReturns(underlying)
+	tx, err = s.Compounding.UnderlyingReturns(underlying)
 	assert.Nil(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
@@ -168,7 +168,7 @@ func (s *createMarketSuite) TestCreateMarket6Decimals() {
 	tx, err = s.MarketPlace.CreateMarket(
 		maturity,
 		ctoken,
-		common.HexToAddress("0x12345"),
+		s.Dep.CompoundingAddress,
 		"awesomer market",
 		"ARM",
 	)

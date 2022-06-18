@@ -90,6 +90,7 @@ func (s *EVFVISuite) TestEVFVI() {
 	// TODO preparing an order _may_ be relocated to a helper. Possibly per package? Discuss...
 	hashOrder := fakes.HashOrder{
 		Key:        orderKey,
+		Protocol:   uint8(0),
 		Maker:      s.Env.User1.Opts.From,
 		Underlying: s.Dep.Erc20Address,
 		Vault:      true,
@@ -180,7 +181,7 @@ func (s *EVFVISuite) TestEVFVI() {
 	assert.Equal(args2.Amount.Cmp(big.NewInt(0)), 1) // fee should be non zero
 
 	// market zctoken transfer from call...
-	noTransferArgs, err := s.MarketPlace.P2pVaultExchangeCalled(order.Underlying)
+	noTransferArgs, err := s.MarketPlace.P2pVaultExchangeCalled(uint8(0))
 	assert.Nil(err)
 	assert.NotNil(noTransferArgs)
 	assert.Equal(noTransferArgs.Maturity, order.Maturity)

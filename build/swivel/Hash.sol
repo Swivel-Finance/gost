@@ -12,8 +12,8 @@ pragma solidity 0.8.13;
 library Hash {
   /// @dev struct represents the attributes of an offchain Swivel.Order
   struct Order {
-    uint8 protocol;
     bytes32 key;
+    uint8 protocol;
     address maker;
     address underlying;
     bool vault;

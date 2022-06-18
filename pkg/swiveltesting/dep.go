@@ -11,19 +11,20 @@ import (
 
 // TODO mock for marketplace...
 type Dep struct {
-	SigFakeAddress     common.Address
-	SigFake            *fakes.SigFake // fake sig lib test contract
-	HashFakeAddress    common.Address
-	HashFake           *fakes.HashFake // fake hash lib test contract
-	Erc20Address       common.Address
-	Erc20              *mocks.Erc20 // mock erc20
-	CErc20Address      common.Address
-	CErc20             *mocks.CErc20 // mock erc20
-	MarketPlaceAddress common.Address
-	MarketPlace        *mocks.MarketPlace // mock marketplace
-	Maturity           *big.Int
-	SwivelAddress      common.Address
-	Swivel             *swivel.Swivel
+	SigFakeAddress       common.Address
+	SigFake              *fakes.SigFake // fake sig lib test contract
+	HashFakeAddress      common.Address
+	HashFake             *fakes.HashFake // fake hash lib test contract
+	Erc20Address         common.Address
+	Erc20                *mocks.Erc20 // mock erc20
+	CompoundAddress      common.Address
+	Compound             *mocks.Compound // mock compound adapter
+	CompoundTokenAddress common.Address
+	MarketPlaceAddress   common.Address
+	MarketPlace          *mocks.MarketPlace // mock marketplace
+	Maturity             *big.Int
+	SwivelAddress        common.Address
+	Swivel               *swivel.Swivel
 }
 
 func Deploy(e *Env) (*Dep, error) {
@@ -54,10 +55,10 @@ func Deploy(e *Env) (*Dep, error) {
 
 	e.Blockchain.Commit()
 
-	cercAddress, _, cercContract, cercErr := mocks.DeployCErc20(e.Owner.Opts, e.Blockchain)
+	compAddress, _, compContract, compErr := mocks.DeployCompound(e.Owner.Opts, e.Blockchain)
 
-	if cercErr != nil {
-		return nil, cercErr
+	if compErr != nil {
+		return nil, compErr
 	}
 
 	e.Blockchain.Commit()
@@ -82,18 +83,19 @@ func Deploy(e *Env) (*Dep, error) {
 	e.Blockchain.Commit()
 
 	return &Dep{
-		SigFakeAddress:     sigAddress,
-		SigFake:            sigContract,
-		HashFakeAddress:    hashAddress,
-		HashFake:           hashContract,
-		Erc20Address:       ercAddress,
-		Erc20:              ercContract,
-		CErc20Address:      cercAddress,
-		CErc20:             cercContract,
-		MarketPlaceAddress: marketAddress,
-		MarketPlace:        marketContract,
-		Maturity:           maturity,
-		SwivelAddress:      swivelAddress,
-		Swivel:             swivelContract,
+		SigFakeAddress:       sigAddress,
+		SigFake:              sigContract,
+		HashFakeAddress:      hashAddress,
+		HashFake:             hashContract,
+		Erc20Address:         ercAddress,
+		Erc20:                ercContract,
+		CompoundAddress:      compAddress,
+		Compound:             compContract,
+		CompoundTokenAddress: common.HexToAddress("0x123ABc"),
+		MarketPlaceAddress:   marketAddress,
+		MarketPlace:          marketContract,
+		Maturity:             maturity,
+		SwivelAddress:        swivelAddress,
+		Swivel:               swivelContract,
 	}, nil
 }

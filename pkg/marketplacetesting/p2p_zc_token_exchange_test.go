@@ -13,11 +13,11 @@ import (
 
 type p2pZCTokenExchangeSuite struct {
 	suite.Suite
-	Env           *Env
-	Dep           *Dep
-	Erc20         *mocks.Erc20Session
-	CompoundToken *mocks.CompoundTokenSession
-	MarketPlace   *marketplace.MarketPlaceSession // *Session objects are created by the go bindings
+	Env         *Env
+	Dep         *Dep
+	Erc20       *mocks.Erc20Session
+	Compounding *mocks.CompoundSession
+	MarketPlace *marketplace.MarketPlaceSession // *Session objects are created by the go bindings
 }
 
 func (s *p2pZCTokenExchangeSuite) SetupTest() {
@@ -46,8 +46,8 @@ func (s *p2pZCTokenExchangeSuite) SetupTest() {
 		},
 	}
 
-	s.CErc20 = &mocks.CErc20Session{
-		Contract: s.Dep.CErc20,
+	s.Compounding = &mocks.CompoundSession{
+		Contract: s.Dep.Compounding,
 		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
 		TransactOpts: bind.TransactOpts{
 			From:   s.Env.Owner.Opts.From,
@@ -81,7 +81,7 @@ func (s *p2pZCTokenExchangeSuite) TestExchangeFailsWhenPaused() {
 	s.Env.Blockchain.Commit()
 
 	amount := big.NewInt(100)
-	tx, err = s.MarketPlace.P2pZcTokenExchange(underlying, maturity, s.Env.Owner.Opts.From, s.Env.User1.Opts.From, amount)
+	tx, err = s.MarketPlace.P2pZcTokenExchange(uint8(0), underlying, maturity, s.Env.Owner.Opts.From, s.Env.User1.Opts.From, amount)
 
 	assert.Nil(tx)
 	assert.NotNil(err)
@@ -98,14 +98,14 @@ func (s *p2pZCTokenExchangeSuite) TestP2PZCTokenExchange() {
 	assert := assertions.New(s.T())
 	underlying := s.Dep.Erc20Address
 	maturity := s.Dep.Maturity
-	ctoken := s.Dep.CErc20Address
+	ctoken := s.Dep.CompoundTokenAddress
 
 	tx, err := s.Erc20.DecimalsReturns(uint8(18))
 	assert.Nil(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
 
-	tx, err = s.CErc20.UnderlyingReturns(underlying)
+	tx, err = s.Compounding.UnderlyingReturns(underlying)
 	assert.Nil(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
@@ -113,6 +113,7 @@ func (s *p2pZCTokenExchangeSuite) TestP2PZCTokenExchange() {
 	tx, err = s.MarketPlace.CreateMarket(
 		maturity,
 		ctoken,
+		s.Dep.CompoundingAddress,
 		"awesome market",
 		"AM",
 	)
@@ -126,7 +127,7 @@ func (s *p2pZCTokenExchangeSuite) TestP2PZCTokenExchange() {
 	user1Opts := s.Env.User1.Opts
 
 	// we should be able to fetch the market now...
-	market, err := s.MarketPlace.Markets(underlying, maturity)
+	market, err := s.MarketPlace.Markets(uint8(0), underlying, maturity)
 	assert.Nil(err)
 	assert.Equal(market.CTokenAddr, ctoken)
 
@@ -160,7 +161,7 @@ func (s *p2pZCTokenExchangeSuite) TestP2PZCTokenExchange() {
 	s.Env.Blockchain.Commit()
 
 	amount := big.NewInt(100)
-	tx, err = s.MarketPlace.P2pZcTokenExchange(underlying, maturity, ownerOpts.From, user1Opts.From, amount)
+	tx, err = s.MarketPlace.P2pZcTokenExchange(uint8(0), underlying, maturity, ownerOpts.From, user1Opts.From, amount)
 	assert.Nil(err)
 	assert.NotNil(tx)
 

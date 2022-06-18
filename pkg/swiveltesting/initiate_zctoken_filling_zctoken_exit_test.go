@@ -20,7 +20,7 @@ type IZFZESuite struct {
 	Env         *Env
 	Dep         *Dep
 	Erc20       *mocks.Erc20Session
-	CErc20      *mocks.CErc20Session
+	Compound    *mocks.CompoundSession
 	MarketPlace *mocks.MarketPlaceSession
 	Swivel      *swivel.SwivelSession
 }
@@ -44,8 +44,8 @@ func (s *IZFZESuite) SetupTest() {
 		},
 	}
 
-	s.CErc20 = &mocks.CErc20Session{
-		Contract: s.Dep.CErc20,
+	s.Compound = &mocks.CompoundSession{
+		Contract: s.Dep.Compound,
 		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
 		TransactOpts: bind.TransactOpts{
 			From:   s.Env.Owner.Opts.From,
@@ -98,6 +98,7 @@ func (s *IZFZESuite) TestIZFZE() {
 	// TODO preparing an order _may_ be relocated to a helper. Possibly per package? Discuss...
 	hashOrder := fakes.HashOrder{
 		Key:        orderKey,
+		Protocol:   uint8(0),
 		Maker:      s.Env.User1.Opts.From,
 		Underlying: s.Dep.Erc20Address,
 		Vault:      false,
@@ -137,6 +138,7 @@ func (s *IZFZESuite) TestIZFZE() {
 	// the order passed to the swivel contract must be of the swivel package type...
 	order := swivel.HashOrder{
 		Key:        orderKey,
+		Protocol:   uint8(0),
 		Maker:      s.Env.User1.Opts.From,
 		Underlying: s.Dep.Erc20Address,
 		Vault:      false,
@@ -180,7 +182,7 @@ func (s *IZFZESuite) TestIZFZE() {
 	assert.Equal(amt.Cmp(args.Amount), 1) // amount should be the fee (so less than passed amt)
 
 	// market zctoken transfer from call...
-	marketTransferArgs, err := s.MarketPlace.P2pZcTokenExchangeCalled(order.Underlying)
+	marketTransferArgs, err := s.MarketPlace.P2pZcTokenExchangeCalled(uint8(0))
 	assert.Nil(err)
 	assert.NotNil(marketTransferArgs)
 	assert.Equal(marketTransferArgs.Maturity, order.Maturity)

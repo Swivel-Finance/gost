@@ -22,6 +22,7 @@ contract VaultTracker {
 
   /// @param m Maturity timestamp associated with this vault
   /// @param c Compounding Token address associated with this vault
+  /// @param a ICompounding adapter address associated with this vault
   /// @param s Address of the deployed swivel contract
   constructor(uint256 m, address c, address a, address s) {
     admin = msg.sender;

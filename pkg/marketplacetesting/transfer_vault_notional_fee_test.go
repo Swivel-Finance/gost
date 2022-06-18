@@ -13,11 +13,11 @@ import (
 
 type vaultTransferFeeSuite struct {
 	suite.Suite
-	Env           *Env
-	Dep           *Dep
-	Erc20         *mocks.Erc20Session
-	CompoundToken *mocks.CompoundTokenSession
-	MarketPlace   *marketplace.MarketPlaceSession
+	Env         *Env
+	Dep         *Dep
+	Erc20       *mocks.Erc20Session
+	Compounding *mocks.CompoundSession
+	MarketPlace *marketplace.MarketPlaceSession
 }
 
 func (s *vaultTransferFeeSuite) SetupTest() {
@@ -37,8 +37,8 @@ func (s *vaultTransferFeeSuite) SetupTest() {
 		},
 	}
 
-	s.CErc20 = &mocks.CErc20Session{
-		Contract: s.Dep.CErc20,
+	s.Compounding = &mocks.CompoundSession{
+		Contract: s.Dep.Compounding,
 		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
 		TransactOpts: bind.TransactOpts{
 			From:   s.Env.Owner.Opts.From,
@@ -70,14 +70,14 @@ func (s *vaultTransferFeeSuite) TestVaultTransferFee() {
 	// make a market so that a vault is deployed
 	underlying := s.Dep.Erc20Address
 	maturity := big.NewInt(1234567)
-	ctoken := s.Dep.CErc20Address
+	ctoken := s.Dep.CompoundTokenAddress
 
 	tx, err := s.Erc20.DecimalsReturns(uint8(18))
 	assert.Nil(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
 
-	tx, err = s.CErc20.UnderlyingReturns(underlying)
+	tx, err = s.Compounding.UnderlyingReturns(underlying)
 	assert.Nil(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
@@ -85,6 +85,7 @@ func (s *vaultTransferFeeSuite) TestVaultTransferFee() {
 	tx, err = s.MarketPlace.CreateMarket(
 		maturity,
 		ctoken,
+		s.Dep.CompoundingAddress,
 		"awesome market",
 		"AM",
 	)
@@ -94,7 +95,7 @@ func (s *vaultTransferFeeSuite) TestVaultTransferFee() {
 	s.Env.Blockchain.Commit()
 
 	// find that vault, wrap it in a mock...
-	market, err := s.MarketPlace.Markets(underlying, maturity)
+	market, err := s.MarketPlace.Markets(uint8(0), underlying, maturity)
 	assert.Nil(err)
 	assert.Equal(market.CTokenAddr, ctoken)
 
@@ -116,7 +117,7 @@ func (s *vaultTransferFeeSuite) TestVaultTransferFee() {
 
 	amount := big.NewInt(100)
 
-	tx, err = s.MarketPlace.TransferVaultNotionalFee(underlying, maturity, user1Opts.From, amount)
+	tx, err = s.MarketPlace.TransferVaultNotionalFee(uint8(0), underlying, maturity, user1Opts.From, amount)
 	assert.Nil(err)
 	assert.NotNil(tx)
 

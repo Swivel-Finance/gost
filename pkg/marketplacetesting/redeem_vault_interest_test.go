@@ -13,11 +13,11 @@ import (
 
 type redeemVaultInterestSuite struct {
 	suite.Suite
-	Env           *Env
-	Dep           *Dep
-	Erc20         *mocks.Erc20Session
-	CompoundToken *mocks.CompoundTokenSession
-	MarketPlace   *marketplace.MarketPlaceSession // *Session objects are created by the go bindings
+	Env         *Env
+	Dep         *Dep
+	Erc20       *mocks.Erc20Session
+	Compounding *mocks.CompoundSession
+	MarketPlace *marketplace.MarketPlaceSession // *Session objects are created by the go bindings
 }
 
 func (s *redeemVaultInterestSuite) SetupTest() {
@@ -41,8 +41,8 @@ func (s *redeemVaultInterestSuite) SetupTest() {
 		},
 	}
 
-	s.CErc20 = &mocks.CErc20Session{
-		Contract: s.Dep.CErc20,
+	s.Compounding = &mocks.CompoundSession{
+		Contract: s.Dep.Compounding,
 		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
 		TransactOpts: bind.TransactOpts{
 			From:   s.Env.Owner.Opts.From,
@@ -75,7 +75,7 @@ func (s *redeemVaultInterestSuite) TestRedeemFailsWhenPaused() {
 
 	maturity := big.NewInt(123456789)
 
-	tx, err = s.MarketPlace.RedeemVaultInterest(s.Dep.Erc20Address, maturity, s.Env.Owner.Opts.From)
+	tx, err = s.MarketPlace.RedeemVaultInterest(uint8(0), s.Dep.Erc20Address, maturity, s.Env.Owner.Opts.From)
 
 	assert.Nil(tx)
 	assert.NotNil(err)
@@ -91,14 +91,14 @@ func (s *redeemVaultInterestSuite) TestRedeemFailsWhenPaused() {
 func (s *redeemVaultInterestSuite) TestRedeemVaultInterest() {
 	assert := assertions.New(s.T())
 	maturity := s.Dep.Maturity
-	ctokenAddr := s.Dep.CErc20Address
+	ctokenAddr := s.Dep.CompoundTokenAddress
 
 	tx, err := s.Erc20.DecimalsReturns(uint8(18))
 	assert.Nil(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
 
-	tx, err = s.CErc20.UnderlyingReturns(s.Dep.Erc20Address)
+	tx, err = s.Compounding.UnderlyingReturns(s.Dep.Erc20Address)
 	assert.Nil(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
@@ -106,6 +106,7 @@ func (s *redeemVaultInterestSuite) TestRedeemVaultInterest() {
 	tx, err = s.MarketPlace.CreateMarket(
 		maturity,
 		ctokenAddr,
+		s.Dep.CompoundingAddress,
 		"awesome market",
 		"AM",
 	)
@@ -115,7 +116,7 @@ func (s *redeemVaultInterestSuite) TestRedeemVaultInterest() {
 	s.Env.Blockchain.Commit()
 
 	// we should be able to fetch the market now...
-	market, err := s.MarketPlace.Markets(s.Dep.Erc20Address, maturity)
+	market, err := s.MarketPlace.Markets(uint8(0), s.Dep.Erc20Address, maturity)
 	assert.Nil(err)
 	assert.Equal(market.CTokenAddr, ctokenAddr)
 
@@ -149,7 +150,7 @@ func (s *redeemVaultInterestSuite) TestRedeemVaultInterest() {
 
 	s.Env.Blockchain.Commit()
 
-	tx, err = s.MarketPlace.RedeemVaultInterest(s.Dep.Erc20Address, maturity, s.Env.Owner.Opts.From)
+	tx, err = s.MarketPlace.RedeemVaultInterest(uint8(0), s.Dep.Erc20Address, maturity, s.Env.Owner.Opts.From)
 	assert.Nil(err)
 	assert.NotNil(tx)
 
