@@ -254,7 +254,7 @@ contract MarketPlace {
     /// @param ptBought Amount of `PT` being bought in the Pool, from this we calculate how much underlying it will be taken in.
     /// @param minRatio Minimum ratio of underlying to PT in the pool.
     /// @param maxRatio Maximum ratio of underlying to PT in the pool.
-    /// @return The amount of liquidity tokens minted.
+    /// @return uint256s The amount of liquidity tokens minted.
     function mintWithUnderlying(
         address u,
         uint256 m,
@@ -276,10 +276,10 @@ contract MarketPlace {
     }
 
     /// @dev Burn liquidity tokens in exchange for underlying and PT.
-    /// The liquidity tokens need to be in this contract.
+    /// @param u The token address that will be burned
     /// @param minRatio Minimum ratio of underlying to PT in the pool.
     /// @param maxRatio Maximum ratio of underlying to PT in the pool.
-    /// @return The amount of tokens burned and returned (tokensBurned, underlyings, PTs).
+    /// @return uint256 The amount of tokens burned and returned (tokensBurned, underlyings, PTs).
     function burn(
         address u,
         uint256 m,
@@ -299,14 +299,14 @@ contract MarketPlace {
     /// @dev Burn liquidity tokens in exchange for underlying.
     /// @param minRatio Minimum ratio of underlying to PT in the pool.
     /// @param maxRatio Minimum ratio of underlying to PT in the pool.
-    /// @return tokensBurned The amount of lp tokens burned.
-    /// @return underlyingOut The amount of underlying tokens returned.
+    /// @return uint256 The amount of lp tokens burned.
+    /// @return uint256 The amount of underlying tokens returned.
     function burnForUnderlying(
         address u,
         uint256 m,
         uint256 minRatio,
         uint256 maxRatio
-    ) external returns (uint256 tokensBurned, uint256 underlyingOut) {
+    ) external returns (uint256, uint256) {
         return IPool(pools[u][m]).burnForUnderlying(msg.sender, minRatio, maxRatio);
     }
 
