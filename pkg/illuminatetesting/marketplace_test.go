@@ -287,6 +287,29 @@ func (s *marketplaceTestSuite) TestSellUnderlying() {
 	assert.Equal(amount, transferAmount)
 }
 
+func (s *marketplaceTestSuite) TestBurn() {
+	assert := assert.New(s.T())
+
+	maturity := big.NewInt(100000)
+	minRatio := big.NewInt(5)
+	maxRatio := big.NewInt(10)
+
+	s.MarketPlace.SetPool(s.Dep.Erc20Address, maturity, s.Dep.PoolAddress)
+	s.Env.Blockchain.Commit()
+
+	tx, err := s.Pool.Burn(s.Dep.Erc20Address, s.Env.User1.Opts.From, minRatio, maxRatio)
+	assert.NoError(err)
+	assert.NotNil(tx)
+	s.Env.Blockchain.Commit()
+
+	// verify methods were called as expected
+	burnOut, err := s.Pool.BurnCalled(s.Dep.Erc20Address)
+	assert.Nil(err)
+	assert.Equal(minRatio, burnOut.MinRatio)
+	assert.Equal(maxRatio, burnOut.MaxRatio)
+	assert.Equal(s.Env.User1.Opts.From, burnOut.PTTo)
+}
+
 func (s *marketplaceTestSuite) TestSetIndividualMarket() {
 	assert := assert.New(s.T())
 
