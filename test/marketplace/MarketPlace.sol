@@ -238,7 +238,8 @@ contract MarketPlace {
         )
     {
         IPool pool = IPool(pools[u][m]);
-        Safe.transferFrom(IErc20(address(pool.underlying())), msg.sender, address(pool), underlyingAmount);
+        address hello = pool.underlying();
+        Safe.transferFrom(IErc20(hello), msg.sender, address(pool), underlyingAmount);
         Safe.transferFrom(IErc20(address(pool.PT())), msg.sender, address(pool), principalTokenAmount);
         return pool.mint(msg.sender, msg.sender, minRatio, maxRatio);
     }
