@@ -210,6 +210,105 @@ contract MarketPlace {
         return pool.buyUnderlying(msg.sender, pool.buyUnderlyingPreview(a), a);
     }
 
+    /// @dev Mint liquidity tokens in exchange for adding underlying and PT.
+    /// The amount of liquidity tokens to mint is calculated from the amount of
+    /// unaccounted for PT in this contract.
+    /// A proportional amount of underlying tokens need to be present in this
+    /// contract, also unaccounted for.
+    /// @param u the address of the underlying token
+    /// @param m the maturity of the principal token
+    /// @param underlyingAmount the underlying amount being sent
+    /// @param principalTokenAmount the principal token amount being sent
+    /// @param minRatio Minimum ratio of underlying to PT in the pool.
+    /// @param maxRatio Maximum ratio of underlying to PT in the pool.
+    /// @return The amount of liquidity tokens minted.
+    function mint(
+        address u,
+        uint256 m,
+        uint256 underlyingAmount,
+        uint256 principalTokenAmount,
+        uint256 minRatio,
+        uint256 maxRatio
+    )
+        external
+        returns (
+            uint256,
+            uint256,
+            uint256
+        )
+    {
+        IPool pool = IPool(pools[u][m]);
+        Safe.transferFrom(IErc20(address(pool.underlying())), msg.sender, address(pool), underlyingAmount);
+        Safe.transferFrom(IErc20(address(pool.PT())), msg.sender, address(pool), principalTokenAmount);
+        return pool.mint(msg.sender, msg.sender, minRatio, maxRatio);
+    }
+
+    /// @dev Mint liquidity tokens in exchange for adding only underlying
+    /// The amount of liquidity tokens is calculated from the amount of PT to buy from the pool,
+    /// plus the amount of unaccounted for PT in this contract.
+    /// The underlying tokens need to be present in this contract, unaccounted for.
+    /// @param u the address of the underlying token
+    /// @param m the maturity of the principal token
+    /// @param a the underlying amount being sent
+    /// @param ptBought Amount of `PT` being bought in the Pool, from this we calculate how much underlying it will be taken in.
+    /// @param minRatio Minimum ratio of underlying to PT in the pool.
+    /// @param maxRatio Maximum ratio of underlying to PT in the pool.
+    /// @return The amount of liquidity tokens minted.
+    function mintWithUnderlying(
+        address u,
+        uint256 m,
+        uint256 a,
+        uint256 ptBought,
+        uint256 minRatio,
+        uint256 maxRatio
+    )
+        external
+        returns (
+            uint256,
+            uint256,
+            uint256
+        )
+    {
+        IPool pool = IPool(pools[u][m]);
+        Safe.transferFrom(IErc20(address(pool.underlying())), msg.sender, address(pool), a);
+        return pool.mintWithUnderlying(msg.sender, msg.sender, ptBought, minRatio, maxRatio);
+    }
+
+    /// @dev Burn liquidity tokens in exchange for underlying and PT.
+    /// The liquidity tokens need to be in this contract.
+    /// @param minRatio Minimum ratio of underlying to PT in the pool.
+    /// @param maxRatio Maximum ratio of underlying to PT in the pool.
+    /// @return The amount of tokens burned and returned (tokensBurned, underlyings, PTs).
+    function burn(
+        address u,
+        uint256 m,
+        uint256 minRatio,
+        uint256 maxRatio
+    )
+        external
+        returns (
+            uint256,
+            uint256,
+            uint256
+        )
+    {
+        return IPool(pools[u][m]).burn(msg.sender, msg.sender, minRatio, maxRatio);
+    }
+
+    /// @dev Burn liquidity tokens in exchange for underlying.
+    /// @param minRatio Minimum ratio of underlying to PT in the pool.
+    /// @param maxRatio Minimum ratio of underlying to PT in the pool.
+    /// @return tokensBurned The amount of lp tokens burned.
+    /// @return underlyingOut The amount of underlying tokens returned.
+    function burnForUnderlying(
+        address u,
+        uint256 m,
+        uint256 minRatio,
+        uint256 maxRatio
+    ) external returns (uint256 tokensBurned, uint256 underlyingOut) {
+        return IPool(pools[u][m]).burnForUnderlying(msg.sender, minRatio, maxRatio);
+    }
+
     modifier authorized(address a) {
         if (msg.sender != a) {
             revert Unauthorized();
