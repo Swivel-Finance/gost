@@ -33,7 +33,7 @@ contract MarketPlace {
     /// should be ordered in that way
     mapping(address => mapping(uint256 => address[9])) public markets;
 
-    mapping(address => mapping(uint256 => address[9])) public pools;
+    mapping(address => mapping(uint256 => address)) public pools;
 
     address public admin;
     /// @notice address of the deployed redeemer contract
@@ -47,6 +47,25 @@ contract MarketPlace {
     constructor(address r) {
         admin = msg.sender;
         redeemer = r;
+    }
+
+    /// @notice allows the admin to create a market
+    /// @param p enum value of the principal token
+    /// @param u underlying token address
+    /// @param m maturity timestamp for the market
+    /// @param a address of the new market
+    /// @return bool true if successful
+    function setMarket(
+        uint8 p,
+        address u,
+        uint256 m,
+        address a
+    ) external authorized(admin) returns (bool) {
+        if (markets[u][m][p] != address(0)) {
+            revert Exists('Market already exists');
+        }
+        markets[u][m][p] = a;
+        return true;
     }
 
     /// @notice creates a new market for the given underlying token and maturity
@@ -107,21 +126,19 @@ contract MarketPlace {
     }
 
     /// @notice sets the address for a pool
-    /// @param p enum value of the principal token
     /// @param u address of the underlying asset
     /// @param m maturity (timestamp) of the market
     /// @param a address of the pool
     /// @return bool true if successful
     function setPool(
-        uint8 p,
         address u,
         uint256 m,
         address a
     ) external authorized(admin) returns (bool) {
-        if (pools[u][m][p] != address(0)) {
+        if (pools[u][m] != address(0)) {
             revert Exists('pool already exists');
         }
-        pools[u][m][p] = a;
+        pools[u][m] = a;
         return true;
     }
 
@@ -137,7 +154,7 @@ contract MarketPlace {
         uint256 m,
         uint128 a
     ) external unpaused(p) returns (uint128) {
-        IPool pool = IPool(pools[u][m][p]);
+        IPool pool = IPool(pools[u][m]);
         Safe.transfer(IErc20(address(pool.principalToken())), address(pool), a);
         return pool.sellPrincipalToken(msg.sender, pool.sellPrincipalTokenPreview(a));
     }
@@ -154,7 +171,7 @@ contract MarketPlace {
         uint256 m,
         uint128 a
     ) external unpaused(p) returns (uint128) {
-        IPool pool = IPool(pools[u][m][p]);
+        IPool pool = IPool(pools[u][m]);
         Safe.transfer(IErc20(address(pool.underlying())), address(pool), a);
         return pool.buyPrincipalToken(msg.sender, pool.buyPrincipalTokenPreview(a), a);
     }
@@ -171,7 +188,7 @@ contract MarketPlace {
         uint256 m,
         uint128 a
     ) external unpaused(p) returns (uint128) {
-        IPool pool = IPool(pools[u][m][p]);
+        IPool pool = IPool(pools[u][m]);
         Safe.transfer(IErc20(address(pool.underlying())), address(pool), a);
         return pool.sellUnderlying(msg.sender, pool.sellUnderlyingPreview(a));
     }
@@ -188,7 +205,7 @@ contract MarketPlace {
         uint256 m,
         uint128 a
     ) external unpaused(p) returns (uint128) {
-        IPool pool = IPool(pools[u][m][p]);
+        IPool pool = IPool(pools[u][m]);
         Safe.transfer(IErc20(address(pool.principalToken())), address(pool), a);
         return pool.buyUnderlying(msg.sender, pool.buyUnderlyingPreview(a), a);
     }

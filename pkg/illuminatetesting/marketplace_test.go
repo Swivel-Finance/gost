@@ -116,7 +116,7 @@ func (s *marketplaceTestSuite) TestBuyPt() {
 	amount := big.NewInt(1000000000000000000)
 	returnAmount := new(big.Int).Sub(amount, big.NewInt(5))
 
-	s.MarketPlace.SetPool(0, s.Dep.Erc20Address, maturity, s.Dep.PoolAddress)
+	s.MarketPlace.SetPool(s.Dep.Erc20Address, maturity, s.Dep.PoolAddress)
 	s.Env.Blockchain.Commit()
 
 	s.Pool.UnderlyingReturns(s.Dep.Erc20Address)
@@ -161,7 +161,7 @@ func (s *marketplaceTestSuite) TestSellPt() {
 	amount := big.NewInt(1000000000000000000)
 	returnAmount := new(big.Int).Sub(amount, big.NewInt(5))
 
-	s.MarketPlace.SetPool(0, s.Dep.Erc20Address, maturity, s.Dep.PoolAddress)
+	s.MarketPlace.SetPool(s.Dep.Erc20Address, maturity, s.Dep.PoolAddress)
 	s.Env.Blockchain.Commit()
 
 	s.Pool.PrincipalTokenReturns(s.Dep.Erc20Address)
@@ -208,7 +208,7 @@ func (s *marketplaceTestSuite) TestBuyUnderlying() {
 	amount := big.NewInt(1000000000000000000)
 	returnAmount := new(big.Int).Sub(amount, big.NewInt(5))
 
-	s.MarketPlace.SetPool(0, s.Dep.Erc20Address, maturity, s.Dep.PoolAddress)
+	s.MarketPlace.SetPool(s.Dep.Erc20Address, maturity, s.Dep.PoolAddress)
 	s.Env.Blockchain.Commit()
 
 	s.Pool.PrincipalTokenReturns(s.Dep.Erc20Address)
@@ -253,7 +253,7 @@ func (s *marketplaceTestSuite) TestSellUnderlying() {
 	amount := big.NewInt(1000000000000000000)
 	returnAmount := new(big.Int).Sub(amount, big.NewInt(5))
 
-	s.MarketPlace.SetPool(0, s.Dep.Erc20Address, maturity, s.Dep.PoolAddress)
+	s.MarketPlace.SetPool(s.Dep.Erc20Address, maturity, s.Dep.PoolAddress)
 	s.Env.Blockchain.Commit()
 
 	s.Pool.UnderlyingReturns(s.Dep.Erc20Address)
@@ -285,6 +285,25 @@ func (s *marketplaceTestSuite) TestSellUnderlying() {
 	transferAmount, err := s.Erc20.TransferCalled(s.Dep.PoolAddress)
 	assert.Nil(err)
 	assert.Equal(amount, transferAmount)
+}
+
+func (s *marketplaceTestSuite) TestSetIndividualMarket() {
+	assert := assert.New(s.T())
+
+	s.MarketPlace.Pause(0, true)
+	s.Env.Blockchain.Commit()
+
+	maturity := big.NewInt(100000)
+	pool := common.HexToAddress("0x0000000000000000000000000000000000000001")
+	principal := uint8(3)
+	tx, err := s.MarketPlace.SetMarket(principal, s.Dep.Erc20Address, maturity, pool)
+	assert.NoError(err)
+	assert.NotNil(tx)
+	s.Env.Blockchain.Commit()
+
+	addr, err := s.MarketPlace.Markets(s.Dep.Erc20Address, maturity, big.NewInt(int64(principal)))
+	assert.NoError(err)
+	assert.Equal(pool, addr)
 }
 
 func (s *marketplaceTestSuite) TestPasuedPools() {
