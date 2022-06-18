@@ -3,7 +3,7 @@
 pragma solidity 0.8.13;
 
 import './Interfaces.sol';
-import './ZcToken.sol';
+import './ERC5095.sol';
 import './Safe.sol';
 
 contract MarketPlace {
@@ -73,7 +73,7 @@ contract MarketPlace {
 
         // deploy an illuminate token with this new market
         // NOTE: ATM is using name as symbol args
-        address iToken = address(new ZcToken(u, m, n, s, d));
+        address iToken = address(new ERC5095(u, m, redeemer, n, s, d));
 
         // the market will have the illuminate principal as its zeroth item, thus t should have Principals[1] as [0]
         // TODO we could choose to put illuminate last in
