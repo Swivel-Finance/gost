@@ -44,6 +44,13 @@ contract Redeemer {
         apwineAddr = a;
     }
 
+    /// @param a Address of a new admin
+    function setAdmin(address a) external authorized(admin) returns (bool) {
+        admin = a;
+
+        return true;
+    }
+
     /// @notice Sets the address of the marketplace contract which contains the
     /// addresses of all the fixed rate markets
     /// @param m the address of the marketplace contract

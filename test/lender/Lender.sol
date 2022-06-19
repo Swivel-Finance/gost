@@ -18,7 +18,7 @@ contract Lender {
     uint256 constant public HOLD = 3 days;
 
 
-    address public immutable admin;
+    address public admin;
     address public marketPlace;
 
     /// @dev addresses of the 3rd party protocol contracts
@@ -111,6 +111,13 @@ contract Lender {
                 i++;
             }
         }
+        return true;
+    }
+
+    /// @param a Address of a new admin
+    function setAdmin(address a) external authorized(admin) returns (bool) {
+        admin = a;
+
         return true;
     }
 
@@ -468,9 +475,11 @@ contract Lender {
         ISenseToken token = ISenseToken(IMarketPlace(marketPlace).markets(u, m, p));
 
         // Verify that the underlying and maturity match up
-        if (token.underlying() != u) {
-            revert NotEqual('underlying');
-        } else if (ISense(x).maturity() > m) {
+        if (token.underlying() != u) { // gauruntee the input token is the right token
+            revert NotEqual('underlying'); 
+        } else if (ISense(s).pt() != address(token)) {
+            revert NotEqual('principal token'); 
+        } else if (ISense(x).maturity() > m) { // gauruntee the input amm has the correct maturity
             revert NotEqual('maturity');
         }
 
@@ -525,6 +534,8 @@ contract Lender {
         if (IAPWineToken(principal).getUnderlyingOfIBTAddress() != u) {
             revert NotEqual('underlying');
         }
+        // Dont necessarily need to validate APWINE maturity (They have 1 maturity per underlying)
+        // Potentially add redundant implied maturity calculation
 
         // Transfer funds from user to Illuminate
         Safe.transferFrom(IERC20(u), msg.sender, address(this), a);
@@ -539,7 +550,6 @@ contract Lender {
         uint256 lent = a - fee;
 
         // Deposit into aave
-        // TODO: Get a referral code and use it to deposit
         IAave(aave).deposit(u, lent, address(this), 0);
 
         // Swap on the APWine Pool using the provided market and params
@@ -609,14 +619,11 @@ contract Lender {
         address y,
         uint256 a
     ) internal returns (uint256) {
-        // TODO: This is definitely a bug. The returned variable should be returned
-        // by the method, but the original amount should still be sent to the pool.
-
         // preview exact swap slippage on yield
         uint128 returned = IYield(y).sellBasePreview(Cast.u128(a));
 
         // send the remaing amount to the given yield pool
-        Safe.transfer(IERC20(u), y, returned);
+        Safe.transfer(IERC20(u), y, a);
 
         // lend out the remaining tokens in the yield pool
         IYield(y).sellBase(address(this), returned);

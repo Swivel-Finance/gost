@@ -220,6 +220,7 @@ interface ISense {
     ) external returns (uint256);
 
     function maturity() external returns (uint256);
+    function pt() external returns (address);
 }
 
 interface ISenseToken {

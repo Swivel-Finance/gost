@@ -46,9 +46,11 @@ contract MarketPlace {
     event CreateMarket(address indexed underlying, uint256 indexed maturity);
 
     /// @param r address of the deployed redeemer contract
-    constructor(address r) {
+    /// @param l address of the deployed lender contract
+    constructor(address r, address l) {
         admin = msg.sender;
         redeemer = r;
+        lender = l;
     }
 
     /// @notice creates a new market for the given underlying token and maturity
@@ -95,6 +97,13 @@ contract MarketPlace {
     /// @return bool true if successful
     function pause(uint8 p, bool s) external authorized(admin) returns (bool) {
         paused[p] = s;
+        return true;
+    }
+
+    /// @param a Address of a new admin
+    function setAdmin(address a) external authorized(admin) returns (bool) {
+        admin = a;
+
         return true;
     }
 
