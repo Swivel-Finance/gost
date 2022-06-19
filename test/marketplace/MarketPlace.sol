@@ -128,8 +128,8 @@ contract MarketPlace {
         uint128 a
     ) external unpaused(p) returns (uint128) {
         IPool pool = IPool(pools[u][m]);
-        Safe.transfer(IErc20(address(pool.principalToken())), address(pool), a);
-        return pool.sellPrincipalToken(msg.sender, pool.sellPrincipalTokenPreview(a));
+        Safe.transfer(IERC20(address(pool.fyToken())), address(pool), a);
+        return pool.sellFYToken(msg.sender, pool.sellFYTokenPreview(a));
     }
 
     /// @notice buys the underlying for the PT via the pool
@@ -145,8 +145,8 @@ contract MarketPlace {
         uint128 a
     ) external unpaused(p) returns (uint128) {
         IPool pool = IPool(pools[u][m]);
-        Safe.transfer(IErc20(address(pool.underlying())), address(pool), a);
-        return pool.buyPrincipalToken(msg.sender, pool.buyPrincipalTokenPreview(a), a);
+        Safe.transfer(IERC20(address(pool.base())), address(pool), a);
+        return pool.buyFYToken(msg.sender, pool.buyFYTokenPreview(a), a);
     }
 
     /// @notice sells the underlying for the PT via the pool
@@ -162,8 +162,8 @@ contract MarketPlace {
         uint128 a
     ) external unpaused(p) returns (uint128) {
         IPool pool = IPool(pools[u][m]);
-        Safe.transfer(IErc20(address(pool.underlying())), address(pool), a);
-        return pool.sellUnderlying(msg.sender, pool.sellUnderlyingPreview(a));
+        Safe.transfer(IERC20(address(pool.base())), address(pool), a);
+        return pool.sellBase(msg.sender, pool.sellBasePreview(a));
     }
 
     /// @notice buys the underlying for the PT via the pool
@@ -179,8 +179,8 @@ contract MarketPlace {
         uint128 a
     ) external unpaused(p) returns (uint128) {
         IPool pool = IPool(pools[u][m]);
-        Safe.transfer(IErc20(address(pool.principalToken())), address(pool), a);
-        return pool.buyUnderlying(msg.sender, pool.buyUnderlyingPreview(a), a);
+        Safe.transfer(IERC20(address(pool.fyToken())), address(pool), a);
+        return pool.buyBase(msg.sender, pool.buyBasePreview(a), a);
     }
 
     modifier authorized(address a) {

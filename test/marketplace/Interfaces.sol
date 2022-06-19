@@ -169,7 +169,7 @@ interface IRedeemer {
 }
 
 interface IPool {
-    function principalToken() external returns (IERC5095);
+    function fyToken() external returns (IERC5095);
 
     function base() external returns (address);
 
@@ -177,15 +177,15 @@ interface IPool {
 
     function buyBase(address, uint128, uint128) external returns (uint128);
 
-    function sellPrincipalToken(address, uint128) external returns (uint128);
+    function sellFYToken(address, uint128) external returns (uint128);
 
-    function buyPrincipalToken(address, uint128, uint128) external returns (uint128);
+    function buyFYToken(address, uint128, uint128) external returns (uint128);
 
     function sellBasePreview(uint128) external returns (uint128);
 
     function buyBasePreview(uint128) external returns (uint128);
 
-    function sellPrincipalTokenPreview(uint128) external returns (uint128);
+    function sellFYTokenPreview(uint128) external returns (uint128);
 
-    function buyPrincipalTokenPreview(uint128) external returns (uint128);
+    function buyFYTokenPreview(uint128) external returns (uint128);
 }

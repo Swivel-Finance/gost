@@ -88,11 +88,11 @@ contract Redeemer {
         address principal = IMarketPlace(marketPlace).markets(u, m, p);
 
         // Get the amount of tokens to be redeemed from the principal token
-        uint256 amount = IErc20(principal).balanceOf(lender);
+        uint256 amount = IERC20(principal).balanceOf(lender);
 
         // Transfer the underlying token to the redeem contract if it is not illuminate
         if (p != uint8(MarketPlace.Principals.Illuminate)) {
-            Safe.transferFrom(IErc20(u), lender, address(this), amount);
+            Safe.transferFrom(IERC20(u), lender, address(this), amount);
         }
 
         if (p == uint8(MarketPlace.Principals.Apwine)) {
@@ -111,7 +111,7 @@ contract Redeemer {
             // Burn the prinicipal token from illuminate
             token.burn(o, amount);
             // Transfer the original underlying token back to the user
-            Safe.transferFrom(IErc20(u), lender, address(this), amount);
+            Safe.transferFrom(IERC20(u), lender, address(this), amount);
         } else {
             revert Invalid('principal');
         }
@@ -145,10 +145,10 @@ contract Redeemer {
         }
 
         // The amount redeemed should be the balance of the principal token held by the illuminate contract
-        uint256 amount = IErc20(principal).balanceOf(lender);
+        uint256 amount = IERC20(principal).balanceOf(lender);
 
         // Transfer the principal token from the marketplace contract to here
-        Safe.transferFrom(IErc20(principal), lender, address(this), amount);
+        Safe.transferFrom(IERC20(principal), lender, address(this), amount);
 
         if (p == uint8(MarketPlace.Principals.Swivel)) {
             // Redeems zc tokens to the sender's address
@@ -187,7 +187,7 @@ contract Redeemer {
         }
 
         // Get the principal token that is being redeemed by the user
-        IErc20 token = IErc20(IMarketPlace(marketPlace).markets(u, m, p));
+        IERC20 token = IERC20(IMarketPlace(marketPlace).markets(u, m, p));
 
         // Get the balance of tokens to be redeemed by the user
         uint256 amount = token.balanceOf(lender);
@@ -219,7 +219,7 @@ contract Redeemer {
         }
 
         // Get the principal token for the given market
-        IErc20 token = IErc20(IMarketPlace(marketPlace).markets(u, m, p));
+        IERC20 token = IERC20(IMarketPlace(marketPlace).markets(u, m, p));
 
         // Get the balance of tokens to be redeemed by the user
         uint256 amount = token.balanceOf(lender);
@@ -262,7 +262,7 @@ contract Redeemer {
         pt.burn(f, a);
 
         // Transfer the original underlying token back to the user
-        Safe.transfer(IErc20(u), t, a);
+        Safe.transfer(IERC20(u), t, a);
         return true;
     }
 
