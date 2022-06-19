@@ -15,13 +15,13 @@ contract Lender {
     error Exists(address);
     error Invalid(string);
 
-    address public admin;
+    address public immutable admin;
     address public marketPlace;
 
     /// @dev addresses of the 3rd party protocol contracts
     address public swivelAddr;
-    address public pendleAddr;
-    address public tempusAddr;
+    address public immutable pendleAddr;
+    address public immutable tempusAddr;
 
     uint256 public feenominator;
 
@@ -121,6 +121,14 @@ contract Lender {
             revert Exists(marketPlace);
         }
         marketPlace = m;
+        return true;
+    }
+
+    /// @notice Sets the feenominator to the given value
+    /// @param s the address of the Swivel.sol Router
+    /// @return bool true if successful
+    function setSwivel(address s) external authorized(admin) returns (bool) {
+        swivelAddr = s;
         return true;
     }
 
