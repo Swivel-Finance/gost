@@ -228,6 +228,7 @@ contract Redeemer {
     /// @param m maturity of the market being redeemed
     /// @param d sense contract that splits the loan's prinicpal and yield
     /// @param o sense contract that [d] calls into to adapt the underlying to sense
+    /// @return bool true if the redemption was successful
     function redeem(
         uint8 p,
         address u,

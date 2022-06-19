@@ -115,9 +115,9 @@ contract Lender {
     }
 
     /// @param a Address of a new admin
+    /// @return bool true if successful
     function setAdmin(address a) external authorized(admin) returns (bool) {
         admin = a;
-
         return true;
     }
 
@@ -300,6 +300,7 @@ contract Lender {
     /// @param d deadline is a timestamp by which the swap must be executed deadline is a timestamp by which the swap must be executed
     /// @param e element pool that is lent to
     /// @param i the id of the pool
+    /// @return uint256 the amount of principal tokens lent out
     function lend(
         uint8 p,
         address u,
@@ -668,28 +669,29 @@ contract Lender {
 
     /// @notice Allows the admin to schedule the withdrawal of tokens
     /// @param e Address of (erc20) token to withdraw
+    /// @return bool true if successful
     function scheduleWithdrawal(address e) external authorized(admin) returns (bool) {
         uint256 when = block.timestamp + HOLD;
         withdrawals[e] = when;
 
         emit ScheduleWithdrawal(e, when);
-
         return true;
     }
 
     /// @notice Emergency function to block unplanned withdrawals
     /// @param e Address of token withdrawal to block
+    /// @return bool true if successful
     function blockWithdrawal(address e) external authorized(admin) returns (bool) {
         withdrawals[e] = 0;
 
         emit BlockWithdrawal(e);
-
         return true;
     }
 
     /// @notice Allows the admin to withdraw the given token, provided the holding 
     /// period has been observed
     /// @param e Address of token to withdraw
+    /// @return bool true if successful
     function withdraw(address e) external authorized(admin) returns (bool) {
         uint256 when = withdrawals[e];
         require (when != 0, 'no withdrawal scheduled');
