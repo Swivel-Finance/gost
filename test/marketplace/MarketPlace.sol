@@ -38,6 +38,8 @@ contract MarketPlace {
     address public admin;
     /// @notice address of the deployed redeemer contract
     address public immutable redeemer;
+    /// @notice address of the deployed lender contract
+    address public immutable lender;
     /// @notice flag that determines if a principal's pool is available
     bool[9] public paused = [false, false, false, false, false, false, false, false, false];
 
@@ -73,7 +75,7 @@ contract MarketPlace {
 
         // deploy an illuminate token with this new market
         // NOTE: ATM is using name as symbol args
-        address iToken = address(new ERC5095(u, m, redeemer, n, s, d));
+        address iToken = address(new ERC5095(u, m, redeemer, lender, n, s, d));
 
         // the market will have the illuminate principal as its zeroth item, thus t should have Principals[1] as [0]
         // TODO we could choose to put illuminate last in

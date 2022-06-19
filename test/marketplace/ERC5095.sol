@@ -9,17 +9,20 @@ contract ERC5095 is ERC20Permit, IERC5095 {
     uint256 public override immutable maturity;
     /// @dev address of the ERC20 token that is returned on ERC5095 redemption
     address public override immutable underlying;
+    /// @dev address of the minting authority
+    address public immutable lender;
     
     /////////////OPTIONAL///////////////// (Allows the calculation and distribution of yield post maturity)
     /// @dev address and interface for an external custody contract (necessary for some project's backwards compatability)
-    IRedeemer public immutable redeemer;
+    address public immutable redeemer;
 
     error Maturity(uint256 timestamp);  
 
-    constructor(address _underlying, uint256 _maturity, address _redeemer, string memory name_, string memory symbol_, uint8 decimals_) ERC20Permit(name_, symbol_, decimals_) {
+    constructor(address _underlying, uint256 _maturity, address _redeemer, address l, string memory name_, string memory symbol_, uint8 decimals_) ERC20Permit(name_, symbol_, decimals_) {
         underlying = _underlying;
         maturity = _maturity;
-        redeemer = IRedeemer(_redeemer);
+        redeemer = _redeemer;
+        lender = l;
     }
 
     /// @notice Post maturity converts an amount of principal tokens to an amount of underlying that would be returned. Returns 0 pre-maturity.
@@ -91,11 +94,11 @@ contract ERC5095 is ERC20Permit, IERC5095 {
             revert Maturity(maturity);
         }
         if (holder == msg.sender) {
-            return redeemer.authRedeem(underlying, maturity, msg.sender, receiver, underlyingAmount);
+            return IRedeemer(redeemer).authRedeem(underlying, maturity, msg.sender, receiver, underlyingAmount);
         }
         else {
             require(_allowance[holder][msg.sender] >= underlyingAmount, 'not enough approvals');
-            return redeemer.authRedeem(underlying, maturity, holder, receiver, underlyingAmount);     
+            return IRedeemer(redeemer).authRedeem(underlying, maturity, holder, receiver, underlyingAmount);     
         }
     }
 
@@ -107,11 +110,31 @@ contract ERC5095 is ERC20Permit, IERC5095 {
             revert Maturity(maturity);
         }
         if (holder == msg.sender) {
-            return redeemer.authRedeem(underlying, maturity, msg.sender, receiver, principalAmount);
+            return IRedeemer(redeemer).authRedeem(underlying, maturity, msg.sender, receiver, principalAmount);
         }
         else {
             require(_allowance[holder][msg.sender] >= underlyingAmount, 'not enough approvals');
-            return redeemer.authRedeem(underlying, maturity, holder, receiver, principalAmount);     
+            return IRedeemer(redeemer).authRedeem(underlying, maturity, holder, receiver, principalAmount);     
         }
+    }
+
+    /// @param f Address to burn from
+    /// @param a Amount to burn
+    function burn(address f, uint256 a) external onlyAdmin(redeemer) returns (bool) {
+        _burn(f, a);
+        return true;
+    }
+
+    /// @param t Address recieving the minted amount
+    /// @param a The amount to mint
+    function mint(address t, uint256 a) external onlyAdmin(lender) returns (bool) {
+        _mint(t, a);
+        return true;
+    }
+
+    /// @param a Admin address
+    modifier onlyAdmin(address a) {
+    require(msg.sender == a, 'sender must be admin');
+    _;
     }
 }

@@ -88,7 +88,6 @@ contract Lender {
         if (len != a.length) {
             revert NotEqual('array length');
         }
-
         uint256 max = 2**256 - 1;
 
         for (uint256 i; i < len; ) {
@@ -100,7 +99,6 @@ contract Lender {
                 i++;
             }
         }
-
         return true;
     }
 
@@ -151,7 +149,7 @@ contract Lender {
         //use safe transfer lib and ERC interface...
         Safe.transferFrom(IERC20(principal), msg.sender, address(this), a);
         //use zctoken interface...
-        IZcToken(zcToken(u, m)).mint(msg.sender, a);
+        IERC5095(principalToken(u, m)).mint(msg.sender, a);
 
         emit Mint(p, u, m, a);
 
@@ -163,7 +161,7 @@ contract Lender {
     /// @param u address of an underlying asset
     /// @param m maturity (timestamp) of the market
     /// @param a amount of underlying tokens to lend
-    /// @param y yield pool that will execute the swap for the principal token
+    /// @param y yieldspace pool that will execute the swap for the principal token
     /// @return uint256 the amount of principal tokens lent out
     function lend(
         uint8 p,
@@ -195,7 +193,7 @@ contract Lender {
         // this step is only needed when the lend is for yield
         if (p == uint8(MarketPlace.Principals.Yield)) {
             // TODO should we require on this?
-            IZcToken(zcToken(u, m)).mint(msg.sender, returned);
+            IERC5095(principalToken(u, m)).mint(msg.sender, returned);
         }
 
         emit Lend(p, u, m, returned);
@@ -379,8 +377,8 @@ contract Lender {
         uint256 returned = IPendle(pendleAddr).swapExactTokensForTokens(a - calculateFee(a), r, path, address(this), d)[0];
 
         // Mint Illuminate zero coupons
-        address illuminateToken = zcToken(u, m);
-        IZcToken(illuminateToken).mint(msg.sender, returned);
+        address illuminateToken = principalToken(u, m);
+        IERC5095(illuminateToken).mint(msg.sender, returned);
 
         emit Lend(p, u, m, returned);
 
@@ -431,7 +429,7 @@ contract Lender {
         fees[u] += calculateFee(a);
 
         // Swap on the Tempus Router using the provided market and params
-        IZcToken illuminateToken = IZcToken(zcToken(u, m));
+        IERC5095 illuminateToken = IERC5095(principalToken(u, m));
         uint256 returned = ITempus(tempusAddr).depositAndFix(Any(x), Any(t), a - calculateFee(a), true, r, d) -
             illuminateToken.balanceOf(address(this));
 
@@ -496,7 +494,7 @@ contract Lender {
         uint256 returned = ISense(x).swapUnderlyingForPTs(s, m, lent, r);
 
         // Get the address of the ZC token for this market
-        IZcToken illuminateToken = IZcToken(zcToken(u, m));
+        IERC5095 illuminateToken = IERC5095(principalToken(u, m));
 
         // Mint the illuminate tokens based on the returned amount
         illuminateToken.mint(msg.sender, returned);
@@ -556,7 +554,7 @@ contract Lender {
         uint256 returned = IAPWineRouter(pool).swapExactAmountIn(i, 1, lent, 0, r, address(this));
 
         // Mint Illuminate zero coupons
-        IZcToken(zcToken(u, m)).mint(msg.sender, returned);
+        IERC5095(principalToken(u, m)).mint(msg.sender, returned);
 
         emit Lend(p, u, m, returned);
 
@@ -604,8 +602,8 @@ contract Lender {
         uint256 returned = token.deposit(a - fee, address(this));
 
         // Mint Illuminate zero coupons
-        address illuminateToken = zcToken(u, m);
-        IZcToken(illuminateToken).mint(msg.sender, returned);
+        address illuminateToken = principalToken(u, m);(u, m);
+        IERC5095(illuminateToken).mint(msg.sender, returned);
 
         emit Lend(p, u, m, returned);
 
@@ -669,7 +667,7 @@ contract Lender {
     /// @param u address of the underlying
     /// @param m uint256 representing the maturity of the market
     /// @return address of the zc token for the market
-    function zcToken(address u, uint256 m) internal returns (address) {
+    function principalToken(address u, uint256 m) internal returns (address) {
         return IMarketPlace(marketPlace).markets(u, m, 0);
     }
 
