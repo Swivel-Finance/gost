@@ -47,6 +47,7 @@ modifier {{name}}{{#if natspec.params}}(
 {{#natspec.params}}
 |`{{param}}` | {{#lookup ../args.types @index}}{{/lookup}} | {{description}} {{~"|"}}
 {{~/natspec.params}}
+
 {{/if}}
 
 {{/ownModifiers}}

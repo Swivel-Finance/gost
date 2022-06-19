@@ -6,11 +6,14 @@ import './Interfaces.sol';
 import './ERC5095.sol';
 import './Safe.sol';
 
+/// @title MarketPlace
+/// @author Sourabh Marathe, Julian Traversa, Rob Robbins
+/// @notice This contract is in charge of managing the avaialable principals for each loan market.
+/// @notice In addition, this contract routes swap orders between metaprincipal tokens and their respective underlying to YieldSpace pools.
 contract MarketPlace {
     /// @notice the available principals
     /// @dev the order of this enum is used to select principals from the markets
-    /// mapping
-    /// @dev e.g. Illuminate => 0, Swivel => 1, and so on
+    /// mapping (e.g. Illuminate => 0, Swivel => 1, and so on)
     enum Principals {
         Illuminate,
         Swivel,
@@ -27,14 +30,14 @@ contract MarketPlace {
     error Unauthorized();
     error Invalid(string);
 
-    /// markets are defined by a market pair which point to a fixed length array
-    /// of principal token addresses. The principal tokens those addresses
-    /// represent correspond to their Principals enum value, thus the array
-    /// should be ordered in that way
+    /// @notice markets are defined by a market pair which point to a fixed length array of principal token addresses. 
+    /// @notice The principal tokens those addresses represent correspond to their Principals enum value, thus the array should be ordered in that way
     mapping(address => mapping(uint256 => address[9])) public markets;
 
+    /// @notice pools map markets to their respective YieldSpace pools for the MetaPrincipal token
     mapping(address => mapping(uint256 => address)) public pools;
 
+    /// @notice address that is allowed to create markets, set fees, etc. It is commonly used in the authorized modifier.
     address public admin;
     /// @notice address of the deployed redeemer contract
     address public immutable redeemer;
@@ -43,8 +46,10 @@ contract MarketPlace {
     /// @notice flag that determines if a principal's pool is available
     bool[9] public paused = [false, false, false, false, false, false, false, false, false];
 
+    /// @notice emitted upon the creation of a new market
     event CreateMarket(address indexed underlying, uint256 indexed maturity);
 
+    /// @notice intializes the MarketPlace contract
     /// @param r address of the deployed redeemer contract
     /// @param l address of the deployed lender contract
     constructor(address r, address l) {
@@ -54,11 +59,9 @@ contract MarketPlace {
     }
 
     /// @notice creates a new market for the given underlying token and maturity
-    /// @notice all seven principals should be provided in the order of their enum value
     /// @param u address of an underlying asset
     /// @param m maturity (timestamp) of the market
-    /// @param t principal token addresses for this market minus the illuminate
-    /// principal (which is added here)
+    /// @param t principal token addresses for this market minus the illuminate principal (which is added here)
     /// @param n name for the illuminate token
     /// @param s symbol for the illuminate token
     /// @param d decimals for the illuminate token
@@ -76,7 +79,6 @@ contract MarketPlace {
         }
 
         // deploy an illuminate token with this new market
-        // NOTE: ATM is using name as symbol args
         address iToken = address(new ERC5095(u, m, redeemer, lender, n, s, d));
 
         // the market will have the illuminate principal as its zeroth item, thus t should have Principals[1] as [0]
@@ -98,6 +100,7 @@ contract MarketPlace {
         return true;
     }
 
+    /// @notice sets the admin address
     /// @param a Address of a new admin
     /// @return bool true if successful
     function setAdmin(address a) external authorized(admin) returns (bool) {
@@ -190,17 +193,16 @@ contract MarketPlace {
         return pool.buyBase(msg.sender, pool.buyBasePreview(a), a);
     }
 
-    //////////LIQUIDITY PROVIDER METHODS//////////////////
-    /// @dev Mint liquidity tokens in exchange for adding underlying and PT
-    /// The amount of liquidity tokens to mint is calculated from the amount of unaccounted for PT in this contract.
-    /// A proportional amount of underlying tokens need to be present in this contract, also unaccounted for.
+    /// @notice mint liquidity tokens in exchange for adding underlying and PT
+    /// @dev amount of liquidity tokens to mint is calculated from the amount of unaccounted for PT in this contract.
+    /// @dev A proportional amount of underlying tokens need to be present in this contract, also unaccounted for.
     /// @param u the address of the underlying token
     /// @param m the maturity of the principal token
     /// @param uA the underlying amount being sent
     /// @param ptA the principal token amount being sent
-    /// @param minRatio Minimum ratio of underlying to PT in the pool.
-    /// @param maxRatio Maximum ratio of underlying to PT in the pool.
-    /// @return The amount of liquidity tokens minted.
+    /// @param minRatio minimum ratio of underlying to PT in the pool.
+    /// @param maxRatio maximum ratio of underlying to PT in the pool.
+    /// @return uint256 the amount of liquidity tokens minted.
     function mint(address u, uint256 m, uint256 uA, uint256 ptA, uint256 minRatio, uint256 maxRatio) external returns (uint256, uint256, uint256) {
         IPool pool = IPool(pools[u][m]);
         Safe.transferFrom(ERC20(address(pool.base())), msg.sender, address(pool), uA);  
@@ -208,40 +210,45 @@ contract MarketPlace {
         return pool.mint(msg.sender, msg.sender, minRatio, maxRatio);
     }
 
-    /// @dev Mint liquidity tokens in exchange for adding only underlying
-    /// The amount of liquidity tokens is calculated from the amount of PT to buy from the pool,
+    /// @notice Mint liquidity tokens in exchange for adding only underlying
+    /// @dev amount of liquidity tokens is calculated from the amount of PT to buy from the pool,
     /// plus the amount of unaccounted for PT in this contract.
-    /// The underlying tokens need to be present in this contract, unaccounted for.
     /// @param u the address of the underlying token
     /// @param m the maturity of the principal token
     /// @param a the underlying amount being sent
-    /// @param ptBought Amount of `PT` being bought in the Pool, from this we calculate how much underlying it will be taken in.
-    /// @param minRatio Minimum ratio of underlying to PT in the pool.
-    /// @param maxRatio Maximum ratio of underlying to PT in the pool.
-    /// @return The amount of liquidity tokens minted.
+    /// @param ptBought amount of `PT` being bought in the Pool, from this we calculate how much underlying it will be taken in.
+    /// @param minRatio minimum ratio of underlying to PT in the pool.
+    /// @param maxRatio maximum ratio of underlying to PT in the pool.
+    /// @return uint256 the amount of liquidity tokens minted
     function mintWithUnderlying(address u, uint256 m, uint256 a, uint256 ptBought, uint256 minRatio, uint256 maxRatio) external returns (uint256, uint256, uint256) {
         IPool pool = IPool(pools[u][m]);
         Safe.transferFrom(ERC20(address(pool.base())), msg.sender, address(pool), a);
         return pool.mintWithBase(msg.sender, msg.sender, ptBought, minRatio, maxRatio);
     }
 
-    /// @dev Burn liquidity tokens in exchange for underlying and PT.
-    /// The liquidity tokens need to be in this contract.
-    /// @param minRatio Minimum ratio of underlying to PT in the pool.
-    /// @param maxRatio Maximum ratio of underlying to PT in the pool.
-    /// @return The amount of tokens burned and returned (tokensBurned, underlyings, PTs).
+    /// @notice burn liquidity tokens in exchange for underlying and PT.
+    /// @param u the address of the underlying token
+    /// @param m the maturity of the principal token
+    /// @param minRatio minimum ratio of underlying to PT in the pool.
+    /// @param maxRatio maximum ratio of underlying to PT in the pool.
+    /// @return uint256 amount of tokens burned and returned (tokensBurned, underlyings, PTs).
     function burn(address u, uint256 m, uint256 minRatio, uint256 maxRatio) external returns (uint256, uint256, uint256) {
         return IPool(pools[u][m]).burn(msg.sender, msg.sender, minRatio, maxRatio);
     }
 
-    /// @dev Burn liquidity tokens in exchange for underlying.
-    /// @param minRatio Minimum ratio of underlying to PT in the pool.
-    /// @param maxRatio Minimum ratio of underlying to PT in the pool.
-    /// @return tokensBurned The amount of lp tokens burned.
-    /// @return underlyingOut The amount of underlying tokens returned.
-    function burnForUnderlying(address u, uint256 m, uint256 minRatio, uint256 maxRatio) external returns (uint256 tokensBurned, uint256 underlyingOut) {
+    /// @notice burn liquidity tokens in exchange for underlying.
+    /// @param u the address of the underlying token
+    /// @param m the maturity of the principal token
+    /// @param minRatio minimum ratio of underlying to PT in the pool.
+    /// @param maxRatio minimum ratio of underlying to PT in the pool.
+    /// @return uint256 amount of underlying tokens returned
+    /// @return uint256 amount of PT tokens sent to the pool
+    function burnForUnderlying(address u, uint256 m, uint256 minRatio, uint256 maxRatio) external returns (uint256, uint256) {
         return IPool(pools[u][m]).burnForBase(msg.sender, minRatio, maxRatio);
     }
+
+    /// @notice ensures that only a certain address can call the function
+    /// @param a address that msg.sender must be to be authorized
     modifier authorized(address a) {
         if (msg.sender != a) {
             revert Unauthorized();
@@ -249,6 +256,8 @@ contract MarketPlace {
         _;
     }
 
+    /// @notice prevents usage of router for a given principal based on the paused mapping
+    /// @param p enum value of the principal token
     modifier unpaused(uint8 p) {
         if (paused[p]) {
             revert Invalid('princpal paused');

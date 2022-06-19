@@ -1,7 +1,8 @@
 # MarketPlace
 
 
-
+This contract is in charge of managing the avaialable principals for each loan market.
+In addition, this contract routes swap orders between metaprincipal tokens and their respective underlying to YieldSpace pools.
 
 
 ## Contents
@@ -25,30 +26,45 @@
 ## Modifiers
 
 ### authorized
-No description
+ensures that only a certain address can call the function
+
 
 
 #### Declaration
 ```solidity
-modifier authorized
+modifier authorized(
+address a
+)
 ```
 
+#### Args:
+| Arg | Type | Description |
+| --- | --- | --- |
+|`a` | address | address that msg.sender must be to be authorized
 
 ### unpaused
-No description
+prevents usage of router for a given principal based on the paused mapping
+
 
 
 #### Declaration
 ```solidity
-modifier unpaused
+modifier unpaused(
+uint8 p
+)
 ```
 
+#### Args:
+| Arg | Type | Description |
+| --- | --- | --- |
+|`p` | uint8 | enum value of the principal token
 
 
 ## Functions
 
 ### constructor
-No description
+intializes the MarketPlace contract
+
 
 
 #### Declaration
@@ -70,7 +86,6 @@ No modifiers
 
 ### createMarket
 creates a new market for the given underlying token and maturity
-all seven principals should be provided in the order of their enum value
 
 
 
@@ -97,8 +112,7 @@ uint8 d
 | --- | --- | --- |
 |`u` | address | address of an underlying asset
 |`m` | uint256 | maturity (timestamp) of the market
-|`t` | address[8] | principal token addresses for this market minus the illuminate
-principal (which is added here)
+|`t` | address[8] | principal token addresses for this market minus the illuminate principal (which is added here)
 |`n` | string | name for the illuminate token
 |`s` | string | symbol for the illuminate token
 |`d` | uint8 | decimals for the illuminate token
@@ -139,7 +153,8 @@ bool s
 |`bool` | true if successful
 
 ### setAdmin
-No description
+sets the admin address
+
 
 
 #### Declaration
@@ -334,9 +349,9 @@ uint128 a
 |`uint128` | amount of underlying bought
 
 ### mint
-No description
-> Mint liquidity tokens in exchange for adding underlying and PT
-The amount of liquidity tokens to mint is calculated from the amount of unaccounted for PT in this contract.
+mint liquidity tokens in exchange for adding underlying and PT
+
+> amount of liquidity tokens to mint is calculated from the amount of unaccounted for PT in this contract.
 A proportional amount of underlying tokens need to be present in this contract, also unaccounted for.
 
 
@@ -363,20 +378,19 @@ No modifiers
 |`m` | uint256 | the maturity of the principal token
 |`uA` | uint256 | the underlying amount being sent
 |`ptA` | uint256 | the principal token amount being sent
-|`minRatio` | uint256 | Minimum ratio of underlying to PT in the pool.
-|`maxRatio` | uint256 | Maximum ratio of underlying to PT in the pool.
+|`minRatio` | uint256 | minimum ratio of underlying to PT in the pool.
+|`maxRatio` | uint256 | maximum ratio of underlying to PT in the pool.
 
 #### Returns:
 | Type | Description |
 | --- | --- |
-|`The` | amount of liquidity tokens minted.
+|`uint256` | the amount of liquidity tokens minted.
 
 ### mintWithUnderlying
-No description
-> Mint liquidity tokens in exchange for adding only underlying
-The amount of liquidity tokens is calculated from the amount of PT to buy from the pool,
+Mint liquidity tokens in exchange for adding only underlying
+
+> amount of liquidity tokens is calculated from the amount of PT to buy from the pool,
 plus the amount of unaccounted for PT in this contract.
-The underlying tokens need to be present in this contract, unaccounted for.
 
 
 #### Declaration
@@ -401,25 +415,26 @@ No modifiers
 |`u` | address | the address of the underlying token
 |`m` | uint256 | the maturity of the principal token
 |`a` | uint256 | the underlying amount being sent
-|`ptBought` | uint256 | Amount of `PT` being bought in the Pool, from this we calculate how much underlying it will be taken in.
-|`minRatio` | uint256 | Minimum ratio of underlying to PT in the pool.
-|`maxRatio` | uint256 | Maximum ratio of underlying to PT in the pool.
+|`ptBought` | uint256 | amount of `PT` being bought in the Pool, from this we calculate how much underlying it will be taken in.
+|`minRatio` | uint256 | minimum ratio of underlying to PT in the pool.
+|`maxRatio` | uint256 | maximum ratio of underlying to PT in the pool.
 
 #### Returns:
 | Type | Description |
 | --- | --- |
-|`The` | amount of liquidity tokens minted.
+|`uint256` | the amount of liquidity tokens minted
 
 ### burn
-No description
-> Burn liquidity tokens in exchange for underlying and PT.
-The liquidity tokens need to be in this contract.
+burn liquidity tokens in exchange for underlying and PT.
+
 
 
 #### Declaration
 ```solidity
 function burn(
-address minRatio,
+address u,
+uint256 m,
+uint256 minRatio,
 uint256 maxRatio
 ) external returns
 (uint256, uint256, uint256)
@@ -431,26 +446,30 @@ No modifiers
 #### Args:
 | Arg | Type | Description |
 | --- | --- | --- |
-|`minRatio` | address | Minimum ratio of underlying to PT in the pool.
-|`maxRatio` | uint256 | Maximum ratio of underlying to PT in the pool.
+|`u` | address | the address of the underlying token
+|`m` | uint256 | the maturity of the principal token
+|`minRatio` | uint256 | minimum ratio of underlying to PT in the pool.
+|`maxRatio` | uint256 | maximum ratio of underlying to PT in the pool.
 
 #### Returns:
 | Type | Description |
 | --- | --- |
-|`The` | amount of tokens burned and returned (tokensBurned, underlyings, PTs).
+|`uint256` | amount of tokens burned and returned (tokensBurned, underlyings, PTs).
 
 ### burnForUnderlying
-No description
-> Burn liquidity tokens in exchange for underlying.
+burn liquidity tokens in exchange for underlying.
+
 
 
 #### Declaration
 ```solidity
 function burnForUnderlying(
-address minRatio,
+address u,
+uint256 m,
+uint256 minRatio,
 uint256 maxRatio
 ) external returns
-(uint256 tokensBurned, uint256 underlyingOut)
+(uint256, uint256)
 ```
 
 #### Modifiers:
@@ -459,21 +478,23 @@ No modifiers
 #### Args:
 | Arg | Type | Description |
 | --- | --- | --- |
-|`minRatio` | address | Minimum ratio of underlying to PT in the pool.
-|`maxRatio` | uint256 | Minimum ratio of underlying to PT in the pool.
+|`u` | address | the address of the underlying token
+|`m` | uint256 | the maturity of the principal token
+|`minRatio` | uint256 | minimum ratio of underlying to PT in the pool.
+|`maxRatio` | uint256 | minimum ratio of underlying to PT in the pool.
 
 #### Returns:
 | Type | Description |
 | --- | --- |
-|`tokensBurned` | The amount of lp tokens burned.
-|`underlyingOut` | The amount of underlying tokens returned.
+|`uint256` | amount of underlying tokens returned
+|`uint256` | amount of PT tokens sent to the pool
 
 
 
 ## Events
 
 ### CreateMarket
-No description
+emitted upon the creation of a new market
 
 
 

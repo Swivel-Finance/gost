@@ -43,6 +43,7 @@ address a
 | --- | --- | --- |
 |`a` | address | address that msg.sender must be to be authorized
 
+
 ## Functions
 
 ### constructor
