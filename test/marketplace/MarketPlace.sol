@@ -86,7 +86,6 @@ contract MarketPlace {
         markets[u][m] = market;
 
         emit CreateMarket(u, m);
-
         return true;
     }
 

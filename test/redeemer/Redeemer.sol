@@ -45,9 +45,9 @@ contract Redeemer {
     }
 
     /// @param a Address of a new admin
+    /// @return bool true if successful
     function setAdmin(address a) external authorized(admin) returns (bool) {
         admin = a;
-
         return true;
     }
 
@@ -187,7 +187,6 @@ contract Redeemer {
         }
 
         emit Redeem(p, u, m, amount);
-
         return true;
     }
 
@@ -219,6 +218,8 @@ contract Redeemer {
 
         // Redeem the tokens from the pendle contract
         IPendle(pendleAddr).redeemAfterExpiry(i, u, m);
+        
+        emit Redeem(p, u, m, amount);
         return true;
     }
 
@@ -254,7 +255,6 @@ contract Redeemer {
         ISense(d).redeem(o, m, amount);
 
         emit Redeem(p, u, m, amount);
-
         return true;
     }
 

@@ -398,7 +398,6 @@ contract Lender {
         IERC5095(illuminateToken).mint(msg.sender, returned);
 
         emit Lend(p, u, m, returned);
-
         return returned;
     }
 
@@ -451,7 +450,6 @@ contract Lender {
         illuminateToken.mint(msg.sender, returned);
 
         emit Lend(p, u, m, returned);
-
         return returned;
     }
 
@@ -512,7 +510,6 @@ contract Lender {
         illuminateToken.mint(msg.sender, returned);
 
         emit Lend(p, u, m, returned);
-
         return returned;
     }
 
@@ -535,7 +532,6 @@ contract Lender {
         address aave,
         uint256 i
     ) public returns (uint256) {
-
         // Instantiate market and tokens
         address principal = IMarketPlace(marketPlace).markets(u, m, p);
         if (IAPWineToken(principal).getUnderlyingOfIBTAddress() != u) {
@@ -566,7 +562,6 @@ contract Lender {
         IERC5095(principalToken(u, m)).mint(msg.sender, returned);
 
         emit Lend(p, u, m, returned);
-
         return returned;
     }
 
@@ -582,7 +577,6 @@ contract Lender {
         uint256 m,
         uint256 a
     ) public returns (uint256) {
-
         // Instantiate market and tokens
         address principal = IMarketPlace(marketPlace).markets(u, m, p);
 
@@ -611,7 +605,6 @@ contract Lender {
         IERC5095(illuminateToken).mint(msg.sender, returned);
 
         emit Lend(p, u, m, returned);
-
         return returned;
     }
 
@@ -655,7 +648,6 @@ contract Lender {
 
         // Transfer the accumulated fees to the admin
         Safe.transfer(token, admin, balance);
-
         return true;
     }
 
