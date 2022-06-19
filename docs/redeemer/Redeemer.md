@@ -66,6 +66,28 @@ No modifiers
 |`t` | address | the tempus contract
 |`a` | address | the apwine contract
 
+### setAdmin
+No description
+
+
+#### Declaration
+```solidity
+function setAdmin(
+address a
+) external authorized returns
+(bool)
+```
+
+#### Modifiers:
+| Modifier |
+| --- |
+| authorized |
+
+#### Args:
+| Arg | Type | Description |
+| --- | --- | --- |
+|`a` | address | Address of a new admin
+
 ### setMarketPlaceAddress
 Sets the address of the marketplace contract which contains the
 addresses of all the fixed rate markets

@@ -15,9 +15,10 @@
 | Var | Type |
 | --- | --- |
 | markets | mapping(address => mapping(uint256 => address[9])) |
-| pools | mapping(address => mapping(uint256 => address[9])) |
+| pools | mapping(address => mapping(uint256 => address)) |
 | admin | address |
 | redeemer | address |
+| lender | address |
 | paused | bool[9] |
 
 
@@ -53,7 +54,8 @@ No description
 #### Declaration
 ```solidity
 function constructor(
-address r
+address r,
+address l
 ) public
 ```
 
@@ -64,6 +66,7 @@ No modifiers
 | Arg | Type | Description |
 | --- | --- | --- |
 |`r` | address | address of the deployed redeemer contract
+|`l` | address | address of the deployed lender contract
 
 ### createMarket
 creates a new market for the given underlying token and maturity
@@ -133,6 +136,28 @@ bool s
 | Type | Description |
 | --- | --- |
 |`bool` | true if successful
+### setAdmin
+No description
+
+
+#### Declaration
+```solidity
+function setAdmin(
+address a
+) external authorized returns
+(bool)
+```
+
+#### Modifiers:
+| Modifier |
+| --- |
+| authorized |
+
+#### Args:
+| Arg | Type | Description |
+| --- | --- | --- |
+|`a` | address | Address of a new admin
+
 ### setPool
 sets the address for a pool
 
@@ -141,7 +166,6 @@ sets the address for a pool
 #### Declaration
 ```solidity
 function setPool(
-uint8 p,
 address u,
 uint256 m,
 address a
@@ -157,7 +181,6 @@ address a
 #### Args:
 | Arg | Type | Description |
 | --- | --- | --- |
-|`p` | uint8 | enum value of the principal token
 |`u` | address | address of the underlying asset
 |`m` | uint256 | maturity (timestamp) of the market
 |`a` | address | address of the pool

@@ -22,7 +22,7 @@ No description
 #### Declaration
 ```solidity
 function transfer(
-contract IErc20 e,
+contract IERC20 e,
 address t,
 uint256 a
 ) internal
@@ -34,7 +34,7 @@ No modifiers
 #### Args:
 | Arg | Type | Description |
 | --- | --- | --- |
-|`e` | contract IErc20 | Erc20 token to execute the call with
+|`e` | contract IERC20 | Erc20 token to execute the call with
 |`t` | address | To address
 |`a` | uint256 | Amount being transferred
 
@@ -45,7 +45,7 @@ No description
 #### Declaration
 ```solidity
 function transferFrom(
-contract IErc20 e,
+contract IERC20 e,
 address f,
 address t,
 uint256 a
@@ -58,7 +58,7 @@ No modifiers
 #### Args:
 | Arg | Type | Description |
 | --- | --- | --- |
-|`e` | contract IErc20 | Erc20 token to execute the call with
+|`e` | contract IERC20 | Erc20 token to execute the call with
 |`f` | address | From address
 |`t` | address | To address
 |`a` | uint256 | Amount being transferred

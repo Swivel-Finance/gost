@@ -14,6 +14,7 @@
 
 | Var | Type |
 | --- | --- |
+| HOLD | uint256 |
 | admin | address |
 | marketPlace | address |
 | swivelAddr | address |
@@ -21,6 +22,7 @@
 | tempusAddr | address |
 | feenominator | uint256 |
 | fees | mapping(address => uint256) |
+| withdrawals | mapping(address => uint256) |
 
 
 ## Modifiers
@@ -125,6 +127,28 @@ address[] a
 | Type | Description |
 | --- | --- |
 |`true` | if successful
+### setAdmin
+No description
+
+
+#### Declaration
+```solidity
+function setAdmin(
+address a
+) external authorized returns
+(bool)
+```
+
+#### Modifiers:
+| Modifier |
+| --- |
+| authorized |
+
+#### Args:
+| Arg | Type | Description |
+| --- | --- | --- |
+|`a` | address | Address of a new admin
+
 ### setFee
 Sets the feenominator to the given value
 
@@ -180,6 +204,33 @@ address m
 | Type | Description |
 | --- | --- |
 |`bool` | true if the address was set, false otherwise
+### setSwivel
+Sets the feenominator to the given value
+
+
+
+#### Declaration
+```solidity
+function setSwivel(
+address s
+) external authorized returns
+(bool)
+```
+
+#### Modifiers:
+| Modifier |
+| --- |
+| authorized |
+
+#### Args:
+| Arg | Type | Description |
+| --- | --- | --- |
+|`s` | address | the address of the Swivel.sol Router
+
+#### Returns:
+| Type | Description |
+| --- | --- |
+|`bool` | true if successful
 ### mint
 mint swaps the sender's principal tokens for illuminate's zc tokens
 in effect, this opens a new fixed rate position for the sender on illuminate
@@ -240,7 +291,7 @@ No modifiers
 |`u` | address | address of an underlying asset
 |`m` | uint256 | maturity (timestamp) of the market
 |`a` | uint256 | amount of underlying tokens to lend
-|`y` | address | yield pool that will execute the swap for the principal token
+|`y` | address | yieldspace pool that will execute the swap for the principal token
 
 #### Returns:
 | Type | Description |
@@ -534,14 +585,14 @@ No modifiers
 | Type | Description |
 | --- | --- |
 |`uint256` | the amount of tokens sent to the yield pool
-### withdraw
+### withdrawFee
 Withdraws accumulated lending fees of the underlying token
 
 
 
 #### Declaration
 ```solidity
-function withdraw(
+function withdrawFee(
 address e
 ) external authorized returns
 (bool)
@@ -587,14 +638,84 @@ No modifiers
 | Type | Description |
 | --- | --- |
 |`uint256` | The total for for the given amount
-### zcToken
+### scheduleWithdrawal
+Allows the admin to schedule the withdrawal of tokens
+
+
+
+#### Declaration
+```solidity
+function scheduleWithdrawal(
+address e
+) external authorized returns
+(bool)
+```
+
+#### Modifiers:
+| Modifier |
+| --- |
+| authorized |
+
+#### Args:
+| Arg | Type | Description |
+| --- | --- | --- |
+|`e` | address | Address of (erc20) token to withdraw
+
+### blockWithdrawal
+Emergency function to block unplanned withdrawals
+
+
+
+#### Declaration
+```solidity
+function blockWithdrawal(
+address e
+) external authorized returns
+(bool)
+```
+
+#### Modifiers:
+| Modifier |
+| --- |
+| authorized |
+
+#### Args:
+| Arg | Type | Description |
+| --- | --- | --- |
+|`e` | address | Address of token withdrawal to block
+
+### withdraw
+Allows the admin to withdraw the given token, provided the holding 
+period has been observed
+
+
+
+#### Declaration
+```solidity
+function withdraw(
+address e
+) external authorized returns
+(bool)
+```
+
+#### Modifiers:
+| Modifier |
+| --- |
+| authorized |
+
+#### Args:
+| Arg | Type | Description |
+| --- | --- | --- |
+|`e` | address | Address of token to withdraw
+
+### principalToken
 retrieves the zc token for the given market
 
 
 
 #### Declaration
 ```solidity
-function zcToken(
+function principalToken(
 address u,
 uint256 m
 ) internal returns
@@ -619,13 +740,25 @@ No modifiers
 ## Events
 
 ### Lend
-No description
+Emitted upon executed lend
 
 
 
 
 ### Mint
-No description
+Emitted upon minted ERC5095 to user
+
+
+
+
+### ScheduleWithdrawal
+Emitted on token withdrawal scheduling
+
+
+
+
+### BlockWithdrawal
+Emitted on token withdrawal blocking
 
 
 

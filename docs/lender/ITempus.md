@@ -37,7 +37,7 @@ No description
 ```solidity
 function yieldBearingToken(
 ) external returns
-(contract IErc20Metadata)
+(contract IERC20Metadata)
 ```
 
 #### Modifiers:

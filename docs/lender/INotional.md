@@ -21,7 +21,7 @@ No description
 ```solidity
 function getUnderlyingToken(
 ) external returns
-(contract IErc20, int256)
+(contract IERC20, int256)
 ```
 
 #### Modifiers:

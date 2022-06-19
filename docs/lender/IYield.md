@@ -21,7 +21,7 @@ No description
 ```solidity
 function base(
 ) external returns
-(contract IErc20)
+(contract IERC20)
 ```
 
 #### Modifiers:
