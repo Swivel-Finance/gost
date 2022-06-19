@@ -86,8 +86,8 @@ contract Redeemer {
     /// @notice Redeems underlying token for illuminate, apwine and tempus
     /// protocols
     /// @dev Illuminate burns its tokens prior to redemption, unlike APWine and
-    /// Tempus, which withdraw their tokens after transferring the underlying to
-    /// the redeem contract. As a result, only Illuminate's redeem returns funds
+    /// Tempus, which redeem PTs to the redeemer, transferring the underlying to
+    /// this redeemer contract. Consequently, only Illuminate's redeem returns funds
     /// to the user.
     /// @dev We can avoid a require check on the principal at the start of this
     /// redeem because there is no common business logic executed before the
@@ -106,23 +106,11 @@ contract Redeemer {
         // Get the address of the principal token being redeemed
         address principal = IMarketPlace(marketPlace).markets(u, m, p);
 
-        // Get the amount of tokens to be redeemed from the principal token
-        uint256 amount = IERC20(principal).balanceOf(lender);
-
-        // Transfer the underlying token to the redeem contract if it is not illuminate
-        if (p != uint8(MarketPlace.Principals.Illuminate)) {
-            Safe.transferFrom(IERC20(u), lender, address(this), amount);
-        }
-
-        if (p == uint8(MarketPlace.Principals.Apwine)) {
-            // Redeem the underlying token from APWine to illuminate
-            IAPWine(apwineAddr).withdraw(o, amount);
-        } else if (p == uint8(MarketPlace.Principals.Tempus)) {
-            // Redeem the tokens from the tempus contract to illuminate
-            ITempus(tempusAddr).redeemToBacking(o, amount, 0, address(this));
-        } else if (p == uint8(MarketPlace.Principals.Illuminate)) {
+        if (p == uint8(MarketPlace.Principals.Illuminate)) {
             // Get Illuminate's principal token
-            IZcToken token = IZcToken(principal);
+            IERC5095 token = IERC5095(principal);
+            // Get the amount of tokens to be redeemed from the sender
+            uint256 amount = token.balanceOf(msg.sender);
             // Make sure the market has matured
             if (block.timestamp < token.maturity()) {
                 revert Invalid('not matured');
@@ -130,12 +118,25 @@ contract Redeemer {
             // Burn the prinicipal token from illuminate
             token.burn(o, amount);
             // Transfer the original underlying token back to the user
-            Safe.transferFrom(IERC20(u), lender, address(this), amount);
-        } else {
-            revert Invalid('principal');
+            Safe.transferFrom(IERC20(u), lender, address(this), amount);      
+            emit Redeem(0, u, m, amount);
         }
+        else {
+            // Get the amount of tokens to be redeemed from the principal token
+            uint256 amount = IERC20(principal).balanceOf(lender);
+            Safe.transferFrom(IERC20(u), lender, address(this), amount);
 
-        emit Redeem(0, u, m, amount);
+            if (p == uint8(MarketPlace.Principals.Apwine)) {
+                // Redeem the underlying token from APWine to illuminate
+                IAPWine(apwineAddr).withdraw(o, amount);
+            } else if (p == uint8(MarketPlace.Principals.Tempus)) {
+                // Redeem the tokens from the tempus contract to illuminate
+                ITempus(tempusAddr).redeemToBacking(o, amount, 0, address(this));
+            } else {
+                revert Invalid('principal');
+            }
+            emit Redeem(0, u, m, amount);
+        }
 
         return true;
     }
@@ -270,7 +271,7 @@ contract Redeemer {
         uint256 a
     ) public authorized(IMarketPlace(marketPlace).markets(u, m, 0)) returns (bool) {
         // Get the principal token for the given market
-        IZcToken pt = IZcToken(IMarketPlace(marketPlace).markets(u, m, 0));
+        IERC5095 pt = IERC5095(IMarketPlace(marketPlace).markets(u, m, 0));
 
         // Make sure the market has matured
         if (block.timestamp < pt.maturity()) {
