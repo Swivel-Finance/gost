@@ -356,48 +356,6 @@ func (_MarketPlace *MarketPlaceCallerSession) Redeemer() (common.Address, error)
 	return _MarketPlace.Contract.Redeemer(&_MarketPlace.CallOpts)
 }
 
-// Burn is a paid mutator transaction binding the contract method 0xde7bf0a2.
-//
-// Solidity: function burn(address u, uint256 m, uint256 minRatio, uint256 maxRatio) returns(uint256, uint256, uint256)
-func (_MarketPlace *MarketPlaceTransactor) Burn(opts *bind.TransactOpts, u common.Address, m *big.Int, minRatio *big.Int, maxRatio *big.Int) (*types.Transaction, error) {
-	return _MarketPlace.contract.Transact(opts, "burn", u, m, minRatio, maxRatio)
-}
-
-// Burn is a paid mutator transaction binding the contract method 0xde7bf0a2.
-//
-// Solidity: function burn(address u, uint256 m, uint256 minRatio, uint256 maxRatio) returns(uint256, uint256, uint256)
-func (_MarketPlace *MarketPlaceSession) Burn(u common.Address, m *big.Int, minRatio *big.Int, maxRatio *big.Int) (*types.Transaction, error) {
-	return _MarketPlace.Contract.Burn(&_MarketPlace.TransactOpts, u, m, minRatio, maxRatio)
-}
-
-// Burn is a paid mutator transaction binding the contract method 0xde7bf0a2.
-//
-// Solidity: function burn(address u, uint256 m, uint256 minRatio, uint256 maxRatio) returns(uint256, uint256, uint256)
-func (_MarketPlace *MarketPlaceTransactorSession) Burn(u common.Address, m *big.Int, minRatio *big.Int, maxRatio *big.Int) (*types.Transaction, error) {
-	return _MarketPlace.Contract.Burn(&_MarketPlace.TransactOpts, u, m, minRatio, maxRatio)
-}
-
-// BurnForUnderlying is a paid mutator transaction binding the contract method 0x7674535d.
-//
-// Solidity: function burnForUnderlying(address u, uint256 m, uint256 minRatio, uint256 maxRatio) returns(uint256, uint256)
-func (_MarketPlace *MarketPlaceTransactor) BurnForUnderlying(opts *bind.TransactOpts, u common.Address, m *big.Int, minRatio *big.Int, maxRatio *big.Int) (*types.Transaction, error) {
-	return _MarketPlace.contract.Transact(opts, "burnForUnderlying", u, m, minRatio, maxRatio)
-}
-
-// BurnForUnderlying is a paid mutator transaction binding the contract method 0x7674535d.
-//
-// Solidity: function burnForUnderlying(address u, uint256 m, uint256 minRatio, uint256 maxRatio) returns(uint256, uint256)
-func (_MarketPlace *MarketPlaceSession) BurnForUnderlying(u common.Address, m *big.Int, minRatio *big.Int, maxRatio *big.Int) (*types.Transaction, error) {
-	return _MarketPlace.Contract.BurnForUnderlying(&_MarketPlace.TransactOpts, u, m, minRatio, maxRatio)
-}
-
-// BurnForUnderlying is a paid mutator transaction binding the contract method 0x7674535d.
-//
-// Solidity: function burnForUnderlying(address u, uint256 m, uint256 minRatio, uint256 maxRatio) returns(uint256, uint256)
-func (_MarketPlace *MarketPlaceTransactorSession) BurnForUnderlying(u common.Address, m *big.Int, minRatio *big.Int, maxRatio *big.Int) (*types.Transaction, error) {
-	return _MarketPlace.Contract.BurnForUnderlying(&_MarketPlace.TransactOpts, u, m, minRatio, maxRatio)
-}
-
 // BuyPrincipalToken is a paid mutator transaction binding the contract method 0x8ef6c83e.
 //
 // Solidity: function buyPrincipalToken(uint8 p, address u, uint256 m, uint128 a) returns(uint128)
@@ -459,48 +417,6 @@ func (_MarketPlace *MarketPlaceSession) CreateMarket(u common.Address, m *big.In
 // Solidity: function createMarket(address u, uint256 m, address[8] t, string n, string s, uint8 d) returns(bool)
 func (_MarketPlace *MarketPlaceTransactorSession) CreateMarket(u common.Address, m *big.Int, t [8]common.Address, n string, s string, d uint8) (*types.Transaction, error) {
 	return _MarketPlace.Contract.CreateMarket(&_MarketPlace.TransactOpts, u, m, t, n, s, d)
-}
-
-// Mint is a paid mutator transaction binding the contract method 0xdfc8fff6.
-//
-// Solidity: function mint(address u, uint256 m, uint256 underlyingAmount, uint256 principalTokenAmount, uint256 minRatio, uint256 maxRatio) returns(uint256, uint256, uint256)
-func (_MarketPlace *MarketPlaceTransactor) Mint(opts *bind.TransactOpts, u common.Address, m *big.Int, underlyingAmount *big.Int, principalTokenAmount *big.Int, minRatio *big.Int, maxRatio *big.Int) (*types.Transaction, error) {
-	return _MarketPlace.contract.Transact(opts, "mint", u, m, underlyingAmount, principalTokenAmount, minRatio, maxRatio)
-}
-
-// Mint is a paid mutator transaction binding the contract method 0xdfc8fff6.
-//
-// Solidity: function mint(address u, uint256 m, uint256 underlyingAmount, uint256 principalTokenAmount, uint256 minRatio, uint256 maxRatio) returns(uint256, uint256, uint256)
-func (_MarketPlace *MarketPlaceSession) Mint(u common.Address, m *big.Int, underlyingAmount *big.Int, principalTokenAmount *big.Int, minRatio *big.Int, maxRatio *big.Int) (*types.Transaction, error) {
-	return _MarketPlace.Contract.Mint(&_MarketPlace.TransactOpts, u, m, underlyingAmount, principalTokenAmount, minRatio, maxRatio)
-}
-
-// Mint is a paid mutator transaction binding the contract method 0xdfc8fff6.
-//
-// Solidity: function mint(address u, uint256 m, uint256 underlyingAmount, uint256 principalTokenAmount, uint256 minRatio, uint256 maxRatio) returns(uint256, uint256, uint256)
-func (_MarketPlace *MarketPlaceTransactorSession) Mint(u common.Address, m *big.Int, underlyingAmount *big.Int, principalTokenAmount *big.Int, minRatio *big.Int, maxRatio *big.Int) (*types.Transaction, error) {
-	return _MarketPlace.Contract.Mint(&_MarketPlace.TransactOpts, u, m, underlyingAmount, principalTokenAmount, minRatio, maxRatio)
-}
-
-// MintWithUnderlying is a paid mutator transaction binding the contract method 0x23f86bef.
-//
-// Solidity: function mintWithUnderlying(address u, uint256 m, uint256 a, uint256 ptBought, uint256 minRatio, uint256 maxRatio) returns(uint256, uint256, uint256)
-func (_MarketPlace *MarketPlaceTransactor) MintWithUnderlying(opts *bind.TransactOpts, u common.Address, m *big.Int, a *big.Int, ptBought *big.Int, minRatio *big.Int, maxRatio *big.Int) (*types.Transaction, error) {
-	return _MarketPlace.contract.Transact(opts, "mintWithUnderlying", u, m, a, ptBought, minRatio, maxRatio)
-}
-
-// MintWithUnderlying is a paid mutator transaction binding the contract method 0x23f86bef.
-//
-// Solidity: function mintWithUnderlying(address u, uint256 m, uint256 a, uint256 ptBought, uint256 minRatio, uint256 maxRatio) returns(uint256, uint256, uint256)
-func (_MarketPlace *MarketPlaceSession) MintWithUnderlying(u common.Address, m *big.Int, a *big.Int, ptBought *big.Int, minRatio *big.Int, maxRatio *big.Int) (*types.Transaction, error) {
-	return _MarketPlace.Contract.MintWithUnderlying(&_MarketPlace.TransactOpts, u, m, a, ptBought, minRatio, maxRatio)
-}
-
-// MintWithUnderlying is a paid mutator transaction binding the contract method 0x23f86bef.
-//
-// Solidity: function mintWithUnderlying(address u, uint256 m, uint256 a, uint256 ptBought, uint256 minRatio, uint256 maxRatio) returns(uint256, uint256, uint256)
-func (_MarketPlace *MarketPlaceTransactorSession) MintWithUnderlying(u common.Address, m *big.Int, a *big.Int, ptBought *big.Int, minRatio *big.Int, maxRatio *big.Int) (*types.Transaction, error) {
-	return _MarketPlace.Contract.MintWithUnderlying(&_MarketPlace.TransactOpts, u, m, a, ptBought, minRatio, maxRatio)
 }
 
 // Pause is a paid mutator transaction binding the contract method 0xfe3ee169.
@@ -585,7 +501,6 @@ func (_MarketPlace *MarketPlaceSession) SetPool(u common.Address, m *big.Int, a 
 // Solidity: function setPool(address u, uint256 m, address a) returns(bool)
 func (_MarketPlace *MarketPlaceTransactorSession) SetPool(u common.Address, m *big.Int, a common.Address) (*types.Transaction, error) {
 	return _MarketPlace.Contract.SetPool(&_MarketPlace.TransactOpts, u, m, a)
-
 }
 
 // MarketPlaceCreateMarketIterator is returned from FilterCreateMarket and is used to iterate over the raw logs and unpacked data for CreateMarket events raised by the MarketPlace contract.

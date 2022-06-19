@@ -162,25 +162,6 @@ interface IERC5095 is IERC2612 {
     function redeem(uint256, address, address) external returns (uint256);
 }
 
-interface IPool {
-    function principalToken() external returns (IErc5095);
-
-    function PT() external view returns (IErc5095);
-
-    function underlying() external returns (address);
-
-    function sellUnderlying(address, uint128) external returns (uint128);
-
-    function buyUnderlying(address, uint128, uint128) external returns (uint128);
-
-    function sellPrincipalToken(address, uint128) external returns (uint128);
-
-    function buyPrincipalToken(address, uint128, uint128) external returns (uint128);
-
-    function sellUnderlyingPreview(uint128) external returns (uint128);
-
-    function buyUnderlyingPreview(uint128) external returns (uint128);
-
 interface IRedeemer {
     function authRedeem(address underlying, uint256 maturity, address from, address to, uint256 amount) external returns (uint256);
 }

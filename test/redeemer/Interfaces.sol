@@ -3,7 +3,11 @@
 pragma solidity 0.8.13;
 
 interface IMarketPlace {
-    function markets(address, uint256, uint8) external returns (address);
+    function markets(
+        address,
+        uint256,
+        uint8
+    ) external returns (address);
 }
 
 interface IERC20 {
@@ -171,23 +175,40 @@ interface IAPWine {
 }
 
 interface ITempus {
-    function redeemToBacking(address, uint256, uint256, address) external;
+    function redeemToBacking(
+        address,
+        uint256,
+        uint256,
+        address
+    ) external;
 }
 
 interface ISwivel {
-    function redeemZcToken(address, uint256, uint256) external returns (bool);
+    function redeemZcToken(
+        address u,
+        uint256 m,
+        uint256 a
+    ) external returns (bool);
 }
 
 interface IYield {
-    function redeem(address, uint256) external returns (uint256);
+    function redeem(address to, uint256 amount) external returns (uint256);
 }
 
 interface IPendle {
-    function redeemAfterExpiry(bytes32, address, uint256) external;
+    function redeemAfterExpiry(
+        bytes32,
+        address,
+        uint256
+    ) external;
 }
 
 interface ISense {
-    function redeem(address, uint256, uint256) external;
+    function redeem(
+        address,
+        uint256,
+        uint256
+    ) external;
 }
 
 interface IElementToken {
@@ -195,11 +216,15 @@ interface IElementToken {
 
     function underlying() external returns (address);
 
-    function withdrawPrincipal(uint256, address) external;
+    function withdrawPrincipal(uint256 amount, address destination) external;
 }
 
 interface IYieldToken {
-    function redeem(address, address, uint256) external;
+    function redeem(
+        address,
+        address,
+        uint256
+    ) external;
 }
 
 interface INotional {
