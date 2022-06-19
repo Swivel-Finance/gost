@@ -222,8 +222,8 @@ contract MarketPlace {
     /// @return The amount of liquidity tokens minted.
     function mintWithUnderlying(address u, uint256 m, uint256 a, uint256 ptBought, uint256 minRatio, uint256 maxRatio) external returns (uint256, uint256, uint256) {
         IPool pool = IPool(pools[u][m]);
-        Safe.safeTransferFrom(ERC20(address(pool.underlying())), msg.sender, address(pool), a);
-        return pool.mintWithUnderlying(msg.sender, msg.sender, ptBought, minRatio, maxRatio);
+        Safe.transferFrom(ERC20(address(pool.base())), msg.sender, address(pool), a);
+        return pool.mintWithBase(msg.sender, msg.sender, ptBought, minRatio, maxRatio);
     }
 
     /// @dev Burn liquidity tokens in exchange for underlying and PT.
@@ -240,8 +240,8 @@ contract MarketPlace {
     /// @param maxRatio Minimum ratio of underlying to PT in the pool.
     /// @return tokensBurned The amount of lp tokens burned.
     /// @return underlyingOut The amount of underlying tokens returned.
-    function burnForUnderlying(address u, uint256 m, uint256 minRatio, uint256 maxRatio) external override returns (uint256 tokensBurned, uint256 underlyingOut) {
-        return IPool(pools[u][m]).burnForUnderlying(msg.sender, minRatio, maxRatio);
+    function burnForUnderlying(address u, uint256 m, uint256 minRatio, uint256 maxRatio) external returns (uint256 tokensBurned, uint256 underlyingOut) {
+        return IPool(pools[u][m]).burnForBase(msg.sender, minRatio, maxRatio);
     }
     modifier authorized(address a) {
         if (msg.sender != a) {
