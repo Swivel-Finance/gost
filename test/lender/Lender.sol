@@ -15,6 +15,9 @@ contract Lender {
     error Exists(address);
     error Invalid(string);
 
+    uint256 constant public HOLD = 3 days;
+
+
     address public immutable admin;
     address public marketPlace;
 
@@ -27,9 +30,18 @@ contract Lender {
 
     /// @notice maps underlying tokens to the amount of fees accumulated for that token
     mapping(address => uint256) public fees;
+    /// @dev maps a token address to a point in time, a hold, after which a withdrawal can be made
+    mapping (address => uint256) public withdrawals;
 
+    /// @notice Emitted upon executed lend
     event Lend(uint8 principal, address indexed underlying, uint256 indexed maturity, uint256 returned);
+    /// @notice Emitted upon minted ERC5095 to user
     event Mint(uint8 principal, address indexed underlying, uint256 indexed maturity, uint256 amount);
+    /// @notice Emitted on token withdrawal scheduling
+    event ScheduleWithdrawal(address indexed token, uint256 hold);
+    /// @notice Emitted on token withdrawal blocking
+    event BlockWithdrawal(address indexed token);
+    /// @notice Emitted on a change to the feenominators array
 
     /// @notice Initializes the Lender contract
     /// @dev the ctor sets a default value for the feenominator
@@ -639,7 +651,7 @@ contract Lender {
     /// @notice Withdraws accumulated lending fees of the underlying token
     /// @param e Address of the underlying token to withdraw
     /// @return bool true if successful
-    function withdraw(address e) external authorized(admin) returns (bool) {
+    function withdrawFees(address e) external authorized(admin) returns (bool) {
         // Get the token to be withdrawn
         IERC20 token = IERC20(e);
 
@@ -661,6 +673,44 @@ contract Lender {
     /// @return uint256 The total for for the given amount
     function calculateFee(uint256 a) internal view returns (uint256) {
         return feenominator > 0 ? a / feenominator : 0;
+    }
+
+    /// @notice Allows the admin to schedule the withdrawal of tokens
+    /// @param e Address of (erc20) token to withdraw
+    function scheduleWithdrawal(address e) external authorized(admin) returns (bool) {
+        uint256 when = block.timestamp + HOLD;
+        withdrawals[e] = when;
+
+        emit ScheduleWithdrawal(e, when);
+
+        return true;
+    }
+
+    /// @notice Emergency function to block unplanned withdrawals
+    /// @param e Address of token withdrawal to block
+    function blockWithdrawal(address e) external authorized(admin) returns (bool) {
+        withdrawals[e] = 0;
+
+        emit BlockWithdrawal(e);
+
+        return true;
+    }
+
+    /// @notice Allows the admin to withdraw the given token, provided the holding 
+    /// period has been observed
+    /// @param e Address of token to withdraw
+    function withdraw(address e) external authorized(admin) returns (bool) {
+        uint256 when = withdrawals[e];
+        require (when != 0, 'no withdrawal scheduled');
+  
+        require (block.timestamp >= when, 'withdrawal still on hold');
+  
+        withdrawals[e] = 0;
+  
+        IERC20 token = IERC20(e);
+        Safe.transfer(token, admin, token.balanceOf(address(this)));
+  
+        return true;
     }
 
     /// @notice retrieves the zc token for the given market
