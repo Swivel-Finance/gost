@@ -1,8 +1,6 @@
 // SPDX-License-Identifier: UNLICENSED
 // Adapted from: https://github.com/Rari-Capital/solmate/blob/main/src/utils/SafeTransferLib.sol
 
-// TODO audit for which methods are needed
-
 pragma solidity 0.8.13;
 
 import {IERC20} from './Interfaces.sol';

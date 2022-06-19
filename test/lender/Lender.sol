@@ -207,21 +207,27 @@ contract Lender {
         // transfer from user to illuminate
         Safe.transferFrom(IERC20(u), msg.sender, address(this), a);
 
-        uint256 returned = yield(u, y, a - calculateFee(a));
-
-        // this step is only needed when the lend is for yield
         if (p == uint8(MarketPlace.Principals.Yield)) {
-            // TODO should we require on this?
+            // Purchase yield PTs to lender.sol (address(this))
+            uint256 returned = yield(u, y, a - calculateFee(a), address(this));
+            // Mint and distribute equivalent illuminate PTs
             IERC5095(principalToken(u, m)).mint(msg.sender, returned);
+            
+            emit Lend(p, u, m, returned);
+
+            return returned;
         }
+        else {
+            // Purchase illuminate PTs directly to msg.sender
+            uint256 returned = yield(u, y, a - calculateFee(a), msg.sender);
 
-        emit Lend(p, u, m, returned);
+            emit Lend(p, u, m, returned);
 
-        return returned;
+            return returned;
+        }
     }
 
     /// @notice lends to yield pool. remaining balance is sent to the yield pool
-    /// TODO: this will change when we implement a check on the gas market
     /// @dev lend method signature for swivel
     /// @param p value of a specific principal according to the Illuminate Principals Enum
     /// @param u address of an underlying asset
@@ -278,7 +284,7 @@ contract Lender {
             // fill the orders on swivel protocol
             ISwivel(swivelAddr).initiate(o, a, s);
 
-            yield(u, y, returned);
+            yield(u, y, returned, address(this));
         }
 
         emit Lend(p, u, m, lent);
@@ -613,11 +619,13 @@ contract Lender {
     /// @param u address of an underlying asset
     /// @param y the yield pool to lend to
     /// @param a the amount of underlying tokens to lend
+    /// @param r the receiving address for PTs
     /// @return uint256 the amount of tokens sent to the yield pool
     function yield(
         address u,
         address y,
-        uint256 a
+        uint256 a,
+        address r
     ) internal returns (uint256) {
         // preview exact swap slippage on yield
         uint128 returned = IYield(y).sellBasePreview(Cast.u128(a));
@@ -626,7 +634,7 @@ contract Lender {
         Safe.transfer(IERC20(u), y, a);
 
         // lend out the remaining tokens in the yield pool
-        IYield(y).sellBase(address(this), returned);
+        IYield(y).sellBase(r, returned);
 
         return returned;
     }

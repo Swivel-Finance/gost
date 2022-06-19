@@ -80,7 +80,6 @@ contract MarketPlace {
         address iToken = address(new ERC5095(u, m, redeemer, lender, n, s, d));
 
         // the market will have the illuminate principal as its zeroth item, thus t should have Principals[1] as [0]
-        // TODO we could choose to put illuminate last in
         address[9] memory market = [iToken, t[0], t[1], t[2], t[3], t[4], t[5], t[6], t[7]];
 
         // set the market

@@ -63,9 +63,9 @@ contract Redeemer {
         return true;
     }
 
-    /// @notice Sets the address of the marketplace contract which contains the
+    /// @notice Sets the address of the lender contract which contains the
     /// addresses of all the fixed rate markets
-    /// @param l the address of the marketplace contract
+    /// @param l the address of the lender contract
     /// @return bool true if the address was set, false otherwise
     function setLenderAddress(address l) external authorized(admin) returns (bool) {
         if (lender != address(0)) {
@@ -118,12 +118,14 @@ contract Redeemer {
             // Burn the prinicipal token from illuminate
             token.burn(o, amount);
             // Transfer the original underlying token back to the user
-            Safe.transferFrom(IERC20(u), lender, address(this), amount);      
+            Safe.transferFrom(IERC20(u), lender, address(this), amount);
+
             emit Redeem(0, u, m, amount);
         }
         else {
             // Get the amount of tokens to be redeemed from the principal token
             uint256 amount = IERC20(principal).balanceOf(lender);
+            // Transfer the principal token from the lender contract to here
             Safe.transferFrom(IERC20(u), lender, address(this), amount);
 
             if (p == uint8(MarketPlace.Principals.Apwine)) {
@@ -167,7 +169,7 @@ contract Redeemer {
         // The amount redeemed should be the balance of the principal token held by the illuminate contract
         uint256 amount = IERC20(principal).balanceOf(lender);
 
-        // Transfer the principal token from the marketplace contract to here
+        // Transfer the principal token from the lender contract to here
         Safe.transferFrom(IERC20(principal), lender, address(this), amount);
 
         if (p == uint8(MarketPlace.Principals.Swivel)) {

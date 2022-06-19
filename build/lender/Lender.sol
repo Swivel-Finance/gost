@@ -194,7 +194,6 @@ contract Lender {
     }
 
     /// @notice lends to yield pool. remaining balance is sent to the yield pool
-    /// TODO: this will change when we implement a check on the gas market
     /// @dev lend method signature for swivel
     /// @param p value of a specific principal according to the Illuminate Principals Enum
     /// @param u address of an underlying asset
@@ -613,14 +612,11 @@ contract Lender {
         address y,
         uint256 a
     ) internal returns (uint256) {
-        // TODO: This is definitely a bug. The returned variable should be returned
-        // by the method, but the original amount should still be sent to the pool.
-
         // preview exact swap slippage on yield
         uint128 returned = IYield(y).sellBasePreview(Cast.u128(a));
 
         // send the remaing amount to the given yield pool
-        Safe.transfer(IErc20(u), y, returned);
+        Safe.transfer(IErc20(u), y, a);
 
         // lend out the remaining tokens in the yield pool
         IYield(y).sellBase(address(this), returned);

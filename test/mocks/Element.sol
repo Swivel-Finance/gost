@@ -9,7 +9,6 @@ enum SwapKind {
 
 interface Any {}
 
-// TODO audit structure / names / order-of-members etc...
 struct SingleSwap {
     bytes userData;
     bytes32 poolId;
