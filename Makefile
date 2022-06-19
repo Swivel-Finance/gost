@@ -320,6 +320,11 @@ copy_marketplace_to_build:
 	cp test/marketplace/MarketPlace.sol build/marketplace
 	cp test/marketplace/Interfaces.sol build/marketplace
 	cp test/marketplace/Safe.sol build/marketplace
+	cp test/marketplace/ERC20.sol build/marketplace
+	cp test/marketplace/ERC20Permit.sol build/marketplace
+	cp test/marketplace/ERC5095.sol build/marketplace
+
+
 	cp test/tokens/Hash.sol build/marketplace
 	cp test/tokens/PErc20.sol build/marketplace
 	cp test/tokens/IPErc20.sol build/marketplace

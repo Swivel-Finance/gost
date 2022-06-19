@@ -3,7 +3,7 @@
 pragma solidity 0.8.13;
 
 import './Interfaces.sol';
-import './ZcToken.sol';
+import './ERC5095.sol';
 import './Safe.sol';
 
 contract MarketPlace {
@@ -33,7 +33,7 @@ contract MarketPlace {
     /// should be ordered in that way
     mapping(address => mapping(uint256 => address[9])) public markets;
 
-    mapping(address => mapping(uint256 => address[9])) public pools;
+    mapping(address => mapping(uint256 => address)) public pools;
 
     address public admin;
     /// @notice address of the deployed redeemer contract
@@ -73,22 +73,12 @@ contract MarketPlace {
 
         // deploy an illuminate token with this new market
         // NOTE: ATM is using name as symbol args
-        address iToken = address(new ZcToken(u, m, n, s, d));
+        address iToken = address(new ERC5095(u, m, redeemer, n, s, d));
 
         // the market will have the illuminate principal as its zeroth item, thus t should have Principals[1] as [0]
         // TODO we could choose to put illuminate last in
         address[9] memory market = [iToken, t[0], t[1], t[2], t[3], t[4], t[5], t[6], t[7]];
 
-        // max is the maximum integer value for a 256 unsighed integer
-        uint256 max = 2**256 - 1;
-
-        // approve the underlying for max per given principal
-        for (uint8 i; i < 8; ) {
-            Safe.approve(IErc20(market[i]), redeemer, max);
-            unchecked {
-                i++;
-            }
-        }
         // set the market
         markets[u][m] = market;
 
@@ -118,10 +108,10 @@ contract MarketPlace {
         uint256 m,
         address a
     ) external authorized(admin) returns (bool) {
-        if (pools[u][m][p] != address(0)) {
+        if (pools[u][m] != address(0)) {
             revert Exists('pool already exists');
         }
-        pools[u][m][p] = a;
+        pools[u][m] = a;
         return true;
     }
 
@@ -137,7 +127,7 @@ contract MarketPlace {
         uint256 m,
         uint128 a
     ) external unpaused(p) returns (uint128) {
-        IPool pool = IPool(pools[u][m][p]);
+        IPool pool = IPool(pools[u][m]);
         Safe.transfer(IErc20(address(pool.principalToken())), address(pool), a);
         return pool.sellPrincipalToken(msg.sender, pool.sellPrincipalTokenPreview(a));
     }
@@ -154,7 +144,7 @@ contract MarketPlace {
         uint256 m,
         uint128 a
     ) external unpaused(p) returns (uint128) {
-        IPool pool = IPool(pools[u][m][p]);
+        IPool pool = IPool(pools[u][m]);
         Safe.transfer(IErc20(address(pool.underlying())), address(pool), a);
         return pool.buyPrincipalToken(msg.sender, pool.buyPrincipalTokenPreview(a), a);
     }
@@ -171,7 +161,7 @@ contract MarketPlace {
         uint256 m,
         uint128 a
     ) external unpaused(p) returns (uint128) {
-        IPool pool = IPool(pools[u][m][p]);
+        IPool pool = IPool(pools[u][m]);
         Safe.transfer(IErc20(address(pool.underlying())), address(pool), a);
         return pool.sellUnderlying(msg.sender, pool.sellUnderlyingPreview(a));
     }
@@ -188,7 +178,7 @@ contract MarketPlace {
         uint256 m,
         uint128 a
     ) external unpaused(p) returns (uint128) {
-        IPool pool = IPool(pools[u][m][p]);
+        IPool pool = IPool(pools[u][m]);
         Safe.transfer(IErc20(address(pool.principalToken())), address(pool), a);
         return pool.buyUnderlying(msg.sender, pool.buyUnderlyingPreview(a), a);
     }

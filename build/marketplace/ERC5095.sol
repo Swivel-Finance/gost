@@ -31,7 +31,6 @@ contract ERC5095 is ERC20Permit, IERC5095 {
         }
         return (principalAmount);
     }
-
     /// @notice Post maturity converts a desired amount of underlying tokens returned to principal tokens needed. Returns 0 pre-maturity.
     /// @param underlyingAmount The amount of underlying tokens to convert
     /// @return principalAmount The amount of principal tokens returned by the conversion
@@ -41,7 +40,6 @@ contract ERC5095 is ERC20Permit, IERC5095 {
         }
         return (underlyingAmount);
     }
-
     /// @notice Post maturity calculates the amount of principal tokens that `owner` can redeem. Returns 0 pre-maturity.
     /// @param owner The address of the owner for which redemption is calculated
     /// @return maxPrincipalAmount The maximum amount of principal tokens that `owner` can redeem.
@@ -51,7 +49,6 @@ contract ERC5095 is ERC20Permit, IERC5095 {
         }
         return (_balanceOf[owner]);
     }
-
     /// @notice Post maturity simulates the effects of redeemption at the current block. Returns 0 pre-maturity.
     /// @param principalAmount the amount of principal tokens redeemed in the simulation
     /// @return underlyingAmount The maximum amount of underlying returned by `principalAmount` of PT redemption
@@ -61,7 +58,6 @@ contract ERC5095 is ERC20Permit, IERC5095 {
         }
         return (principalAmount);
     }
-
     /// @notice Post maturity calculates the amount of underlying tokens that `owner` can withdraw. Returns 0 pre-maturity.
     /// @param  owner The address of the owner for which withdrawal is calculated
     /// @return maxUnderlyingAmount The maximum amount of underlying tokens that `owner` can withdraw.
@@ -71,7 +67,6 @@ contract ERC5095 is ERC20Permit, IERC5095 {
         }
         return (_balanceOf[owner]);
     }
-
     /// @notice Post maturity simulates the effects of withdrawal at the current block. Returns 0 pre-maturity.
     /// @param underlyingAmount the amount of underlying tokens withdrawn in the simulation
     /// @return principalAmount The amount of principal tokens required for the withdrawal of `underlyingAmount`
@@ -81,23 +76,21 @@ contract ERC5095 is ERC20Permit, IERC5095 {
         }
         return (underlyingAmount);
     }
-
     /// @notice At or after maturity, Burns principalAmount from `owner` and sends exactly `underlyingAmount` of underlying tokens to `receiver`.
     /// @param underlyingAmount The amount of underlying tokens withdrawn
     /// @param receiver The receiver of the underlying tokens being withdrawn
     /// @return principalAmount The amount of principal tokens burnt by the withdrawal
-    function withdraw(uint256 underlyingAmount, address receiver, address) external override returns (uint256 principalAmount) {
+    function withdraw(uint256 underlyingAmount, address receiver) external override returns (uint256 principalAmount){
         if (block.timestamp < maturity) {
             revert Maturity(maturity);
         }
         return redeemer.authRedeem(underlying, maturity, msg.sender, receiver, underlyingAmount);
     }
-
     /// @notice At or after maturity, burns exactly `principalAmount` of Principal Tokens from `owner` and sends underlyingAmount of underlying tokens to `receiver`.
     /// @param principalAmount The amount of principal tokens being redeemed
     /// @param receiver The receiver of the underlying tokens being withdrawn
     /// @return underlyingAmount The amount of underlying tokens distributed by the redemption
-    function redeem(uint256 principalAmount, address receiver, address) external override returns (uint256 underlyingAmount) {
+    function redeem(uint256 principalAmount, address receiver) external override returns (uint256 underlyingAmount){
         if (block.timestamp < maturity) {
             revert Maturity(maturity);
         }

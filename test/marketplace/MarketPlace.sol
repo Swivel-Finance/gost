@@ -97,13 +97,11 @@ contract MarketPlace {
     }
 
     /// @notice sets the address for a pool
-    /// @param p enum value of the principal token
     /// @param u address of the underlying asset
     /// @param m maturity (timestamp) of the market
     /// @param a address of the pool
     /// @return bool true if successful
     function setPool(
-        uint8 p,
         address u,
         uint256 m,
         address a

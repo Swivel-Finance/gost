@@ -145,8 +145,6 @@ interface IERC5095 is IERC2612 {
 
     function underlying() external returns (address);
 
-    function maturityRate() external returns (uint256);
-
     function convertToUnderlying(uint256) external returns (uint256);
 
     function convertToPrincipal(uint256) external returns (uint256);
@@ -159,7 +157,7 @@ interface IERC5095 is IERC2612 {
 
     function previewWithdraw(uint256) external returns (uint256);
 
-    function withdraw(uint256,address, address) external returns (uint256);
+    function withdraw(uint256, address, address) external returns (uint256);
 
     function redeem(uint256, address, address) external returns (uint256);
 }
