@@ -1,9 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.4;
 
+import "./Interfaces.sol";
 import "./ERC20Permit.sol";
-import "./IERC5095.sol";  
-import "./IRedeemer.sol";
 
 contract ERC5095 is ERC20Permit, IERC5095 {
     /// @dev unix timestamp when the ERC5095 token can be redeemed

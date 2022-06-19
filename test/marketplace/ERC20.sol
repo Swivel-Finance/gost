@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 // Inspired on token.sol from DappHub. Natspec adpated from OpenZeppelin.
-
 pragma solidity ^0.8.0;
-import "./IERC20Metadata.sol";
+
+import "./Interfaces.sol";
 
 /**
  * @dev Implementation of the {IERC20} interface.

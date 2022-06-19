@@ -3,7 +3,7 @@
 
 pragma solidity 0.8.13;
 
-import {IErc20} from './Interfaces.sol';
+import {IERC20} from './Interfaces.sol';
 
 /**
   @notice Safe ETH and ERC20 transfer library that gracefully handles missing return values.
@@ -16,7 +16,7 @@ library Safe {
     /// @param t To address
     /// @param a Amount being transferred
     function approve(
-        IErc20 e,
+        IERC20 e,
         address t,
         uint256 a
     ) internal {
@@ -43,7 +43,7 @@ library Safe {
     /// @param t To address
     /// @param a Amount being transferred
     function transfer(
-        IErc20 e,
+        IERC20 e,
         address t,
         uint256 a
     ) internal {
