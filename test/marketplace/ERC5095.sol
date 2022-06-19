@@ -86,7 +86,7 @@ contract ERC5095 is ERC20Permit, IERC5095 {
     /// @param underlyingAmount The amount of underlying tokens withdrawn
     /// @param receiver The receiver of the underlying tokens being withdrawn
     /// @return principalAmount The amount of principal tokens burnt by the withdrawal
-    function withdraw(uint256 underlyingAmount, address receiver, address holder) external returns (uint256 principalAmount){
+    function withdraw(uint256 underlyingAmount, address receiver, address holder) external override returns (uint256 principalAmount){
         if (block.timestamp < maturity) {
             revert Maturity(maturity);
         }
