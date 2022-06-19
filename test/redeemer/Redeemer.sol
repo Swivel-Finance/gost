@@ -63,11 +63,23 @@ contract Redeemer {
         return true;
     }
 
+    /// @notice Sets the address of the marketplace contract which contains the
+    /// addresses of all the fixed rate markets
+    /// @param l the address of the marketplace contract
+    /// @return bool true if the address was set, false otherwise
     function setLenderAddress(address l) external authorized(admin) returns (bool) {
         if (lender != address(0)) {
             revert Exists('lender');
         }
         lender = l;
+        return true;
+    }
+
+    /// @notice Sets the feenominator to the given value
+    /// @param s the address of the Swivel.sol Router
+    /// @return bool true if successful
+    function setSwivel(address s) external authorized(admin) returns (bool) {
+        swivelAddr = s;
         return true;
     }
 
