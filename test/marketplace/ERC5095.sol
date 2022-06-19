@@ -80,20 +80,32 @@ contract ERC5095 is ERC20Permit, IERC5095 {
     /// @param underlyingAmount The amount of underlying tokens withdrawn
     /// @param receiver The receiver of the underlying tokens being withdrawn
     /// @return principalAmount The amount of principal tokens burnt by the withdrawal
-    function withdraw(uint256 underlyingAmount, address receiver) external override returns (uint256 principalAmount){
+    function withdraw(uint256 underlyingAmount, address receiver, address holder) external returns (uint256 principalAmount){
         if (block.timestamp < maturity) {
             revert Maturity(maturity);
         }
-        return redeemer.authRedeem(underlying, maturity, msg.sender, receiver, underlyingAmount);
+        if (holder == msg.sender) {
+            return redeemer.authRedeem(underlying, maturity, msg.sender, receiver, underlyingAmount);
+        }
+        else {
+            require(_allowance[holder][msg.sender] >= underlyingAmount, 'not enough approvals');
+            return redeemer.authRedeem(underlying, maturity, holder, receiver, underlyingAmount);     
+        }
     }
     /// @notice At or after maturity, burns exactly `principalAmount` of Principal Tokens from `owner` and sends underlyingAmount of underlying tokens to `receiver`.
     /// @param principalAmount The amount of principal tokens being redeemed
     /// @param receiver The receiver of the underlying tokens being withdrawn
     /// @return underlyingAmount The amount of underlying tokens distributed by the redemption
-    function redeem(uint256 principalAmount, address receiver) external override returns (uint256 underlyingAmount){
+    function redeem(uint256 principalAmount, address receiver, address holder) external override returns (uint256 underlyingAmount){
         if (block.timestamp < maturity) {
             revert Maturity(maturity);
         }
-        return redeemer.authRedeem(underlying, maturity, msg.sender, receiver, principalAmount);
+        if (holder == msg.sender) {
+            return redeemer.authRedeem(underlying, maturity, msg.sender, receiver, underlyingAmount);
+        }
+        else {
+            require(_allowance[holder][msg.sender] >= underlyingAmount, 'not enough approvals');
+            return redeemer.authRedeem(underlying, maturity, holder, receiver, underlyingAmount);     
+        }
     }
 }
