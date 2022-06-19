@@ -93,7 +93,9 @@ contract Lender {
 
         for (uint256 i; i < len; ) {
             IERC20 uToken = IERC20(u[i]);
-            Safe.approve(uToken, a[i], max);
+            if (address(0) != (address(uToken))) {
+                Safe.approve(uToken, a[i], max);
+            }
             unchecked {
                 i++;
             }
