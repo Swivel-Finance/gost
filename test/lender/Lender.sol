@@ -221,10 +221,6 @@ contract Lender {
         Swivel.Order[] calldata o,
         Swivel.Components[] calldata s
     ) public returns (uint256) {
-        // check the principal is swivel
-        if (p != uint8(MarketPlace.Principals.Swivel)) {
-            revert Invalid('principal');
-        }
 
         // lent represents the number of underlying tokens lent
         uint256 lent;
@@ -289,10 +285,7 @@ contract Lender {
         address e,
         bytes32 i
     ) public returns (uint256) {
-        // check the principal is element
-        if (p != uint8(MarketPlace.Principals.Element)) {
-            revert Invalid('principal');
-        }
+
         // Get the principal token for this market for element
         address principal = IMarketPlace(marketPlace).markets(u, m, p);
 
@@ -348,10 +341,7 @@ contract Lender {
         uint256 r,
         uint256 d
     ) public returns (uint256) {
-        // check the principal is pendle
-        if (p != uint8(MarketPlace.Principals.Pendle)) {
-            revert Invalid('principal');
-        }
+
         // Instantiate market and tokens
         address principal = IMarketPlace(marketPlace).markets(u, m, p);
         IPendleToken token = IPendleToken(principal);
@@ -367,14 +357,15 @@ contract Lender {
         Safe.transferFrom(IERC20(u), msg.sender, address(this), a);
 
         // Add the accumulated fees to the total
-        fees[u] += calculateFee(a);
+        uint256 fee = calculateFee(a);
+        fees[u] += fee;
 
         address[] memory path = new address[](2);
         path[0] = u;
         path[1] = principal;
 
         // Swap on the Pendle Router using the provided market and params
-        uint256 returned = IPendle(pendleAddr).swapExactTokensForTokens(a - calculateFee(a), r, path, address(this), d)[0];
+        uint256 returned = IPendle(pendleAddr).swapExactTokensForTokens(a - fee, r, path, address(this), d)[0];
 
         // Mint Illuminate zero coupons
         address illuminateToken = principalToken(u, m);
@@ -406,10 +397,6 @@ contract Lender {
         address t,
         address x
     ) public returns (uint256) {
-        // check the principal is tempus
-        if (p != uint8(MarketPlace.Principals.Tempus)) {
-            revert Invalid('principal');
-        }
 
         // Instantiate market and tokens
         address principal = IMarketPlace(marketPlace).markets(u, m, p);
@@ -426,11 +413,12 @@ contract Lender {
         Safe.transferFrom(underlyingToken, msg.sender, address(this), a);
 
         // Add the accumulated fees to the total
-        fees[u] += calculateFee(a);
+        uint256 fee = calculateFee(a);
+        fees[u] += fee;
 
         // Swap on the Tempus Router using the provided market and params
         IERC5095 illuminateToken = IERC5095(principalToken(u, m));
-        uint256 returned = ITempus(tempusAddr).depositAndFix(Any(x), Any(t), a - calculateFee(a), true, r, d) -
+        uint256 returned = ITempus(tempusAddr).depositAndFix(Any(x), Any(t), a - fee, true, r, d) -
             illuminateToken.balanceOf(address(this));
 
         // Mint Illuminate zero coupons
@@ -463,10 +451,6 @@ contract Lender {
         address x,
         address s
     ) public returns (uint256) {
-        // check the principal is sense
-        if (p != uint8(MarketPlace.Principals.Sense)) {
-            revert Invalid('principal');
-        }
 
         // Get the principal token for this market for this market
         ISenseToken token = ISenseToken(IMarketPlace(marketPlace).markets(u, m, p));
@@ -523,10 +507,6 @@ contract Lender {
         address aave,
         uint256 i
     ) public returns (uint256) {
-        // check the principal is apwine
-        if (p != uint8(MarketPlace.Principals.Apwine)) {
-            revert Invalid('principal');
-        }
 
         // Instantiate market and tokens
         address principal = IMarketPlace(marketPlace).markets(u, m, p);
@@ -573,10 +553,6 @@ contract Lender {
         uint256 m,
         uint256 a
     ) public returns (uint256) {
-        // check the principal is notional
-        if (p != uint8(MarketPlace.Principals.Notional)) {
-            revert Invalid('principal');
-        }
 
         // Instantiate market and tokens
         address principal = IMarketPlace(marketPlace).markets(u, m, p);
@@ -639,7 +615,7 @@ contract Lender {
     /// @notice Withdraws accumulated lending fees of the underlying token
     /// @param e Address of the underlying token to withdraw
     /// @return bool true if successful
-    function withdraw(address e) external authorized(admin) returns (bool) {
+    function withdrawFee(address e) external authorized(admin) returns (bool) {
         // Get the token to be withdrawn
         IERC20 token = IERC20(e);
 
