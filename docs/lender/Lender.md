@@ -1,7 +1,8 @@
 # Lender
 
 
-
+The lender contract executes loans on behalf of users. 
+The contract holds the principal tokens for each market and mints an ERC-5095 position to users to represent their lent positions.
 
 
 ## Contents
@@ -10,7 +11,7 @@
 
 ## Globals
 
-> Note this contains internal vars as well due to a bug in the docgen procedure
+> Note that this list contains both internal and external attributes
 
 | Var | Type |
 | --- | --- |
@@ -101,6 +102,7 @@ address r
 | Type | Description |
 | --- | --- |
 |`bool` | true if the approval was successful, false otherwise
+
 ### approve
 bulk approves the usage of addresses at the given ERC20 addresses. 
 

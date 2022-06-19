@@ -9,6 +9,10 @@ import './Element.sol'; // library of element specific constructs
 import './Safe.sol';
 import './Cast.sol';
 
+/// @title Lender.sol
+/// @author Sourabh Marathe, Julian Traversa, Rob Robbins
+/// @notice The lender contract executes loans on behalf of users. 
+/// @notice The contract holds the principal tokens for each market and mints an ERC-5095 position to users to represent their lent positions.
 contract Lender {
     error Unauthorized();
     error NotEqual(string);
