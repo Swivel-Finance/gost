@@ -158,6 +158,10 @@ address a
 | --- | --- | --- |
 |`a` | address | Address of a new admin
 
+#### Returns:
+| Type | Description |
+| --- | --- |
+|`bool` | true if successful
 ### setPool
 sets the address for a pool
 
@@ -321,6 +325,137 @@ uint128 a
 | Type | Description |
 | --- | --- |
 |`uint128` | amount of underlying bought
+### mint
+No description
+> Mint liquidity tokens in exchange for adding underlying and PT
+The amount of liquidity tokens to mint is calculated from the amount of unaccounted for PT in this contract.
+A proportional amount of underlying tokens need to be present in this contract, also unaccounted for.
+
+
+#### Declaration
+```solidity
+function mint(
+address u,
+uint256 m,
+uint256 uA,
+uint256 ptA,
+uint256 minRatio,
+uint256 maxRatio
+) external returns
+(uint256, uint256, uint256)
+```
+
+#### Modifiers:
+No modifiers
+
+#### Args:
+| Arg | Type | Description |
+| --- | --- | --- |
+|`u` | address | the address of the underlying token
+|`m` | uint256 | the maturity of the principal token
+|`uA` | uint256 | the underlying amount being sent
+|`ptA` | uint256 | the principal token amount being sent
+|`minRatio` | uint256 | Minimum ratio of underlying to PT in the pool.
+|`maxRatio` | uint256 | Maximum ratio of underlying to PT in the pool.
+
+#### Returns:
+| Type | Description |
+| --- | --- |
+|`The` | amount of liquidity tokens minted.
+### mintWithUnderlying
+No description
+> Mint liquidity tokens in exchange for adding only underlying
+The amount of liquidity tokens is calculated from the amount of PT to buy from the pool,
+plus the amount of unaccounted for PT in this contract.
+The underlying tokens need to be present in this contract, unaccounted for.
+
+
+#### Declaration
+```solidity
+function mintWithUnderlying(
+address u,
+uint256 m,
+uint256 a,
+uint256 ptBought,
+uint256 minRatio,
+uint256 maxRatio
+) external returns
+(uint256, uint256, uint256)
+```
+
+#### Modifiers:
+No modifiers
+
+#### Args:
+| Arg | Type | Description |
+| --- | --- | --- |
+|`u` | address | the address of the underlying token
+|`m` | uint256 | the maturity of the principal token
+|`a` | uint256 | the underlying amount being sent
+|`ptBought` | uint256 | Amount of `PT` being bought in the Pool, from this we calculate how much underlying it will be taken in.
+|`minRatio` | uint256 | Minimum ratio of underlying to PT in the pool.
+|`maxRatio` | uint256 | Maximum ratio of underlying to PT in the pool.
+
+#### Returns:
+| Type | Description |
+| --- | --- |
+|`The` | amount of liquidity tokens minted.
+### burn
+No description
+> Burn liquidity tokens in exchange for underlying and PT.
+The liquidity tokens need to be in this contract.
+
+
+#### Declaration
+```solidity
+function burn(
+address minRatio,
+uint256 maxRatio
+) external returns
+(uint256, uint256, uint256)
+```
+
+#### Modifiers:
+No modifiers
+
+#### Args:
+| Arg | Type | Description |
+| --- | --- | --- |
+|`minRatio` | address | Minimum ratio of underlying to PT in the pool.
+|`maxRatio` | uint256 | Maximum ratio of underlying to PT in the pool.
+
+#### Returns:
+| Type | Description |
+| --- | --- |
+|`The` | amount of tokens burned and returned (tokensBurned, underlyings, PTs).
+### burnForUnderlying
+No description
+> Burn liquidity tokens in exchange for underlying.
+
+
+#### Declaration
+```solidity
+function burnForUnderlying(
+address minRatio,
+uint256 maxRatio
+) external returns
+(uint256 tokensBurned, uint256 underlyingOut)
+```
+
+#### Modifiers:
+No modifiers
+
+#### Args:
+| Arg | Type | Description |
+| --- | --- | --- |
+|`minRatio` | address | Minimum ratio of underlying to PT in the pool.
+|`maxRatio` | uint256 | Minimum ratio of underlying to PT in the pool.
+
+#### Returns:
+| Type | Description |
+| --- | --- |
+|`tokensBurned` | The amount of lp tokens burned.
+|`underlyingOut` | The amount of underlying tokens returned.
 
 
 ## Events

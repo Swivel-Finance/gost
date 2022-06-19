@@ -15,29 +15,6 @@ Safe ETH and ERC20 transfer library that gracefully handles missing return value
 
 ## Functions
 
-### approve
-No description
-
-
-#### Declaration
-```solidity
-function approve(
-contract IERC20 e,
-address t,
-uint256 a
-) internal
-```
-
-#### Modifiers:
-No modifiers
-
-#### Args:
-| Arg | Type | Description |
-| --- | --- | --- |
-|`e` | contract IERC20 | Erc20 token to execute the call with
-|`t` | address | To address
-|`a` | uint256 | Amount being transferred
-
 ### transfer
 No description
 
@@ -60,6 +37,46 @@ No modifiers
 |`e` | contract IERC20 | Erc20 token to execute the call with
 |`t` | address | To address
 |`a` | uint256 | Amount being transferred
+
+### transferFrom
+No description
+
+
+#### Declaration
+```solidity
+function transferFrom(
+contract IERC20 e,
+address f,
+address t,
+uint256 a
+) internal
+```
+
+#### Modifiers:
+No modifiers
+
+#### Args:
+| Arg | Type | Description |
+| --- | --- | --- |
+|`e` | contract IERC20 | Erc20 token to execute the call with
+|`f` | address | From address
+|`t` | address | To address
+|`a` | uint256 | Amount being transferred
+
+### approve
+No description
+
+
+#### Declaration
+```solidity
+function approve(
+) internal
+```
+
+#### Modifiers:
+No modifiers
+
+
 
 
 

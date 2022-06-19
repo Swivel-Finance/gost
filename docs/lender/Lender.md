@@ -28,22 +28,27 @@
 ## Modifiers
 
 ### authorized
-No description
+ensures that only a certain address can call the function
+
 
 
 #### Declaration
 ```solidity
-modifier authorized
+modifier authorized(
+address a
+)
 ```
 
-
+#### Args:
+| Arg | Type | Description |
+| --- | --- | --- |
+|`a` | address | address that msg.sender must be to be authorized
 
 ## Functions
 
 ### constructor
-Initializes the Lender contract
+initializes the Lender contract
 
-> the ctor sets a default value for the feenominator
 
 
 #### Declaration
@@ -66,8 +71,7 @@ No modifiers
 |`t` | address | the tempus contract
 
 ### approve
-Approves the redeemer contract to spend the principal tokens held by
-the lender contract.
+approves the redeemer contract to spend the principal tokens held by the lender contract.
 
 
 
@@ -98,9 +102,9 @@ address r
 | --- | --- |
 |`bool` | true if the approval was successful, false otherwise
 ### approve
-Bulk approves the usage of addresses at the given ERC20 addresses
-The lengths of the inputs must match because the arrays are paired by index
+bulk approves the usage of addresses at the given ERC20 addresses. 
 
+> the lengths of the inputs must match because the arrays are paired by index
 
 
 #### Declaration
@@ -128,7 +132,8 @@ address[] a
 | --- | --- |
 |`true` | if successful
 ### setAdmin
-No description
+sets the admin address
+
 
 
 #### Declaration
@@ -147,10 +152,14 @@ address a
 #### Args:
 | Arg | Type | Description |
 | --- | --- | --- |
-|`a` | address | Address of a new admin
+|`a` | address | address of a new admin
 
+#### Returns:
+| Type | Description |
+| --- | --- |
+|`bool` | true if successful
 ### setFee
-Sets the feenominator to the given value
+sets the feenominator to the given value
 
 
 
@@ -177,8 +186,7 @@ uint256 f
 | --- | --- |
 |`bool` | true if successful
 ### setMarketPlaceAddress
-Sets the address of the marketplace contract which contains the
-addresses of all the fixed rate markets
+sets the address of the marketplace contract which contains the addresses of all the fixed rate markets
 
 
 
@@ -205,7 +213,7 @@ address m
 | --- | --- |
 |`bool` | true if the address was set, false otherwise
 ### setSwivel
-Sets the feenominator to the given value
+sets the feenominator to the given value
 
 
 
@@ -232,10 +240,8 @@ address s
 | --- | --- |
 |`bool` | true if successful
 ### mint
-mint swaps the sender's principal tokens for illuminate's zc tokens
-in effect, this opens a new fixed rate position for the sender on illuminate
+mint swaps the sender's principal tokens for illuminate's ERC5095 tokens in effect, this opens a new fixed rate position for the sender on illuminate
 
-> mint is uniform across all principals, thus there is no need for a 'minter'
 
 
 #### Declaration
@@ -265,8 +271,8 @@ No modifiers
 | --- | --- |
 |`bool` | true if the mint was successful, false otherwise
 ### lend
-No description
-> lend method signature for both illuminate and yield
+lend method signature for both illuminate and yield
+
 
 
 #### Declaration
@@ -298,10 +304,9 @@ No modifiers
 | --- | --- |
 |`uint256` | the amount of principal tokens lent out
 ### lend
-lends to yield pool. remaining balance is sent to the yield pool
-TODO: this will change when we implement a check on the gas market
+lend method signature for swivel
 
-> lend method signature for swivel
+> lends to yield pool. remaining balance is sent to the yield pool
 
 
 #### Declaration
@@ -337,8 +342,8 @@ No modifiers
 | --- | --- |
 |`uint256` | the amount of principal tokens lent out
 ### lend
-No description
-> lend method signature for element
+lend method signature for element
+
 
 
 #### Declaration
@@ -371,9 +376,13 @@ No modifiers
 |`e` | address | element pool that is lent to
 |`i` | bytes32 | the id of the pool
 
+#### Returns:
+| Type | Description |
+| --- | --- |
+|`uint256` | the amount of principal tokens lent out
 ### lend
-No description
-> lend method signature for pendle
+lend method signature for pendle
+
 
 
 #### Declaration
@@ -407,9 +416,9 @@ No modifiers
 | --- | --- |
 |`uint256` | the amount of principal tokens lent out
 ### lend
-Can be called before maturity to lend to Tempus while minting Illuminate tokens
+lend method signature for tempus
 
-> lend method signature for tempus
+> This method can be called before maturity to lend to Tempus while minting Illuminate tokens
 
 
 #### Declaration
@@ -447,12 +456,10 @@ No modifiers
 | --- | --- |
 |`uint256` | the amount of principal tokens lent out
 ### lend
-Can be called before maturity to lend to Sense while minting Illuminate tokens
+lend method signature for sense
 
-> lend method signature for sense
-sense provides a [divider] contract that splits [target] assets (underlying)
-into PTs and YTs. Each [target] asset has a [series] of contracts, each
-identifiable by their [maturity].
+> this method can be called before maturity to lend to Sense while minting Illuminate tokens
+sense provides a [divider] contract that splits [target] assets (underlying) into PTs and YTs. Each [target] asset has a [series] of contracts, each identifiable by their [maturity].
 
 
 #### Declaration
@@ -488,7 +495,7 @@ No modifiers
 | --- | --- |
 |`uint256` | the amount of principal tokens lent out
 ### lend
-Can be called before maturity to lend to APWine while minting Illuminate tokens
+this method can be called before maturity to lend to APWine while minting Illuminate tokens
 
 
 
@@ -566,7 +573,8 @@ transfers excess funds to yield pool after principal tokens have been lent out
 function yield(
 address u,
 address y,
-uint256 a
+uint256 a,
+address r
 ) internal returns
 (uint256)
 ```
@@ -580,13 +588,14 @@ No modifiers
 |`u` | address | address of an underlying asset
 |`y` | address | the yield pool to lend to
 |`a` | uint256 | the amount of underlying tokens to lend
+|`r` | address | the receiving address for PTs
 
 #### Returns:
 | Type | Description |
 | --- | --- |
 |`uint256` | the amount of tokens sent to the yield pool
 ### withdrawFee
-Withdraws accumulated lending fees of the underlying token
+withdraws accumulated lending fees of the underlying token
 
 
 
@@ -606,15 +615,14 @@ address e
 #### Args:
 | Arg | Type | Description |
 | --- | --- | --- |
-|`e` | address | Address of the underlying token to withdraw
+|`e` | address | address of the underlying token to withdraw
 
 #### Returns:
 | Type | Description |
 | --- | --- |
 |`bool` | true if successful
 ### calculateFee
-This method returns the fee based on the amount passed to it. If
-feenominator is 0, then there is no fee.
+this method returns the fee based on the amount passed to it. If the feenominator is 0, then there is no fee.
 
 
 
@@ -632,14 +640,14 @@ No modifiers
 #### Args:
 | Arg | Type | Description |
 | --- | --- | --- |
-|`a` | uint256 | Amount of underlying tokens to calculate the fee for
+|`a` | uint256 | amount of underlying tokens to calculate the fee for
 
 #### Returns:
 | Type | Description |
 | --- | --- |
 |`uint256` | The total for for the given amount
 ### scheduleWithdrawal
-Allows the admin to schedule the withdrawal of tokens
+allows the admin to schedule the withdrawal of tokens
 
 
 
@@ -659,10 +667,14 @@ address e
 #### Args:
 | Arg | Type | Description |
 | --- | --- | --- |
-|`e` | address | Address of (erc20) token to withdraw
+|`e` | address | address of (erc20) token to withdraw
 
+#### Returns:
+| Type | Description |
+| --- | --- |
+|`bool` | true if successful
 ### blockWithdrawal
-Emergency function to block unplanned withdrawals
+emergency function to block unplanned withdrawals
 
 
 
@@ -682,11 +694,14 @@ address e
 #### Args:
 | Arg | Type | Description |
 | --- | --- | --- |
-|`e` | address | Address of token withdrawal to block
+|`e` | address | address of token withdrawal to block
 
+#### Returns:
+| Type | Description |
+| --- | --- |
+|`bool` | true if successful
 ### withdraw
-Allows the admin to withdraw the given token, provided the holding 
-period has been observed
+allows the admin to withdraw the given token, provided the holding period has been observed
 
 
 
@@ -708,8 +723,12 @@ address e
 | --- | --- | --- |
 |`e` | address | Address of token to withdraw
 
+#### Returns:
+| Type | Description |
+| --- | --- |
+|`bool` | true if successful
 ### principalToken
-retrieves the zc token for the given market
+retrieves the ERC5095 token for the given market
 
 
 
@@ -734,31 +753,31 @@ No modifiers
 #### Returns:
 | Type | Description |
 | --- | --- |
-|`address` | of the zc token for the market
+|`address` | of the ERC5095 token for the market
 
 
 ## Events
 
 ### Lend
-Emitted upon executed lend
+emitted upon executed lend
 
 
 
 
 ### Mint
-Emitted upon minted ERC5095 to user
+emitted upon minted ERC5095 to user
 
 
 
 
 ### ScheduleWithdrawal
-Emitted on token withdrawal scheduling
+emitted on token withdrawal scheduling
 
 
 
 
 ### BlockWithdrawal
-Emitted on token withdrawal blocking
+emitted on token withdrawal blocking
 
 
 

@@ -88,6 +88,10 @@ address a
 | --- | --- | --- |
 |`a` | address | Address of a new admin
 
+#### Returns:
+| Type | Description |
+| --- | --- |
+|`bool` | true if successful
 ### setMarketPlaceAddress
 Sets the address of the marketplace contract which contains the
 addresses of all the fixed rate markets
@@ -117,12 +121,15 @@ address m
 | --- | --- |
 |`bool` | true if the address was set, false otherwise
 ### setLenderAddress
-No description
+Sets the address of the lender contract which contains the
+addresses of all the fixed rate markets
+
 
 
 #### Declaration
 ```solidity
 function setLenderAddress(
+address l
 ) external authorized returns
 (bool)
 ```
@@ -132,15 +139,49 @@ function setLenderAddress(
 | --- |
 | authorized |
 
+#### Args:
+| Arg | Type | Description |
+| --- | --- | --- |
+|`l` | address | the address of the lender contract
+
+#### Returns:
+| Type | Description |
+| --- | --- |
+|`bool` | true if the address was set, false otherwise
+### setSwivel
+Sets the feenominator to the given value
 
 
+
+#### Declaration
+```solidity
+function setSwivel(
+address s
+) external authorized returns
+(bool)
+```
+
+#### Modifiers:
+| Modifier |
+| --- |
+| authorized |
+
+#### Args:
+| Arg | Type | Description |
+| --- | --- | --- |
+|`s` | address | the address of the Swivel.sol Router
+
+#### Returns:
+| Type | Description |
+| --- | --- |
+|`bool` | true if successful
 ### redeem
 Redeems underlying token for illuminate, apwine and tempus
 protocols
 
 > Illuminate burns its tokens prior to redemption, unlike APWine and
-Tempus, which withdraw their tokens after transferring the underlying to
-the redeem contract. As a result, only Illuminate's redeem returns funds
+Tempus, which redeem PTs to the redeemer, transferring the underlying to
+this redeemer contract. Consequently, only Illuminate's redeem returns funds
 to the user.
 We can avoid a require check on the principal at the start of this
 redeem because there is no common business logic executed before the
@@ -262,6 +303,10 @@ No modifiers
 |`d` | address | sense contract that splits the loan's prinicpal and yield
 |`o` | address | sense contract that [d] calls into to adapt the underlying to sense
 
+#### Returns:
+| Type | Description |
+| --- | --- |
+|`bool` | true if the redemption was successful
 ### authRedeem
 implements the redeem method for the contract to fulfill the
 ERC-5095 interface

@@ -15,36 +15,40 @@ contract Lender {
     error Exists(address);
     error Invalid(string);
 
+    /// @notice minimum amount of time the admin must wait before executing a withdrawl
     uint256 constant public HOLD = 3 days;
 
-
+    /// @notice address that is allowed to create markets, set fees, etc. It is commonly used in the authorized modifier.
     address public admin;
+    /// @notice address of the MarketPlace.sol contract, used to access the markets mapping
     address public marketPlace;
 
-    /// @dev addresses of the 3rd party protocol contracts
+    /// @notice third party contract needed to lend on Swivel
     address public swivelAddr;
+    /// @notice third party contract needed to lend on Pendle
     address public immutable pendleAddr;
+    /// @notice third party contract needed to lend on Tempus
     address public immutable tempusAddr;
 
+    /// @notice this value determines the amount of fees paid on loans
     uint256 public feenominator;
 
     /// @notice maps underlying tokens to the amount of fees accumulated for that token
     mapping(address => uint256) public fees;
-    /// @dev maps a token address to a point in time, a hold, after which a withdrawal can be made
+    /// @notice maps a token address to a point in time, a hold, after which a withdrawal can be made
     mapping (address => uint256) public withdrawals;
 
-    /// @notice Emitted upon executed lend
+    /// @notice emitted upon executed lend
     event Lend(uint8 principal, address indexed underlying, uint256 indexed maturity, uint256 returned);
-    /// @notice Emitted upon minted ERC5095 to user
+    /// @notice emitted upon minted ERC5095 to user
     event Mint(uint8 principal, address indexed underlying, uint256 indexed maturity, uint256 amount);
-    /// @notice Emitted on token withdrawal scheduling
+    /// @notice emitted on token withdrawal scheduling
     event ScheduleWithdrawal(address indexed token, uint256 hold);
-    /// @notice Emitted on token withdrawal blocking
+    /// @notice emitted on token withdrawal blocking
     event BlockWithdrawal(address indexed token);
-    /// @notice Emitted on a change to the feenominators array
+    /// @notice emitted on a change to the feenominators array
 
-    /// @notice Initializes the Lender contract
-    /// @dev the ctor sets a default value for the feenominator
+    /// @notice initializes the Lender contract
     /// @param s the swivel contract
     /// @param p the pendle contract
     /// @param t the tempus contract
@@ -60,8 +64,7 @@ contract Lender {
         feenominator = 1000;
     }
 
-    /// @notice Approves the redeemer contract to spend the principal tokens held by
-    /// the lender contract.
+    /// @notice approves the redeemer contract to spend the principal tokens held by the lender contract.
     /// @param u underlying token's address, used to define the market being approved
     /// @param m maturity of the underlying token, used to define the market being approved
     /// @param r the address being approved, in this case the redeemer contract
@@ -90,8 +93,8 @@ contract Lender {
         return true;
     }
 
-    /// @notice Bulk approves the usage of addresses at the given ERC20 addresses
-    /// @notice The lengths of the inputs must match because the arrays are paired by index
+    /// @notice bulk approves the usage of addresses at the given ERC20 addresses. 
+    /// @dev the lengths of the inputs must match because the arrays are paired by index
     /// @param u array of ERC20 token addresses that will be approved on
     /// @param a array of addresses that will be approved
     /// @return true if successful
@@ -114,14 +117,15 @@ contract Lender {
         return true;
     }
 
-    /// @param a Address of a new admin
+    /// @notice sets the admin address
+    /// @param a address of a new admin
     /// @return bool true if successful
     function setAdmin(address a) external authorized(admin) returns (bool) {
         admin = a;
         return true;
     }
 
-    /// @notice Sets the feenominator to the given value
+    /// @notice sets the feenominator to the given value
     /// @param f the new value of the feenominator, fees are not collected when the feenominator is 0
     /// @return bool true if successful
     function setFee(uint256 f) external authorized(admin) returns (bool) {
@@ -129,8 +133,7 @@ contract Lender {
         return true;
     }
 
-    /// @notice Sets the address of the marketplace contract which contains the
-    /// addresses of all the fixed rate markets
+    /// @notice sets the address of the marketplace contract which contains the addresses of all the fixed rate markets
     /// @param m the address of the marketplace contract
     /// @return bool true if the address was set, false otherwise
     function setMarketPlaceAddress(address m) external authorized(admin) returns (bool) {
@@ -141,7 +144,7 @@ contract Lender {
         return true;
     }
 
-    /// @notice Sets the feenominator to the given value
+    /// @notice sets the feenominator to the given value
     /// @param s the address of the Swivel.sol Router
     /// @return bool true if successful
     function setSwivel(address s) external authorized(admin) returns (bool) {
@@ -149,9 +152,7 @@ contract Lender {
         return true;
     }
 
-    /// @notice mint swaps the sender's principal tokens for illuminate's zc tokens
-    /// @notice in effect, this opens a new fixed rate position for the sender on illuminate
-    /// @dev mint is uniform across all principals, thus there is no need for a 'minter'
+    /// @notice mint swaps the sender's principal tokens for illuminate's ERC5095 tokens in effect, this opens a new fixed rate position for the sender on illuminate
     /// @param p value of a specific principal according to the MarketPlace Principals Enum
     /// @param u address of an underlying asset
     /// @param m maturity (timestamp) of the market
@@ -167,7 +168,7 @@ contract Lender {
         address principal = IMarketPlace(marketPlace).markets(u, m, p);
         //use safe transfer lib and ERC interface...
         Safe.transferFrom(IERC20(principal), msg.sender, address(this), a);
-        //use zctoken interface...
+        //use ERC5095 interface...
         IERC5095(principalToken(u, m)).mint(msg.sender, a);
 
         emit Mint(p, u, m, a);
@@ -175,7 +176,7 @@ contract Lender {
         return true;
     }
 
-    /// @dev lend method signature for both illuminate and yield
+    /// @notice lend method signature for both illuminate and yield
     /// @param p value of a specific principal according to the MarketPlace Principals Enum
     /// @param u address of an underlying asset
     /// @param m maturity (timestamp) of the market
@@ -227,8 +228,8 @@ contract Lender {
         }
     }
 
-    /// @notice lends to yield pool. remaining balance is sent to the yield pool
-    /// @dev lend method signature for swivel
+    /// @notice lend method signature for swivel
+    /// @dev lends to yield pool. remaining balance is sent to the yield pool
     /// @param p value of a specific principal according to the Illuminate Principals Enum
     /// @param u address of an underlying asset
     /// @param m maturity (timestamp) of the market
@@ -267,7 +268,7 @@ contract Lender {
                 uint256 fee = calculateFee(a[i]);
                 // Track accumulated fees
                 totalFee += fee;
-                // Sum the total amount lent to Swivel (amount of zc tokens to mint) minus fees
+                // Sum the total amount lent to Swivel (amount of ERC5095 tokens to mint) minus fees
                 lent += a[i] - fee;
                 // Sum the total amount of premium paid from Swivel (amount of underlying to lend to yield)
                 returned += (a[i] - fee) * (order.premium / order.principal);
@@ -291,7 +292,7 @@ contract Lender {
         return lent;
     }
 
-    /// @dev lend method signature for element
+    /// @notice lend method signature for element
     /// @param p value of a specific principal according to the Illuminate Principals Enum
     /// @param u address of an underlying asset
     /// @param m maturity (timestamp) of the market
@@ -351,7 +352,7 @@ contract Lender {
         return purchased;
     }
 
-    /// @dev lend method signature for pendle
+    /// @notice lend method signature for pendle
     /// @param p value of a specific principal according to the Illuminate Principals Enum
     /// @param u address of an underlying asset
     /// @param m maturity (timestamp) of the market
@@ -401,8 +402,8 @@ contract Lender {
         return returned;
     }
 
-    /// @dev lend method signature for tempus
-    /// @notice Can be called before maturity to lend to Tempus while minting Illuminate tokens
+    /// @notice lend method signature for tempus
+    /// @dev This method can be called before maturity to lend to Tempus while minting Illuminate tokens
     /// @param p value of a specific principal according to the Illuminate Principals Enum
     /// @param u address of an underlying asset
     /// @param m maturity (timestamp) of the market
@@ -453,11 +454,9 @@ contract Lender {
         return returned;
     }
 
-    /// @dev lend method signature for sense
-    /// @dev sense provides a [divider] contract that splits [target] assets (underlying)
-    /// into PTs and YTs. Each [target] asset has a [series] of contracts, each
-    /// identifiable by their [maturity].
-    /// @notice Can be called before maturity to lend to Sense while minting Illuminate tokens
+    /// @notice lend method signature for sense
+    /// @dev this method can be called before maturity to lend to Sense while minting Illuminate tokens
+    /// @dev sense provides a [divider] contract that splits [target] assets (underlying) into PTs and YTs. Each [target] asset has a [series] of contracts, each identifiable by their [maturity].
     /// @param p value of a specific principal according to the Illuminate Principals Enum
     /// @param u address of an underlying asset
     /// @param m maturity (timestamp) of the market
@@ -503,7 +502,7 @@ contract Lender {
         // Swap those tokens for the principal tokens
         uint256 returned = ISense(x).swapUnderlyingForPTs(s, m, lent, r);
 
-        // Get the address of the ZC token for this market
+        // Get the address of the ERC5095 token for this market
         IERC5095 illuminateToken = IERC5095(principalToken(u, m));
 
         // Mint the illuminate tokens based on the returned amount
@@ -513,7 +512,7 @@ contract Lender {
         return returned;
     }
 
-    /// @notice Can be called before maturity to lend to APWine while minting Illuminate tokens
+    /// @notice this method can be called before maturity to lend to APWine while minting Illuminate tokens
     /// @param p value of a specific principal according to the Illuminate Principals Enum
     /// @param u address of an underlying asset
     /// @param m maturity (timestamp) of the market
@@ -633,8 +632,8 @@ contract Lender {
         return returned;
     }
 
-    /// @notice Withdraws accumulated lending fees of the underlying token
-    /// @param e Address of the underlying token to withdraw
+    /// @notice withdraws accumulated lending fees of the underlying token
+    /// @param e address of the underlying token to withdraw
     /// @return bool true if successful
     function withdrawFee(address e) external authorized(admin) returns (bool) {
         // Get the token to be withdrawn
@@ -651,16 +650,15 @@ contract Lender {
         return true;
     }
 
-    /// @notice This method returns the fee based on the amount passed to it. If
-    /// feenominator is 0, then there is no fee.
-    /// @param a Amount of underlying tokens to calculate the fee for
+    /// @notice this method returns the fee based on the amount passed to it. If the feenominator is 0, then there is no fee.
+    /// @param a amount of underlying tokens to calculate the fee for
     /// @return uint256 The total for for the given amount
     function calculateFee(uint256 a) internal view returns (uint256) {
         return feenominator > 0 ? a / feenominator : 0;
     }
 
-    /// @notice Allows the admin to schedule the withdrawal of tokens
-    /// @param e Address of (erc20) token to withdraw
+    /// @notice allows the admin to schedule the withdrawal of tokens
+    /// @param e address of (erc20) token to withdraw
     /// @return bool true if successful
     function scheduleWithdrawal(address e) external authorized(admin) returns (bool) {
         uint256 when = block.timestamp + HOLD;
@@ -670,8 +668,8 @@ contract Lender {
         return true;
     }
 
-    /// @notice Emergency function to block unplanned withdrawals
-    /// @param e Address of token withdrawal to block
+    /// @notice emergency function to block unplanned withdrawals
+    /// @param e address of token withdrawal to block
     /// @return bool true if successful
     function blockWithdrawal(address e) external authorized(admin) returns (bool) {
         withdrawals[e] = 0;
@@ -680,8 +678,7 @@ contract Lender {
         return true;
     }
 
-    /// @notice Allows the admin to withdraw the given token, provided the holding 
-    /// period has been observed
+    /// @notice allows the admin to withdraw the given token, provided the holding period has been observed
     /// @param e Address of token to withdraw
     /// @return bool true if successful
     function withdraw(address e) external authorized(admin) returns (bool) {
@@ -698,14 +695,16 @@ contract Lender {
         return true;
     }
 
-    /// @notice retrieves the zc token for the given market
+    /// @notice retrieves the ERC5095 token for the given market
     /// @param u address of the underlying
     /// @param m uint256 representing the maturity of the market
-    /// @return address of the zc token for the market
+    /// @return address of the ERC5095 token for the market
     function principalToken(address u, uint256 m) internal returns (address) {
         return IMarketPlace(marketPlace).markets(u, m, 0);
     }
 
+    /// @notice ensures that only a certain address can call the function
+    /// @param a address that msg.sender must be to be authorized
     modifier authorized(address a) {
         if (msg.sender != a) {
             revert Unauthorized();
