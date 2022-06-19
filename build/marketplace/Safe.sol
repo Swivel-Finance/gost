@@ -104,4 +104,34 @@ library Safe {
 
         return result;
     }
+
+    /// @param e Erc20 token to execute the call with
+    /// @param f From address
+    /// @param t To address
+    /// @param a Amount being transferred
+    function transferFrom(
+        IErc20 e,
+        address f,
+        address t,
+        uint256 a
+    ) internal {
+        bool result;
+
+        assembly {
+            // Get a pointer to some free memory.
+            let pointer := mload(0x40)
+
+            // Write the abi-encoded calldata to memory piece by piece:
+            mstore(pointer, 0x23b872dd00000000000000000000000000000000000000000000000000000000) // Begin with the function selector.
+            mstore(add(pointer, 4), and(f, 0xffffffffffffffffffffffffffffffffffffffff)) // Mask and append the "from" argument.
+            mstore(add(pointer, 36), and(t, 0xffffffffffffffffffffffffffffffffffffffff)) // Mask and append the "to" argument.
+            mstore(add(pointer, 68), a) // Finally append the "amount" argument. No mask as it's a full 32 byte value.
+
+            // Call the token and store if it succeeded or not.
+            // We use 100 because the calldata length is 4 + 32 * 3.
+            result := call(gas(), e, 0, pointer, 100, 0, 0)
+        }
+
+        require(success(result), 'transfer from failed');
+    }
 }

@@ -49,6 +49,20 @@ contract MarketPlace {
         redeemer = r;
     }
 
+    /// @notice allows the admin to create a market
+    /// @param p enum value of the principal token
+    /// @param u underlying token address
+    /// @param m maturity timestamp for the market
+    /// @param a address of the new market
+    /// @return bool true if successful
+    function setPrincipal(uint8 p, address u, uint256 m, address a) external authorized(admin) returns (bool) {
+        if (markets[u][m][p] != address(0)) {
+            revert Exists('Market already exists');
+        }
+        markets[u][m][p] = a;
+        return true;
+    }
+
     /// @notice creates a new market for the given underlying token and maturity
     /// @notice all seven principals should be provided in the order of their enum value
     /// @param u address of an underlying asset
@@ -59,14 +73,7 @@ contract MarketPlace {
     /// @param s symbol for the illuminate token
     /// @param d decimals for the illuminate token
     /// @return bool true if successful
-    function createMarket(
-        address u,
-        uint256 m,
-        address[8] memory t,
-        string calldata n,
-        string calldata s,
-        uint8 d
-    ) external authorized(admin) returns (bool) {
+    function createMarket(address u, uint256 m, address[8]  memory t,string calldata  n,string calldata  s,uint8 d) external authorized(admin) returns (bool) {
         if (markets[u][m][uint256(Principals.Illuminate)] != address(0)) {
             revert Exists('market already exists');
         }
@@ -97,7 +104,6 @@ contract MarketPlace {
     }
 
     /// @notice sets the address for a pool
-    /// @param p enum value of the principal token
     /// @param u address of the underlying asset
     /// @param m maturity (timestamp) of the market
     /// @param a address of the pool
@@ -181,6 +187,61 @@ contract MarketPlace {
         IPool pool = IPool(pools[u][m]);
         Safe.transfer(IErc20(address(pool.principalToken())), address(pool), a);
         return pool.buyUnderlying(msg.sender, pool.buyUnderlyingPreview(a), a);
+    }
+
+    /// @dev Mint liquidity tokens in exchange for adding underlying and PT.
+    /// The amount of liquidity tokens to mint is calculated from the amount of
+    /// unaccounted for PT in this contract.
+    /// A proportional amount of underlying tokens need to be present in this
+    /// contract, also unaccounted for.
+    /// @param u the address of the underlying token
+    /// @param m the maturity of the principal token
+    /// @param underlyingAmount the underlying amount being sent
+    /// @param principalTokenAmount the principal token amount being sent
+    /// @param minRatio Minimum ratio of underlying to PT in the pool.
+    /// @param maxRatio Maximum ratio of underlying to PT in the pool.
+    /// @return The amount of liquidity tokens minted.
+    function mint(address u, uint256 m, uint256 underlyingAmount, uint256 principalTokenAmount, uint256 minRatio, uint256 maxRatio) external returns (uint256, uint256, uint256) {
+        IPool pool = IPool(pools[u][m]);
+        Safe.transferFrom(IErc20(pool.underlying()), msg.sender, address(pool), underlyingAmount);
+        Safe.transferFrom(IErc20(address(pool.PT())), msg.sender, address(pool), principalTokenAmount);
+        return pool.mint(msg.sender, msg.sender, minRatio, maxRatio);
+    }
+
+    /// @dev Mint liquidity tokens in exchange for adding only underlying
+    /// The amount of liquidity tokens is calculated from the amount of PT to buy from the pool,
+    /// plus the amount of unaccounted for PT in this contract.
+    /// The underlying tokens need to be present in this contract, unaccounted for.
+    /// @param u the address of the underlying token
+    /// @param m the maturity of the principal token
+    /// @param a the underlying amount being sent
+    /// @param ptBought Amount of `PT` being bought in the Pool, from this we calculate how much underlying it will be taken in.
+    /// @param minRatio Minimum ratio of underlying to PT in the pool.
+    /// @param maxRatio Maximum ratio of underlying to PT in the pool.
+    /// @return tokensMint The amount of liquidity tokens minted.
+    function mintWithUnderlying(address u, uint256 m, uint256 a, uint256 ptBought, uint256 minRatio, uint256 maxRatio) external returns (uint256, uint256, uint256) {
+        IPool pool = IPool(pools[u][m]);
+        Safe.transferFrom(IErc20(address(pool.underlying())), msg.sender, address(pool), a);
+        return pool.mintWithUnderlying(msg.sender, msg.sender, ptBought, minRatio, maxRatio);
+    }
+
+    /// @dev Burn liquidity tokens in exchange for underlying and PT.
+    /// @param u The token address that will be burned
+    /// @param minRatio Minimum ratio of underlying to PT in the pool.
+    /// @param maxRatio Maximum ratio of underlying to PT in the pool.
+    /// @return uint256 The amount of tokens burned and returned (tokensBurned, underlyings, PTs).
+    function burn(address u, uint256 m, uint256 minRatio, uint256 maxRatio) external returns (uint256, uint256, uint256) {
+        return IPool(pools[u][m]).burn(msg.sender, msg.sender, minRatio, maxRatio);
+    }
+
+    /// @dev Burn liquidity tokens in exchange for underlying.
+    /// @param u The token address that will be burned
+    /// @param minRatio Minimum ratio of underlying to PT in the pool.
+    /// @param maxRatio Minimum ratio of underlying to PT in the pool.
+    /// @return uint256 The amount of lp tokens burned.
+    /// @return uint256 The amount of underlying tokens returned.
+    function burnForUnderlying(address u, uint256 m, uint256 minRatio, uint256 maxRatio) external returns (uint256, uint256) { 
+      return IPool(pools[u][m]).burnForUnderlying(msg.sender, minRatio, maxRatio);
     }
 
     modifier authorized(address a) {

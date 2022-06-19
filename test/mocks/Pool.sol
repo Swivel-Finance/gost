@@ -48,6 +48,47 @@ contract Pool {
         uint128 min;
     }
 
+    struct MintArgs {
+        address remainder;
+        uint256 minRatio;
+        uint256 maxRatio;
+    }
+
+    struct MintOutputs {
+        uint256 baseIn;
+        uint256 ptIn;
+        uint256 tokensMinted;
+    }
+
+    struct MintWithUnderlyingArgs {
+        address remainder;
+        uint256 PTToBuy;
+        uint256 minRatio;
+        uint256 maxRatio;
+    }
+
+    struct BurnArgs {
+        address PTTo;
+        uint256 minRatio;
+        uint256 maxRatio;
+    }
+
+    struct BurnOutputs {
+        uint256 tokensBurned;
+        uint256 tokensReturned;
+        uint256 ptTokensReturned;
+    }
+
+    struct BurnForUnderlyingArgs {
+        uint256 minRatio;
+        uint256 maxRatio;
+    }
+
+    struct BurnForUnderlyingOutput {
+        uint256 tokensBurned;
+        uint256 tokensReturned;
+    }
+
     IErc5095 private PrincipalTokenReturn;
     address private underlyingReturn;
     uint128 private sellUnderlyingReturn;
@@ -58,6 +99,11 @@ contract Pool {
     uint128 private buyUnderlyingPreviewReturn;
     uint128 private sellPrincipalTokenPreviewReturn;
     uint128 private buyPrincipalTokenPreviewReturn;
+    address private ptReturn;
+    MintOutputs private mintReturn;
+    MintOutputs private mintWithUnderlyingReturn;
+    BurnOutputs private burnReturn;
+    BurnForUnderlyingOutput private burnForUnderlyingReturn;
 
     mapping(address => uint128) public sellUnderlyingCalled;
     mapping(address => BuyUnderlyingArgs) public buyUnderlyingCalled;
@@ -67,6 +113,10 @@ contract Pool {
     uint128 public buyUnderlyingPreviewCalled;
     uint128 public sellPrincipalTokenPreviewCalled;
     uint128 public buyPrincipalTokenPreviewCalled;
+    mapping(address => MintArgs) public mintCalled;
+    mapping(address => MintWithUnderlyingArgs) public mintWithUnderlyingCalled;
+    mapping(address => BurnArgs) public burnCalled;
+    mapping(address => BurnForUnderlyingArgs) public burnForUnderlyingCalled;
 
     function principalTokenReturns(address p) public {
         PrincipalTokenReturn = IErc5095(p);
@@ -78,6 +128,14 @@ contract Pool {
 
     function sellUnderlyingReturns(uint128 s) public {
         sellUnderlyingReturn = s;
+    }
+
+    function ptReturns(address p) public {
+        ptReturn = p;
+    }
+
+    function PT() public view returns (address) {
+        return ptReturn;
     }
 
     function underlyingReturns(address u) public {
@@ -162,5 +220,84 @@ contract Pool {
     function buyPrincipalTokenPreview(uint128 o) external returns (uint128) {
         buyPrincipalTokenPreviewCalled = o;
         return buyPrincipalTokenPreviewReturn;
+    }
+
+    function mintReturns(MintOutputs memory o) public {
+        mintReturn = o;
+    }
+
+    function mint(
+        address t,
+        address remained,
+        uint256 minRatio,
+        uint256 maxRatio
+    )
+        external
+        returns (
+            uint256,
+            uint256,
+            uint256
+        )
+    {
+        mintCalled[t] = MintArgs(remained, minRatio, maxRatio);
+        return (mintReturn.baseIn, mintReturn.ptIn, mintReturn.tokensMinted);
+    }
+
+    function mintWithUnderlyingReturns(MintOutputs memory o) public {
+        mintWithUnderlyingReturn = o;
+    }
+
+    function mintWithUnderlying(
+        address t,
+        address remained,
+        uint256 ptToBuy,
+        uint256 minRatio,
+        uint256 maxRatio
+    )
+        external
+        returns (
+            uint256,
+            uint256,
+            uint256
+        )
+    {
+        mintWithUnderlyingCalled[t] = MintWithUnderlyingArgs(remained, ptToBuy, minRatio, maxRatio);
+        return (mintWithUnderlyingReturn.baseIn, mintWithUnderlyingReturn.ptIn, mintWithUnderlyingReturn.tokensMinted);
+    }
+
+    //// panda
+
+    function burnReturns(BurnOutputs memory o) public {
+        burnReturn = o;
+    }
+
+    function burn(
+        address t,
+        address remained,
+        uint256 minRatio,
+        uint256 maxRatio
+    )
+        external
+        returns (
+            uint256,
+            uint256,
+            uint256
+        )
+    {
+        burnCalled[t] = BurnArgs(remained, minRatio, maxRatio);
+        return (burnReturn.tokensBurned, burnReturn.tokensReturned, burnReturn.ptTokensReturned);
+    }
+
+    function burnForUnderlyingReturns(MintOutputs memory o) public {
+        mintWithUnderlyingReturn = o;
+    }
+
+    function burnForUnderlying(
+        address t,
+        uint256 minRatio,
+        uint256 maxRatio
+    ) external returns (uint256, uint256) {
+        burnForUnderlyingCalled[t] = BurnForUnderlyingArgs(minRatio, maxRatio);
+        return (burnForUnderlyingReturn.tokensBurned, burnForUnderlyingReturn.tokensReturned);
     }
 }

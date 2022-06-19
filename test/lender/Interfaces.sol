@@ -171,19 +171,11 @@ interface IERC5095 is IERC2612 {
 }
 
 interface IMarketPlace {
-    function markets(
-        address,
-        uint256,
-        uint8
-    ) external returns (address);
+    function markets(address, uint256, uint8) external returns (address);
 }
 
 interface ISwivel {
-    function initiate(
-        Swivel.Order[] calldata,
-        uint256[] calldata,
-        Swivel.Components[] calldata
-    ) external returns (bool);
+    function initiate(Swivel.Order[] calldata, uint256[] calldata, Swivel.Components[] calldata) external returns (bool);
 }
 
 interface IYield {
@@ -197,12 +189,7 @@ interface IYield {
 }
 
 interface IElement {
-    function swap(
-        Element.SingleSwap memory,
-        Element.FundManagement memory,
-        uint256,
-        uint256
-    ) external returns (uint256);
+    function swap(Element.SingleSwap memory, Element.FundManagement memory, uint256, uint256) external returns (uint256);
 }
 
 interface IElementToken {
@@ -212,12 +199,7 @@ interface IElementToken {
 }
 
 interface ISense {
-    function swapUnderlyingForPTs(
-        address,
-        uint256,
-        uint256,
-        uint256
-    ) external returns (uint256);
+    function swapUnderlyingForPTs(address, uint256, uint256, uint256) external returns (uint256);
 
     function maturity() external returns (uint256);
     function pt() external returns (address);
@@ -238,13 +220,7 @@ interface IPendleToken {
 }
 
 interface IPendle {
-    function swapExactTokensForTokens(
-        uint256,
-        uint256,
-        address[] calldata,
-        address,
-        uint256
-    ) external returns (uint256[] memory amounts);
+    function swapExactTokensForTokens(uint256, uint256, address[ ] calldata,address, uint256) external returns (uint256[] memory amounts);
 }
 
 interface ITempus {
@@ -252,25 +228,11 @@ interface ITempus {
 
     function yieldBearingToken() external view returns (IERC20Metadata);
 
-    function depositAndFix(
-        Any,
-        Any,
-        uint256,
-        bool,
-        uint256,
-        uint256
-    ) external returns (uint256);
+    function depositAndFix(Any, Any, uint256, bool, uint256, uint256) external returns (uint256);
 }
 
 interface IAPWineRouter {
-    function swapExactAmountIn(
-        uint256,
-        uint256,
-        uint256,
-        uint256,
-        uint256,
-        address
-    ) external returns (uint256);
+    function swapExactAmountIn(uint256, uint256, uint256, uint256, uint256, address) external returns (uint256);
 }
 
 interface IAPWineToken {
@@ -286,10 +248,5 @@ interface INotional {
 }
 
 interface IAave {
-    function deposit(
-        address,
-        uint256,
-        address,
-        uint16
-    ) external;
+    function deposit(address, uint256, address, uint16) external;
 }

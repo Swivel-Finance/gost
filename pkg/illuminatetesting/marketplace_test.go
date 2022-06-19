@@ -116,7 +116,7 @@ func (s *marketplaceTestSuite) TestBuyPt() {
 	amount := big.NewInt(1000000000000000000)
 	returnAmount := new(big.Int).Sub(amount, big.NewInt(5))
 
-	s.MarketPlace.SetPool(0, s.Dep.Erc20Address, maturity, s.Dep.PoolAddress)
+	s.MarketPlace.SetPool(s.Dep.Erc20Address, maturity, s.Dep.PoolAddress)
 	s.Env.Blockchain.Commit()
 
 	s.Pool.UnderlyingReturns(s.Dep.Erc20Address)
@@ -161,7 +161,7 @@ func (s *marketplaceTestSuite) TestSellPt() {
 	amount := big.NewInt(1000000000000000000)
 	returnAmount := new(big.Int).Sub(amount, big.NewInt(5))
 
-	s.MarketPlace.SetPool(0, s.Dep.Erc20Address, maturity, s.Dep.PoolAddress)
+	s.MarketPlace.SetPool(s.Dep.Erc20Address, maturity, s.Dep.PoolAddress)
 	s.Env.Blockchain.Commit()
 
 	s.Pool.PrincipalTokenReturns(s.Dep.Erc20Address)
@@ -208,7 +208,7 @@ func (s *marketplaceTestSuite) TestBuyUnderlying() {
 	amount := big.NewInt(1000000000000000000)
 	returnAmount := new(big.Int).Sub(amount, big.NewInt(5))
 
-	s.MarketPlace.SetPool(0, s.Dep.Erc20Address, maturity, s.Dep.PoolAddress)
+	s.MarketPlace.SetPool(s.Dep.Erc20Address, maturity, s.Dep.PoolAddress)
 	s.Env.Blockchain.Commit()
 
 	s.Pool.PrincipalTokenReturns(s.Dep.Erc20Address)
@@ -253,7 +253,7 @@ func (s *marketplaceTestSuite) TestSellUnderlying() {
 	amount := big.NewInt(1000000000000000000)
 	returnAmount := new(big.Int).Sub(amount, big.NewInt(5))
 
-	s.MarketPlace.SetPool(0, s.Dep.Erc20Address, maturity, s.Dep.PoolAddress)
+	s.MarketPlace.SetPool(s.Dep.Erc20Address, maturity, s.Dep.PoolAddress)
 	s.Env.Blockchain.Commit()
 
 	s.Pool.UnderlyingReturns(s.Dep.Erc20Address)
@@ -285,6 +285,171 @@ func (s *marketplaceTestSuite) TestSellUnderlying() {
 	transferAmount, err := s.Erc20.TransferCalled(s.Dep.PoolAddress)
 	assert.Nil(err)
 	assert.Equal(amount, transferAmount)
+}
+
+func (s *marketplaceTestSuite) TestMint() {
+	assert := assert.New(s.T())
+
+	s.Erc20.ApproveReturns(true)
+	s.Env.Blockchain.Commit()
+
+	maturity := big.NewInt(100000)
+
+	s.MarketPlace.SetPool(s.Dep.Erc20Address, maturity, s.Dep.PoolAddress)
+	s.Env.Blockchain.Commit()
+
+	s.Pool.UnderlyingReturns(s.Dep.Erc20Address)
+	s.Env.Blockchain.Commit()
+
+	s.Pool.PtReturns(s.Dep.Erc20Address)
+	s.Env.Blockchain.Commit()
+
+	s.Erc20.TransferFromReturns(true)
+	s.Env.Blockchain.Commit()
+
+	s.Pool.MintReturns(mocks.PoolMintOutputs{
+		BaseIn:       big.NewInt(1),
+		PtIn:         big.NewInt(2),
+		TokensMinted: big.NewInt(3),
+	})
+	s.Env.Blockchain.Commit()
+
+	ptAmount := big.NewInt(34234)
+	uAmount := big.NewInt(234234)
+	minRatio := big.NewInt(5)
+	maxRatio := big.NewInt(10)
+
+	tx, err := s.MarketPlace.Mint(s.Dep.Erc20Address, maturity, uAmount, ptAmount, minRatio, maxRatio)
+	assert.NoError(err)
+	assert.NotNil(tx)
+	s.Env.Blockchain.Commit()
+
+	// verify methods were called as expected
+	mintOut, err := s.Pool.MintCalled(s.Env.Owner.Opts.From)
+	assert.Nil(err)
+	assert.Equal(s.Env.Owner.Opts.From, mintOut.Remainder)
+	assert.Equal(minRatio, mintOut.MinRatio)
+	assert.Equal(maxRatio, mintOut.MaxRatio)
+
+	transferCall, err := s.Erc20.TransferFromCalled(s.Env.Owner.Opts.From)
+	assert.Nil(err)
+	assert.Equal(s.Dep.PoolAddress, transferCall.To)
+	assert.Equal(ptAmount, transferCall.Amount)
+}
+
+func (s *marketplaceTestSuite) TestMintWithUnderlying() {
+	assert := assert.New(s.T())
+
+	s.Erc20.ApproveReturns(true)
+	s.Env.Blockchain.Commit()
+
+	maturity := big.NewInt(100000)
+
+	s.MarketPlace.SetPool(s.Dep.Erc20Address, maturity, s.Dep.PoolAddress)
+	s.Env.Blockchain.Commit()
+
+	s.Pool.UnderlyingReturns(s.Dep.Erc20Address)
+	s.Env.Blockchain.Commit()
+
+	s.Pool.PtReturns(s.Dep.Erc20Address)
+	s.Env.Blockchain.Commit()
+
+	s.Erc20.TransferFromReturns(true)
+	s.Env.Blockchain.Commit()
+
+	s.Pool.MintWithUnderlyingReturns(mocks.PoolMintOutputs{
+		BaseIn:       big.NewInt(1),
+		PtIn:         big.NewInt(2),
+		TokensMinted: big.NewInt(3),
+	})
+	s.Env.Blockchain.Commit()
+
+	ptBought := big.NewInt(34234)
+	amount := big.NewInt(234234)
+	minRatio := big.NewInt(5)
+	maxRatio := big.NewInt(10)
+
+	tx, err := s.MarketPlace.MintWithUnderlying(s.Dep.Erc20Address, maturity, amount, ptBought, minRatio, maxRatio)
+	assert.NoError(err)
+	assert.NotNil(tx)
+	s.Env.Blockchain.Commit()
+
+	// verify methods were called as expected
+	mintOut, err := s.Pool.MintWithUnderlyingCalled(s.Env.Owner.Opts.From)
+	assert.Nil(err)
+	assert.Equal(s.Env.Owner.Opts.From, mintOut.Remainder)
+	assert.Equal(ptBought, mintOut.PTToBuy)
+	assert.Equal(minRatio, mintOut.MinRatio)
+	assert.Equal(maxRatio, mintOut.MaxRatio)
+
+	transferCall, err := s.Erc20.TransferFromCalled(s.Env.Owner.Opts.From)
+	assert.Nil(err)
+	assert.Equal(s.Dep.PoolAddress, transferCall.To)
+	assert.Equal(amount, transferCall.Amount)
+}
+
+func (s *marketplaceTestSuite) TestBurn() {
+	assert := assert.New(s.T())
+
+	maturity := big.NewInt(100000)
+	minRatio := big.NewInt(5)
+	maxRatio := big.NewInt(10)
+
+	s.MarketPlace.SetPool(s.Dep.Erc20Address, maturity, s.Dep.PoolAddress)
+	s.Env.Blockchain.Commit()
+
+	tx, err := s.Pool.Burn(s.Dep.Erc20Address, s.Env.User1.Opts.From, minRatio, maxRatio)
+	assert.NoError(err)
+	assert.NotNil(tx)
+	s.Env.Blockchain.Commit()
+
+	// verify methods were called as expected
+	burnOut, err := s.Pool.BurnCalled(s.Dep.Erc20Address)
+	assert.Nil(err)
+	assert.Equal(minRatio, burnOut.MinRatio)
+	assert.Equal(maxRatio, burnOut.MaxRatio)
+	assert.Equal(s.Env.User1.Opts.From, burnOut.PTTo)
+}
+
+func (s *marketplaceTestSuite) TestBurnForUnderlying() {
+	assert := assert.New(s.T())
+
+	maturity := big.NewInt(100000)
+	minRatio := big.NewInt(5)
+	maxRatio := big.NewInt(10)
+
+	s.MarketPlace.SetPool(s.Dep.Erc20Address, maturity, s.Dep.PoolAddress)
+	s.Env.Blockchain.Commit()
+
+	tx, err := s.Pool.BurnForUnderlying(s.Dep.Erc20Address, minRatio, maxRatio)
+	assert.NoError(err)
+	assert.NotNil(tx)
+	s.Env.Blockchain.Commit()
+
+	// verify methods were called as expected
+	burnOut, err := s.Pool.BurnForUnderlyingCalled(s.Dep.Erc20Address)
+	assert.Nil(err)
+	assert.Equal(minRatio, burnOut.MinRatio)
+	assert.Equal(maxRatio, burnOut.MaxRatio)
+}
+
+func (s *marketplaceTestSuite) TestSetIndividualMarket() {
+	assert := assert.New(s.T())
+
+	s.MarketPlace.Pause(0, true)
+	s.Env.Blockchain.Commit()
+
+	maturity := big.NewInt(1000001)
+	pool := common.HexToAddress("0x0000000000000000000000000000000000000001")
+	principal := uint8(3)
+	tx, err := s.MarketPlace.SetPrincipal(principal, s.Dep.Erc20Address, maturity, pool)
+	assert.NoError(err)
+	assert.NotNil(tx)
+	s.Env.Blockchain.Commit()
+
+	addr, err := s.MarketPlace.Markets(s.Dep.Erc20Address, maturity, big.NewInt(int64(principal)))
+	assert.NoError(err)
+	assert.Equal(pool, addr)
 }
 
 func (s *marketplaceTestSuite) TestPasuedPools() {

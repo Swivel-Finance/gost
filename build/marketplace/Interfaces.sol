@@ -170,12 +170,13 @@ interface IRedeemer {
 
 interface IPool {
     function principalToken() external returns (IERC5095);
-
+    
     function base() external returns (address);
+
 
     function sellBase(address, uint128) external returns (uint128);
 
-    function buyBase(address, uint128, uint128) external returns (uint128);
+    function buyUnderlying(address, uint128, uint128) external returns (uint128);
 
     function sellPrincipalToken(address, uint128) external returns (uint128);
 
@@ -188,4 +189,12 @@ interface IPool {
     function sellPrincipalTokenPreview(uint128) external returns (uint128);
 
     function buyPrincipalTokenPreview(uint128) external returns (uint128);
+
+    function mint(address, address, uint256, uint256) external returns (uint256, uint256, uint256);
+
+    function mintWithUnderlying(address, address, uint256, uint256, uint256) external returns (uint256, uint256, uint256);
+
+    function burn(address, address, uint256, uint256) external returns (uint256 ,uint256 ,uint256);
+
+    function burnForUnderlying(address, uint256, uint256) external returns (uint256, uint256);
 }
