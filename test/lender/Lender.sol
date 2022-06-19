@@ -69,7 +69,7 @@ contract Lender {
             // check that the token is defined for this particular market
             if (token != address(0)) {
                 // max approve the token
-                Safe.approve(IErc20(token), r, max);
+                Safe.approve(IERC20(token), r, max);
             }
             unchecked {
                 i++;
@@ -92,7 +92,7 @@ contract Lender {
         uint256 max = 2**256 - 1;
 
         for (uint256 i; i < len; ) {
-            IErc20 uToken = IErc20(u[i]);
+            IERC20 uToken = IERC20(u[i]);
             Safe.approve(uToken, a[i], max);
             unchecked {
                 i++;
@@ -139,7 +139,7 @@ contract Lender {
         //use market interface to fetch the market for the given market pair
         address principal = IMarketPlace(marketPlace).markets(u, m, p);
         //use safe transfer lib and ERC interface...
-        Safe.transferFrom(IErc20(principal), msg.sender, address(this), a);
+        Safe.transferFrom(IERC20(principal), msg.sender, address(this), a);
         //use zctoken interface...
         IZcToken(zcToken(u, m)).mint(msg.sender, a);
 
@@ -178,7 +178,7 @@ contract Lender {
         }
 
         // transfer from user to illuminate
-        Safe.transferFrom(IErc20(u), msg.sender, address(this), a);
+        Safe.transferFrom(IERC20(u), msg.sender, address(this), a);
 
         uint256 returned = yield(u, y, a - calculateFee(a));
 
@@ -251,7 +251,7 @@ contract Lender {
             fees[u] += totalFee;
 
             // transfer underlying tokens from user to illuminate
-            Safe.transferFrom(IErc20(u), msg.sender, address(this), lent);
+            Safe.transferFrom(IERC20(u), msg.sender, address(this), lent);
             // fill the orders on swivel protocol
             ISwivel(swivelAddr).initiate(o, a, s);
 
@@ -295,7 +295,7 @@ contract Lender {
             revert NotEqual('maturity');
         }
         // Transfer underlying token from user to illuminate
-        Safe.transferFrom(IErc20(u), msg.sender, address(this), a);
+        Safe.transferFrom(IERC20(u), msg.sender, address(this), a);
 
         // Track the accumulated fees
         fees[u] += calculateFee(a);
@@ -356,7 +356,7 @@ contract Lender {
         }
 
         // Transfer funds from user to Illuminate
-        Safe.transferFrom(IErc20(u), msg.sender, address(this), a);
+        Safe.transferFrom(IERC20(u), msg.sender, address(this), a);
 
         // Add the accumulated fees to the total
         fees[u] += calculateFee(a);
@@ -405,14 +405,14 @@ contract Lender {
 
         // Instantiate market and tokens
         address principal = IMarketPlace(marketPlace).markets(u, m, p);
-        if (ITempus(principal).yieldBearingToken() != IErc20Metadata(u)) {
+        if (ITempus(principal).yieldBearingToken() != IERC20Metadata(u)) {
             revert NotEqual('underlying');
         } else if (ITempus(principal).maturityTime() > m) {
             revert NotEqual('maturity');
         }
 
         // Get the underlying token
-        IErc20 underlyingToken = IErc20(u);
+        IERC20 underlyingToken = IERC20(u);
 
         // Transfer funds from user to Illuminate, Scope to avoid stack limit
         Safe.transferFrom(underlyingToken, msg.sender, address(this), a);
@@ -480,7 +480,7 @@ contract Lender {
         uint256 lent = a - fee;
 
         // Transfer funds from user to Illuminate
-        Safe.transferFrom(IErc20(u), msg.sender, address(this), a);
+        Safe.transferFrom(IERC20(u), msg.sender, address(this), a);
 
         // Swap those tokens for the principal tokens
         uint256 returned = ISense(x).swapUnderlyingForPTs(s, m, lent, r);
@@ -527,7 +527,7 @@ contract Lender {
         }
 
         // Transfer funds from user to Illuminate
-        Safe.transferFrom(IErc20(u), msg.sender, address(this), a);
+        Safe.transferFrom(IERC20(u), msg.sender, address(this), a);
 
         // Determine the fee
         uint256 fee = calculateFee(a);
@@ -576,7 +576,7 @@ contract Lender {
         INotional token = INotional(principal);
 
         // Verify that the underlying and maturity match up
-        (IErc20 underlying, ) = token.getUnderlyingToken();
+        (IERC20 underlying, ) = token.getUnderlyingToken();
         if (address(underlying) != u) {
             revert NotEqual('underlying');
         } else if (token.getMaturity() > m) {
@@ -584,7 +584,7 @@ contract Lender {
         }
 
         // Transfer funds from user to Illuminate
-        Safe.transferFrom(IErc20(u), msg.sender, address(this), a);
+        Safe.transferFrom(IERC20(u), msg.sender, address(this), a);
 
         // Add the accumulated fees to the total
         uint256 fee = calculateFee(a);
@@ -620,7 +620,7 @@ contract Lender {
         uint128 returned = IYield(y).sellBasePreview(Cast.u128(a));
 
         // send the remaing amount to the given yield pool
-        Safe.transfer(IErc20(u), y, returned);
+        Safe.transfer(IERC20(u), y, returned);
 
         // lend out the remaining tokens in the yield pool
         IYield(y).sellBase(address(this), returned);
@@ -633,7 +633,7 @@ contract Lender {
     /// @return bool true if successful
     function withdraw(address e) external authorized(admin) returns (bool) {
         // Get the token to be withdrawn
-        IErc20 token = IErc20(e);
+        IERC20 token = IERC20(e);
 
         // Get the balance to be transferred
         uint256 balance = fees[e];

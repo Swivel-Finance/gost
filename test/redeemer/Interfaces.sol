@@ -2,8 +2,6 @@
 
 pragma solidity 0.8.13;
 
-import './Redeemer.sol';
-
 interface IMarketPlace {
     function markets(
         address,
@@ -12,7 +10,7 @@ interface IMarketPlace {
     ) external returns (address);
 }
 
-interface IErc20 {
+interface IERC20 {
     function approve(address, uint256) external returns (bool);
 
     function transfer(address, uint256) external returns (bool);

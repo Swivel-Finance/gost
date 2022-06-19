@@ -7,7 +7,7 @@ import './Element.sol'; // library of Element specific constructs
 
 interface Any {}
 
-interface IErc20 {
+interface IERC20 {
     function approve(address, uint256) external returns (bool);
 
     function transfer(address, uint256) external returns (bool);
@@ -21,7 +21,7 @@ interface IErc20 {
     ) external returns (bool);
 }
 
-interface IErc20Metadata is IErc20 {
+interface IERC20Metadata is IERC20 {
     function name() external view returns (string memory);
 
     function symbol() external view returns (string memory);
@@ -46,7 +46,7 @@ interface ISwivel {
 }
 
 interface IYield {
-    function base() external returns (IErc20);
+    function base() external returns (IERC20);
 
     function maturity() external returns (uint32);
 
@@ -114,7 +114,7 @@ interface IPendle {
 interface ITempus {
     function maturityTime() external view returns (uint256);
 
-    function yieldBearingToken() external view returns (IErc20Metadata);
+    function yieldBearingToken() external view returns (IERC20Metadata);
 
     function depositAndFix(
         Any,
@@ -142,7 +142,7 @@ interface IAPWineToken {
 }
 
 interface INotional {
-    function getUnderlyingToken() external view returns (IErc20, int256);
+    function getUnderlyingToken() external view returns (IERC20, int256);
 
     function getMaturity() external view returns (uint40);
 

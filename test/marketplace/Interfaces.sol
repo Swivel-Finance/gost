@@ -138,7 +138,7 @@ interface IERC2612 is IERC20Metadata{
     function nonces(address owner) external view returns (uint256);
 }
 
-interface IErc5095 is IERC2612 {
+interface IERC5095 is IERC2612 {
     event Redeem(address, address, uint256);
 
     function maturity() external returns (uint256);
@@ -169,21 +169,21 @@ interface IRedeemer {
 }
 
 interface IPool {
-    function principalToken() external returns (IErc5095);
+    function principalToken() external returns (IERC5095);
 
-    function underlying() external returns (address);
+    function base() external returns (address);
 
-    function sellUnderlying(address, uint128) external returns (uint128);
+    function sellBase(address, uint128) external returns (uint128);
 
-    function buyUnderlying(address, uint128, uint128) external returns (uint128);
+    function buyBase(address, uint128, uint128) external returns (uint128);
 
     function sellPrincipalToken(address, uint128) external returns (uint128);
 
     function buyPrincipalToken(address, uint128, uint128) external returns (uint128);
 
-    function sellUnderlyingPreview(uint128) external returns (uint128);
+    function sellBasePreview(uint128) external returns (uint128);
 
-    function buyUnderlyingPreview(uint128) external returns (uint128);
+    function buyBasePreview(uint128) external returns (uint128);
 
     function sellPrincipalTokenPreview(uint128) external returns (uint128);
 
