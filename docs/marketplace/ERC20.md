@@ -28,7 +28,7 @@ type(uint256).max. This reduces the gas costs without any likely impact.
 
 ## Globals
 
-> Note this contains internal vars as well due to a bug in the docgen procedure
+> Note this list contains both internal and external attributes
 
 | Var | Type |
 | --- | --- |

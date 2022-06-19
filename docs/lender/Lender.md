@@ -11,7 +11,7 @@ The contract holds the principal tokens for each market and mints an ERC-5095 po
 
 ## Globals
 
-> Note that this list contains both internal and external attributes
+> Note this list contains both internal and external attributes
 
 | Var | Type |
 | --- | --- |
@@ -133,6 +133,7 @@ address[] a
 | Type | Description |
 | --- | --- |
 |`true` | if successful
+
 ### setAdmin
 sets the admin address
 
@@ -160,6 +161,7 @@ address a
 | Type | Description |
 | --- | --- |
 |`bool` | true if successful
+
 ### setFee
 sets the feenominator to the given value
 
@@ -187,6 +189,7 @@ uint256 f
 | Type | Description |
 | --- | --- |
 |`bool` | true if successful
+
 ### setMarketPlaceAddress
 sets the address of the marketplace contract which contains the addresses of all the fixed rate markets
 
@@ -214,6 +217,7 @@ address m
 | Type | Description |
 | --- | --- |
 |`bool` | true if the address was set, false otherwise
+
 ### setSwivel
 sets the feenominator to the given value
 
@@ -241,6 +245,7 @@ address s
 | Type | Description |
 | --- | --- |
 |`bool` | true if successful
+
 ### mint
 mint swaps the sender's principal tokens for illuminate's ERC5095 tokens in effect, this opens a new fixed rate position for the sender on illuminate
 
@@ -272,6 +277,7 @@ No modifiers
 | Type | Description |
 | --- | --- |
 |`bool` | true if the mint was successful, false otherwise
+
 ### lend
 lend method signature for both illuminate and yield
 
@@ -305,6 +311,7 @@ No modifiers
 | Type | Description |
 | --- | --- |
 |`uint256` | the amount of principal tokens lent out
+
 ### lend
 lend method signature for swivel
 
@@ -343,6 +350,7 @@ No modifiers
 | Type | Description |
 | --- | --- |
 |`uint256` | the amount of principal tokens lent out
+
 ### lend
 lend method signature for element
 
@@ -382,6 +390,7 @@ No modifiers
 | Type | Description |
 | --- | --- |
 |`uint256` | the amount of principal tokens lent out
+
 ### lend
 lend method signature for pendle
 
@@ -417,6 +426,7 @@ No modifiers
 | Type | Description |
 | --- | --- |
 |`uint256` | the amount of principal tokens lent out
+
 ### lend
 lend method signature for tempus
 
@@ -457,6 +467,7 @@ No modifiers
 | Type | Description |
 | --- | --- |
 |`uint256` | the amount of principal tokens lent out
+
 ### lend
 lend method signature for sense
 
@@ -496,6 +507,7 @@ No modifiers
 | Type | Description |
 | --- | --- |
 |`uint256` | the amount of principal tokens lent out
+
 ### lend
 this method can be called before maturity to lend to APWine while minting Illuminate tokens
 
@@ -533,6 +545,7 @@ No modifiers
 | Type | Description |
 | --- | --- |
 |`uint256` | the amount of principal tokens lent out
+
 ### lend
 No description
 > lend method signature for Notional
@@ -564,6 +577,7 @@ No modifiers
 | Type | Description |
 | --- | --- |
 |`uint256` | the amount of principal tokens lent out
+
 ### yield
 transfers excess funds to yield pool after principal tokens have been lent out
 
@@ -596,6 +610,7 @@ No modifiers
 | Type | Description |
 | --- | --- |
 |`uint256` | the amount of tokens sent to the yield pool
+
 ### withdrawFee
 withdraws accumulated lending fees of the underlying token
 
@@ -623,6 +638,7 @@ address e
 | Type | Description |
 | --- | --- |
 |`bool` | true if successful
+
 ### calculateFee
 this method returns the fee based on the amount passed to it. If the feenominator is 0, then there is no fee.
 
@@ -648,6 +664,7 @@ No modifiers
 | Type | Description |
 | --- | --- |
 |`uint256` | The total for for the given amount
+
 ### scheduleWithdrawal
 allows the admin to schedule the withdrawal of tokens
 
@@ -675,6 +692,7 @@ address e
 | Type | Description |
 | --- | --- |
 |`bool` | true if successful
+
 ### blockWithdrawal
 emergency function to block unplanned withdrawals
 
@@ -702,6 +720,7 @@ address e
 | Type | Description |
 | --- | --- |
 |`bool` | true if successful
+
 ### withdraw
 allows the admin to withdraw the given token, provided the holding period has been observed
 
@@ -729,6 +748,7 @@ address e
 | Type | Description |
 | --- | --- |
 |`bool` | true if successful
+
 ### principalToken
 retrieves the ERC5095 token for the given market
 
@@ -756,6 +776,7 @@ No modifiers
 | Type | Description |
 | --- | --- |
 |`address` | of the ERC5095 token for the market
+
 
 
 ## Events

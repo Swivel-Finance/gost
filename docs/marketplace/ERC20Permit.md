@@ -15,7 +15,7 @@ The {permit} signature mechanism conforms to the {IERC2612} interface.
 
 ## Globals
 
-> Note this contains internal vars as well due to a bug in the docgen procedure
+> Note this list contains both internal and external attributes
 
 | Var | Type |
 | --- | --- |

@@ -10,7 +10,7 @@
 
 ## Globals
 
-> Note this contains internal vars as well due to a bug in the docgen procedure
+> Note this list contains both internal and external attributes
 
 | Var | Type |
 | --- | --- |
@@ -107,6 +107,7 @@ principal (which is added here)
 | Type | Description |
 | --- | --- |
 |`bool` | true if successful
+
 ### pause
 allows the admin to pause a principal's pools
 
@@ -136,6 +137,7 @@ bool s
 | Type | Description |
 | --- | --- |
 |`bool` | true if successful
+
 ### setAdmin
 No description
 
@@ -162,6 +164,7 @@ address a
 | Type | Description |
 | --- | --- |
 |`bool` | true if successful
+
 ### setPool
 sets the address for a pool
 
@@ -193,6 +196,7 @@ address a
 | Type | Description |
 | --- | --- |
 |`bool` | true if successful
+
 ### sellPrincipalToken
 sells the PT for the PT via the pool
 
@@ -226,6 +230,7 @@ uint128 a
 | Type | Description |
 | --- | --- |
 |`uint128` | amount of PT bought
+
 ### buyPrincipalToken
 buys the underlying for the PT via the pool
 
@@ -259,6 +264,7 @@ uint128 a
 | Type | Description |
 | --- | --- |
 |`uint128` | amount of PT received
+
 ### sellUnderlying
 sells the underlying for the PT via the pool
 
@@ -292,6 +298,7 @@ uint128 a
 | Type | Description |
 | --- | --- |
 |`uint128` | amount of underlying sold
+
 ### buyUnderlying
 buys the underlying for the PT via the pool
 
@@ -325,6 +332,7 @@ uint128 a
 | Type | Description |
 | --- | --- |
 |`uint128` | amount of underlying bought
+
 ### mint
 No description
 > Mint liquidity tokens in exchange for adding underlying and PT
@@ -362,6 +370,7 @@ No modifiers
 | Type | Description |
 | --- | --- |
 |`The` | amount of liquidity tokens minted.
+
 ### mintWithUnderlying
 No description
 > Mint liquidity tokens in exchange for adding only underlying
@@ -400,6 +409,7 @@ No modifiers
 | Type | Description |
 | --- | --- |
 |`The` | amount of liquidity tokens minted.
+
 ### burn
 No description
 > Burn liquidity tokens in exchange for underlying and PT.
@@ -428,6 +438,7 @@ No modifiers
 | Type | Description |
 | --- | --- |
 |`The` | amount of tokens burned and returned (tokensBurned, underlyings, PTs).
+
 ### burnForUnderlying
 No description
 > Burn liquidity tokens in exchange for underlying.
@@ -456,6 +467,7 @@ No modifiers
 | --- | --- |
 |`tokensBurned` | The amount of lp tokens burned.
 |`underlyingOut` | The amount of underlying tokens returned.
+
 
 
 ## Events

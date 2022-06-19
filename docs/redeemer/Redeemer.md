@@ -1,7 +1,8 @@
 # Redeemer
 
 
-
+The Redeemer contract is used to redeem the underlying lent capital of a loan.
+Users may redeem their ERC-5095 tokens for the underlying asset represented by that token after maturity.
 
 
 ## Contents
@@ -10,7 +11,7 @@
 
 ## Globals
 
-> Note this contains internal vars as well due to a bug in the docgen procedure
+> Note this list contains both internal and external attributes
 
 | Var | Type |
 | --- | --- |
@@ -26,15 +27,21 @@
 ## Modifiers
 
 ### authorized
-No description
+ensures that only a certain address can call the function
+
 
 
 #### Declaration
 ```solidity
-modifier authorized
+modifier authorized(
+address a
+)
 ```
 
-
+#### Args:
+| Arg | Type | Description |
+| --- | --- | --- |
+|`a` | address | address that msg.sender must be to be authorized
 
 ## Functions
 
@@ -61,13 +68,14 @@ No modifiers
 | Arg | Type | Description |
 | --- | --- | --- |
 |`l` | address | the lender contract
-|`s` | address | the swivel contract
-|`p` | address | the pendle contract
-|`t` | address | the tempus contract
-|`a` | address | the apwine contract
+|`s` | address | the Swivel contract
+|`p` | address | the Pendle contract
+|`t` | address | the Tempus contract
+|`a` | address | the APWine contract
 
 ### setAdmin
-No description
+sets the admin address
+
 
 
 #### Declaration
@@ -92,9 +100,9 @@ address a
 | Type | Description |
 | --- | --- |
 |`bool` | true if successful
+
 ### setMarketPlaceAddress
-Sets the address of the marketplace contract which contains the
-addresses of all the fixed rate markets
+sets the address of the marketplace contract which contains the addresses of all the fixed rate markets
 
 
 
@@ -120,9 +128,9 @@ address m
 | Type | Description |
 | --- | --- |
 |`bool` | true if the address was set, false otherwise
+
 ### setLenderAddress
-Sets the address of the lender contract which contains the
-addresses of all the fixed rate markets
+sets the address of the lender contract which contains the addresses of all the fixed rate markets
 
 
 
@@ -148,8 +156,9 @@ address l
 | Type | Description |
 | --- | --- |
 |`bool` | true if the address was set, false otherwise
+
 ### setSwivel
-Sets the feenominator to the given value
+sets the feenominator to the given value
 
 
 
@@ -175,17 +184,14 @@ address s
 | Type | Description |
 | --- | --- |
 |`bool` | true if successful
+
 ### redeem
-Redeems underlying token for illuminate, apwine and tempus
-protocols
+redeems underlying token for Illuminate, APWine and Tempus protocols
 
 > Illuminate burns its tokens prior to redemption, unlike APWine and
 Tempus, which redeem PTs to the redeemer, transferring the underlying to
 this redeemer contract. Consequently, only Illuminate's redeem returns funds
 to the user.
-We can avoid a require check on the principal at the start of this
-redeem because there is no common business logic executed before the
-protocol specific code is executed.
 
 
 #### Declaration
@@ -214,9 +220,10 @@ No modifiers
 | Type | Description |
 | --- | --- |
 |`bool` | true if the redemption was successful
+
 ### redeem
-No description
-> redeem method for swivel, yield, element and notional. This method redeems all
+redeem method for Swivel, Yield, Element and Notional protocols
+
 
 
 #### Declaration
@@ -243,8 +250,9 @@ No modifiers
 | Type | Description |
 | --- | --- |
 |`bool` | true if the redemption was successful
+
 ### redeem
-redeem method signature for pendle
+redeem method signature for Pendle
 
 
 
@@ -268,15 +276,16 @@ No modifiers
 |`p` | uint8 | value of a specific principal according to the Illuminate Principals Enum
 |`u` | address | underlying token being redeemed
 |`m` | uint256 | maturity of the market being redeemed
-|`i` | bytes32 | forge id used by pendle to redeem the underlying token
+|`i` | bytes32 | forge id used by Pendle to redeem the underlying token
 
 #### Returns:
 | Type | Description |
 | --- | --- |
 |`bool` | true if the redemption was successful
+
 ### redeem
-No description
-> redeem method signature for sense
+redeem method signature for Sense
+
 
 
 #### Declaration
@@ -300,16 +309,16 @@ No modifiers
 |`p` | uint8 | value of a specific principal according to the Illuminate Principals Enum
 |`u` | address | underlying token being redeemed
 |`m` | uint256 | maturity of the market being redeemed
-|`d` | address | sense contract that splits the loan's prinicpal and yield
-|`o` | address | sense contract that [d] calls into to adapt the underlying to sense
+|`d` | address | Sense contract that splits the loan's prinicpal and yield
+|`o` | address | Sense contract that [d] calls into to adapt the underlying to Sense
 
 #### Returns:
 | Type | Description |
 | --- | --- |
 |`bool` | true if the redemption was successful
+
 ### authRedeem
-implements the redeem method for the contract to fulfill the
-ERC-5095 interface
+implements the redeem method for the contract to fulfill the ERC-5095 interface
 
 
 
@@ -345,10 +354,11 @@ uint256 a
 |`bool` | true if the underlying asset was burned successfully
 
 
+
 ## Events
 
 ### Redeem
-No description
+emitted upon redemption of a loan
 
 
 
