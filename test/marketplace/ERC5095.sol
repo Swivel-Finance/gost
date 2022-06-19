@@ -120,6 +120,7 @@ contract ERC5095 is ERC20Permit, IERC5095 {
 
     /// @param f Address to burn from
     /// @param a Amount to burn
+    /// @return bool true if successful
     function burn(address f, uint256 a) external onlyAdmin(redeemer) returns (bool) {
         _burn(f, a);
         return true;
@@ -127,6 +128,7 @@ contract ERC5095 is ERC20Permit, IERC5095 {
 
     /// @param t Address recieving the minted amount
     /// @param a The amount to mint
+    /// @return bool true if successful
     function mint(address t, uint256 a) external onlyAdmin(lender) returns (bool) {
         _mint(t, a);
         return true;
