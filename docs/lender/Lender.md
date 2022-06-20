@@ -209,14 +209,14 @@ uint256 f
 | --- | --- |
 |`bool` | true if successful
 
-### setMarketPlaceAddress
+### setMarketPlace
 sets the address of the marketplace contract which contains the addresses of all the fixed rate markets
 
 
 
 #### Declaration
 ```solidity
-function setMarketPlaceAddress(
+function setMarketPlace(
 address m
 ) external authorized returns
 (bool)

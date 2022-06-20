@@ -105,7 +105,7 @@ uint8 d
 |`bool` | true if successful
 
 ### setPrincipal
-allows the admin to create a market
+allows the admin to set an individual market
 
 
 

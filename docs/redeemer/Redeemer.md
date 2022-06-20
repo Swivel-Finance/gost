@@ -102,14 +102,14 @@ address a
 | --- | --- |
 |`bool` | true if successful
 
-### setMarketPlaceAddress
+### setMarketPlace
 sets the address of the marketplace contract which contains the addresses of all the fixed rate markets
 
 
 
 #### Declaration
 ```solidity
-function setMarketPlaceAddress(
+function setMarketPlace(
 address m
 ) external authorized returns
 (bool)
@@ -130,14 +130,14 @@ address m
 | --- | --- |
 |`bool` | true if the address was set, false otherwise
 
-### setLenderAddress
+### setLender
 sets the address of the lender contract which contains the addresses of all the fixed rate markets
 
 
 
 #### Declaration
 ```solidity
-function setLenderAddress(
+function setLender(
 address l
 ) external authorized returns
 (bool)
