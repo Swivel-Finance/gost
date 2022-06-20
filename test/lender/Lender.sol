@@ -26,6 +26,8 @@ contract Lender {
     address public admin;
     /// @notice address of the MarketPlace.sol contract, used to access the markets mapping
     address public marketPlace;
+    /// @notice mapping that determines if a principal may be used by a lender
+    mapping(uint8 => bool) public paused;
 
     /// @notice third party contract needed to lend on Swivel
     address public swivelAddr;
@@ -193,7 +195,7 @@ contract Lender {
         uint256 m,
         uint256 a,
         address y
-    ) public returns (uint256) {
+    ) public unpaused(p) returns (uint256) {
         // check the principal is illuminate or yield
         if (p != uint8(MarketPlace.Principals.Illuminate) && p != uint8(MarketPlace.Principals.Yield)) {
             revert Invalid('principal');
@@ -250,7 +252,7 @@ contract Lender {
         address y,
         Swivel.Order[] calldata o,
         Swivel.Components[] calldata s
-    ) public returns (uint256) {
+    ) public unpaused(p) returns (uint256) {
 
         // lent represents the number of underlying tokens lent
         uint256 lent;
@@ -315,8 +317,7 @@ contract Lender {
         uint256 d,
         address e,
         bytes32 i
-    ) public returns (uint256) {
-
+    ) public unpaused(p) returns (uint256) {
         // Get the principal token for this market for element
         address principal = IMarketPlace(marketPlace).markets(u, m, p);
 
@@ -371,7 +372,7 @@ contract Lender {
         uint256 a,
         uint256 r,
         uint256 d
-    ) public returns (uint256) {
+    ) public unpaused(p) returns (uint256) {
 
         // Instantiate market and tokens
         address principal = IMarketPlace(marketPlace).markets(u, m, p);
@@ -426,7 +427,7 @@ contract Lender {
         uint256 d,
         address t,
         address x
-    ) public returns (uint256) {
+    ) public unpaused(p) returns (uint256) {
 
         // Instantiate market and tokens
         address principal = IMarketPlace(marketPlace).markets(u, m, p);
@@ -477,7 +478,7 @@ contract Lender {
         uint256 r,
         address x,
         address s
-    ) public returns (uint256) {
+    ) public unpaused(p) returns (uint256) {
 
         // Get the principal token for this market for this market
         ISenseToken token = ISenseToken(IMarketPlace(marketPlace).markets(u, m, p));
@@ -534,7 +535,7 @@ contract Lender {
         address pool,
         address aave,
         uint256 i
-    ) public returns (uint256) {
+    ) public unpaused(p) returns (uint256) {
         // Instantiate market and tokens
         address principal = IMarketPlace(marketPlace).markets(u, m, p);
         if (IAPWineToken(principal).getUnderlyingOfIBTAddress() != u) {
@@ -579,7 +580,7 @@ contract Lender {
         address u,
         uint256 m,
         uint256 a
-    ) public returns (uint256) {
+    ) public unpaused(p) returns (uint256) {
         // Instantiate market and tokens
         address principal = IMarketPlace(marketPlace).markets(u, m, p);
 
@@ -707,11 +708,29 @@ contract Lender {
         return IMarketPlace(marketPlace).markets(u, m, 0);
     }
 
+    /// @notice pauses a market and prevents execution of all lending for that market
+    /// @param p principal enum value
+    /// @param b bool representing whether to pause or unpause
+    /// @return bool true if successful
+    function pause(uint8 p, bool b) external authorized(admin) returns (bool) {
+        paused[p] = b;
+        return true;
+    }
+
     /// @notice ensures that only a certain address can call the function
     /// @param a address that msg.sender must be to be authorized
     modifier authorized(address a) {
         if (msg.sender != a) {
             revert Unauthorized();
+        }
+        _;
+    }
+
+    /// @notice reverts on all markets where the paused mapping returns true
+    /// @param p principal enum value
+    modifier unpaused(uint8 p) {
+        if (paused[p]) {
+            revert Invalid('paused');
         }
         _;
     }
