@@ -18,6 +18,7 @@ The contract holds the principal tokens for each market and mints an ERC-5095 po
 | HOLD | uint256 |
 | admin | address |
 | marketPlace | address |
+| paused | mapping(address => mapping(uint256 => bool)) |
 | swivelAddr | address |
 | pendleAddr | address |
 | tempusAddr | address |
@@ -44,6 +45,25 @@ address a
 | Arg | Type | Description |
 | --- | --- | --- |
 |`a` | address | address that msg.sender must be to be authorized
+
+### unpaused
+reverts on all markets where the paused mapping returns true
+
+
+
+#### Declaration
+```solidity
+modifier unpaused(
+address u,
+uint256 m
+)
+```
+
+#### Args:
+| Arg | Type | Description |
+| --- | --- | --- |
+|`u` | address | address of the underlying
+|`m` | uint256 | uint256 representing the maturity of the market
 
 
 ## Functions
@@ -292,12 +312,14 @@ address u,
 uint256 m,
 uint256 a,
 address y
-) public returns
+) public unpaused returns
 (uint256)
 ```
 
 #### Modifiers:
-No modifiers
+| Modifier |
+| --- |
+| unpaused |
 
 #### Args:
 | Arg | Type | Description |
@@ -329,12 +351,14 @@ uint256[] a,
 address y,
 struct Swivel.Order[] o,
 struct Swivel.Components[] s
-) public returns
+) public unpaused returns
 (uint256)
 ```
 
 #### Modifiers:
-No modifiers
+| Modifier |
+| --- |
+| unpaused |
 
 #### Args:
 | Arg | Type | Description |
@@ -368,12 +392,14 @@ uint256 r,
 uint256 d,
 address e,
 bytes32 i
-) public returns
+) public unpaused returns
 (uint256)
 ```
 
 #### Modifiers:
-No modifiers
+| Modifier |
+| --- |
+| unpaused |
 
 #### Args:
 | Arg | Type | Description |
@@ -406,12 +432,14 @@ uint256 m,
 uint256 a,
 uint256 r,
 uint256 d
-) public returns
+) public unpaused returns
 (uint256)
 ```
 
 #### Modifiers:
-No modifiers
+| Modifier |
+| --- |
+| unpaused |
 
 #### Args:
 | Arg | Type | Description |
@@ -445,12 +473,14 @@ uint256 r,
 uint256 d,
 address t,
 address x
-) public returns
+) public unpaused returns
 (uint256)
 ```
 
 #### Modifiers:
-No modifiers
+| Modifier |
+| --- |
+| unpaused |
 
 #### Args:
 | Arg | Type | Description |
@@ -486,12 +516,14 @@ uint128 a,
 uint256 r,
 address x,
 address s
-) public returns
+) public unpaused returns
 (uint256)
 ```
 
 #### Modifiers:
-No modifiers
+| Modifier |
+| --- |
+| unpaused |
 
 #### Args:
 | Arg | Type | Description |
@@ -524,12 +556,14 @@ uint256 a,
 uint256 r,
 address pool,
 address i
-) public returns
+) public unpaused returns
 (uint256)
 ```
 
 #### Modifiers:
-No modifiers
+| Modifier |
+| --- |
+| unpaused |
 
 #### Args:
 | Arg | Type | Description |
@@ -559,12 +593,14 @@ uint8 p,
 address u,
 uint256 m,
 uint256 a
-) public returns
+) public unpaused returns
 (uint256)
 ```
 
 #### Modifiers:
-No modifiers
+| Modifier |
+| --- |
+| unpaused |
 
 #### Args:
 | Arg | Type | Description |
@@ -777,6 +813,38 @@ No modifiers
 | Type | Description |
 | --- | --- |
 |`address` | of the ERC5095 token for the market
+
+### pause
+pauses a market and prevents execution of all lending for that market
+
+
+
+#### Declaration
+```solidity
+function pause(
+address u,
+uint256 m,
+bool b
+) external authorized returns
+(bool)
+```
+
+#### Modifiers:
+| Modifier |
+| --- |
+| authorized |
+
+#### Args:
+| Arg | Type | Description |
+| --- | --- | --- |
+|`u` | address | address of the underlying
+|`m` | uint256 | uint256 representing the maturity of the market
+|`b` | bool | bool representing whether to pause or unpause
+
+#### Returns:
+| Type | Description |
+| --- | --- |
+|`bool` | true if successful
 
 
 

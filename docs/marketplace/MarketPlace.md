@@ -20,7 +20,6 @@ In addition, this contract routes swap orders between metaprincipal tokens and t
 | admin | address |
 | redeemer | address |
 | lender | address |
-| paused | bool[9] |
 
 
 ## Modifiers
@@ -41,23 +40,6 @@ address a
 | Arg | Type | Description |
 | --- | --- | --- |
 |`a` | address | address that msg.sender must be to be authorized
-
-### unpaused
-prevents usage of router for a given principal based on the paused mapping
-
-
-
-#### Declaration
-```solidity
-modifier unpaused(
-uint8 p
-)
-```
-
-#### Args:
-| Arg | Type | Description |
-| --- | --- | --- |
-|`p` | uint8 | enum value of the principal token
 
 
 ## Functions
@@ -122,16 +104,18 @@ uint8 d
 | --- | --- |
 |`bool` | true if successful
 
-### pause
-allows the admin to pause a principal's pools
+### setPrincipal
+allows the admin to create a market
 
 
 
 #### Declaration
 ```solidity
-function pause(
+function setPrincipal(
 uint8 p,
-bool s
+address u,
+uint256 m,
+address a
 ) external authorized returns
 (bool)
 ```
@@ -144,8 +128,10 @@ bool s
 #### Args:
 | Arg | Type | Description |
 | --- | --- | --- |
-|`p` | uint8 | principal's enum value
-|`s` | bool | true if the pool should be paused, false otherwise
+|`p` | uint8 | enum value of the principal token
+|`u` | address | underlying token address
+|`m` | uint256 | maturity timestamp for the market
+|`a` | address | address of the new market
 
 #### Returns:
 | Type | Description |
@@ -220,23 +206,19 @@ sells the PT for the PT via the pool
 #### Declaration
 ```solidity
 function sellPrincipalToken(
-uint8 p,
 address u,
 uint256 m,
 uint128 a
-) external unpaused returns
+) external returns
 (uint128)
 ```
 
 #### Modifiers:
-| Modifier |
-| --- |
-| unpaused |
+No modifiers
 
 #### Args:
 | Arg | Type | Description |
 | --- | --- | --- |
-|`p` | uint8 | enum value of the principal token
 |`u` | address | address of the underlying asset
 |`m` | uint256 | maturity (timestamp) of the market
 |`a` | uint128 | amount of PT to swap
@@ -254,23 +236,19 @@ buys the underlying for the PT via the pool
 #### Declaration
 ```solidity
 function buyPrincipalToken(
-uint8 p,
 address u,
 uint256 m,
 uint128 a
-) external unpaused returns
+) external returns
 (uint128)
 ```
 
 #### Modifiers:
-| Modifier |
-| --- |
-| unpaused |
+No modifiers
 
 #### Args:
 | Arg | Type | Description |
 | --- | --- | --- |
-|`p` | uint8 | enum value of the principal token
 |`u` | address | address of the underlying asset
 |`m` | uint256 | maturity (timestamp) of the market
 |`a` | uint128 | amount of underlying tokens to sell
@@ -288,23 +266,19 @@ sells the underlying for the PT via the pool
 #### Declaration
 ```solidity
 function sellUnderlying(
-uint8 p,
 address u,
 uint256 m,
 uint128 a
-) external unpaused returns
+) external returns
 (uint128)
 ```
 
 #### Modifiers:
-| Modifier |
-| --- |
-| unpaused |
+No modifiers
 
 #### Args:
 | Arg | Type | Description |
 | --- | --- | --- |
-|`p` | uint8 | enum value of the principal token
 |`u` | address | address of the underlying asset
 |`m` | uint256 | maturity (timestamp) of the market
 |`a` | uint128 | amount of underlying to swap
@@ -322,23 +296,19 @@ buys the underlying for the PT via the pool
 #### Declaration
 ```solidity
 function buyUnderlying(
-uint8 p,
 address u,
 uint256 m,
 uint128 a
-) external unpaused returns
+) external returns
 (uint128)
 ```
 
 #### Modifiers:
-| Modifier |
-| --- |
-| unpaused |
+No modifiers
 
 #### Args:
 | Arg | Type | Description |
 | --- | --- | --- |
-|`p` | uint8 | enum value of the principal token
 |`u` | address | address of the underlying asset
 |`m` | uint256 | maturity (timestamp) of the market
 |`a` | uint128 | amount of PT to swap
