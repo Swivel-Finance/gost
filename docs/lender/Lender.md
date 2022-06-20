@@ -18,7 +18,7 @@ The contract holds the principal tokens for each market and mints an ERC-5095 po
 | HOLD | uint256 |
 | admin | address |
 | marketPlace | address |
-| paused | mapping(address => mapping(uint256 => bool)) |
+| paused | mapping(uint8 => bool) |
 | swivelAddr | address |
 | pendleAddr | address |
 | tempusAddr | address |
@@ -54,16 +54,14 @@ reverts on all markets where the paused mapping returns true
 #### Declaration
 ```solidity
 modifier unpaused(
-address u,
-uint256 m
+uint8 p
 )
 ```
 
 #### Args:
 | Arg | Type | Description |
 | --- | --- | --- |
-|`u` | address | address of the underlying
-|`m` | uint256 | uint256 representing the maturity of the market
+|`p` | uint8 | principal enum value
 
 
 ## Functions
@@ -822,8 +820,7 @@ pauses a market and prevents execution of all lending for that market
 #### Declaration
 ```solidity
 function pause(
-address u,
-uint256 m,
+uint8 p,
 bool b
 ) external authorized returns
 (bool)
@@ -837,8 +834,7 @@ bool b
 #### Args:
 | Arg | Type | Description |
 | --- | --- | --- |
-|`u` | address | address of the underlying
-|`m` | uint256 | uint256 representing the maturity of the market
+|`p` | uint8 | principal enum value
 |`b` | bool | bool representing whether to pause or unpause
 
 #### Returns:
