@@ -2,6 +2,9 @@
 
 pragma solidity 0.8.13;
 
-interface ICErc20 {
-	function exchangeRateCurrent() external returns (uint256);
+/// @notice tokenized representation of assets.
+/// @dev This represents the 'port' exposed by the swivel protocol that various
+/// deployed adapters implement in order to communicate with their given PROTOCOL
+interface ICompounding {
+  function exchangeRate(address) external returns (uint256);
 }

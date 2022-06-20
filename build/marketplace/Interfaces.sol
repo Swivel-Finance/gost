@@ -6,7 +6,11 @@ interface IErc20 {
   function decimals() external returns (uint8);
 }
 
-interface ICErc20 {
-	function exchangeRateCurrent() external returns (uint256);
-  function underlying() external returns (address);
+/// @notice tokenized representation of assets.
+/// @dev This represents the 'port' exposed by the swivel protocol that various
+/// deployed adapters implement in order to communicate with their given PROTOCOL
+interface ICompounding {
+  function PROTOCOL() external returns (uint8);
+  function exchangeRate(address) external returns (uint256);
+  function underlying(address) external returns (address);
 }

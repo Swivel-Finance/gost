@@ -13,6 +13,7 @@ library Hash {
   /// @dev struct represents the attributes of an offchain Swivel.Order
   struct Order {
     bytes32 key;
+    uint8 protocol;
     address maker;
     address underlying;
     bool vault;
@@ -38,6 +39,7 @@ library Hash {
   // keccak256(abi.encodePacked(
   //     'Order(',
   //     'bytes32 key,',
+  //     'uint8 protocol,',
   //     'address maker,',
   //     'address underlying,',
   //     'bool vault,',
@@ -48,7 +50,7 @@ library Hash {
   //     'uint256 expiry',
   //     ')'
   // ));
-  bytes32 constant internal ORDER_TYPEHASH = 0x7ddd38ab5ed1c16b61ca90eeb9579e29da1ba821cf42d8cdef8f30a31a6a4146;
+  bytes32 constant internal ORDER_TYPEHASH = 0xbc200cfe92556575f801f821f26e6d54f6421fa132e4b2d65319cac1c687d8e6;
 
   /// @param n EIP712 domain name
   /// @param version EIP712 semantic version string
@@ -94,6 +96,7 @@ library Hash {
     return keccak256(abi.encode(
       ORDER_TYPEHASH,
       o.key,
+      o.protocol,
       o.maker,
       o.underlying,
       o.vault,

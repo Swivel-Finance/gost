@@ -90,6 +90,7 @@ func (s *EZFZISuite) TestEZFZI() {
 	// TODO preparing an order _may_ be relocated to a helper. Possibly per package? Discuss...
 	hashOrder := fakes.HashOrder{
 		Key:        orderKey,
+		Protocol:   uint8(0),
 		Maker:      s.Env.User1.Opts.From,
 		Underlying: s.Dep.Erc20Address,
 		Vault:      false,
@@ -129,6 +130,7 @@ func (s *EZFZISuite) TestEZFZI() {
 	// the order passed to the swivel contract must be of the swivel package type...
 	order := swivel.HashOrder{
 		Key:        orderKey,
+		Protocol:   uint8(0),
 		Maker:      s.Env.User1.Opts.From,
 		Underlying: s.Dep.Erc20Address,
 		Vault:      false,
@@ -182,7 +184,7 @@ func (s *EZFZISuite) TestEZFZI() {
 	// s.T().Log(args.Amount)
 
 	// market zctoken transfer from call...
-	zcTransferArgs, err := s.MarketPlace.P2pZcTokenExchangeCalled(order.Underlying)
+	zcTransferArgs, err := s.MarketPlace.P2pZcTokenExchangeCalled(uint8(0))
 	assert.Nil(err)
 	assert.NotNil(zcTransferArgs)
 	assert.Equal(zcTransferArgs.Maturity, order.Maturity)

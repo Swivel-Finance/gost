@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: UNLICENSED
 
 /**
-  CErc20 is a mock compound token with stubs of the methods we need for testing.
+  CompoundToken is a mock compound token with stubs of the methods we need for testing.
 */
 
 pragma solidity 0.8.13;
 
 // TODO this could inherit from the ERC20 mock if needed
-contract CErc20 {
+contract CompoundToken {
   /// @dev allows us to dictate return from mint().
   uint256 private mintReturn;
   /// @dev the last amount mint was called with
@@ -16,7 +16,7 @@ contract CErc20 {
   uint256 private redeemUnderlyingReturn;
   /// @dev the last amount redeemUnderlying was called with
   uint256 public redeemUnderlyingCalled;
-  /// @dev allows us to dictate return from exchangeRateCurrent().
+
   address private underlyingReturn;
   /// @dev allows us to dictate return from exchangeRateCurrent().
   uint256 private exchangeRateCurrentReturn;

@@ -59,7 +59,7 @@ func (s *approveUnderlyingSuite) TestApprove() {
 	s.Env.Blockchain.Commit()
 
 	uTokens := []common.Address{s.Dep.Erc20Address}
-	cTokens := []common.Address{s.Dep.CErc20Address}
+	cTokens := []common.Address{s.Dep.CompoundTokenAddress}
 
 	tx, err = s.Swivel.ApproveUnderlying(uTokens, cTokens)
 
@@ -68,7 +68,7 @@ func (s *approveUnderlyingSuite) TestApprove() {
 	s.Env.Blockchain.Commit()
 
 	// we just care that the args were passed thru...
-	amount, err := s.Erc20.ApproveCalled(s.Dep.CErc20Address)
+	amount, err := s.Erc20.ApproveCalled(s.Dep.CompoundTokenAddress)
 	assert.Nil(err)
 	assert.NotNil(amount)
 	// it should be for the max sol integer

@@ -93,6 +93,7 @@ func (s *IVFVESuite) TestIVFVE() {
 	// TODO preparing an order _may_ be relocated to a helper. Possibly per package? Discuss...
 	hashOrder := fakes.HashOrder{
 		Key:        orderKey,
+		Protocol:   uint8(0),
 		Maker:      s.Env.User1.Opts.From,
 		Underlying: s.Dep.Erc20Address,
 		Vault:      true,
@@ -132,6 +133,7 @@ func (s *IVFVESuite) TestIVFVE() {
 	// the order passed to the swivel contract must be of the swivel package type...
 	order := swivel.HashOrder{
 		Key:        orderKey,
+		Protocol:   uint8(0),
 		Maker:      s.Env.User1.Opts.From,
 		Underlying: s.Dep.Erc20Address,
 		Vault:      true,
@@ -175,7 +177,7 @@ func (s *IVFVESuite) TestIVFVE() {
 	assert.Equal(amt, args.Amount) // should be "a" here
 
 	// market notional transfer from call...
-	notionalTransferArgs, err := s.MarketPlace.P2pVaultExchangeCalled(order.Underlying)
+	notionalTransferArgs, err := s.MarketPlace.P2pVaultExchangeCalled(uint8(0))
 	assert.Nil(err)
 	assert.NotNil(notionalTransferArgs)
 	assert.Equal(notionalTransferArgs.Maturity, order.Maturity)
@@ -185,7 +187,7 @@ func (s *IVFVESuite) TestIVFVE() {
 	assert.Equal(notionalTransferArgs.Two, s.Env.Owner.Opts.From)
 
 	// transfer fee call...
-	feeTransferArgs, err := s.MarketPlace.TransferVaultNotionalFeeCalled(order.Underlying)
+	feeTransferArgs, err := s.MarketPlace.TransferVaultNotionalFeeCalled(uint8(0))
 	assert.Nil(err)
 	assert.NotNil(feeTransferArgs)
 	assert.Equal(feeTransferArgs.Amount, big.NewInt(6)) // 6.25 will be truncated to 6

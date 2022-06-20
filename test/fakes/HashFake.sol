@@ -34,6 +34,7 @@ contract HashFake {
     return keccak256(abi.encodePacked(
       'Order(',
       'bytes32 key,',
+      'uint8 protocol,',
       'address maker,',
       'address underlying,',
       'bool vault,',

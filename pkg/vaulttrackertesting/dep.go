@@ -9,10 +9,11 @@ import (
 )
 
 type Dep struct {
-	CErc20        *mocks.CErc20
-	CErc20Address common.Address
+	Compounding        *mocks.Compound // deployed Compound Adapter, implements ICompounding
+	CompoundingAddress common.Address
 
-	SwivelAddress common.Address
+	CompoundingTokenAddress common.Address
+	SwivelAddress           common.Address
 
 	VaultTracker        *vaulttracker.VaultTracker
 	VaultTrackerAddress common.Address
@@ -22,23 +23,26 @@ type Dep struct {
 
 func Deploy(e *Env) (*Dep, error) {
 	maturity := big.NewInt(MATURITY)
-	cercAddress, _, cercContract, cercErr := mocks.DeployCErc20(e.Owner.Opts, e.Blockchain)
+	compAddress, _, compContract, compErr := mocks.DeployCompound(e.Owner.Opts, e.Blockchain)
 
-	if cercErr != nil {
-		return nil, cercErr
+	if compErr != nil {
+		return nil, compErr
 	}
 
 	e.Blockchain.Commit()
 
-	// vaultTracker expects a swivel address passed to it
-	swivelAddress := common.HexToAddress("0xAbC123")
+	// compounding token address can be mocked (contract communicates with the adapter, not the token directly)
+	ctAddress := common.HexToAddress("0x123Abc")
+	// swivel address can be mocked
+	swivelAddress := common.HexToAddress("0x234bCd")
 
 	// deploy contract...
 	trackerAddress, _, trackerContract, trackerErr := vaulttracker.DeployVaultTracker(
 		e.Owner.Opts,
 		e.Blockchain,
 		maturity,
-		cercAddress,
+		ctAddress,
+		compAddress,
 		swivelAddress,
 	)
 
@@ -49,11 +53,12 @@ func Deploy(e *Env) (*Dep, error) {
 	e.Blockchain.Commit()
 
 	return &Dep{
-		SwivelAddress:       swivelAddress,
-		VaultTrackerAddress: trackerAddress,
-		VaultTracker:        trackerContract,
-		Maturity:            maturity,
-		CErc20:              cercContract,
-		CErc20Address:       cercAddress,
+		Compounding:             compContract,
+		CompoundingAddress:      compAddress,
+		CompoundingTokenAddress: ctAddress,
+		Maturity:                maturity,
+		SwivelAddress:           swivelAddress,
+		VaultTrackerAddress:     trackerAddress,
+		VaultTracker:            trackerContract,
 	}, nil
 }

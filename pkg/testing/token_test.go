@@ -13,11 +13,10 @@ import (
 
 type tokenTestSuite struct {
 	suite.Suite
-	Env    *Env
-	Dep    *Dep
-	Erc20  *mocks.Erc20Session // *Session objects are created by the go bindings
-	CErc20 *mocks.CErc20Session
-	FErc20 *mocks.FErc20Session
+	Env           *Env
+	Dep           *Dep
+	Erc20         *mocks.Erc20Session // *Session objects are created by the go bindings
+	CompoundToken *mocks.CompoundTokenSession
 }
 
 func (s *tokenTestSuite) SetupSuite() {
@@ -40,17 +39,8 @@ func (s *tokenTestSuite) SetupSuite() {
 		},
 	}
 
-	s.CErc20 = &mocks.CErc20Session{
-		Contract: s.Dep.CErc20,
-		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
-		TransactOpts: bind.TransactOpts{
-			From:   s.Env.Owner.Opts.From,
-			Signer: s.Env.Owner.Opts.Signer,
-		},
-	}
-
-	s.FErc20 = &mocks.FErc20Session{
-		Contract: s.Dep.FErc20,
+	s.CompoundToken = &mocks.CompoundTokenSession{
+		Contract: s.Dep.CompoundToken,
 		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
 		TransactOpts: bind.TransactOpts{
 			From:   s.Env.Owner.Opts.From,
@@ -172,13 +162,13 @@ func (s *tokenTestSuite) TestExchangeRateCurrent() {
 	amount := big.NewInt(205906566771510710)
 	amount = amount.Mul(amount, big.NewInt(1000000000))
 
-	tx, err := s.CErc20.ExchangeRateCurrentReturns(amount)
+	tx, err := s.CompoundToken.ExchangeRateCurrentReturns(amount)
 	assert.NotNil(tx)
 	assert.Nil(err)
 	s.Env.Blockchain.Commit()
 
 	// should return the stubbed amt
-	curr, err := s.CErc20.ExchangeRateCurrent()
+	curr, err := s.CompoundToken.ExchangeRateCurrent()
 	assert.Nil(err)
 	assert.Equal(amount, curr)
 }
@@ -189,18 +179,18 @@ func (s *tokenTestSuite) TestMint() {
 	minted := big.NewInt(ONE_GWEI)
 
 	// not necessary for the result, but test it anyway
-	tx, err := s.CErc20.MintReturns(minted)
+	tx, err := s.CompoundToken.MintReturns(minted)
 	assert.NotNil(tx)
 	assert.Nil(err)
 	s.Env.Blockchain.Commit()
 
 	// call mint() so that the args are stored
-	tx, err = s.CErc20.Mint(minted)
+	tx, err = s.CompoundToken.Mint(minted)
 	assert.NotNil(tx)
 	assert.Nil(err)
 	s.Env.Blockchain.Commit()
 
-	stored, err := s.CErc20.MintCalled()
+	stored, err := s.CompoundToken.MintCalled()
 	assert.Nil(err)
 	assert.Equal(minted, stored)
 }
@@ -211,18 +201,18 @@ func (s *tokenTestSuite) TestRedeemUnderlying() {
 	redeemed := big.NewInt(ONE_GWEI)
 
 	// compound uses 0 as 'success'. see https://compound.finance/docs/ctokens#redeem-underlying
-	tx, err := s.CErc20.RedeemUnderlyingReturns(big.NewInt(0))
+	tx, err := s.CompoundToken.RedeemUnderlyingReturns(big.NewInt(0))
 	assert.NotNil(tx)
 	assert.Nil(err)
 	s.Env.Blockchain.Commit()
 
 	// call redeem...() so that the args are stored
-	tx, err = s.CErc20.RedeemUnderlying(redeemed)
+	tx, err = s.CompoundToken.RedeemUnderlying(redeemed)
 	assert.NotNil(tx)
 	assert.Nil(err)
 	s.Env.Blockchain.Commit()
 
-	stored, err := s.CErc20.RedeemUnderlyingCalled()
+	stored, err := s.CompoundToken.RedeemUnderlyingCalled()
 	assert.Nil(err)
 	assert.Equal(redeemed, stored)
 }
@@ -230,35 +220,14 @@ func (s *tokenTestSuite) TestRedeemUnderlying() {
 func (s *tokenTestSuite) TestSupplyRatePerBlock() {
 	assert := assert.New(s.T())
 	rate := big.NewInt(1000000000)
-	tx, err := s.CErc20.SupplyRatePerBlockReturns(rate)
+	tx, err := s.CompoundToken.SupplyRatePerBlockReturns(rate)
 	assert.NotNil(tx)
 	assert.Nil(err)
 	s.Env.Blockchain.Commit()
 
-	stored, err := s.CErc20.SupplyRatePerBlock()
+	stored, err := s.CompoundToken.SupplyRatePerBlock()
 	assert.Nil(err)
 	assert.Equal(rate, stored)
-}
-
-func (s *tokenTestSuite) TestAllocateTo() {
-	assert := assert.New(s.T())
-
-	tx, err := s.FErc20.AllocateToReturns(true)
-	assert.NotNil(tx)
-	assert.Nil(err)
-	s.Env.Blockchain.Commit()
-
-	address := common.HexToAddress("0xaBC123")
-	amount := big.NewInt(ONE_ETH)
-
-	tx, err = s.FErc20.AllocateTo(address, amount)
-	assert.NotNil(tx)
-	assert.Nil(err)
-	s.Env.Blockchain.Commit()
-
-	stored, err := s.FErc20.AllocateToCalled(address)
-	assert.Nil(err)
-	assert.Equal(amount, stored)
 }
 
 func TestTokenSuite(t *test.T) {

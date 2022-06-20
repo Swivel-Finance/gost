@@ -15,24 +15,27 @@ contract VaultTracker {
 
   address public immutable admin;
   address public immutable cTokenAddr;
+  address public immutable adapterAddr;
   address public immutable swivel;
   uint256 public immutable maturity;
   uint256 public maturityRate;
 
-  /// @param m Maturity timestamp of the new market
-  /// @param c cToken address associated with underlying for the new market
-  /// @param s address of the deployed swivel contract
-  constructor(uint256 m, address c, address s) {
+  /// @param m Maturity timestamp associated with this vault
+  /// @param c Compounding Token address associated with this vault
+  /// @param a ICompounding adapter address associated with this vault
+  /// @param s Address of the deployed swivel contract
+  constructor(uint256 m, address c, address a, address s) {
     admin = msg.sender;
     maturity = m;
     cTokenAddr = c;
+    adapterAddr = a;
     swivel = s;
 
     // instantiate swivel's vault (unblocking transferNotionalFee)
     vaults[s] = Vault({
       notional: 0,
       redeemable: 0,
-      exchangeRate: ICErc20(c).exchangeRateCurrent()
+      exchangeRate: ICompounding(a).exchangeRate(c)
     });
   }
 
@@ -40,7 +43,7 @@ contract VaultTracker {
   /// @param o Address that owns a vault
   /// @param a Amount of notional added
   function addNotional(address o, uint256 a) external authorized(admin) returns (bool) {
-    uint256 exchangeRate = ICErc20(cTokenAddr).exchangeRateCurrent();
+    uint256 exchangeRate = ICompounding(adapterAddr).exchangeRate(cTokenAddr);
 
     Vault memory vlt = vaults[o];
 
@@ -79,7 +82,7 @@ contract VaultTracker {
     require(vlt.notional >= a, "amount exceeds vault balance");
 
     uint256 yield;
-    uint256 exchangeRate = ICErc20(cTokenAddr).exchangeRateCurrent();
+    uint256 exchangeRate = ICompounding(adapterAddr).exchangeRate(cTokenAddr);
 
     // if market has matured, calculate marginal interest between the maturity rate and previous position exchange rate
     // otherwise, calculate marginal exchange rate between current and previous exchange rate.
@@ -109,7 +112,7 @@ contract VaultTracker {
 
     uint256 redeemable = vlt.redeemable;
     uint256 yield;
-    uint256 exchangeRate = ICErc20(cTokenAddr).exchangeRateCurrent();
+    uint256 exchangeRate = ICompounding(adapterAddr).exchangeRate(cTokenAddr);
 
     // if market has matured, calculate marginal interest between the maturity rate and previous position exchange rate
     // otherwise, calculate marginal exchange rate between current and previous exchange rate.
@@ -151,7 +154,7 @@ contract VaultTracker {
     require(from.notional >= a, "amount exceeds available balance");
 
     uint256 yield;
-    uint256 exchangeRate = ICErc20(cTokenAddr).exchangeRateCurrent();
+    uint256 exchangeRate = ICompounding(adapterAddr).exchangeRate(cTokenAddr);
 
     // if market has matured, calculate marginal interest between the maturity rate and previous position exchange rate
     // otherwise, calculate marginal exchange rate between current and previous exchange rate.
@@ -205,7 +208,7 @@ contract VaultTracker {
     // remove notional from its owner
     oVault.notional -= a;
 
-    uint256 exchangeRate = ICErc20(cTokenAddr).exchangeRateCurrent();
+    uint256 exchangeRate = ICompounding(adapterAddr).exchangeRate(cTokenAddr);
     uint256 yield;
 
     // check if exchangeRate has been stored already this block. If not, calculate marginal interest + store exchangeRate

@@ -16,7 +16,7 @@ type cTokenAddrSuite struct {
 	Env         *Env
 	Dep         *Dep
 	Erc20       *mocks.Erc20Session
-	CErc20      *mocks.CErc20Session
+	Compounding *mocks.CompoundSession
 	MarketPlace *marketplace.MarketPlaceSession // *Session objects are created by the go bindings
 }
 
@@ -39,8 +39,8 @@ func (s *cTokenAddrSuite) SetupSuite() {
 		},
 	}
 
-	s.CErc20 = &mocks.CErc20Session{
-		Contract: s.Dep.CErc20,
+	s.Compounding = &mocks.CompoundSession{
+		Contract: s.Dep.Compounding,
 		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
 		TransactOpts: bind.TransactOpts{
 			From:   s.Env.Owner.Opts.From,
@@ -67,14 +67,14 @@ func (s *cTokenAddrSuite) TestSetCTokenAddr() {
 	// addresses can be BS in this test...
 	underlying := s.Dep.Erc20Address
 	maturity := big.NewInt(123456789)
-	cTokenAddr := s.Dep.CErc20Address
+	cTokenAddr := s.Dep.CompoundTokenAddress
 
 	tx, err := s.Erc20.DecimalsReturns(uint8(18))
 	assert.Nil(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
 
-	tx, err = s.CErc20.UnderlyingReturns(underlying)
+	tx, err = s.Compounding.UnderlyingReturns(underlying)
 	assert.Nil(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
@@ -82,6 +82,7 @@ func (s *cTokenAddrSuite) TestSetCTokenAddr() {
 	tx, err = s.MarketPlace.CreateMarket(
 		maturity,
 		cTokenAddr,
+		s.Dep.CompoundingAddress,
 		"awesome market",
 		"AM",
 	)
@@ -90,9 +91,9 @@ func (s *cTokenAddrSuite) TestSetCTokenAddr() {
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
 
-	cTokenAddrC, err := s.MarketPlace.CTokenAddress(underlying, maturity)
+	cTokenAddr, _, err = s.MarketPlace.CTokenAndAdapterAddress(uint8(0), underlying, maturity)
 	assert.Nil(err)
-	assert.Equal(cTokenAddr, cTokenAddrC)
+	assert.Equal(cTokenAddr, cTokenAddr)
 }
 
 func TestCTokenAddrSuite(t *test.T) {

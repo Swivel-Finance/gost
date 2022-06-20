@@ -9,6 +9,7 @@ import (
 	// "github.com/ethereum/go-ethereum/crypto"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
+
 	// "github.com/swivel-finance/gost/internal/helpers"
 	// "github.com/swivel-finance/gost/test/fakes"
 	"github.com/swivel-finance/gost/test/mocks"
@@ -20,7 +21,7 @@ type splitCombineSuite struct {
 	Env         *Env
 	Dep         *Dep
 	Erc20       *mocks.Erc20Session
-	CErc20      *mocks.CErc20Session
+	Compound    *mocks.CompoundSession
 	MarketPlace *mocks.MarketPlaceSession
 	Swivel      *swivel.SwivelSession
 }
@@ -44,8 +45,8 @@ func (s *splitCombineSuite) SetupTest() {
 		},
 	}
 
-	s.CErc20 = &mocks.CErc20Session{
-		Contract: s.Dep.CErc20,
+	s.Compound = &mocks.CompoundSession{
+		Contract: s.Dep.Compound,
 		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
 		TransactOpts: bind.TransactOpts{
 			From:   s.Env.Owner.Opts.From,
@@ -81,14 +82,13 @@ func (s *splitCombineSuite) TestSplit() {
 	assert.NotNil(tx)
 	assert.Nil(err)
 
-	// stub (Cerc20) to return 0
-	tx, err = s.CErc20.MintReturns(big.NewInt(0))
+	tx, err = s.Compound.MintReturns(big.NewInt(0))
 	assert.NotNil(tx)
 	assert.Nil(err)
 	s.Env.Blockchain.Commit()
 
 	// the marketplace mock...
-	tx, err = s.MarketPlace.CTokenAddressReturns(s.Dep.CErc20Address) // must use the actual dep addr here
+	tx, err = s.MarketPlace.CTokenAndAdapterAddressReturns(s.Dep.CompoundTokenAddress, s.Dep.CompoundAddress) // must use the actual dep addr here
 	assert.NotNil(tx)
 	assert.Nil(err)
 	s.Env.Blockchain.Commit()
@@ -101,14 +101,14 @@ func (s *splitCombineSuite) TestSplit() {
 	maturity := big.NewInt(123456789)
 	amount := big.NewInt(1000)
 
-	tx, err = s.Swivel.SplitUnderlying(s.Dep.Erc20Address, maturity, amount)
+	tx, err = s.Swivel.SplitUnderlying(uint8(0), s.Dep.Erc20Address, maturity, amount)
 
 	assert.Nil(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
 
 	// we just care that the args were passed thru...
-	splitArgs, err := s.MarketPlace.MintZcTokenAddingNotionalCalled(s.Dep.Erc20Address)
+	splitArgs, err := s.MarketPlace.MintZcTokenAddingNotionalCalled(uint8(0))
 	assert.Nil(err)
 	assert.NotNil(splitArgs)
 	assert.Equal(splitArgs.Maturity, maturity)
@@ -126,13 +126,13 @@ func (s *splitCombineSuite) TestCombine() {
 	assert.Nil(err)
 
 	// stub (Cerc20) to return 0
-	tx, err = s.CErc20.RedeemUnderlyingReturns(big.NewInt(0))
+	tx, err = s.Compound.RedeemUnderlyingReturns(big.NewInt(0))
 	assert.NotNil(tx)
 	assert.Nil(err)
 	s.Env.Blockchain.Commit()
 
 	// the marketplace mock...
-	tx, err = s.MarketPlace.CTokenAddressReturns(s.Dep.CErc20Address) // must use the actual dep addr here
+	tx, err = s.MarketPlace.CTokenAndAdapterAddressReturns(s.Dep.CompoundTokenAddress, s.Dep.CompoundAddress) // must use the actual dep addr here
 	assert.NotNil(tx)
 	assert.Nil(err)
 	s.Env.Blockchain.Commit()
@@ -145,14 +145,14 @@ func (s *splitCombineSuite) TestCombine() {
 	maturity := big.NewInt(123456789)
 	amount := big.NewInt(1000)
 
-	tx, err = s.Swivel.CombineTokens(s.Dep.Erc20Address, maturity, amount)
+	tx, err = s.Swivel.CombineTokens(uint8(0), s.Dep.Erc20Address, maturity, amount)
 
 	assert.Nil(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
 
 	// we just care that the args were passed thru...
-	combineArgs, err := s.MarketPlace.BurnZcTokenRemovingNotionalCalled(s.Dep.Erc20Address)
+	combineArgs, err := s.MarketPlace.BurnZcTokenRemovingNotionalCalled(uint8(0))
 	assert.Nil(err)
 	assert.NotNil(combineArgs)
 	assert.Equal(combineArgs.Maturity, maturity)

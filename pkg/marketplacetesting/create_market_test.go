@@ -17,7 +17,7 @@ type createMarketSuite struct {
 	Env         *Env
 	Dep         *Dep
 	Erc20       *mocks.Erc20Session
-	CErc20      *mocks.CErc20Session
+	Compounding *mocks.CompoundSession
 	MarketPlace *marketplace.MarketPlaceSession // *Session objects are created by the go bindings
 }
 
@@ -41,8 +41,8 @@ func (s *createMarketSuite) SetupSuite() {
 		},
 	}
 
-	s.CErc20 = &mocks.CErc20Session{
-		Contract: s.Dep.CErc20,
+	s.Compounding = &mocks.CompoundSession{
+		Contract: s.Dep.Compounding,
 		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
 		TransactOpts: bind.TransactOpts{
 			From:   s.Env.Owner.Opts.From,
@@ -69,7 +69,7 @@ func (s *createMarketSuite) TestCreateFailsWhenPaused() {
 	assert := assert.New(s.T())
 
 	maturity := big.NewInt(123456789)
-	ctoken := s.Dep.CErc20Address
+	ctoken := s.Dep.CompoundTokenAddress
 
 	tx, err := s.MarketPlace.Pause(true)
 	assert.Nil(err)
@@ -79,6 +79,7 @@ func (s *createMarketSuite) TestCreateFailsWhenPaused() {
 	tx, err = s.MarketPlace.CreateMarket(
 		maturity,
 		ctoken,
+		s.Dep.CompoundingAddress,
 		"nope",
 		"NM",
 	)
@@ -98,7 +99,7 @@ func (s *createMarketSuite) TestCreateMarket18Decimals() {
 	assert := assert.New(s.T())
 
 	underlying := s.Dep.Erc20Address
-	ctoken := s.Dep.CErc20Address
+	ctoken := s.Dep.CompoundTokenAddress
 
 	// stub underlying (erc20) methods...
 	tx, err := s.Erc20.DecimalsReturns(uint8(18))
@@ -106,7 +107,7 @@ func (s *createMarketSuite) TestCreateMarket18Decimals() {
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
 
-	tx, err = s.CErc20.UnderlyingReturns(underlying)
+	tx, err = s.Compounding.UnderlyingReturns(underlying)
 	assert.Nil(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
@@ -116,6 +117,7 @@ func (s *createMarketSuite) TestCreateMarket18Decimals() {
 	tx, err = s.MarketPlace.CreateMarket(
 		maturity,
 		ctoken,
+		s.Dep.CompoundingAddress,
 		"awesome market",
 		"AM",
 	)
@@ -125,7 +127,7 @@ func (s *createMarketSuite) TestCreateMarket18Decimals() {
 	s.Env.Blockchain.Commit()
 
 	// we should be able to fetch the market now...
-	market, err := s.MarketPlace.Markets(underlying, maturity)
+	market, err := s.MarketPlace.Markets(uint8(0), underlying, maturity)
 	assert.Nil(err)
 	assert.Equal(market.CTokenAddr, ctoken)
 	assert.NotEqual(market.ZcToken, common.HexToAddress("0x0"))
@@ -149,14 +151,14 @@ func (s *createMarketSuite) TestCreateMarket6Decimals() {
 	assert := assert.New(s.T())
 
 	underlying := s.Dep.Erc20Address
-	ctoken := s.Dep.CErc20Address
+	ctoken := s.Dep.CompoundTokenAddress
 	// stub underlying (erc20) methods...
 	tx, err := s.Erc20.DecimalsReturns(uint8(6))
 	assert.Nil(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
 
-	tx, err = s.CErc20.UnderlyingReturns(underlying)
+	tx, err = s.Compounding.UnderlyingReturns(underlying)
 	assert.Nil(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
@@ -166,6 +168,7 @@ func (s *createMarketSuite) TestCreateMarket6Decimals() {
 	tx, err = s.MarketPlace.CreateMarket(
 		maturity,
 		ctoken,
+		s.Dep.CompoundingAddress,
 		"awesomer market",
 		"ARM",
 	)
@@ -175,7 +178,7 @@ func (s *createMarketSuite) TestCreateMarket6Decimals() {
 	s.Env.Blockchain.Commit()
 
 	// we should be able to fetch the market now...
-	market, err := s.MarketPlace.Markets(underlying, maturity)
+	market, err := s.MarketPlace.Markets(uint8(0), underlying, maturity)
 	assert.Nil(err)
 	assert.Equal(market.CTokenAddr, ctoken)
 	assert.NotEqual(market.ZcToken, common.HexToAddress("0x0"))

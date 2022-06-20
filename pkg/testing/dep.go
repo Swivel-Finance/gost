@@ -7,16 +7,16 @@ import (
 )
 
 type Dep struct {
-	SigFakeAddress  common.Address
-	SigFake         *fakes.SigFake // fake sig lib test contract
-	HashFakeAddress common.Address
-	HashFake        *fakes.HashFake // fake hash lib test contract
-	Erc20Address    common.Address
-	Erc20           *mocks.Erc20
-	CErc20Address   common.Address
-	CErc20          *mocks.CErc20
-	FErc20Address   common.Address
-	FErc20          *mocks.FErc20
+	SigFakeAddress       common.Address
+	SigFake              *fakes.SigFake // fake sig lib test contract
+	HashFakeAddress      common.Address
+	HashFake             *fakes.HashFake // fake hash lib test contract
+	Erc20Address         common.Address
+	Erc20                *mocks.Erc20
+	CompoundTokenAddress common.Address
+	CompoundToken        *mocks.CompoundToken
+	// FErc20Address   common.Address
+	// FErc20          *mocks.FErc20
 }
 
 func Deploy(e *Env) (*Dep, error) {
@@ -48,50 +48,22 @@ func Deploy(e *Env) (*Dep, error) {
 
 	e.Blockchain.Commit()
 
-	cercAddress, _, cercContract, cercErr := mocks.DeployCErc20(e.Owner.Opts, e.Blockchain)
+	ctAddress, _, ctContract, ctErr := mocks.DeployCompoundToken(e.Owner.Opts, e.Blockchain)
 
-	if cercErr != nil {
-		return nil, cercErr
+	if ctErr != nil {
+		return nil, ctErr
 	}
 
 	e.Blockchain.Commit()
-
-	fercAddress, _, fercContract, fercErr := mocks.DeployFErc20(e.Owner.Opts, e.Blockchain)
-
-	if fercErr != nil {
-		return nil, fercErr
-	}
-
-	e.Blockchain.Commit()
-
-	// deploy marketplace contract... TODO we likely give the marketplace address to swivel...
-	// marketAddress, _, marketContract, marketErr := swivel.DeployMarketPlace(e.Owner.Opts, e.Blockchain)
-
-	// if marketErr != nil {
-	// return nil, marketErr
-	// }
-
-	// e.Blockchain.Commit()
-
-	// deploy swivel contract...
-	// swivelAddress, _, swivelContract, swivelErr := swivel.DeploySwivel(e.Owner.Opts, e.Blockchain)
-
-	// if swivelErr != nil {
-	// return nil, swivelErr
-	// }
-
-	// e.Blockchain.Commit()
 
 	return &Dep{
-		SigFakeAddress:  sigAddress,
-		SigFake:         sigContract,
-		HashFakeAddress: hashAddress,
-		HashFake:        hashContract,
-		Erc20Address:    ercAddress,
-		Erc20:           ercContract,
-		CErc20Address:   cercAddress,
-		CErc20:          cercContract,
-		FErc20Address:   fercAddress,
-		FErc20:          fercContract,
+		SigFakeAddress:       sigAddress,
+		SigFake:              sigContract,
+		HashFakeAddress:      hashAddress,
+		HashFake:             hashContract,
+		Erc20Address:         ercAddress,
+		Erc20:                ercContract,
+		CompoundTokenAddress: ctAddress,
+		CompoundToken:        ctContract,
 	}, nil
 }

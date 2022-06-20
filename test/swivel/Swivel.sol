@@ -102,13 +102,17 @@ contract Swivel {
 
     IMarketPlace mPlace = IMarketPlace(marketPlace);
     // mint tokens
-    require(ICErc20(mPlace.cTokenAddress(o.underlying, o.maturity)).mint(principalFilled) == 0, 'minting CToken failed');
+    address cTokenAddr;
+    address adapterAddr;
+    // TODO implement prococol enum and determine interface to use depending on that
+    (cTokenAddr, adapterAddr) = mPlace.cTokenAndAdapterAddress(o.protocol, o.underlying, o.maturity);
+    require(ICompound(adapterAddr).mint(cTokenAddr, principalFilled) == 0, 'minting CToken failed');
     // alert marketplace
-    require(mPlace.custodialInitiate(o.underlying, o.maturity, o.maker, msg.sender, principalFilled), 'custodial initiate failed');
+    require(mPlace.custodialInitiate(o.protocol, o.underlying, o.maturity, o.maker, msg.sender, principalFilled), 'custodial initiate failed');
 
     // transfer fee in vault notional to swivel (from msg.sender)
     uint256 fee = principalFilled / feenominators[2];
-    require(mPlace.transferVaultNotionalFee(o.underlying, o.maturity, msg.sender, fee), 'notional fee transfer failed');
+    require(mPlace.transferVaultNotionalFee(o.protocol, o.underlying, o.maturity, msg.sender, fee), 'notional fee transfer failed');
 
     emit Initiate(o.key, hash, o.maker, o.vault, o.exit, msg.sender, a, principalFilled);
   }
@@ -136,9 +140,13 @@ contract Swivel {
 
     IMarketPlace mPlace = IMarketPlace(marketPlace);
     // mint tokens
-    require(ICErc20(mPlace.cTokenAddress(o.underlying, o.maturity)).mint(a) == 0, 'minting CToken Failed');
+    address cTokenAddr;
+    address adapterAddr;
+    // TODO implement prococol enum and determine interface to use depending on that
+    (cTokenAddr, adapterAddr) = mPlace.cTokenAndAdapterAddress(o.protocol, o.underlying, o.maturity);
+    require(ICompound(adapterAddr).mint(cTokenAddr, a) == 0, 'minting CToken Failed');
     // alert marketplace 
-    require(mPlace.custodialInitiate(o.underlying, o.maturity, msg.sender, o.maker, a), 'custodial initiate failed');
+    require(mPlace.custodialInitiate(o.protocol, o.underlying, o.maturity, msg.sender, o.maker, a), 'custodial initiate failed');
 
     emit Initiate(o.key, hash, o.maker, o.vault, o.exit, msg.sender, a, premiumFilled);
   }
@@ -165,7 +173,7 @@ contract Swivel {
     Safe.transferFrom(uToken, msg.sender, address(this), fee);
 
     // alert marketplace
-    require(IMarketPlace(marketPlace).p2pZcTokenExchange(o.underlying, o.maturity, o.maker, msg.sender, a), 'zcToken exchange failed');
+    require(IMarketPlace(marketPlace).p2pZcTokenExchange(o.protocol, o.underlying, o.maturity, o.maker, msg.sender, a), 'zcToken exchange failed');
             
     emit Initiate(o.key, hash, o.maker, o.vault, o.exit, msg.sender, a, premiumFilled);
   }
@@ -187,11 +195,11 @@ contract Swivel {
     IMarketPlace mPlace = IMarketPlace(marketPlace);
     uint256 principalFilled = (a * o.principal) / o.premium;
     // alert marketplace
-    require(mPlace.p2pVaultExchange(o.underlying, o.maturity, o.maker, msg.sender, principalFilled), 'vault exchange failed');
+    require(mPlace.p2pVaultExchange(o.protocol, o.underlying, o.maturity, o.maker, msg.sender, principalFilled), 'vault exchange failed');
 
     // transfer fee (in vault notional) to swivel
     uint256 fee = principalFilled / feenominators[2];
-    require(mPlace.transferVaultNotionalFee(o.underlying, o.maturity, msg.sender, fee), "notional fee transfer failed");
+    require(mPlace.transferVaultNotionalFee(o.protocol, o.underlying, o.maturity, msg.sender, fee), "notional fee transfer failed");
 
     emit Initiate(o.key, hash, o.maker, o.vault, o.exit, msg.sender, a, principalFilled);
   }
@@ -255,7 +263,7 @@ contract Swivel {
     Safe.transferFrom(uToken, o.maker, address(this), fee);
 
     // alert marketplace
-    require(IMarketPlace(marketPlace).p2pZcTokenExchange(o.underlying, o.maturity, msg.sender, o.maker, principalFilled), 'zcToken exchange failed');
+    require(IMarketPlace(marketPlace).p2pZcTokenExchange(o.protocol, o.underlying, o.maturity, msg.sender, o.maker, principalFilled), 'zcToken exchange failed');
 
     emit Exit(o.key, hash, o.maker, o.vault, o.exit, msg.sender, a, principalFilled);
   }
@@ -283,7 +291,7 @@ contract Swivel {
     Safe.transferFrom(uToken, msg.sender, address(this), fee);
 
     // transfer <a> notional from sender to maker
-    require(IMarketPlace(marketPlace).p2pVaultExchange(o.underlying, o.maturity, msg.sender, o.maker, a), 'vault exchange failed');
+    require(IMarketPlace(marketPlace).p2pVaultExchange(o.protocol, o.underlying, o.maturity, msg.sender, o.maker, a), 'vault exchange failed');
 
     emit Exit(o.key, hash, o.maker, o.vault, o.exit, msg.sender, a, premiumFilled);
   }
@@ -302,8 +310,11 @@ contract Swivel {
 
     // redeem underlying on Compound and burn cTokens
     IMarketPlace mPlace = IMarketPlace(marketPlace);
-    address cTokenAddr = mPlace.cTokenAddress(o.underlying, o.maturity);
-    require((ICErc20(cTokenAddr).redeemUnderlying(a) == 0), "compound redemption error");
+    address cTokenAddr;
+    address adapterAddr;
+    // TODO implement prococol enum and determine interface to use depending on that
+    (cTokenAddr, adapterAddr) = mPlace.cTokenAndAdapterAddress(o.protocol, o.underlying, o.maturity);
+    require((ICompound(adapterAddr).redeemUnderlying(cTokenAddr, a) == 0), "compound redemption error");
 
     IErc20 uToken = IErc20(o.underlying);
     // transfer principal-premium  back to fixed exit party now that the interest coupon and zcb have been redeemed
@@ -315,7 +326,7 @@ contract Swivel {
     Safe.transfer(uToken, msg.sender, premiumFilled - fee);
 
     // burn zcTokens + nTokens from o.maker and msg.sender respectively
-    require(mPlace.custodialExit(o.underlying, o.maturity, o.maker, msg.sender, a), 'custodial exit failed');
+    require(mPlace.custodialExit(o.protocol, o.underlying, o.maturity, o.maker, msg.sender, a), 'custodial exit failed');
 
     emit Exit(o.key, hash, o.maker, o.vault, o.exit, msg.sender, a, premiumFilled);
   }
@@ -334,10 +345,12 @@ contract Swivel {
 
     // redeem underlying on Compound and burn cTokens
     IMarketPlace mPlace = IMarketPlace(marketPlace);
-
-    address cTokenAddr = mPlace.cTokenAddress(o.underlying, o.maturity);
+    address cTokenAddr;
+    address adapterAddr;
+    // TODO implement prococol enum and determine interface to use depending on that
+    (cTokenAddr, adapterAddr) = mPlace.cTokenAndAdapterAddress(o.protocol, o.underlying, o.maturity);
     uint256 principalFilled = (a * o.principal) / o.premium;
-    require((ICErc20(cTokenAddr).redeemUnderlying(principalFilled) == 0), "compound redemption error");
+    require((ICompound(adapterAddr).redeemUnderlying(cTokenAddr, principalFilled) == 0), "compound redemption error");
 
     IErc20 uToken = IErc20(o.underlying);
     // transfer principal-premium-fee back to fixed exit party now that the interest coupon and zcb have been redeemed
@@ -346,7 +359,7 @@ contract Swivel {
     Safe.transfer(uToken, o.maker, a);
 
     // burn <principalFilled> zcTokens + nTokens from msg.sender and o.maker respectively
-    require(mPlace.custodialExit(o.underlying, o.maturity, msg.sender, o.maker, principalFilled), 'custodial exit failed');
+    require(mPlace.custodialExit(o.protocol, o.underlying, o.maturity, msg.sender, o.maker, principalFilled), 'custodial exit failed');
 
     emit Exit(o.key, hash, o.maker, o.vault, o.exit, msg.sender, a, principalFilled);
   }
@@ -368,6 +381,7 @@ contract Swivel {
 
   // ********* ADMINISTRATIVE ***************
 
+  // TODO -> `setAdmin`
   /// @param a Address of a new admin
   function transferAdmin(address a) external authorized(admin) returns (bool) {
     admin = a;
@@ -446,44 +460,60 @@ contract Swivel {
 
   /// @notice Allows users to deposit underlying and in the process split it into/mint 
   /// zcTokens and vault notional. Calls mPlace.mintZcTokenAddingNotional
-  /// @param u Underlying token address associated with the market
-  /// @param m Maturity timestamp of the market
+  /// @param p Protocol Enum value associated with this market pair
+  /// @param u Underlying token address associated with this market pair
+  /// @param m Maturity timestamp of this associated market
   /// @param a Amount of underlying being deposited
-  function splitUnderlying(address u, uint256 m, uint256 a) external returns (bool) {
+  function splitUnderlying(uint8 p, address u, uint256 m, uint256 a) external returns (bool) {
     IErc20 uToken = IErc20(u);
     Safe.transferFrom(uToken, msg.sender, address(this), a);
+
     IMarketPlace mPlace = IMarketPlace(marketPlace);
-    require(ICErc20(mPlace.cTokenAddress(u, m)).mint(a) == 0, 'minting CToken Failed');
-    require(mPlace.mintZcTokenAddingNotional(u, m, msg.sender, a), 'mint ZcToken adding Notional failed');
+    address cTokenAddr;
+    address adapterAddr;
+    // TODO implement prococol enum and determine interface to use depending on that
+    (cTokenAddr, adapterAddr) = mPlace.cTokenAndAdapterAddress(p, u, m);
+    require(ICompound(adapterAddr).mint(cTokenAddr, a) == 0, 'minting CToken Failed');
+    require(mPlace.mintZcTokenAddingNotional(p, u, m, msg.sender, a), 'mint ZcToken adding Notional failed');
 
     return true;
   }
 
   /// @notice Allows users deposit/burn 1-1 amounts of both zcTokens and vault notional,
   /// in the process "combining" the two, and redeeming underlying. Calls mPlace.burnZcTokenRemovingNotional.
+  /// @param p Protocol Enum value associated with this market pair
   /// @param u Underlying token address associated with the market
   /// @param m Maturity timestamp of the market
   /// @param a Amount of zcTokens being redeemed
-  function combineTokens(address u, uint256 m, uint256 a) external returns (bool) {
+  function combineTokens(uint8 p, address u, uint256 m, uint256 a) external returns (bool) {
     IMarketPlace mPlace = IMarketPlace(marketPlace);
-    require(mPlace.burnZcTokenRemovingNotional(u, m, msg.sender, a), 'burn ZcToken removing Notional failed');
-    address cTokenAddr = mPlace.cTokenAddress(u, m);
-    require((ICErc20(cTokenAddr).redeemUnderlying(a) == 0), "compound redemption error");
+    require(mPlace.burnZcTokenRemovingNotional(p, u, m, msg.sender, a), 'burn ZcToken removing Notional failed');
+
+    address cTokenAddr;
+    address adapterAddr;
+    // TODO implement prococol enum and determine interface to use depending on that
+    (cTokenAddr, adapterAddr) = mPlace.cTokenAndAdapterAddress(p, u, m);
+    require((ICompound(adapterAddr).redeemUnderlying(cTokenAddr, a) == 0), "compound redemption error");
     Safe.transfer(IErc20(u), msg.sender, a);
 
     return true;
   }
 
   /// @notice Allows zcToken holders to redeem their tokens for underlying tokens after maturity has been reached (via MarketPlace).
+  /// @param p Protocol Enum value associated with this market pair
   /// @param u Underlying token address associated with the market
   /// @param m Maturity timestamp of the market
   /// @param a Amount of zcTokens being redeemed
-  function redeemZcToken(address u, uint256 m, uint256 a) external returns (bool) {
+  function redeemZcToken(uint8 p, address u, uint256 m, uint256 a) external returns (bool) {
     IMarketPlace mPlace = IMarketPlace(marketPlace);
     // call marketplace to determine the amount redeemed
-    uint256 redeemed = mPlace.redeemZcToken(u, m, msg.sender, a);
+    uint256 redeemed = mPlace.redeemZcToken(p, u, m, msg.sender, a);
     // redeem underlying from compound
-    require(ICErc20(mPlace.cTokenAddress(u, m)).redeemUnderlying(redeemed) == 0, 'compound redemption failed');
+    address cTokenAddr;
+    address adapterAddr;
+    // TODO implement prococol enum and determine interface to use depending on that
+    (cTokenAddr, adapterAddr) = mPlace.cTokenAndAdapterAddress(p, u, m);
+    require(ICompound(adapterAddr).redeemUnderlying(cTokenAddr, redeemed) == 0, 'compound redemption failed');
     // transfer underlying back to msg.sender
     Safe.transfer(IErc20(u), msg.sender, redeemed);
 
@@ -491,14 +521,19 @@ contract Swivel {
   }
 
   /// @notice Allows Vault owners to redeem any currently accrued interest (via MarketPlace)
+  /// @param p Protocol Enum value associated with this market pair
   /// @param u Underlying token address associated with the market
   /// @param m Maturity timestamp of the market
-  function redeemVaultInterest(address u, uint256 m) external returns (bool) {
+  function redeemVaultInterest(uint8 p, address u, uint256 m) external returns (bool) {
     IMarketPlace mPlace = IMarketPlace(marketPlace);
     // call marketplace to determine the amount redeemed
-    uint256 redeemed = mPlace.redeemVaultInterest(u, m, msg.sender);
+    uint256 redeemed = mPlace.redeemVaultInterest(p, u, m, msg.sender);
     // redeem underlying from compound
-    require(ICErc20(mPlace.cTokenAddress(u, m)).redeemUnderlying(redeemed) == 0, 'compound redemption failed');
+    address cTokenAddr;
+    address adapterAddr;
+    // TODO implement prococol enum and determine interface to use depending on that
+    (cTokenAddr, adapterAddr) = mPlace.cTokenAndAdapterAddress(p, u, m);
+    require(ICompound(adapterAddr).redeemUnderlying(cTokenAddr, redeemed) == 0, 'compound redemption failed');
     // transfer underlying back to msg.sender
     Safe.transfer(IErc20(u), msg.sender, redeemed);
 

@@ -20,7 +20,7 @@ type IVFZISuite struct {
 	Env         *Env
 	Dep         *Dep
 	Erc20       *mocks.Erc20Session
-	CErc20      *mocks.CErc20Session
+	Compound    *mocks.CompoundSession
 	MarketPlace *mocks.MarketPlaceSession
 	Swivel      *swivel.SwivelSession
 }
@@ -44,8 +44,8 @@ func (s *IVFZISuite) SetupTest() {
 		},
 	}
 
-	s.CErc20 = &mocks.CErc20Session{
-		Contract: s.Dep.CErc20,
+	s.Compound = &mocks.CompoundSession{
+		Contract: s.Dep.Compound,
 		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
 		TransactOpts: bind.TransactOpts{
 			From:   s.Env.Owner.Opts.From,
@@ -96,7 +96,7 @@ func (s *IVFZISuite) TestIVFZI() {
 	s.Env.Blockchain.Commit()
 
 	// and the marketplace api methods...
-	tx, err = s.MarketPlace.CTokenAddressReturns(s.Dep.CErc20Address) // must use the actual dep addr here
+	tx, err = s.MarketPlace.CTokenAndAdapterAddressReturns(s.Dep.CompoundTokenAddress, s.Dep.CompoundAddress) // must use the actual dep addr here
 	assert.Nil(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
@@ -112,7 +112,7 @@ func (s *IVFZISuite) TestIVFZI() {
 	s.Env.Blockchain.Commit()
 
 	// and the ctoken mint
-	tx, err = s.CErc20.MintReturns(big.NewInt(0))
+	tx, err = s.Compound.MintReturns(big.NewInt(0))
 	assert.NotNil(tx)
 	assert.Nil(err)
 	s.Env.Blockchain.Commit()
@@ -166,6 +166,7 @@ func (s *IVFZISuite) TestIVFZI() {
 	// the order passed to the swivel contract must be of the swivel package type...
 	order := swivel.HashOrder{
 		Key:        orderKey,
+		Protocol:   uint8(0),
 		Maker:      s.Env.User1.Opts.From,
 		Underlying: s.Dep.Erc20Address,
 		Vault:      false,
@@ -228,13 +229,13 @@ func (s *IVFZISuite) TestIVFZI() {
 	// assert.Equal(arg, pFilled)
 
 	// the call to ctoken mint, don't reuse arg as they should actually both be pFilled
-	mintArg, err := s.CErc20.MintCalled()
+	mintArg, err := s.Compound.MintCalled(s.Dep.CompoundTokenAddress)
 	assert.Nil(err)
 	assert.NotNil(mintArg)
 	assert.Equal(mintArg, pFilled)
 
 	// mint zctoken call...
-	fillingArgs, err := s.MarketPlace.CustodialInitiateCalled(order.Underlying)
+	fillingArgs, err := s.MarketPlace.CustodialInitiateCalled(uint8(0))
 	assert.Nil(err)
 	assert.NotNil(fillingArgs)
 	assert.Equal(fillingArgs.Maturity, order.Maturity)
@@ -243,7 +244,7 @@ func (s *IVFZISuite) TestIVFZI() {
 	assert.Equal(fillingArgs.Two, s.Env.Owner.Opts.From)
 
 	// transfer fee call...
-	feeTransferArgs, err := s.MarketPlace.TransferVaultNotionalFeeCalled(order.Underlying)
+	feeTransferArgs, err := s.MarketPlace.TransferVaultNotionalFeeCalled(uint8(0))
 	assert.Nil(err)
 	assert.NotNil(feeTransferArgs)
 	assert.Equal(feeTransferArgs.Amount, big.NewInt(6)) // 6.25 will be truncated to 6
