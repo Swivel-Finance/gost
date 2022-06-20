@@ -43,9 +43,6 @@ contract MarketPlace {
     address public immutable redeemer;
     /// @notice address of the deployed lender contract
     address public immutable lender;
-    /// @notice flag that determines if a principal's pool is available
-    bool[9] public paused = [false, false, false, false, false, false, false, false, false];
-
     /// @notice emitted upon the creation of a new market
     event CreateMarket(address indexed underlying, uint256 indexed maturity);
 
