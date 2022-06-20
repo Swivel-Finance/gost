@@ -21,8 +21,7 @@ contract MarketPlace {
   address public swivel;
   bool public paused;
 
-  // NOTE I don't believe the address of the adapter needs to be published as it can be fetched at any point in relation to the compounding token
-  event Create(uint8 indexed protocol, address indexed underlying, uint256 indexed maturity, address cToken, address zcToken, address vaultTracker, address adapter);
+  event Create(uint8 indexed protocol, address indexed underlying, uint256 indexed maturity, address cToken, address zcToken, address vaultTracker);
   event Mature(uint8 indexed protocol, address indexed underlying, uint256 indexed maturity, uint256 maturityRate, uint256 matured);
   event RedeemZcToken(uint8 indexed protocol, address indexed underlying, uint256 indexed maturity, address sender, uint256 amount);
   event RedeemVaultInterest(uint8 indexed protocol, address indexed underlying, uint256 indexed maturity, address sender);
@@ -89,7 +88,7 @@ contract MarketPlace {
 
     markets[protocol][underAddr][m] = Market(c, a, zct, tracker, 0);
 
-    emit Create(protocol, underAddr, m, c, zct, tracker, a);
+    emit Create(protocol, underAddr, m, c, zct, tracker);
 
     return true;
   }
@@ -99,17 +98,17 @@ contract MarketPlace {
   /// @param u Underlying token address associated with the market
   /// @param m Maturity timestamp of the market
   function matureMarket(uint8 p, address u, uint256 m) public unpaused() returns (bool) {
-    Market memory mkt = markets[p][u][m];
+    Market memory market = markets[p][u][m];
 
-    require(mkt.maturityRate == 0, 'market already matured');
+    require(market.maturityRate == 0, 'market already matured');
     require(block.timestamp >= m, "maturity not reached");
 
     // set the base maturity cToken exchange rate at maturity to the current cToken exchange rate
-    uint256 exchangeRate = ICompounding(mkt.adapterAddr).exchangeRate(mkt.cTokenAddr);
+    uint256 exchangeRate = ICompounding(market.adapterAddr).exchangeRate(market.cTokenAddr);
     markets[p][u][m].maturityRate = exchangeRate;
 
     // TODO remove the require here? why?
-    require(VaultTracker(mkt.vaultTracker).matureVault(exchangeRate), 'mature vault failed');
+    require(VaultTracker(market.vaultTracker).matureVault(exchangeRate), 'mature vault failed');
 
     emit Mature(p, u, m, exchangeRate, block.timestamp);
 
@@ -123,9 +122,9 @@ contract MarketPlace {
   /// @param t Address of the depositing user
   /// @param a Amount of notional being added
   function mintZcTokenAddingNotional(uint8 p, address u, uint256 m, address t, uint256 a) external authorized(swivel) unpaused() returns (bool) {
-    Market memory mkt = markets[p][u][m];
-    require(ZcToken(mkt.zcToken).mint(t, a), 'mint zcToken failed');
-    require(VaultTracker(mkt.vaultTracker).addNotional(t, a), 'add notional failed');
+    Market memory market = markets[p][u][m];
+    require(ZcToken(market.zcToken).mint(t, a), 'mint zcToken failed');
+    require(VaultTracker(market.vaultTracker).addNotional(t, a), 'add notional failed');
     
     return true;
   }
@@ -137,9 +136,9 @@ contract MarketPlace {
   /// @param t Address of the combining/redeeming user
   /// @param a Amount of zcTokens being burned
   function burnZcTokenRemovingNotional(uint8 p, address u, uint256 m, address t, uint256 a) external authorized(swivel) unpaused() returns(bool) {
-    Market memory mkt = markets[p][u][m];
-    require(ZcToken(mkt.zcToken).burn(t, a), 'burn failed');
-    require(VaultTracker(mkt.vaultTracker).removeNotional(t, a), 'remove notional failed');
+    Market memory market = markets[p][u][m];
+    require(ZcToken(market.zcToken).burn(t, a), 'burn failed');
+    require(VaultTracker(market.vaultTracker).removeNotional(t, a), 'remove notional failed');
     
     return true;
   }
@@ -151,19 +150,19 @@ contract MarketPlace {
   /// @param t Address of the redeeming user
   /// @param a Amount of zcTokens being redeemed
   function redeemZcToken(uint8 p, address u, uint256 m, address t, uint256 a) external authorized(swivel) unpaused() returns (uint256) {
-    Market memory mkt = markets[p][u][m];
+    Market memory market = markets[p][u][m];
 
     // if the market has not matured, mature it and redeem exactly the amount
-    if (mkt.maturityRate == 0) {
+    if (market.maturityRate == 0) {
       require(matureMarket(p, u, m), 'failed to mature the market');
     }
 
     // burn user's zcTokens
-    require(ZcToken(mkt.zcToken).burn(t, a), 'could not burn');
+    require(ZcToken(market.zcToken).burn(t, a), 'could not burn');
 
     emit RedeemZcToken(p, u, m, t, a);
 
-    if (mkt.maturityRate == 0) {
+    if (market.maturityRate == 0) {
       return a;
     } else { 
       // if the market was already mature the return should include the amount + marginal floating interest generated on Compound since maturity
@@ -191,11 +190,11 @@ contract MarketPlace {
   /// @param m Maturity timestamp of the market
   /// @param a Amount of zcTokens being redeemed
   function calculateReturn(uint8 p, address u, uint256 m, uint256 a) internal returns (uint256) {
-    Market memory mkt = markets[p][u][m];
+    Market memory market = markets[p][u][m];
 
-    uint256 exchangeRate = ICompounding(mkt.adapterAddr).exchangeRate(mkt.cTokenAddr);
+    uint256 exchangeRate = ICompounding(market.adapterAddr).exchangeRate(market.cTokenAddr);
 
-    return (a * exchangeRate) / mkt.maturityRate;
+    return (a * exchangeRate) / market.maturityRate;
   }
 
   /// @notice Return the compounding token address for a given market
@@ -203,8 +202,8 @@ contract MarketPlace {
   /// @param u Underlying token address associated with the market
   /// @param m Maturity timestamp of the market
   function cTokenAndAdapterAddress(uint8 p, address u, uint256 m) external view returns (address, address) {
-    Market memory mkt = markets[p][u][m];
-    return (mkt.cTokenAddr, mkt.adapterAddr);
+    Market memory market = markets[p][u][m];
+    return (market.cTokenAddr, market.adapterAddr);
   }
 
   /// @notice Called by swivel IVFZI && IZFVI
@@ -216,9 +215,9 @@ contract MarketPlace {
   /// @param n Recipient of the added notional
   /// @param a Amount of zcToken minted and notional added
   function custodialInitiate(uint8 p, address u, uint256 m, address z, address n, uint256 a) external authorized(swivel) unpaused() returns (bool) {
-    Market memory mkt = markets[p][u][m];
-    require(ZcToken(mkt.zcToken).mint(z, a), 'mint failed');
-    require(VaultTracker(mkt.vaultTracker).addNotional(n, a), 'add notional failed');
+    Market memory market = markets[p][u][m];
+    require(ZcToken(market.zcToken).mint(z, a), 'mint failed');
+    require(VaultTracker(market.vaultTracker).addNotional(n, a), 'add notional failed');
     emit CustodialInitiate(p, u, m, z, n, a);
     return true;
   }
@@ -232,9 +231,9 @@ contract MarketPlace {
   /// @param n Target to remove notional from
   /// @param a Amount of zcToken burned and notional removed
   function custodialExit(uint8 p, address u, uint256 m, address z, address n, uint256 a) external authorized(swivel) unpaused() returns (bool) {
-    Market memory mkt = markets[p][u][m];
-    require(ZcToken(mkt.zcToken).burn(z, a), 'burn failed');
-    require(VaultTracker(mkt.vaultTracker).removeNotional(n, a), 'remove notional failed');
+    Market memory market = markets[p][u][m];
+    require(ZcToken(market.zcToken).burn(z, a), 'burn failed');
+    require(VaultTracker(market.vaultTracker).removeNotional(n, a), 'remove notional failed');
     emit CustodialExit(p, u, m, z, n, a);
     return true;
   }
@@ -248,9 +247,9 @@ contract MarketPlace {
   /// @param t Target to be minted to
   /// @param a Amount of zcToken transfer
   function p2pZcTokenExchange(uint8 p, address u, uint256 m, address f, address t, uint256 a) external authorized(swivel) unpaused() returns (bool) {
-    Market memory mkt = markets[p][u][m];
-    require(ZcToken(mkt.zcToken).burn(f, a), 'zcToken burn failed');
-    require(ZcToken(mkt.zcToken).mint(t, a), 'zcToken mint failed');
+    Market memory market = markets[p][u][m];
+    require(ZcToken(market.zcToken).burn(f, a), 'zcToken burn failed');
+    require(ZcToken(market.zcToken).mint(t, a), 'zcToken mint failed');
     emit P2pZcTokenExchange(p, u, m, f, t, a);
     return true;
   }
