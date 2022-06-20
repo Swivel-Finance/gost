@@ -89,7 +89,7 @@ contract MarketPlace {
         return true;
     }
 
-    /// @notice allows the admin to create a market
+    /// @notice allows the admin to set an individual market
     /// @param p enum value of the principal token
     /// @param u underlying token address
     /// @param m maturity timestamp for the market

@@ -142,7 +142,7 @@ contract Lender {
     /// @notice sets the address of the marketplace contract which contains the addresses of all the fixed rate markets
     /// @param m the address of the marketplace contract
     /// @return bool true if the address was set, false otherwise
-    function setMarketPlaceAddress(address m) external authorized(admin) returns (bool) {
+    function setMarketPlace(address m) external authorized(admin) returns (bool) {
         if (marketPlace != address(0)) {
             revert Exists(marketPlace);
         }

@@ -67,7 +67,7 @@ contract Redeemer {
     /// @notice sets the address of the marketplace contract which contains the addresses of all the fixed rate markets
     /// @param m the address of the marketplace contract
     /// @return bool true if the address was set, false otherwise
-    function setMarketPlaceAddress(address m) external authorized(admin) returns (bool) {
+    function setMarketPlace(address m) external authorized(admin) returns (bool) {
         if (marketPlace != address(0)) {
             revert Exists('marketplace');
         }
@@ -78,7 +78,7 @@ contract Redeemer {
     /// @notice sets the address of the lender contract which contains the addresses of all the fixed rate markets
     /// @param l the address of the lender contract
     /// @return bool true if the address was set, false otherwise
-    function setLenderAddress(address l) external authorized(admin) returns (bool) {
+    function setLender(address l) external authorized(admin) returns (bool) {
         if (lender != address(0)) {
             revert Exists('lender');
         }
