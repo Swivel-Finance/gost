@@ -23,3 +23,8 @@
 
 # vscode directory
 .vscode/
+
+# LOC reports
+lender_loc.txt
+redeemer_loc.txt
+marketplace_loc.txt
