@@ -60,7 +60,7 @@ func (s *redeemVaultInterestSuite) SetupTest() {
 	}
 
 	// the swivel address must be set (set to owner accomodating the onlySwivel calls)
-	_, err = s.MarketPlace.SetSwivelAddress(s.Env.Owner.Opts.From)
+	_, err = s.MarketPlace.SetSwivel(s.Env.Owner.Opts.From)
 	assert.Nil(err)
 	s.Env.Blockchain.Commit()
 }

@@ -61,7 +61,7 @@ func (s *createMarketSuite) SetupSuite() {
 	}
 
 	// the swivel address must be set
-	s.MarketPlace.SetSwivelAddress(s.Dep.SwivelAddress)
+	s.MarketPlace.SetSwivel(s.Dep.SwivelAddress)
 	s.Env.Blockchain.Commit()
 }
 

@@ -65,7 +65,7 @@ func (s *p2pZCTokenExchangeSuite) SetupTest() {
 		},
 	}
 
-	s.MarketPlace.SetSwivelAddress(s.Env.Owner.Opts.From)
+	s.MarketPlace.SetSwivel(s.Env.Owner.Opts.From)
 	s.Env.Blockchain.Commit()
 }
 

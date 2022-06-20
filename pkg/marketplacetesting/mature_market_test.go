@@ -64,7 +64,7 @@ func (s *matureMarketSuite) SetupTest() {
 	}
 
 	// the swivel address must be set
-	_, err = s.MarketPlace.SetSwivelAddress(s.Dep.SwivelAddress)
+	_, err = s.MarketPlace.SetSwivel(s.Dep.SwivelAddress)
 	assert.Nil(err)
 	s.Env.Blockchain.Commit()
 }

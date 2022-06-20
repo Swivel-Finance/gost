@@ -35,18 +35,16 @@ contract MarketPlace {
     admin = msg.sender;
   }
 
-  // TODO becomes `setSwivel`
   /// @param s Address of the deployed swivel contract
   /// @notice We only allow this to be set once
-  function setSwivelAddress(address s) external authorized(admin) returns (bool) {
+  function setSwivel(address s) external authorized(admin) returns (bool) {
     require(swivel == address(0), 'swivel contract address already set');
     swivel = s;
     return true;
   }
 
-  // TODO becomes `setAdmin`
   /// @param a Address of a new admin
-  function transferAdmin(address a) external authorized(admin) returns (bool) {
+  function setAdmin(address a) external authorized(admin) returns (bool) {
     admin = a;
     return true;
   }

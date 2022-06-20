@@ -61,7 +61,7 @@ func (s *cTokenAddrSuite) SetupSuite() {
 func (s *cTokenAddrSuite) TestSetCTokenAddr() {
 	assert := assertions.New(s.T())
 	// the swivel address must be set
-	_, err := s.MarketPlace.SetSwivelAddress(s.Dep.SwivelAddress)
+	_, err := s.MarketPlace.SetSwivel(s.Dep.SwivelAddress)
 	assert.Nil(err)
 	s.Env.Blockchain.Commit()
 	// addresses can be BS in this test...

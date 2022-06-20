@@ -63,7 +63,7 @@ func (s *custodialExitSuite) SetupTest() {
 
 	// the Marketplace needs to have a swivel addr set, we'll use the owner addr so as not to have to generate a new signer
 	// and re-do all the calls...
-	s.MarketPlace.SetSwivelAddress(s.Env.Owner.Opts.From)
+	s.MarketPlace.SetSwivel(s.Env.Owner.Opts.From)
 	s.Env.Blockchain.Commit()
 }
 

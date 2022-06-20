@@ -381,9 +381,8 @@ contract Swivel {
 
   // ********* ADMINISTRATIVE ***************
 
-  // TODO -> `setAdmin`
   /// @param a Address of a new admin
-  function transferAdmin(address a) external authorized(admin) returns (bool) {
+  function setAdmin(address a) external authorized(admin) returns (bool) {
     admin = a;
 
     return true;

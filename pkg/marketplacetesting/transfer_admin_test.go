@@ -58,7 +58,7 @@ func (s *transferAdminSuite) TestTransferAdmin() {
 	assert.Equal(addr, s.Env.Owner.Opts.From)
 
 	// transfer it to User1, must be done from owner (current admin)
-	tx, err := s.MarketPlaceOwner.TransferAdmin(s.Env.User1.Opts.From)
+	tx, err := s.MarketPlaceOwner.SetAdmin(s.Env.User1.Opts.From)
 	assert.Nil(err)
 	assert.NotNil(tx)
 
@@ -70,7 +70,7 @@ func (s *transferAdminSuite) TestTransferAdmin() {
 	assert.Equal(addr, s.Env.User1.Opts.From)
 
 	// change it back so everything doesn't fail... (must be done from user, as that's the admin now)
-	tx, err = s.MarketPlaceUser.TransferAdmin(s.Env.Owner.Opts.From)
+	tx, err = s.MarketPlaceUser.SetAdmin(s.Env.Owner.Opts.From)
 	assert.Nil(err)
 	assert.NotNil(tx)
 
