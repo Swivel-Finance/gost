@@ -91,12 +91,17 @@ contract MarketPlace {
         return true;
     }
 
-    /// @notice allows the admin to pause a principal's pools
-    /// @param p principal's enum value
-    /// @param s true if the pool should be paused, false otherwise
+    /// @notice allows the admin to create a market
+    /// @param p enum value of the principal token
+    /// @param u underlying token address
+    /// @param m maturity timestamp for the market
+    /// @param a address of the new market
     /// @return bool true if successful
-    function pause(uint8 p, bool s) external authorized(admin) returns (bool) {
-        paused[p] = s;
+    function setPrincipal(uint8 p, address u, uint256 m, address a) external authorized(admin) returns (bool) {
+        if (markets[u][m][p] != address(0)) {
+            revert Exists('Market already exists');
+        }
+        markets[u][m][p] = a;
         return true;
     }
 
@@ -126,68 +131,60 @@ contract MarketPlace {
     }
 
     /// @notice sells the PT for the PT via the pool
-    /// @param p enum value of the principal token
     /// @param u address of the underlying asset
     /// @param m maturity (timestamp) of the market
     /// @param a amount of PT to swap
     /// @return uint128 amount of PT bought
     function sellPrincipalToken(
-        uint8 p,
         address u,
         uint256 m,
         uint128 a
-    ) external unpaused(p) returns (uint128) {
+    ) external returns (uint128) {
         IPool pool = IPool(pools[u][m]);
         Safe.transfer(IERC20(address(pool.fyToken())), address(pool), a);
         return pool.sellFYToken(msg.sender, pool.sellFYTokenPreview(a));
     }
 
     /// @notice buys the underlying for the PT via the pool
-    /// @param p enum value of the principal token
     /// @param u address of the underlying asset
     /// @param m maturity (timestamp) of the market
     /// @param a amount of underlying tokens to sell
     /// @return uint128 amount of PT received
     function buyPrincipalToken(
-        uint8 p,
         address u,
         uint256 m,
         uint128 a
-    ) external unpaused(p) returns (uint128) {
+    ) external returns (uint128) {
         IPool pool = IPool(pools[u][m]);
         Safe.transfer(IERC20(address(pool.base())), address(pool), a);
         return pool.buyFYToken(msg.sender, pool.buyFYTokenPreview(a), a);
     }
 
     /// @notice sells the underlying for the PT via the pool
-    /// @param p enum value of the principal token
     /// @param u address of the underlying asset
     /// @param m maturity (timestamp) of the market
     /// @param a amount of underlying to swap
     /// @return uint128 amount of underlying sold
     function sellUnderlying(
-        uint8 p,
         address u,
         uint256 m,
         uint128 a
-    ) external unpaused(p) returns (uint128) {
+    ) external returns (uint128) {
         IPool pool = IPool(pools[u][m]);
         Safe.transfer(IERC20(address(pool.base())), address(pool), a);
         return pool.sellBase(msg.sender, pool.sellBasePreview(a));
     }
 
     /// @notice buys the underlying for the PT via the pool
-    /// @param p enum value of the principal token
     /// @param u address of the underlying asset
     /// @param m maturity (timestamp) of the market
     /// @param a amount of PT to swap
     /// @return uint128 amount of underlying bought
     function buyUnderlying(
-        uint8 p,
         address u,
         uint256 m,
         uint128 a
-    ) external unpaused(p) returns (uint128) {
+    ) external returns (uint128) {
         IPool pool = IPool(pools[u][m]);
         Safe.transfer(IERC20(address(pool.fyToken())), address(pool), a);
         return pool.buyBase(msg.sender, pool.buyBasePreview(a), a);
@@ -252,15 +249,6 @@ contract MarketPlace {
     modifier authorized(address a) {
         if (msg.sender != a) {
             revert Unauthorized();
-        }
-        _;
-    }
-
-    /// @notice prevents usage of router for a given principal based on the paused mapping
-    /// @param p enum value of the principal token
-    modifier unpaused(uint8 p) {
-        if (paused[p]) {
-            revert Invalid('princpal paused');
         }
         _;
     }
