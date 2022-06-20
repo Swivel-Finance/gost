@@ -56,7 +56,7 @@ func (s *vaultTransferFeeSuite) SetupTest() {
 	}
 
 	// the swivel address must be set, using owner here for ease of mocking
-	_, err = s.MarketPlace.SetSwivelAddress(s.Env.Owner.Opts.From)
+	_, err = s.MarketPlace.SetSwivel(s.Env.Owner.Opts.From)
 	assert.Nil(err)
 	s.Env.Blockchain.Commit()
 }
