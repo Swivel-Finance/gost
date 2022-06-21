@@ -30,8 +30,8 @@ var (
 
 // CompoundMetaData contains all meta data concerning the Compound contract.
 var CompoundMetaData = &bind.MetaData{
-	ABI: "[{\"inputs\":[],\"name\":\"PROTOCOL\",\"outputs\":[{\"internalType\":\"uint8\",\"name\":\"\",\"type\":\"uint8\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"a\",\"type\":\"address\"}],\"name\":\"exchangeRate\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"exchangeRateCalled\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"n\",\"type\":\"uint256\"}],\"name\":\"exchangeRateReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"c\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"n\",\"type\":\"uint256\"}],\"name\":\"mint\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"mintCalled\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"n\",\"type\":\"uint256\"}],\"name\":\"mintReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"c\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"n\",\"type\":\"uint256\"}],\"name\":\"redeemUnderlying\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"redeemUnderlyingCalled\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"n\",\"type\":\"uint256\"}],\"name\":\"redeemUnderlyingReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"a\",\"type\":\"address\"}],\"name\":\"underlying\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"underlyingCalled\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"a\",\"type\":\"address\"}],\"name\":\"underlyingReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]",
-	Bin: "0x608060405260008060006101000a81548160ff021916908360ff16021790555034801561002b57600080fd5b506106fd8061003b6000396000f3fe608060405234801561001057600080fd5b50600436106100cf5760003560e01c8063962941781161008c578063e7a7b9ce11610066578063e7a7b9ce14610238578063e7ba677414610254578063ee4db57014610270578063f189b337146102a0576100cf565b806396294178146101a8578063dc3b7c8b146101d8578063e6919c8214610208576100cf565b806329d9ce3e146100d457806340c10f19146100f0578063589aeec7146101205780635c62eb2f1461013c57806364f670ee1461015a57806391b9b8271461018a575b600080fd5b6100ee60048036038101906100e99190610544565b6102be565b005b61010a600480360381019061010591906105cf565b6102c8565b604051610117919061061e565b60405180910390f35b61013a60048036038101906101359190610544565b610319565b005b610144610323565b6040516101519190610648565b60405180910390f35b610174600480360381019061016f9190610663565b610349565b604051610181919061061e565b60405180910390f35b610192610361565b60405161019f91906106ac565b60405180910390f35b6101c260048036038101906101bd91906105cf565b610372565b6040516101cf919061061e565b60405180910390f35b6101f260048036038101906101ed9190610663565b6103c3565b6040516101ff919061061e565b60405180910390f35b610222600480360381019061021d9190610663565b610410565b60405161022f9190610648565b60405180910390f35b610252600480360381019061024d9190610544565b61047d565b005b61026e60048036038101906102699190610663565b610487565b005b61028a60048036038101906102859190610663565b6104cb565b604051610297919061061e565b60405180910390f35b6102a86104e3565b6040516102b59190610648565b60405180910390f35b8060038190555050565b600081600260008573ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002081905550600154905092915050565b8060088190555050565b600760009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1681565b60046020528060005260406000206000915090505481565b60008054906101000a900460ff1681565b600081600460008573ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002081905550600354905092915050565b600081600760006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff1602179055506008549050919050565b600081600560006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff160217905550600660009054906101000a900473ffffffffffffffffffffffffffffffffffffffff169050919050565b8060018190555050565b80600660006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555050565b60026020528060005260406000206000915090505481565b600560009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1681565b600080fd5b6000819050919050565b6105218161050e565b811461052c57600080fd5b50565b60008135905061053e81610518565b92915050565b60006020828403121561055a57610559610509565b5b60006105688482850161052f565b91505092915050565b600073ffffffffffffffffffffffffffffffffffffffff82169050919050565b600061059c82610571565b9050919050565b6105ac81610591565b81146105b757600080fd5b50565b6000813590506105c9816105a3565b92915050565b600080604083850312156105e6576105e5610509565b5b60006105f4858286016105ba565b92505060206106058582860161052f565b9150509250929050565b6106188161050e565b82525050565b6000602082019050610633600083018461060f565b92915050565b61064281610591565b82525050565b600060208201905061065d6000830184610639565b92915050565b60006020828403121561067957610678610509565b5b6000610687848285016105ba565b91505092915050565b600060ff82169050919050565b6106a681610690565b82525050565b60006020820190506106c1600083018461069d565b9291505056fea2646970667358221220f96466f65ff7e9eef21a1176ba88af056c7fdcf83c88855dfdad99e0c2f8e0ba64736f6c634300080d0033",
+	ABI: "[{\"inputs\":[],\"name\":\"PROTOCOL\",\"outputs\":[{\"internalType\":\"uint8\",\"name\":\"\",\"type\":\"uint8\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"c\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"n\",\"type\":\"uint256\"}],\"name\":\"deposit\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"depositCalled\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"n\",\"type\":\"uint256\"}],\"name\":\"depositReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"a\",\"type\":\"address\"}],\"name\":\"exchangeRate\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"exchangeRateCalled\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"n\",\"type\":\"uint256\"}],\"name\":\"exchangeRateReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"c\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"n\",\"type\":\"uint256\"}],\"name\":\"redeemUnderlying\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"redeemUnderlyingCalled\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"n\",\"type\":\"uint256\"}],\"name\":\"redeemUnderlyingReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"a\",\"type\":\"address\"}],\"name\":\"underlying\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"underlyingCalled\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"a\",\"type\":\"address\"}],\"name\":\"underlyingReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]",
+	Bin: "0x608060405260008060006101000a81548160ff021916908360ff16021790555034801561002b57600080fd5b506106fd8061003b6000396000f3fe608060405234801561001057600080fd5b50600436106100cf5760003560e01c806391b9b8271161008c578063dc3b7c8b11610066578063dc3b7c8b14610224578063e6919c8214610254578063e7ba677414610284578063f189b337146102a0576100cf565b806391b9b827146101a657806396294178146101c4578063d35147e4146101f4576100cf565b806326cca786146100d457806329d9ce3e146100f057806347e7ef241461010c578063589aeec71461013c5780635c62eb2f1461015857806364f670ee14610176575b600080fd5b6100ee60048036038101906100e99190610544565b6102be565b005b61010a60048036038101906101059190610544565b6102c8565b005b610126600480360381019061012191906105cf565b6102d2565b604051610133919061061e565b60405180910390f35b61015660048036038101906101519190610544565b610323565b005b61016061032d565b60405161016d9190610648565b60405180910390f35b610190600480360381019061018b9190610663565b610353565b60405161019d919061061e565b60405180910390f35b6101ae61036b565b6040516101bb91906106ac565b60405180910390f35b6101de60048036038101906101d991906105cf565b61037c565b6040516101eb919061061e565b60405180910390f35b61020e60048036038101906102099190610663565b6103cd565b60405161021b919061061e565b60405180910390f35b61023e60048036038101906102399190610663565b6103e5565b60405161024b919061061e565b60405180910390f35b61026e60048036038101906102699190610663565b610432565b60405161027b9190610648565b60405180910390f35b61029e60048036038101906102999190610663565b61049f565b005b6102a86104e3565b6040516102b59190610648565b60405180910390f35b8060018190555050565b8060038190555050565b600081600260008573ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002081905550600154905092915050565b8060088190555050565b600760009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1681565b60046020528060005260406000206000915090505481565b60008054906101000a900460ff1681565b600081600460008573ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002081905550600354905092915050565b60026020528060005260406000206000915090505481565b600081600760006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff1602179055506008549050919050565b600081600560006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff160217905550600660009054906101000a900473ffffffffffffffffffffffffffffffffffffffff169050919050565b80600660006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555050565b600560009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1681565b600080fd5b6000819050919050565b6105218161050e565b811461052c57600080fd5b50565b60008135905061053e81610518565b92915050565b60006020828403121561055a57610559610509565b5b60006105688482850161052f565b91505092915050565b600073ffffffffffffffffffffffffffffffffffffffff82169050919050565b600061059c82610571565b9050919050565b6105ac81610591565b81146105b757600080fd5b50565b6000813590506105c9816105a3565b92915050565b600080604083850312156105e6576105e5610509565b5b60006105f4858286016105ba565b92505060206106058582860161052f565b9150509250929050565b6106188161050e565b82525050565b6000602082019050610633600083018461060f565b92915050565b61064281610591565b82525050565b600060208201905061065d6000830184610639565b92915050565b60006020828403121561067957610678610509565b5b6000610687848285016105ba565b91505092915050565b600060ff82169050919050565b6106a681610690565b82525050565b60006020820190506106c1600083018461069d565b9291505056fea2646970667358221220bd550d0656e1e7e8fdb06c89c1b44da4cc38ad651216b1c98bb45aa936af6b6e64736f6c634300080d0033",
 }
 
 // CompoundABI is the input ABI used to generate the binding from.
@@ -232,6 +232,37 @@ func (_Compound *CompoundCallerSession) PROTOCOL() (uint8, error) {
 	return _Compound.Contract.PROTOCOL(&_Compound.CallOpts)
 }
 
+// DepositCalled is a free data retrieval call binding the contract method 0xd35147e4.
+//
+// Solidity: function depositCalled(address ) view returns(uint256)
+func (_Compound *CompoundCaller) DepositCalled(opts *bind.CallOpts, arg0 common.Address) (*big.Int, error) {
+	var out []interface{}
+	err := _Compound.contract.Call(opts, &out, "depositCalled", arg0)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
+}
+
+// DepositCalled is a free data retrieval call binding the contract method 0xd35147e4.
+//
+// Solidity: function depositCalled(address ) view returns(uint256)
+func (_Compound *CompoundSession) DepositCalled(arg0 common.Address) (*big.Int, error) {
+	return _Compound.Contract.DepositCalled(&_Compound.CallOpts, arg0)
+}
+
+// DepositCalled is a free data retrieval call binding the contract method 0xd35147e4.
+//
+// Solidity: function depositCalled(address ) view returns(uint256)
+func (_Compound *CompoundCallerSession) DepositCalled(arg0 common.Address) (*big.Int, error) {
+	return _Compound.Contract.DepositCalled(&_Compound.CallOpts, arg0)
+}
+
 // ExchangeRateCalled is a free data retrieval call binding the contract method 0x5c62eb2f.
 //
 // Solidity: function exchangeRateCalled() view returns(address)
@@ -261,37 +292,6 @@ func (_Compound *CompoundSession) ExchangeRateCalled() (common.Address, error) {
 // Solidity: function exchangeRateCalled() view returns(address)
 func (_Compound *CompoundCallerSession) ExchangeRateCalled() (common.Address, error) {
 	return _Compound.Contract.ExchangeRateCalled(&_Compound.CallOpts)
-}
-
-// MintCalled is a free data retrieval call binding the contract method 0xee4db570.
-//
-// Solidity: function mintCalled(address ) view returns(uint256)
-func (_Compound *CompoundCaller) MintCalled(opts *bind.CallOpts, arg0 common.Address) (*big.Int, error) {
-	var out []interface{}
-	err := _Compound.contract.Call(opts, &out, "mintCalled", arg0)
-
-	if err != nil {
-		return *new(*big.Int), err
-	}
-
-	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
-
-	return out0, err
-
-}
-
-// MintCalled is a free data retrieval call binding the contract method 0xee4db570.
-//
-// Solidity: function mintCalled(address ) view returns(uint256)
-func (_Compound *CompoundSession) MintCalled(arg0 common.Address) (*big.Int, error) {
-	return _Compound.Contract.MintCalled(&_Compound.CallOpts, arg0)
-}
-
-// MintCalled is a free data retrieval call binding the contract method 0xee4db570.
-//
-// Solidity: function mintCalled(address ) view returns(uint256)
-func (_Compound *CompoundCallerSession) MintCalled(arg0 common.Address) (*big.Int, error) {
-	return _Compound.Contract.MintCalled(&_Compound.CallOpts, arg0)
 }
 
 // RedeemUnderlyingCalled is a free data retrieval call binding the contract method 0x64f670ee.
@@ -356,6 +356,48 @@ func (_Compound *CompoundCallerSession) UnderlyingCalled() (common.Address, erro
 	return _Compound.Contract.UnderlyingCalled(&_Compound.CallOpts)
 }
 
+// Deposit is a paid mutator transaction binding the contract method 0x47e7ef24.
+//
+// Solidity: function deposit(address c, uint256 n) returns(uint256)
+func (_Compound *CompoundTransactor) Deposit(opts *bind.TransactOpts, c common.Address, n *big.Int) (*types.Transaction, error) {
+	return _Compound.contract.Transact(opts, "deposit", c, n)
+}
+
+// Deposit is a paid mutator transaction binding the contract method 0x47e7ef24.
+//
+// Solidity: function deposit(address c, uint256 n) returns(uint256)
+func (_Compound *CompoundSession) Deposit(c common.Address, n *big.Int) (*types.Transaction, error) {
+	return _Compound.Contract.Deposit(&_Compound.TransactOpts, c, n)
+}
+
+// Deposit is a paid mutator transaction binding the contract method 0x47e7ef24.
+//
+// Solidity: function deposit(address c, uint256 n) returns(uint256)
+func (_Compound *CompoundTransactorSession) Deposit(c common.Address, n *big.Int) (*types.Transaction, error) {
+	return _Compound.Contract.Deposit(&_Compound.TransactOpts, c, n)
+}
+
+// DepositReturns is a paid mutator transaction binding the contract method 0x26cca786.
+//
+// Solidity: function depositReturns(uint256 n) returns()
+func (_Compound *CompoundTransactor) DepositReturns(opts *bind.TransactOpts, n *big.Int) (*types.Transaction, error) {
+	return _Compound.contract.Transact(opts, "depositReturns", n)
+}
+
+// DepositReturns is a paid mutator transaction binding the contract method 0x26cca786.
+//
+// Solidity: function depositReturns(uint256 n) returns()
+func (_Compound *CompoundSession) DepositReturns(n *big.Int) (*types.Transaction, error) {
+	return _Compound.Contract.DepositReturns(&_Compound.TransactOpts, n)
+}
+
+// DepositReturns is a paid mutator transaction binding the contract method 0x26cca786.
+//
+// Solidity: function depositReturns(uint256 n) returns()
+func (_Compound *CompoundTransactorSession) DepositReturns(n *big.Int) (*types.Transaction, error) {
+	return _Compound.Contract.DepositReturns(&_Compound.TransactOpts, n)
+}
+
 // ExchangeRate is a paid mutator transaction binding the contract method 0xdc3b7c8b.
 //
 // Solidity: function exchangeRate(address a) returns(uint256)
@@ -396,48 +438,6 @@ func (_Compound *CompoundSession) ExchangeRateReturns(n *big.Int) (*types.Transa
 // Solidity: function exchangeRateReturns(uint256 n) returns()
 func (_Compound *CompoundTransactorSession) ExchangeRateReturns(n *big.Int) (*types.Transaction, error) {
 	return _Compound.Contract.ExchangeRateReturns(&_Compound.TransactOpts, n)
-}
-
-// Mint is a paid mutator transaction binding the contract method 0x40c10f19.
-//
-// Solidity: function mint(address c, uint256 n) returns(uint256)
-func (_Compound *CompoundTransactor) Mint(opts *bind.TransactOpts, c common.Address, n *big.Int) (*types.Transaction, error) {
-	return _Compound.contract.Transact(opts, "mint", c, n)
-}
-
-// Mint is a paid mutator transaction binding the contract method 0x40c10f19.
-//
-// Solidity: function mint(address c, uint256 n) returns(uint256)
-func (_Compound *CompoundSession) Mint(c common.Address, n *big.Int) (*types.Transaction, error) {
-	return _Compound.Contract.Mint(&_Compound.TransactOpts, c, n)
-}
-
-// Mint is a paid mutator transaction binding the contract method 0x40c10f19.
-//
-// Solidity: function mint(address c, uint256 n) returns(uint256)
-func (_Compound *CompoundTransactorSession) Mint(c common.Address, n *big.Int) (*types.Transaction, error) {
-	return _Compound.Contract.Mint(&_Compound.TransactOpts, c, n)
-}
-
-// MintReturns is a paid mutator transaction binding the contract method 0xe7a7b9ce.
-//
-// Solidity: function mintReturns(uint256 n) returns()
-func (_Compound *CompoundTransactor) MintReturns(opts *bind.TransactOpts, n *big.Int) (*types.Transaction, error) {
-	return _Compound.contract.Transact(opts, "mintReturns", n)
-}
-
-// MintReturns is a paid mutator transaction binding the contract method 0xe7a7b9ce.
-//
-// Solidity: function mintReturns(uint256 n) returns()
-func (_Compound *CompoundSession) MintReturns(n *big.Int) (*types.Transaction, error) {
-	return _Compound.Contract.MintReturns(&_Compound.TransactOpts, n)
-}
-
-// MintReturns is a paid mutator transaction binding the contract method 0xe7a7b9ce.
-//
-// Solidity: function mintReturns(uint256 n) returns()
-func (_Compound *CompoundTransactorSession) MintReturns(n *big.Int) (*types.Transaction, error) {
-	return _Compound.Contract.MintReturns(&_Compound.TransactOpts, n)
 }
 
 // RedeemUnderlying is a paid mutator transaction binding the contract method 0x96294178.

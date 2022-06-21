@@ -10,7 +10,7 @@ interface IErc20 {
 }
 
 interface ICompound {
-	function mint(address, uint256) external returns (uint256);
+	function deposit(address, uint256) external returns (uint256);
 	function redeemUnderlying(address, uint256) external returns (uint256);
 }
 

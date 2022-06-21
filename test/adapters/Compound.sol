@@ -20,10 +20,9 @@ contract Compound is ICompounding, ICompound {
     return ICompoundToken(c).underlying();
   }
 
-  // TODO this could be deposit()...
   /// @param c Compounding token address
-  /// @param a Amount to mint
-  function mint(address c,  uint256 a) external override returns (uint256) {
+  /// @param a Amount to deposit (mint)
+  function deposit(address c,  uint256 a) external override returns (uint256) {
     return ICompoundToken(c).mint(a);
   }
 

@@ -50,7 +50,7 @@ func (s *swivelCtorSuite) TestVersion() {
 	assert := assert.New(s.T())
 	verz, err := s.Swivel.VERSION()
 	assert.Nil(err)
-	assert.Equal(verz, "2.0.0")
+	assert.Equal(verz, "3.0.0")
 }
 
 func (s *swivelCtorSuite) TestDomain() {
