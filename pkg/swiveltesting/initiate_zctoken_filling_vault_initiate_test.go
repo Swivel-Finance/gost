@@ -100,7 +100,7 @@ func (s *IZFVISuite) TestIZFVI() {
 	s.Env.Blockchain.Commit()
 
 	// and the ctoken mint
-	tx, err = s.Compound.MintReturns(big.NewInt(0))
+	tx, err = s.Compound.DepositReturns(big.NewInt(0))
 	assert.NotNil(tx)
 	assert.Nil(err)
 	s.Env.Blockchain.Commit()
@@ -117,7 +117,7 @@ func (s *IZFVISuite) TestIZFVI() {
 	// TODO preparing an order _may_ be relocated to a helper. Possibly per package? Discuss...
 	hashOrder := fakes.HashOrder{
 		Key:        orderKey,
-		Protocol:   uint8(0),
+		Protocol:   uint8(1),
 		Maker:      s.Env.User1.Opts.From,
 		Underlying: s.Dep.Erc20Address,
 		Vault:      true,
@@ -157,7 +157,7 @@ func (s *IZFVISuite) TestIZFVI() {
 	// the order passed to the swivel contract must be of the swivel package type...
 	order := swivel.HashOrder{
 		Key:        orderKey,
-		Protocol:   uint8(0),
+		Protocol:   uint8(1),
 		Maker:      s.Env.User1.Opts.From,
 		Underlying: s.Dep.Erc20Address,
 		Vault:      true,
@@ -217,13 +217,13 @@ func (s *IZFVISuite) TestIZFVI() {
 	// assert.Equal(arg, amt)
 
 	// the call to ctoken mint, don't reuse arg as they should actually both be "a"
-	mintArg, err := s.Compound.MintCalled(s.Dep.CompoundTokenAddress)
+	mintArg, err := s.Compound.DepositCalled(s.Dep.CompoundTokenAddress)
 	assert.Nil(err)
 	assert.NotNil(mintArg)
 	assert.Equal(mintArg, amt)
 
 	// mint zctoken call...
-	fillingArgs, err := s.MarketPlace.CustodialInitiateCalled(uint8(0))
+	fillingArgs, err := s.MarketPlace.CustodialInitiateCalled(uint8(1))
 	assert.Nil(err)
 	assert.NotNil(fillingArgs)
 	assert.Equal(fillingArgs.Maturity, order.Maturity)

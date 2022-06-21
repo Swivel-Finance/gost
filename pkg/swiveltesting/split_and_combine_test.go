@@ -82,7 +82,7 @@ func (s *splitCombineSuite) TestSplit() {
 	assert.NotNil(tx)
 	assert.Nil(err)
 
-	tx, err = s.Compound.MintReturns(big.NewInt(0))
+	tx, err = s.Compound.DepositReturns(big.NewInt(0))
 	assert.NotNil(tx)
 	assert.Nil(err)
 	s.Env.Blockchain.Commit()
@@ -101,14 +101,14 @@ func (s *splitCombineSuite) TestSplit() {
 	maturity := big.NewInt(123456789)
 	amount := big.NewInt(1000)
 
-	tx, err = s.Swivel.SplitUnderlying(uint8(0), s.Dep.Erc20Address, maturity, amount)
+	tx, err = s.Swivel.SplitUnderlying(uint8(1), s.Dep.Erc20Address, maturity, amount)
 
 	assert.Nil(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
 
 	// we just care that the args were passed thru...
-	splitArgs, err := s.MarketPlace.MintZcTokenAddingNotionalCalled(uint8(0))
+	splitArgs, err := s.MarketPlace.MintZcTokenAddingNotionalCalled(uint8(1))
 	assert.Nil(err)
 	assert.NotNil(splitArgs)
 	assert.Equal(splitArgs.Maturity, maturity)
@@ -145,14 +145,14 @@ func (s *splitCombineSuite) TestCombine() {
 	maturity := big.NewInt(123456789)
 	amount := big.NewInt(1000)
 
-	tx, err = s.Swivel.CombineTokens(uint8(0), s.Dep.Erc20Address, maturity, amount)
+	tx, err = s.Swivel.CombineTokens(uint8(1), s.Dep.Erc20Address, maturity, amount)
 
 	assert.Nil(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
 
 	// we just care that the args were passed thru...
-	combineArgs, err := s.MarketPlace.BurnZcTokenRemovingNotionalCalled(uint8(0))
+	combineArgs, err := s.MarketPlace.BurnZcTokenRemovingNotionalCalled(uint8(1))
 	assert.Nil(err)
 	assert.NotNil(combineArgs)
 	assert.Equal(combineArgs.Maturity, maturity)

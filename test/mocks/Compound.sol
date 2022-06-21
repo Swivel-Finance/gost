@@ -9,10 +9,10 @@ pragma solidity 0.8.13;
 
 contract Compound {
   uint8 public PROTOCOL = 0;
-  /// @dev allows us to dictate return from mint().
-  uint256 private mintReturn;
-  /// @dev the last amount mint was called with
-  mapping (address => uint256) public mintCalled;
+  /// @dev allows us to dictate return from deposit().
+  uint256 private depositReturn;
+  /// @dev the last amount deposit was called with
+  mapping (address => uint256) public depositCalled;
   /// @dev allows us to dictate return from redeemUnderlying().
   uint256 private redeemUnderlyingReturn;
   /// @dev the last amount redeemUnderlying was called with
@@ -25,13 +25,13 @@ contract Compound {
   /// @dev allows us to dictate return from exchangeRate().
   uint256 private exchangeRateReturn;
 
-  function mint(address c, uint256 n) public returns (uint256) {
-    mintCalled[c] = n;
-    return mintReturn;
+  function deposit(address c, uint256 n) public returns (uint256) {
+    depositCalled[c] = n;
+    return depositReturn;
   }
 
-  function mintReturns(uint256 n) public {
-    mintReturn = n;
+  function depositReturns(uint256 n) public {
+    depositReturn = n;
   }
 
   function redeemUnderlying(address c, uint256 n) public returns (uint256) {

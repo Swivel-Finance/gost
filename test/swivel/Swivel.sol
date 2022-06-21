@@ -8,6 +8,15 @@ import './Sig.sol';
 import './Safe.sol';
 
 contract Swivel {
+  enum Protocols {
+    Erc4626,
+    Compound,
+    Rari,
+    Yearn,
+    Aave,
+    Euler
+  }
+
   /// @dev maps the key of an order to a boolean indicating if an order was cancelled
   mapping (bytes32 => bool) public cancelled;
   /// @dev maps the key of an order to an amount representing its taken volume
@@ -16,7 +25,7 @@ contract Swivel {
   mapping (address => uint256) public withdrawals;
 
   string constant public NAME = 'Swivel Finance';
-  string constant public VERSION = '2.0.0';
+  string constant public VERSION = '3.0.0';
   uint256 constant public HOLD = 3 days;
   bytes32 public immutable domain;
   address public immutable marketPlace;
@@ -101,12 +110,12 @@ contract Swivel {
     Safe.transferFrom(uToken, o.maker, address(this), principalFilled);
 
     IMarketPlace mPlace = IMarketPlace(marketPlace);
-    // mint tokens
     address cTokenAddr;
     address adapterAddr;
-    // TODO implement prococol enum and determine interface to use depending on that
     (cTokenAddr, adapterAddr) = mPlace.cTokenAndAdapterAddress(o.protocol, o.underlying, o.maturity);
-    require(ICompound(adapterAddr).mint(cTokenAddr, principalFilled) == 0, 'minting CToken failed');
+
+    // perform the actual deposit type transaction, specific to a protocol adapter
+    require(deposit(o.protocol, cTokenAddr, adapterAddr, principalFilled), 'deposit failed');
     // alert marketplace
     require(mPlace.custodialInitiate(o.protocol, o.underlying, o.maturity, o.maker, msg.sender, principalFilled), 'custodial initiate failed');
 
@@ -139,12 +148,12 @@ contract Swivel {
     Safe.transferFrom(uToken, msg.sender, address(this), (a + fee));
 
     IMarketPlace mPlace = IMarketPlace(marketPlace);
-    // mint tokens
     address cTokenAddr;
     address adapterAddr;
-    // TODO implement prococol enum and determine interface to use depending on that
     (cTokenAddr, adapterAddr) = mPlace.cTokenAndAdapterAddress(o.protocol, o.underlying, o.maturity);
-    require(ICompound(adapterAddr).mint(cTokenAddr, a) == 0, 'minting CToken Failed');
+
+    // perform the actual deposit type transaction, specific to a protocol adapter
+    require(deposit(o.protocol, cTokenAddr, adapterAddr, a), 'deposit failed');
     // alert marketplace 
     require(mPlace.custodialInitiate(o.protocol, o.underlying, o.maturity, msg.sender, o.maker, a), 'custodial initiate failed');
 
@@ -203,6 +212,8 @@ contract Swivel {
 
     emit Initiate(o.key, hash, o.maker, o.vault, o.exit, msg.sender, a, principalFilled);
   }
+
+  
 
   // ********* EXITING ***************
 
@@ -470,9 +481,10 @@ contract Swivel {
     IMarketPlace mPlace = IMarketPlace(marketPlace);
     address cTokenAddr;
     address adapterAddr;
-    // TODO implement prococol enum and determine interface to use depending on that
     (cTokenAddr, adapterAddr) = mPlace.cTokenAndAdapterAddress(p, u, m);
-    require(ICompound(adapterAddr).mint(cTokenAddr, a) == 0, 'minting CToken Failed');
+    
+    // the underlying deposit is directed to the appropriate adapter abstraction
+    require(deposit(p, cTokenAddr, adapterAddr, a), 'deposit failed');
     require(mPlace.mintZcTokenAddingNotional(p, u, m, msg.sender, a), 'mint ZcToken adding Notional failed');
 
     return true;
@@ -551,6 +563,22 @@ contract Swivel {
     require(o.maker == Sig.recover(Hash.message(domain, hash), c), 'invalid signature');
 
     return hash;
+  }
+
+  /// @notice Use the Protocol Enum to direct deposit type transactions to their specific adapters
+  /// @dev This functionality is an abstraction used by `IVFZI`, `IZFVI` and `splitUnderlying`
+  /// @param p Protocol Enum Value
+  /// @param c Compounding token address
+  /// @param a Adapter address
+  /// @param d Amount to deposit
+  function deposit(uint8 p, address c, address a, uint256 d) internal returns (bool) {
+    // assembly does have `switch` however it would be a poor choice with this use case...
+    if (p == uint8(Protocols.Compound)) {
+      return ICompound(a).deposit(c, d) == 0;
+    } else {
+      // TODO implement other protocol adapters ...
+      return false;
+    }
   }
 
   modifier authorized(address a) {
