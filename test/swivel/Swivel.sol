@@ -6,7 +6,6 @@ import './Interfaces.sol';
 import './Hash.sol';
 import './Sig.sol';
 import './Safe.sol';
-import './Compound.sol';
 
 contract Swivel {
   enum Protocols {
@@ -568,7 +567,7 @@ contract Swivel {
   /// @param a Amount to deposit
   function deposit(uint8 p, address c, uint256 a) internal returns (bool) {
     if (p == uint8(Protocols.Compound)) {
-      return Compound.deposit(c, a) == 0;
+      return ICompoundToken(c).mint(a) == 0;
     } else {
       // TODO implement other protocol libs ...
       return false;
@@ -583,7 +582,7 @@ contract Swivel {
   /// @param a Amount to withdraw
   function withdraw(uint8 p, address c, uint256 a) internal returns (bool) {
     if (p == uint8(Protocols.Compound)) {
-      return Compound.withdraw(c, a) == 0;
+      return ICompoundToken(c).redeemUnderlying(a) == 0;
     } else {
       // TODO implement other protocol libs ...
       return false;

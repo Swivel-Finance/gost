@@ -9,6 +9,11 @@ interface IErc20 {
 	function transferFrom(address, address, uint256) external returns (bool);
 }
 
+interface ICompoundToken {
+  function mint(uint256) external returns(uint256);
+  function redeemUnderlying(uint256) external returns(uint256);
+}
+
 interface IMarketPlace {
   // adds notional and mints zctokens
   function mintZcTokenAddingNotional(uint8, address, uint256, address, uint256) external returns (bool);

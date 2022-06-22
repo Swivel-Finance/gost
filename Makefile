@@ -224,7 +224,6 @@ copy_swivel_to_build:
 	cp test/swivel/Sig.sol build/swivel
 	cp test/swivel/Safe.sol build/swivel
 	cp test/swivel/Swivel.sol build/swivel
-	cp test/swivel/Compound.sol build/swivel
 
 copy_adapters_to_build:
 	# the adapter files do not have to be rebuilt in build
