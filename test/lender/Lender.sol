@@ -248,7 +248,7 @@ contract Lender {
         uint8 p,
         address u,
         uint256 m,
-        uint256[] calldata a,
+        uint256[] memory a,
         address y,
         Swivel.Order[] calldata o,
         Swivel.Components[] calldata s
