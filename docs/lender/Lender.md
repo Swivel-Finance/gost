@@ -1,7 +1,7 @@
 # Lender
 
 
-The lender contract executes loans on behalf of users. 
+The lender contract executes loans on behalf of users.
 The contract holds the principal tokens for each market and mints an ERC-5095 position to users to represent their lent positions.
 
 
@@ -123,7 +123,7 @@ address r
 |`bool` | true if the approval was successful, false otherwise
 
 ### approve
-bulk approves the usage of addresses at the given ERC20 addresses. 
+bulk approves the usage of addresses at the given ERC20 addresses.
 
 > the lengths of the inputs must match because the arrays are paired by index
 
@@ -342,13 +342,7 @@ lend method signature for swivel
 #### Declaration
 ```solidity
 function lend(
-uint8 p,
-address u,
-uint256 m,
-uint256[] a,
-address y,
-struct Swivel.Order[] o,
-struct Swivel.Components[] s
+struct Input.Swivel s
 ) public unpaused returns
 (uint256)
 ```
@@ -361,13 +355,7 @@ struct Swivel.Components[] s
 #### Args:
 | Arg | Type | Description |
 | --- | --- | --- |
-|`p` | uint8 | value of a specific principal according to the Illuminate Principals Enum
-|`u` | address | address of an underlying asset
-|`m` | uint256 | maturity (timestamp) of the market
-|`a` | uint256[] | array of amounts of underlying tokens lent to each order in the orders array
-|`y` | address | yield pool
-|`o` | struct Swivel.Order[] | array of swivel orders being filled
-|`s` | struct Swivel.Components[] | array of signatures for each order in the orders array
+|`s` | struct Input.Swivel | Swivel input structure
 
 #### Returns:
 | Type | Description |
@@ -382,14 +370,7 @@ lend method signature for element
 #### Declaration
 ```solidity
 function lend(
-uint8 p,
-address u,
-uint256 m,
-uint256 a,
-uint256 r,
-uint256 d,
-address e,
-bytes32 i
+struct Input.Element e
 ) public unpaused returns
 (uint256)
 ```
@@ -402,14 +383,7 @@ bytes32 i
 #### Args:
 | Arg | Type | Description |
 | --- | --- | --- |
-|`p` | uint8 | value of a specific principal according to the Illuminate Principals Enum
-|`u` | address | address of an underlying asset
-|`m` | uint256 | maturity (timestamp) of the market
-|`a` | uint256 | amount of principal tokens to lend
-|`r` | uint256 | minimum amount to return, this puts a cap on allowed slippage
-|`d` | uint256 | deadline is a timestamp by which the swap must be executed deadline is a timestamp by which the swap must be executed
-|`e` | address | element pool that is lent to
-|`i` | bytes32 | the id of the pool
+|`e` | struct Input.Element | Element input struct
 
 #### Returns:
 | Type | Description |
@@ -424,12 +398,7 @@ lend method signature for pendle
 #### Declaration
 ```solidity
 function lend(
-uint8 p,
-address u,
-uint256 m,
-uint256 a,
-uint256 r,
-uint256 d
+struct Input.Pendle p
 ) public unpaused returns
 (uint256)
 ```
@@ -442,12 +411,7 @@ uint256 d
 #### Args:
 | Arg | Type | Description |
 | --- | --- | --- |
-|`p` | uint8 | value of a specific principal according to the Illuminate Principals Enum
-|`u` | address | address of an underlying asset
-|`m` | uint256 | maturity (timestamp) of the market
-|`a` | uint256 | amount of principal tokens to lend
-|`r` | uint256 | minimum amount to return, this puts a cap on allowed slippage
-|`d` | uint256 | deadline is a timestamp by which the swap must be executed
+|`p` | struct Input.Pendle | pendle input structure
 
 #### Returns:
 | Type | Description |
@@ -463,14 +427,7 @@ lend method signature for tempus
 #### Declaration
 ```solidity
 function lend(
-uint8 p,
-address u,
-uint256 m,
-uint256 a,
-uint256 r,
-uint256 d,
-address t,
-address x
+struct Input.Tempus t
 ) public unpaused returns
 (uint256)
 ```
@@ -483,14 +440,7 @@ address x
 #### Args:
 | Arg | Type | Description |
 | --- | --- | --- |
-|`p` | uint8 | value of a specific principal according to the Illuminate Principals Enum
-|`u` | address | address of an underlying asset
-|`m` | uint256 | maturity (timestamp) of the market
-|`a` | uint256 | amount of principal tokens to lend
-|`r` | uint256 | minimum amount to return when executing the swap (sets a limit to slippage)
-|`d` | uint256 | deadline is a timestamp by which the swap must be executed
-|`t` | address | tempus pool that houses the underlying principal tokens
-|`x` | address | tempus amm that executes the swap
+|`t` | struct Input.Tempus | Tempus input structure
 
 #### Returns:
 | Type | Description |
@@ -507,13 +457,7 @@ sense provides a [divider] contract that splits [target] assets (underlying) int
 #### Declaration
 ```solidity
 function lend(
-uint8 p,
-address u,
-uint256 m,
-uint128 a,
-uint256 r,
-address x,
-address s
+struct Input.Sense s
 ) public unpaused returns
 (uint256)
 ```
@@ -526,13 +470,7 @@ address s
 #### Args:
 | Arg | Type | Description |
 | --- | --- | --- |
-|`p` | uint8 | value of a specific principal according to the Illuminate Principals Enum
-|`u` | address | address of an underlying asset
-|`m` | uint256 | maturity (timestamp) of the market
-|`a` | uint128 | amount of underlying tokens to lend
-|`r` | uint256 | minimum number of tokens to lend (sets a limit on the order)
-|`x` | address | amm that is used to conduct the swap
-|`s` | address | contract that holds the principal token for this market
+|`s` | struct Input.Sense | Sense input struct
 
 #### Returns:
 | Type | Description |
@@ -547,13 +485,7 @@ this method can be called before maturity to lend to APWine while minting Illumi
 #### Declaration
 ```solidity
 function lend(
-uint8 p,
-address u,
-uint256 m,
-uint256 a,
-uint256 r,
-address pool,
-address i
+struct Input.APWine a
 ) public unpaused returns
 (uint256)
 ```
@@ -566,13 +498,7 @@ address i
 #### Args:
 | Arg | Type | Description |
 | --- | --- | --- |
-|`p` | uint8 | value of a specific principal according to the Illuminate Principals Enum
-|`u` | address | address of an underlying asset
-|`m` | uint256 | maturity (timestamp) of the market
-|`a` | uint256 | the amount of underlying tokens to lend
-|`r` | uint256 | the minimum amount of zero-coupon tokens to return accounting for slippage
-|`pool` | address | the address of a given APWine pool
-|`i` | address | the id of the pool
+|`a` | struct Input.APWine | APWine input structure
 
 #### Returns:
 | Type | Description |
