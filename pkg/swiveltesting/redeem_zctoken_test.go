@@ -100,7 +100,7 @@ func (s *redeemZcTokenSuite) TestRedeemZcToken() {
 	s.Env.Blockchain.Commit()
 
 	amount := big.NewInt(123456)
-	tx, err = s.Swivel.RedeemZcToken(uint8(0), underlying, maturity, amount)
+	tx, err = s.Swivel.RedeemZcToken(uint8(1), underlying, maturity, amount)
 	assert.Nil(err)
 	assert.NotNil(tx)
 
@@ -136,9 +136,9 @@ func (s *redeemZcTokenSuite) TestRedeemZcTokenRedeemUnderlyingFails() {
 	s.Env.Blockchain.Commit()
 
 	amount := big.NewInt(123456)
-	tx, err = s.Swivel.RedeemZcToken(uint8(0), underlying, maturity, amount)
+	tx, err = s.Swivel.RedeemZcToken(uint8(1), underlying, maturity, amount)
 	assert.NotNil(err)
-	assert.Regexp("compound redemption failed", err.Error())
+	assert.Regexp("withdraw failed", err.Error())
 	assert.Nil(tx)
 }
 

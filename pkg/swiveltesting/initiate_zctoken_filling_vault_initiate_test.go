@@ -218,7 +218,7 @@ func (s *IZFVISuite) TestIZFVI() {
 	// assert.Equal(arg, amt)
 
 	// the call to ctoken mint, don't reuse arg as they should actually both be "a"
-	mintArg, err := s.CompoundToken.MintCalled(s.Env.Owner.Opts.From)
+	mintArg, err := s.CompoundToken.MintCalled(s.Dep.SwivelAddress)
 	assert.Nil(err)
 	assert.NotNil(mintArg)
 	assert.Equal(mintArg, amt)

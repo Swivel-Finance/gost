@@ -98,7 +98,7 @@ func (s *redeemVaultInterestSuite) TestRedeemVaultInterest() {
 
 	s.Env.Blockchain.Commit()
 
-	tx, err = s.Swivel.RedeemVaultInterest(uint8(0), underlying, maturity)
+	tx, err = s.Swivel.RedeemVaultInterest(uint8(1), underlying, maturity)
 	assert.Nil(err)
 	assert.NotNil(tx)
 
@@ -115,7 +115,7 @@ func (s *redeemVaultInterestSuite) TestRedeemVaultInterestUnderlyingFails() {
 	underlying := s.Dep.Erc20Address
 	maturity := s.Dep.Maturity
 
-	tx, err := s.CompoundToken.RedeemUnderlyingReturns(big.NewInt(1))
+	tx, err := s.CompoundToken.RedeemUnderlyingReturns(big.NewInt(0))
 	assert.NotNil(tx)
 	assert.Nil(err)
 
@@ -132,9 +132,9 @@ func (s *redeemVaultInterestSuite) TestRedeemVaultInterestUnderlyingFails() {
 
 	s.Env.Blockchain.Commit()
 
-	tx, err = s.Swivel.RedeemVaultInterest(uint8(0), underlying, maturity)
+	tx, err = s.Swivel.RedeemVaultInterest(uint8(1), underlying, maturity)
 	assert.NotNil(err)
-	assert.Regexp("compound redemption failed", err.Error())
+	assert.Regexp("transfer failed", err.Error())
 	assert.Nil(tx)
 }
 

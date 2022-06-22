@@ -231,7 +231,6 @@ func (s *IVFZISuite) TestIVFZI() {
 	// assert.Equal(arg, pFilled)
 
 	// the call to ctoken mint, don't reuse arg as they should actually both be pFilled
-	// mintArg, err := s.CompoundToken.MintCalled(s.Env.Owner.Opts.From)
 	mintArg, err := s.CompoundToken.MintCalled(s.Dep.SwivelAddress)
 	assert.Nil(err)
 	assert.NotNil(mintArg)
