@@ -308,54 +308,54 @@ contract Lender {
     /// @param e element pool that is lent to
     /// @param i the id of the pool
     /// @return uint256 the amount of principal tokens lent out
-    function lend(
-        uint8 p,
-        address u,
-        uint256 m,
-        uint256 a,
-        uint256 r,
-        uint256 d,
-        address e,
-        bytes32 i
-    ) public unpaused(p) returns (uint256) {
-        // Get the principal token for this market for element
-        address principal = IMarketPlace(marketPlace).markets(u, m, p);
+    // function lend(
+    //     uint8 p,
+    //     address u,
+    //     uint256 m,
+    //     uint256 a,
+    //     uint256 r,
+    //     uint256 d,
+    //     address e,
+    //     bytes32 i
+    // ) public unpaused(p) returns (uint256) {
+    //     // Get the principal token for this market for element
+    //     address principal = IMarketPlace(marketPlace).markets(u, m, p);
 
-        // the element token must match the market pair
-        if (IElementToken(principal).underlying() != u) {
-            revert NotEqual('underlying');
-        } else if (IElementToken(principal).unlockTimestamp() > m) {
-            revert NotEqual('maturity');
-        }
-        // Transfer underlying token from user to illuminate
-        Safe.transferFrom(IERC20(u), msg.sender, address(this), a);
+    //     // the element token must match the market pair
+    //     if (IElementToken(principal).underlying() != u) {
+    //         revert NotEqual('underlying');
+    //     } else if (IElementToken(principal).unlockTimestamp() > m) {
+    //         revert NotEqual('maturity');
+    //     }
+    //     // Transfer underlying token from user to illuminate
+    //     Safe.transferFrom(IERC20(u), msg.sender, address(this), a);
 
-        // Track the accumulated fees
-        fees[u] += calculateFee(a);
+    //     // Track the accumulated fees
+    //     fees[u] += calculateFee(a);
 
-        // Create the variables needed to execute an element swap
-        Element.FundManagement memory fund = Element.FundManagement({
-            sender: address(this),
-            recipient: payable(address(this)),
-            fromInternalBalance: false,
-            toInternalBalance: false
-        });
+    //     // Create the variables needed to execute an element swap
+    //     Element.FundManagement memory fund = Element.FundManagement({
+    //         sender: address(this),
+    //         recipient: payable(address(this)),
+    //         fromInternalBalance: false,
+    //         toInternalBalance: false
+    //     });
 
-        Element.SingleSwap memory swap = Element.SingleSwap({
-            userData: '0x00000000000000000000000000000000000000000000000000000000000000',
-            poolId: i,
-            amount: a - calculateFee(a),
-            kind: Element.SwapKind.In,
-            assetIn: Any(u),
-            assetOut: Any(principal)
-        });
+    //     Element.SingleSwap memory swap = Element.SingleSwap({
+    //         userData: '0x00000000000000000000000000000000000000000000000000000000000000',
+    //         poolId: i,
+    //         amount: a - calculateFee(a),
+    //         kind: Element.SwapKind.In,
+    //         assetIn: Any(u),
+    //         assetOut: Any(principal)
+    //     });
 
-        // Conduct the swap on element
-        uint256 purchased = IElement(e).swap(swap, fund, r, d);
+    //     // Conduct the swap on element
+    //     uint256 purchased = IElement(e).swap(swap, fund, r, d);
 
-        emit Lend(p, u, m, purchased);
-        return purchased;
-    }
+    //     emit Lend(p, u, m, purchased);
+    //     return purchased;
+    // }
 
     /// @notice lend method signature for pendle
     /// @param p value of a specific principal according to the Illuminate Principals Enum
@@ -388,17 +388,20 @@ contract Lender {
         // Transfer funds from user to Illuminate
         Safe.transferFrom(IERC20(u), msg.sender, address(this), a);
 
-        // Add the accumulated fees to the total
-        uint256 fee = calculateFee(a);
-        fees[u] += fee;
+        uint256 returned;
+        {
+            // Add the accumulated fees to the total
+            uint256 fee = calculateFee(a);
+            fees[u] += fee;
 
-        address[] memory path = new address[](2);
-        path[0] = u;
-        path[1] = principal;
+            address[] memory path = new address[](2);
+            path[0] = u;
+            path[1] = principal;
 
-        // Swap on the Pendle Router using the provided market and params
-        uint256 returned = IPendle(pendleAddr).swapExactTokensForTokens(a - fee, r, path, address(this), d)[0];
+            // Swap on the Pendle Router using the provided market and params
+            returned = IPendle(pendleAddr).swapExactTokensForTokens(a - fee, r, path, address(this), d)[0];
 
+        }
         // Mint Illuminate zero coupons
         address illuminateToken = principalToken(u, m);
         IERC5095(illuminateToken).mint(msg.sender, returned);
@@ -443,6 +446,8 @@ contract Lender {
         // Transfer funds from user to Illuminate, Scope to avoid stack limit
         Safe.transferFrom(underlyingToken, msg.sender, address(this), a);
 
+        uint256 returned;
+        {
         // Add the accumulated fees to the total
         uint256 fee = calculateFee(a);
         fees[u] += fee;
@@ -492,14 +497,17 @@ contract Lender {
             revert NotEqual('maturity');
         }
 
-        // Determine the fee
-        uint256 fee = calculateFee(a);
+        uint256 lent;
+        {
+            // Determine the fee
+            uint256 fee = calculateFee(a);
 
-        // Add the accumulated fees to the total
-        fees[u] += fee;
+            // Add the accumulated fees to the total
+            fees[u] += fee;
 
-        // Determine lent amount after fees
-        uint256 lent = a - fee;
+            // Determine lent amount after fees
+            lent = a - fee;
+        }
 
         // Transfer funds from user to Illuminate
         Safe.transferFrom(IERC20(u), msg.sender, address(this), a);
