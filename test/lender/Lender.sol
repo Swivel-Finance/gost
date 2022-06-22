@@ -421,46 +421,48 @@ contract Lender {
     /// @param t tempus pool that houses the underlying principal tokens
     /// @param x tempus amm that executes the swap
     /// @return uint256 the amount of principal tokens lent out
-    function lend(
-        uint8 p,
-        address u,
-        uint256 m,
-        uint256 a,
-        uint256 r,
-        uint256 d,
-        address t,
-        address x
-    ) public unpaused(p) returns (uint256) {
+    // function lend(
+    //     uint8 p,
+    //     address u,
+    //     uint256 m,
+    //     uint256 a,
+    //     uint256 r,
+    //     uint256 d,
+    //     address t,
+    //     address x
+    // ) public unpaused(p) returns (uint256) {
 
-        // Instantiate market and tokens
-        address principal = IMarketPlace(marketPlace).markets(u, m, p);
-        if (ITempus(principal).yieldBearingToken() != IERC20Metadata(u)) {
-            revert NotEqual('underlying');
-        } else if (ITempus(principal).maturityTime() > m) {
-            revert NotEqual('maturity');
-        }
+    //     {
+    //         // Instantiate market and tokens
+    //         address principal = IMarketPlace(marketPlace).markets(u, m, p);
+    //         if (ITempus(principal).yieldBearingToken() != IERC20Metadata(u)) {
+    //             revert NotEqual('underlying');
+    //         } else if (ITempus(principal).maturityTime() > m) {
+    //             revert NotEqual('maturity');
+    //         }
 
-        // Get the underlying token
-        IERC20 underlyingToken = IERC20(u);
+    //         // Get the underlying token
+    //         IERC20 underlyingToken = IERC20(u);
 
-        // Transfer funds from user to Illuminate, Scope to avoid stack limit
-        Safe.transferFrom(underlyingToken, msg.sender, address(this), a);
+    //         // Transfer funds from user to Illuminate, Scope to avoid stack limit
+    //         Safe.transferFrom(underlyingToken, msg.sender, address(this), a);
 
-        // Add the accumulated fees to the total
-        uint256 fee = calculateFee(a);
-        fees[u] += fee;
+    //         // Add the accumulated fees to the total
+    //         uint256 fee = calculateFee(a);
+    //         fees[u] += fee;
+    //     }
 
-        // Swap on the Tempus Router using the provided market and params
-        IERC5095 illuminateToken = IERC5095(principalToken(u, m));
-        uint256 returned = ITempus(tempusAddr).depositAndFix(Any(x), Any(t), a - fee, true, r, d) -
-            illuminateToken.balanceOf(address(this));
+    //     // Swap on the Tempus Router using the provided market and params
+    //     IERC5095 illuminateToken = IERC5095(principalToken(u, m));
+    //     uint256 returned = ITempus(tempusAddr).depositAndFix(Any(x), Any(t), a - fees[u], true, r, d) -
+    //         illuminateToken.balanceOf(address(this));
 
-        // Mint Illuminate zero coupons
-        illuminateToken.mint(msg.sender, returned);
+    //     // Mint Illuminate zero coupons
+    //     illuminateToken.mint(msg.sender, returned);
 
-        emit Lend(p, u, m, returned);
-        return returned;
-    }
+    //     emit Lend(p, u, m, returned);
+    //     return returned;
+    // }
 
     /// @notice lend method signature for sense
     /// @dev this method can be called before maturity to lend to Sense while minting Illuminate tokens
@@ -553,14 +555,17 @@ contract Lender {
         // Transfer funds from user to Illuminate
         Safe.transferFrom(IERC20(u), msg.sender, address(this), a);
 
-        // Determine the fee
-        uint256 fee = calculateFee(a);
+        uint256 lent;
+        {
+            // Determine the fee
+            uint256 fee = calculateFee(a);
 
-        // Add the accumulated fees to the total
-        fees[u] += fee;
+            // Add the accumulated fees to the total
+            fees[u] += fee;
 
-        // Determine the amount lent after fees
-        uint256 lent = a - fee;
+            // Determine the amount lent after fees
+            lent = a - fee;
+        }
 
         // Deposit into aave
         IAave(aave).deposit(u, lent, address(this), 0);
