@@ -254,48 +254,48 @@ contract Lender {
         Swivel.Components[] calldata s
     ) public unpaused(p) returns (uint256) {
 
-        // lent represents the number of underlying tokens lent
-        uint256 lent;
-        // returned represents the number of underlying tokens to lend to yield
-        uint256 returned;
+        // // lent represents the number of underlying tokens lent
+        // uint256 lent;
+        // // returned represents the number of underlying tokens to lend to yield
+        // uint256 returned;
 
-        {
-            uint256 totalFee;
-            // iterate through each order a calculate the total lent and returned
-            for (uint256 i = 0; i < o.length; ) {
-                Swivel.Order memory order = o[i];
-                // Require the Swivel order provided matches the underlying and maturity market provided
-                if (order.underlying != u) {
-                    revert NotEqual('underlying');
-                } else if (order.maturity > m) {
-                    revert NotEqual('maturity');
-                }
-                // Determine the fee
-                uint256 fee = calculateFee(a[i]);
-                // Track accumulated fees
-                totalFee += fee;
-                // Sum the total amount lent to Swivel (amount of ERC5095 tokens to mint) minus fees
-                lent += a[i] - fee;
-                // Sum the total amount of premium paid from Swivel (amount of underlying to lend to yield)
-                returned += (a[i] - fee) * (order.premium / order.principal);
+        // {
+        //     uint256 totalFee;
+        //     // iterate through each order a calculate the total lent and returned
+        //     for (uint256 i = 0; i < o.length; ) {
+        //         Swivel.Order memory order = o[i];
+        //         // Require the Swivel order provided matches the underlying and maturity market provided
+        //         if (order.underlying != u) {
+        //             revert NotEqual('underlying');
+        //         } else if (order.maturity > m) {
+        //             revert NotEqual('maturity');
+        //         }
+        //         // Determine the fee
+        //         uint256 fee = calculateFee(a[i]);
+        //         // Track accumulated fees
+        //         totalFee += fee;
+        //         // Sum the total amount lent to Swivel (amount of ERC5095 tokens to mint) minus fees
+        //         lent += a[i] - fee;
+        //         // Sum the total amount of premium paid from Swivel (amount of underlying to lend to yield)
+        //         returned += (a[i] - fee) * (order.premium / order.principal);
 
-                unchecked {
-                    i++;
-                }
-            }
-            // Track accumulated fee
-            fees[u] += totalFee;
+        //         unchecked {
+        //             i++;
+        //         }
+        //     }
+        //     // Track accumulated fee
+        //     fees[u] += totalFee;
 
-            // transfer underlying tokens from user to illuminate
-            Safe.transferFrom(IERC20(u), msg.sender, address(this), lent);
-            // fill the orders on swivel protocol
-            ISwivel(swivelAddr).initiate(o, a, s);
+        //     // transfer underlying tokens from user to illuminate
+        //     Safe.transferFrom(IERC20(u), msg.sender, address(this), lent);
+        //     // fill the orders on swivel protocol
+        //     ISwivel(swivelAddr).initiate(o, a, s);
 
-            yield(u, y, returned, address(this));
-        }
+        //     yield(u, y, returned, address(this));
+        // }
 
-        emit Lend(p, u, m, lent);
-        return lent;
+        // emit Lend(p, u, m, lent);
+        // return lent;
     }
 
     /// @notice lend method signature for element
@@ -308,54 +308,57 @@ contract Lender {
     /// @param e element pool that is lent to
     /// @param i the id of the pool
     /// @return uint256 the amount of principal tokens lent out
-    // function lend(
-    //     uint8 p,
-    //     address u,
-    //     uint256 m,
-    //     uint256 a,
-    //     uint256 r,
-    //     uint256 d,
-    //     address e,
-    //     bytes32 i
-    // ) public unpaused(p) returns (uint256) {
-    //     // Get the principal token for this market for element
-    //     address principal = IMarketPlace(marketPlace).markets(u, m, p);
+    function lend(
+        uint8 p,
+        address u,
+        uint256 m,
+        uint256 a,
+        uint256 r,
+        uint256 d,
+        address e,
+        bytes32 i
+    ) public unpaused(p) returns (uint256) {
+        // Get the principal token for this market for element
+        address principal = IMarketPlace(marketPlace).markets(u, m, p);
 
-    //     // the element token must match the market pair
-    //     if (IElementToken(principal).underlying() != u) {
-    //         revert NotEqual('underlying');
-    //     } else if (IElementToken(principal).unlockTimestamp() > m) {
-    //         revert NotEqual('maturity');
-    //     }
-    //     // Transfer underlying token from user to illuminate
-    //     Safe.transferFrom(IERC20(u), msg.sender, address(this), a);
+        // the element token must match the market pair
+        if (IElementToken(principal).underlying() != u) {
+            revert NotEqual('underlying');
+        } else if (IElementToken(principal).unlockTimestamp() > m) {
+            revert NotEqual('maturity');
+        }
+        // Transfer underlying token from user to illuminate
+        Safe.transferFrom(IERC20(u), msg.sender, address(this), a);
 
-    //     // Track the accumulated fees
-    //     fees[u] += calculateFee(a);
+        // Track the accumulated fees
+        fees[u] += calculateFee(a);
 
-    //     // Create the variables needed to execute an element swap
-    //     Element.FundManagement memory fund = Element.FundManagement({
-    //         sender: address(this),
-    //         recipient: payable(address(this)),
-    //         fromInternalBalance: false,
-    //         toInternalBalance: false
-    //     });
+        uint256 purchased;
+        {
+            // Create the variables needed to execute an element swap
+            Element.FundManagement memory fund = Element.FundManagement({
+                sender: address(this),
+                recipient: payable(address(this)),
+                fromInternalBalance: false,
+                toInternalBalance: false
+            });
 
-    //     Element.SingleSwap memory swap = Element.SingleSwap({
-    //         userData: '0x00000000000000000000000000000000000000000000000000000000000000',
-    //         poolId: i,
-    //         amount: a - calculateFee(a),
-    //         kind: Element.SwapKind.In,
-    //         assetIn: Any(u),
-    //         assetOut: Any(principal)
-    //     });
+            Element.SingleSwap memory swap = Element.SingleSwap({
+                userData: '0x00000000000000000000000000000000000000000000000000000000000000',
+                poolId: i,
+                amount: a - calculateFee(a),
+                kind: Element.SwapKind.In,
+                assetIn: Any(u),
+                assetOut: Any(principal)
+            });
 
-    //     // Conduct the swap on element
-    //     uint256 purchased = IElement(e).swap(swap, fund, r, d);
+            // Conduct the swap on element
+            purchased = IElement(e).swap(swap, fund, r, d);
+        }
 
-    //     emit Lend(p, u, m, purchased);
-    //     return purchased;
-    // }
+        emit Lend(p, u, m, purchased);
+        return purchased;
+    }
 
     /// @notice lend method signature for pendle
     /// @param p value of a specific principal according to the Illuminate Principals Enum
