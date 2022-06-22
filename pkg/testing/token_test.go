@@ -190,7 +190,7 @@ func (s *tokenTestSuite) TestMint() {
 	assert.Nil(err)
 	s.Env.Blockchain.Commit()
 
-	stored, err := s.CompoundToken.MintCalled()
+	stored, err := s.CompoundToken.MintCalled(s.Env.Owner.Opts.From)
 	assert.Nil(err)
 	assert.Equal(minted, stored)
 }
@@ -212,7 +212,7 @@ func (s *tokenTestSuite) TestRedeemUnderlying() {
 	assert.Nil(err)
 	s.Env.Blockchain.Commit()
 
-	stored, err := s.CompoundToken.RedeemUnderlyingCalled()
+	stored, err := s.CompoundToken.RedeemUnderlyingCalled(s.Env.Owner.Opts.From)
 	assert.Nil(err)
 	assert.Equal(redeemed, stored)
 }

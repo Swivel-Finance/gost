@@ -5,6 +5,7 @@ import (
 	test "testing"
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
@@ -17,12 +18,12 @@ import (
 // yeah, just make it an acronym...
 type IZFVISuite struct {
 	suite.Suite
-	Env         *Env
-	Dep         *Dep
-	Erc20       *mocks.Erc20Session
-	Compound    *mocks.CompoundSession
-	MarketPlace *mocks.MarketPlaceSession
-	Swivel      *swivel.SwivelSession
+	Env           *Env
+	Dep           *Dep
+	Erc20         *mocks.Erc20Session
+	CompoundToken *mocks.CompoundTokenSession
+	MarketPlace   *mocks.MarketPlaceSession
+	Swivel        *swivel.SwivelSession
 }
 
 func (s *IZFVISuite) SetupTest() {
@@ -44,8 +45,8 @@ func (s *IZFVISuite) SetupTest() {
 		},
 	}
 
-	s.Compound = &mocks.CompoundSession{
-		Contract: s.Dep.Compound,
+	s.CompoundToken = &mocks.CompoundTokenSession{
+		Contract: s.Dep.CompoundToken,
 		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
 		TransactOpts: bind.TransactOpts{
 			From:   s.Env.Owner.Opts.From,
@@ -89,7 +90,7 @@ func (s *IZFVISuite) TestIZFVI() {
 	s.Env.Blockchain.Commit()
 
 	// and the marketplace api methods...
-	tx, err = s.MarketPlace.CTokenAndAdapterAddressReturns(s.Dep.CompoundTokenAddress, s.Dep.CompoundAddress) // must use the actual dep addr here
+	tx, err = s.MarketPlace.CTokenAndAdapterAddressReturns(s.Dep.CompoundTokenAddress, common.HexToAddress("0x345")) // must use the actual dep addr here
 	assert.Nil(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
@@ -100,7 +101,7 @@ func (s *IZFVISuite) TestIZFVI() {
 	s.Env.Blockchain.Commit()
 
 	// and the ctoken mint
-	tx, err = s.Compound.DepositReturns(big.NewInt(0))
+	tx, err = s.CompoundToken.MintReturns(big.NewInt(0))
 	assert.NotNil(tx)
 	assert.Nil(err)
 	s.Env.Blockchain.Commit()
@@ -217,7 +218,7 @@ func (s *IZFVISuite) TestIZFVI() {
 	// assert.Equal(arg, amt)
 
 	// the call to ctoken mint, don't reuse arg as they should actually both be "a"
-	mintArg, err := s.Compound.DepositCalled(s.Dep.CompoundTokenAddress)
+	mintArg, err := s.CompoundToken.MintCalled(s.Env.Owner.Opts.From)
 	assert.Nil(err)
 	assert.NotNil(mintArg)
 	assert.Equal(mintArg, amt)

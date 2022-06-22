@@ -10,16 +10,3 @@ interface ICompounding {
   function exchangeRate(address) external returns (uint256);
   function underlying(address) external returns (address);
 }
-
-interface ICompound {
-	function deposit(address, uint256) external returns (uint256);
-	function redeemUnderlying(address, uint256) external returns (uint256);
-}
-
-interface ICompoundToken {
-	function exchangeRateCurrent() external returns (uint256);
-  function underlying() external returns (address);
-  function mint(uint256) external returns(uint256);
-  function redeemUnderlying(uint256) external returns(uint256);
-}
-

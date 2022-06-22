@@ -17,12 +17,12 @@ import (
 // yeah, just make it an acronym...
 type IZFZESuite struct {
 	suite.Suite
-	Env         *Env
-	Dep         *Dep
-	Erc20       *mocks.Erc20Session
-	Compound    *mocks.CompoundSession
-	MarketPlace *mocks.MarketPlaceSession
-	Swivel      *swivel.SwivelSession
+	Env           *Env
+	Dep           *Dep
+	Erc20         *mocks.Erc20Session
+	CompoundToken *mocks.CompoundTokenSession
+	MarketPlace   *mocks.MarketPlaceSession
+	Swivel        *swivel.SwivelSession
 }
 
 func (s *IZFZESuite) SetupTest() {
@@ -44,8 +44,8 @@ func (s *IZFZESuite) SetupTest() {
 		},
 	}
 
-	s.Compound = &mocks.CompoundSession{
-		Contract: s.Dep.Compound,
+	s.CompoundToken = &mocks.CompoundTokenSession{
+		Contract: s.Dep.CompoundToken,
 		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
 		TransactOpts: bind.TransactOpts{
 			From:   s.Env.Owner.Opts.From,

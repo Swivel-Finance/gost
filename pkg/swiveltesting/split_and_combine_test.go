@@ -5,6 +5,8 @@ import (
 	test "testing"
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
+	"github.com/ethereum/go-ethereum/common"
+
 	// "github.com/ethereum/go-ethereum/common"
 	// "github.com/ethereum/go-ethereum/crypto"
 	"github.com/stretchr/testify/assert"
@@ -18,12 +20,12 @@ import (
 
 type splitCombineSuite struct {
 	suite.Suite
-	Env         *Env
-	Dep         *Dep
-	Erc20       *mocks.Erc20Session
-	Compound    *mocks.CompoundSession
-	MarketPlace *mocks.MarketPlaceSession
-	Swivel      *swivel.SwivelSession
+	Env           *Env
+	Dep           *Dep
+	Erc20         *mocks.Erc20Session
+	CompoundToken *mocks.CompoundTokenSession
+	MarketPlace   *mocks.MarketPlaceSession
+	Swivel        *swivel.SwivelSession
 }
 
 func (s *splitCombineSuite) SetupTest() {
@@ -45,8 +47,8 @@ func (s *splitCombineSuite) SetupTest() {
 		},
 	}
 
-	s.Compound = &mocks.CompoundSession{
-		Contract: s.Dep.Compound,
+	s.CompoundToken = &mocks.CompoundTokenSession{
+		Contract: s.Dep.CompoundToken,
 		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
 		TransactOpts: bind.TransactOpts{
 			From:   s.Env.Owner.Opts.From,
@@ -82,13 +84,13 @@ func (s *splitCombineSuite) TestSplit() {
 	assert.NotNil(tx)
 	assert.Nil(err)
 
-	tx, err = s.Compound.DepositReturns(big.NewInt(0))
+	tx, err = s.CompoundToken.MintReturns(big.NewInt(0))
 	assert.NotNil(tx)
 	assert.Nil(err)
 	s.Env.Blockchain.Commit()
 
 	// the marketplace mock...
-	tx, err = s.MarketPlace.CTokenAndAdapterAddressReturns(s.Dep.CompoundTokenAddress, s.Dep.CompoundAddress) // must use the actual dep addr here
+	tx, err = s.MarketPlace.CTokenAndAdapterAddressReturns(s.Dep.CompoundTokenAddress, common.HexToAddress("0x123"))
 	assert.NotNil(tx)
 	assert.Nil(err)
 	s.Env.Blockchain.Commit()
@@ -126,13 +128,13 @@ func (s *splitCombineSuite) TestCombine() {
 	assert.Nil(err)
 
 	// stub (Cerc20) to return 0
-	tx, err = s.Compound.RedeemUnderlyingReturns(big.NewInt(0))
+	tx, err = s.CompoundToken.RedeemUnderlyingReturns(big.NewInt(0))
 	assert.NotNil(tx)
 	assert.Nil(err)
 	s.Env.Blockchain.Commit()
 
 	// the marketplace mock...
-	tx, err = s.MarketPlace.CTokenAndAdapterAddressReturns(s.Dep.CompoundTokenAddress, s.Dep.CompoundAddress) // must use the actual dep addr here
+	tx, err = s.MarketPlace.CTokenAndAdapterAddressReturns(s.Dep.CompoundTokenAddress, common.HexToAddress("0x123"))
 	assert.NotNil(tx)
 	assert.Nil(err)
 	s.Env.Blockchain.Commit()

@@ -10,12 +10,12 @@ pragma solidity 0.8.13;
 contract CompoundToken {
   /// @dev allows us to dictate return from mint().
   uint256 private mintReturn;
-  /// @dev the last amount mint was called with
-  uint256 public mintCalled;
+  /// @dev the last amount mint was called with, msg.sender -> amount
+  mapping (address => uint256) public mintCalled;
   /// @dev allows us to dictate return from redeemUnderlying().
   uint256 private redeemUnderlyingReturn;
-  /// @dev the last amount redeemUnderlying was called with
-  uint256 public redeemUnderlyingCalled;
+  /// @dev the last amount redeemUnderlying was called with, msg.sender -> amount
+  mapping (address => uint256) public redeemUnderlyingCalled;
 
   address private underlyingReturn;
   /// @dev allows us to dictate return from exchangeRateCurrent().
@@ -23,7 +23,7 @@ contract CompoundToken {
   uint256 private supplyRatePerBlockReturn;
 
   function mint(uint256 n) public returns (uint256) {
-    mintCalled = n;
+    mintCalled[msg.sender] = n;
     return mintReturn;
   }
 
@@ -32,7 +32,7 @@ contract CompoundToken {
   }
 
   function redeemUnderlying(uint256 n) public returns (uint256) {
-    redeemUnderlyingCalled = n;
+    redeemUnderlyingCalled[msg.sender] = n;
     return redeemUnderlyingReturn;
   }
 

@@ -16,9 +16,8 @@ type Dep struct {
 	HashFakeAddress      common.Address
 	HashFake             *fakes.HashFake // fake hash lib test contract
 	Erc20Address         common.Address
-	Erc20                *mocks.Erc20 // mock erc20
-	CompoundAddress      common.Address
-	Compound             *mocks.Compound // mock compound adapter
+	Erc20                *mocks.Erc20         // mock erc20
+	CompoundToken        *mocks.CompoundToken // mock compound adapter
 	CompoundTokenAddress common.Address
 	MarketPlaceAddress   common.Address
 	MarketPlace          *mocks.MarketPlace // mock marketplace
@@ -55,10 +54,10 @@ func Deploy(e *Env) (*Dep, error) {
 
 	e.Blockchain.Commit()
 
-	compAddress, _, compContract, compErr := mocks.DeployCompound(e.Owner.Opts, e.Blockchain)
+	ctAddress, _, ctContract, ctErr := mocks.DeployCompoundToken(e.Owner.Opts, e.Blockchain)
 
-	if compErr != nil {
-		return nil, compErr
+	if ctErr != nil {
+		return nil, ctErr
 	}
 
 	e.Blockchain.Commit()
@@ -89,9 +88,8 @@ func Deploy(e *Env) (*Dep, error) {
 		HashFake:             hashContract,
 		Erc20Address:         ercAddress,
 		Erc20:                ercContract,
-		CompoundAddress:      compAddress,
-		Compound:             compContract,
-		CompoundTokenAddress: common.HexToAddress("0x123ABc"),
+		CompoundTokenAddress: ctAddress,
+		CompoundToken:        ctContract,
 		MarketPlaceAddress:   marketAddress,
 		MarketPlace:          marketContract,
 		Maturity:             maturity,

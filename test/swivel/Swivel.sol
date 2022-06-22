@@ -111,11 +111,13 @@ contract Swivel {
 
     IMarketPlace mPlace = IMarketPlace(marketPlace);
     address cTokenAddr;
-    address adapterAddr;
-    (cTokenAddr, adapterAddr) = mPlace.cTokenAndAdapterAddress(o.protocol, o.underlying, o.maturity);
+    // TODO if libraries work, we can revert this to only cTokenAddress if desired...
+    (cTokenAddr,) = mPlace.cTokenAndAdapterAddress(o.protocol, o.underlying, o.maturity);
 
-    // perform the actual deposit type transaction, specific to a protocol adapter
-    require(deposit(o.protocol, cTokenAddr, adapterAddr, principalFilled), 'deposit failed');
+    // perform the actual deposit type transaction, specific to a protocol
+    // require(deposit(o.protocol, cTokenAddr, principalFilled), 'deposit failed');
+    require(ICompoundToken(cTokenAddr).mint(principalFilled) == 0, 'deposit failed');
+
     // alert marketplace
     require(mPlace.custodialInitiate(o.protocol, o.underlying, o.maturity, o.maker, msg.sender, principalFilled), 'custodial initiate failed');
 
@@ -149,11 +151,10 @@ contract Swivel {
 
     IMarketPlace mPlace = IMarketPlace(marketPlace);
     address cTokenAddr;
-    address adapterAddr;
-    (cTokenAddr, adapterAddr) = mPlace.cTokenAndAdapterAddress(o.protocol, o.underlying, o.maturity);
+    (cTokenAddr,) = mPlace.cTokenAndAdapterAddress(o.protocol, o.underlying, o.maturity);
 
-    // perform the actual deposit type transaction, specific to a protocol adapter
-    require(deposit(o.protocol, cTokenAddr, adapterAddr, a), 'deposit failed');
+    // perform the actual deposit type transaction, specific to a protocol
+    require(deposit(o.protocol, cTokenAddr, a), 'deposit failed');
     // alert marketplace 
     require(mPlace.custodialInitiate(o.protocol, o.underlying, o.maturity, msg.sender, o.maker, a), 'custodial initiate failed');
 
@@ -212,8 +213,6 @@ contract Swivel {
 
     emit Initiate(o.key, hash, o.maker, o.vault, o.exit, msg.sender, a, principalFilled);
   }
-
-  
 
   // ********* EXITING ***************
 
@@ -322,10 +321,9 @@ contract Swivel {
     // redeem underlying on Compound and burn cTokens
     IMarketPlace mPlace = IMarketPlace(marketPlace);
     address cTokenAddr;
-    address adapterAddr;
-    // TODO implement prococol enum and determine interface to use depending on that
-    (cTokenAddr, adapterAddr) = mPlace.cTokenAndAdapterAddress(o.protocol, o.underlying, o.maturity);
-    require((ICompound(adapterAddr).redeemUnderlying(cTokenAddr, a) == 0), "compound redemption error");
+    (cTokenAddr,) = mPlace.cTokenAndAdapterAddress(o.protocol, o.underlying, o.maturity);
+
+    require(withdraw(o.protocol, cTokenAddr, a), 'withdraw failed');
 
     IErc20 uToken = IErc20(o.underlying);
     // transfer principal-premium  back to fixed exit party now that the interest coupon and zcb have been redeemed
@@ -357,11 +355,10 @@ contract Swivel {
     // redeem underlying on Compound and burn cTokens
     IMarketPlace mPlace = IMarketPlace(marketPlace);
     address cTokenAddr;
-    address adapterAddr;
-    // TODO implement prococol enum and determine interface to use depending on that
-    (cTokenAddr, adapterAddr) = mPlace.cTokenAndAdapterAddress(o.protocol, o.underlying, o.maturity);
+    (cTokenAddr,) = mPlace.cTokenAndAdapterAddress(o.protocol, o.underlying, o.maturity);
     uint256 principalFilled = (a * o.principal) / o.premium;
-    require((ICompound(adapterAddr).redeemUnderlying(cTokenAddr, principalFilled) == 0), "compound redemption error");
+
+    require(withdraw(o.protocol, cTokenAddr, principalFilled), 'withdraw failed');
 
     IErc20 uToken = IErc20(o.underlying);
     // transfer principal-premium-fee back to fixed exit party now that the interest coupon and zcb have been redeemed
@@ -480,11 +477,10 @@ contract Swivel {
 
     IMarketPlace mPlace = IMarketPlace(marketPlace);
     address cTokenAddr;
-    address adapterAddr;
-    (cTokenAddr, adapterAddr) = mPlace.cTokenAndAdapterAddress(p, u, m);
+    (cTokenAddr,) = mPlace.cTokenAndAdapterAddress(p, u, m);
     
-    // the underlying deposit is directed to the appropriate adapter abstraction
-    require(deposit(p, cTokenAddr, adapterAddr, a), 'deposit failed');
+    // the underlying deposit is directed to the appropriate abstraction
+    require(deposit(p, cTokenAddr, a), 'deposit failed');
     require(mPlace.mintZcTokenAddingNotional(p, u, m, msg.sender, a), 'mint ZcToken adding Notional failed');
 
     return true;
@@ -501,10 +497,10 @@ contract Swivel {
     require(mPlace.burnZcTokenRemovingNotional(p, u, m, msg.sender, a), 'burn ZcToken removing Notional failed');
 
     address cTokenAddr;
-    address adapterAddr;
-    // TODO implement prococol enum and determine interface to use depending on that
-    (cTokenAddr, adapterAddr) = mPlace.cTokenAndAdapterAddress(p, u, m);
-    require((ICompound(adapterAddr).redeemUnderlying(cTokenAddr, a) == 0), "compound redemption error");
+    (cTokenAddr,) = mPlace.cTokenAndAdapterAddress(p, u, m);
+
+    require(withdraw(p, cTokenAddr, a), 'withdraw failed');
+
     Safe.transfer(IErc20(u), msg.sender, a);
 
     return true;
@@ -521,10 +517,10 @@ contract Swivel {
     uint256 redeemed = mPlace.redeemZcToken(p, u, m, msg.sender, a);
     // redeem underlying from compound
     address cTokenAddr;
-    address adapterAddr;
-    // TODO implement prococol enum and determine interface to use depending on that
-    (cTokenAddr, adapterAddr) = mPlace.cTokenAndAdapterAddress(p, u, m);
-    require(ICompound(adapterAddr).redeemUnderlying(cTokenAddr, redeemed) == 0, 'compound redemption failed');
+    (cTokenAddr,) = mPlace.cTokenAndAdapterAddress(p, u, m);
+
+    require(deposit(p, cTokenAddr, redeemed), 'deposit failed');
+
     // transfer underlying back to msg.sender
     Safe.transfer(IErc20(u), msg.sender, redeemed);
 
@@ -541,10 +537,10 @@ contract Swivel {
     uint256 redeemed = mPlace.redeemVaultInterest(p, u, m, msg.sender);
     // redeem underlying from compound
     address cTokenAddr;
-    address adapterAddr;
-    // TODO implement prococol enum and determine interface to use depending on that
-    (cTokenAddr, adapterAddr) = mPlace.cTokenAndAdapterAddress(p, u, m);
-    require(ICompound(adapterAddr).redeemUnderlying(cTokenAddr, redeemed) == 0, 'compound redemption failed');
+    (cTokenAddr,) = mPlace.cTokenAndAdapterAddress(p, u, m);
+
+    require(deposit(p, cTokenAddr, redeemed), 'deposit failed');
+
     // transfer underlying back to msg.sender
     Safe.transfer(IErc20(u), msg.sender, redeemed);
 
@@ -565,18 +561,30 @@ contract Swivel {
     return hash;
   }
 
-  /// @notice Use the Protocol Enum to direct deposit type transactions to their specific adapters
+  /// @notice Use the Protocol Enum to direct deposit type transactions to their specific interface
   /// @dev This functionality is an abstraction used by `IVFZI`, `IZFVI` and `splitUnderlying`
   /// @param p Protocol Enum Value
   /// @param c Compounding token address
-  /// @param a Adapter address
-  /// @param d Amount to deposit
-  function deposit(uint8 p, address c, address a, uint256 d) internal returns (bool) {
-    // assembly does have `switch` however it would be a poor choice with this use case...
+  /// @param a Amount to deposit
+  function deposit(uint8 p, address c, uint256 a) internal returns (bool) {
     if (p == uint8(Protocols.Compound)) {
-      return ICompound(a).deposit(c, d) == 0;
+      return ICompoundToken(c).mint(a) == 0;
     } else {
-      // TODO implement other protocol adapters ...
+      // TODO implement other protocol libs ...
+      return false;
+    }
+  }
+
+/// @notice Use the Protocol Enum to direct withdraw type transactions to their specific interface
+  /// @dev This functionality is an abstraction used by ``, `` and ``
+  /// @param p Protocol Enum Value
+  /// @param c Compounding token address
+  /// @param a Amount to withdraw
+  function withdraw(uint8 p, address c, uint256 a) internal returns (bool) {
+    if (p == uint8(Protocols.Compound)) {
+      return ICompoundToken(c).redeemUnderlying(a) == 0;
+    } else {
+      // TODO implement other protocol libs ...
       return false;
     }
   }
