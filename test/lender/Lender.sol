@@ -254,48 +254,54 @@ contract Lender {
         Swivel.Components[] calldata s
     ) public unpaused(p) returns (uint256) {
 
-        // // lent represents the number of underlying tokens lent
-        // uint256 lent;
-        // // returned represents the number of underlying tokens to lend to yield
-        // uint256 returned;
+        // lent represents the number of underlying tokens lent
+        uint256 lent;
+        {
+            // returned represents the number of underlying tokens to lend to yield
+            uint256 returned;
 
-        // {
-        //     uint256 totalFee;
-        //     // iterate through each order a calculate the total lent and returned
-        //     for (uint256 i = 0; i < o.length; ) {
-        //         Swivel.Order memory order = o[i];
-        //         // Require the Swivel order provided matches the underlying and maturity market provided
-        //         if (order.underlying != u) {
-        //             revert NotEqual('underlying');
-        //         } else if (order.maturity > m) {
-        //             revert NotEqual('maturity');
-        //         }
-        //         // Determine the fee
-        //         uint256 fee = calculateFee(a[i]);
-        //         // Track accumulated fees
-        //         totalFee += fee;
-        //         // Sum the total amount lent to Swivel (amount of ERC5095 tokens to mint) minus fees
-        //         lent += a[i] - fee;
-        //         // Sum the total amount of premium paid from Swivel (amount of underlying to lend to yield)
-        //         returned += (a[i] - fee) * (order.premium / order.principal);
+            uint256 totalFee;
+            // iterate through each order a calculate the total lent and returned
+            for (uint256 i = 0; i < o.length; ) {
+                Swivel.Order memory order = o[i];
+                // Require the Swivel order provided matches the underlying and maturity market provided
+                if (order.underlying != u) {
+                    revert NotEqual('underlying');
+                } else if (order.maturity > m) {
+                    revert NotEqual('maturity');
+                }
 
-        //         unchecked {
-        //             i++;
-        //         }
-        //     }
-        //     // Track accumulated fee
-        //     fees[u] += totalFee;
+                {
+                    uint256 amount = a[i];
+                    // Determine the fee
+                    uint256 fee = calculateFee(amount);
+                    // Track accumulated fees
+                    totalFee += fee;
+                    // Amount lent for this order
+                    uint256 amountLent = amount - fee;
+                    // Sum the total amount lent to Swivel (amount of ERC5095 tokens to mint) minus fees
+                    lent += amountLent;
+                    // Sum the total amount of premium paid from Swivel (amount of underlying to lend to yield)
+                    returned += amountLent * order.premium / order.principal;
+                }
 
-        //     // transfer underlying tokens from user to illuminate
-        //     Safe.transferFrom(IERC20(u), msg.sender, address(this), lent);
-        //     // fill the orders on swivel protocol
-        //     ISwivel(swivelAddr).initiate(o, a, s);
+                unchecked {
+                    i++;
+                }
+            }
+      
+            // Track accumulated fee
+            fees[u] += totalFee;
 
-        //     yield(u, y, returned, address(this));
-        // }
+            // transfer underlying tokens from user to illuminate
+            Safe.transferFrom(IERC20(u), msg.sender, address(this), lent);
+            // fill the orders on swivel protocol
+            ISwivel(swivelAddr).initiate(o, a, s);
 
-        // emit Lend(p, u, m, lent);
-        // return lent;
+            yield(u, y, returned, address(this));
+        }
+        emit Lend(p, u, m, lent);
+        return lent;
     }
 
     /// @notice lend method signature for element
@@ -442,7 +448,7 @@ contract Lender {
             } else if (ITempus(principal).maturityTime() > m) {
                 revert NotEqual('maturity');
             }
-            
+
             // Get the underlying token
             IERC20 underlyingToken = IERC20(u);
 
