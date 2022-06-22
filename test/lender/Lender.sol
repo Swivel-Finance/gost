@@ -446,8 +446,6 @@ contract Lender {
         // Transfer funds from user to Illuminate, Scope to avoid stack limit
         Safe.transferFrom(underlyingToken, msg.sender, address(this), a);
 
-        uint256 returned;
-        {
         // Add the accumulated fees to the total
         uint256 fee = calculateFee(a);
         fees[u] += fee;
