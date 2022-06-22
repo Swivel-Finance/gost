@@ -248,7 +248,7 @@ contract Lender {
         uint8 p,
         address u,
         uint256 m,
-        uint256[] calldata a,
+        uint256[] memory a,
         address y,
         Swivel.Order[] calldata o,
         Swivel.Components[] calldata s
@@ -256,10 +256,10 @@ contract Lender {
 
         // lent represents the number of underlying tokens lent
         uint256 lent;
-        // returned represents the number of underlying tokens to lend to yield
-        uint256 returned;
-
         {
+            // returned represents the number of underlying tokens to lend to yield
+            uint256 returned;
+
             uint256 totalFee;
             // iterate through each order a calculate the total lent and returned
             for (uint256 i = 0; i < o.length; ) {
@@ -270,19 +270,26 @@ contract Lender {
                 } else if (order.maturity > m) {
                     revert NotEqual('maturity');
                 }
-                // Determine the fee
-                uint256 fee = calculateFee(a[i]);
-                // Track accumulated fees
-                totalFee += fee;
-                // Sum the total amount lent to Swivel (amount of ERC5095 tokens to mint) minus fees
-                lent += a[i] - fee;
-                // Sum the total amount of premium paid from Swivel (amount of underlying to lend to yield)
-                returned += (a[i] - fee) * (order.premium / order.principal);
+
+                {
+                    uint256 amount = a[i];
+                    // Determine the fee
+                    uint256 fee = calculateFee(amount);
+                    // Track accumulated fees
+                    totalFee += fee;
+                    // Amount lent for this order
+                    uint256 amountLent = amount - fee;
+                    // Sum the total amount lent to Swivel (amount of ERC5095 tokens to mint) minus fees
+                    lent += amountLent;
+                    // Sum the total amount of premium paid from Swivel (amount of underlying to lend to yield)
+                    returned += amountLent * order.premium / order.principal;
+                }
 
                 unchecked {
                     i++;
                 }
             }
+      
             // Track accumulated fee
             fees[u] += totalFee;
 
@@ -293,7 +300,6 @@ contract Lender {
 
             yield(u, y, returned, address(this));
         }
-
         emit Lend(p, u, m, lent);
         return lent;
     }
@@ -333,25 +339,28 @@ contract Lender {
         // Track the accumulated fees
         fees[u] += calculateFee(a);
 
-        // Create the variables needed to execute an element swap
-        Element.FundManagement memory fund = Element.FundManagement({
-            sender: address(this),
-            recipient: payable(address(this)),
-            fromInternalBalance: false,
-            toInternalBalance: false
-        });
+        uint256 purchased;
+        {
+            // Create the variables needed to execute an element swap
+            Element.FundManagement memory fund = Element.FundManagement({
+                sender: address(this),
+                recipient: payable(address(this)),
+                fromInternalBalance: false,
+                toInternalBalance: false
+            });
 
-        Element.SingleSwap memory swap = Element.SingleSwap({
-            userData: '0x00000000000000000000000000000000000000000000000000000000000000',
-            poolId: i,
-            amount: a - calculateFee(a),
-            kind: Element.SwapKind.In,
-            assetIn: Any(u),
-            assetOut: Any(principal)
-        });
+            Element.SingleSwap memory swap = Element.SingleSwap({
+                userData: '0x00000000000000000000000000000000000000000000000000000000000000',
+                poolId: i,
+                amount: a - calculateFee(a),
+                kind: Element.SwapKind.In,
+                assetIn: Any(u),
+                assetOut: Any(principal)
+            });
 
-        // Conduct the swap on element
-        uint256 purchased = IElement(e).swap(swap, fund, r, d);
+            // Conduct the swap on element
+            purchased = IElement(e).swap(swap, fund, r, d);
+        }
 
         emit Lend(p, u, m, purchased);
         return purchased;
@@ -388,17 +397,20 @@ contract Lender {
         // Transfer funds from user to Illuminate
         Safe.transferFrom(IERC20(u), msg.sender, address(this), a);
 
-        // Add the accumulated fees to the total
-        uint256 fee = calculateFee(a);
-        fees[u] += fee;
+        uint256 returned;
+        {
+            // Add the accumulated fees to the total
+            uint256 fee = calculateFee(a);
+            fees[u] += fee;
 
-        address[] memory path = new address[](2);
-        path[0] = u;
-        path[1] = principal;
+            address[] memory path = new address[](2);
+            path[0] = u;
+            path[1] = principal;
 
-        // Swap on the Pendle Router using the provided market and params
-        uint256 returned = IPendle(pendleAddr).swapExactTokensForTokens(a - fee, r, path, address(this), d)[0];
+            // Swap on the Pendle Router using the provided market and params
+            returned = IPendle(pendleAddr).swapExactTokensForTokens(a - fee, r, path, address(this), d)[0];
 
+        }
         // Mint Illuminate zero coupons
         address illuminateToken = principalToken(u, m);
         IERC5095(illuminateToken).mint(msg.sender, returned);
@@ -428,20 +440,21 @@ contract Lender {
         address t,
         address x
     ) public unpaused(p) returns (uint256) {
+        {
+            // Instantiate market and tokens
+            address principal = IMarketPlace(marketPlace).markets(u, m, p);
+            if (ITempus(principal).yieldBearingToken() != IERC20Metadata(u)) {
+                revert NotEqual('underlying');
+            } else if (ITempus(principal).maturityTime() > m) {
+                revert NotEqual('maturity');
+            }
 
-        // Instantiate market and tokens
-        address principal = IMarketPlace(marketPlace).markets(u, m, p);
-        if (ITempus(principal).yieldBearingToken() != IERC20Metadata(u)) {
-            revert NotEqual('underlying');
-        } else if (ITempus(principal).maturityTime() > m) {
-            revert NotEqual('maturity');
+            // Get the underlying token
+            IERC20 underlyingToken = IERC20(u);
+
+            // Transfer funds from user to Illuminate, Scope to avoid stack limit
+            Safe.transferFrom(underlyingToken, msg.sender, address(this), a);
         }
-
-        // Get the underlying token
-        IERC20 underlyingToken = IERC20(u);
-
-        // Transfer funds from user to Illuminate, Scope to avoid stack limit
-        Safe.transferFrom(underlyingToken, msg.sender, address(this), a);
 
         // Add the accumulated fees to the total
         uint256 fee = calculateFee(a);
@@ -492,14 +505,17 @@ contract Lender {
             revert NotEqual('maturity');
         }
 
-        // Determine the fee
-        uint256 fee = calculateFee(a);
+        uint256 lent;
+        {
+            // Determine the fee
+            uint256 fee = calculateFee(a);
 
-        // Add the accumulated fees to the total
-        fees[u] += fee;
+            // Add the accumulated fees to the total
+            fees[u] += fee;
 
-        // Determine lent amount after fees
-        uint256 lent = a - fee;
+            // Determine lent amount after fees
+            lent = a - fee;
+        }
 
         // Transfer funds from user to Illuminate
         Safe.transferFrom(IERC20(u), msg.sender, address(this), a);
@@ -547,14 +563,17 @@ contract Lender {
         // Transfer funds from user to Illuminate
         Safe.transferFrom(IERC20(u), msg.sender, address(this), a);
 
-        // Determine the fee
-        uint256 fee = calculateFee(a);
+        uint256 lent;
+        {
+            // Determine the fee
+            uint256 fee = calculateFee(a);
 
-        // Add the accumulated fees to the total
-        fees[u] += fee;
+            // Add the accumulated fees to the total
+            fees[u] += fee;
 
-        // Determine the amount lent after fees
-        uint256 lent = a - fee;
+            // Determine the amount lent after fees
+            lent = a - fee;
+        }
 
         // Deposit into aave
         IAave(aave).deposit(u, lent, address(this), 0);
