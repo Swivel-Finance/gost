@@ -48,10 +48,10 @@ func Deploy(e *Env) (*Dep, error) {
 	e.Blockchain.Commit()
 
 	// deploy the two mock tokens.
-	ercAddress, _, ercContract, ercErr := mocks.DeployErc20(e.Owner.Opts, e.Blockchain)
+	erc20Address, _, erc20Contract, erc20Err := mocks.DeployErc20(e.Owner.Opts, e.Blockchain)
 
-	if ercErr != nil {
-		return nil, ercErr
+	if erc20Err != nil {
+		return nil, erc20Err
 	}
 
 	e.Blockchain.Commit()
@@ -64,10 +64,10 @@ func Deploy(e *Env) (*Dep, error) {
 
 	e.Blockchain.Commit()
 
-	tvAddress, _, tvContract, tvErr := mocks.DeployErc4626(e.Owner.Opts, e.Blockchain)
+	erc4626Address, _, erc4626Contract, erc4626Err := mocks.DeployErc4626(e.Owner.Opts, e.Blockchain)
 
-	if tvErr != nil {
-		return nil, tvErr
+	if erc4626Err != nil {
+		return nil, erc4626Err
 	}
 
 	e.Blockchain.Commit()
@@ -96,12 +96,12 @@ func Deploy(e *Env) (*Dep, error) {
 		SigFake:              sigContract,
 		HashFakeAddress:      hashAddress,
 		HashFake:             hashContract,
-		Erc20:                ercContract,
-		Erc20Address:         ercAddress,
+		Erc20:                erc20Contract,
+		Erc20Address:         erc20Address,
 		CompoundToken:        ctContract,
 		CompoundTokenAddress: ctAddress,
-		Erc4626:              tvContract,
-		Erc4626Address:       tvAddress,
+		Erc4626:              erc4626Contract,
+		Erc4626Address:       erc4626Address,
 		MarketPlaceAddress:   marketAddress,
 		MarketPlace:          marketContract,
 		Maturity:             maturity,
