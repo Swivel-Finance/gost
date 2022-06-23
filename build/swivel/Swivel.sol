@@ -111,12 +111,12 @@ contract Swivel {
 
     IMarketPlace mPlace = IMarketPlace(marketPlace);
     address cTokenAddr;
-    // TODO if libraries work, we can revert this to only cTokenAddress if desired...
+    // TODO we can revert the getter on MarketPlace.sol to only cTokenAddress if desired...
     (cTokenAddr,) = mPlace.cTokenAndAdapterAddress(o.protocol, o.underlying, o.maturity);
 
     // perform the actual deposit type transaction, specific to a protocol
+    // TODO discuss the require or simply fire-and-forget
     require(deposit(o.protocol, cTokenAddr, principalFilled), 'deposit failed');
-
     // alert marketplace
     require(mPlace.custodialInitiate(o.protocol, o.underlying, o.maturity, o.maker, msg.sender, principalFilled), 'custodial initiate failed');
 
@@ -569,8 +569,9 @@ contract Swivel {
     if (p == uint8(Protocols.Compound)) {
       return ICompoundToken(c).mint(a) == 0;
     } else {
-      // TODO implement other protocol libs ...
-      return false;
+      // we will allow protocol[0] to also function as a catchall for Erc4626
+      // NOTE: deposit, as per the spec, returns 'shares' but it is unknown if 0 would revert, thus we'll check for 0 or greater
+      return IErc4626(c).deposit(a, address(this)) >= 0;
     }
   }
 
@@ -584,8 +585,8 @@ contract Swivel {
     if (p == uint8(Protocols.Compound)) {
       return ICompoundToken(c).redeemUnderlying(a) == 0;
     } else {
-      // TODO implement other protocol libs ...
-      return false;
+      // we will allow protocol[0] to also function as a catchall for Erc4626
+      return IErc4626(c).withdraw(a, address(this), address(this)) >= 0;
     }
   }
 

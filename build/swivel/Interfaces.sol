@@ -9,9 +9,15 @@ interface IErc20 {
 	function transferFrom(address, address, uint256) external returns (bool);
 }
 
+interface IErc4626 {
+  function deposit(uint256, address) external returns (uint256);
+  function withdraw(uint256, address, address) external returns (uint256);
+}
+
+// TODO if we move away from adapters the `..Token` suffix can be dropped
 interface ICompoundToken {
-  function mint(uint256) external returns(uint256);
-  function redeemUnderlying(uint256) external returns(uint256);
+  function mint(uint256) external returns (uint256);
+  function redeemUnderlying(uint256) external returns (uint256);
 }
 
 interface IMarketPlace {

@@ -15,10 +15,12 @@ type Dep struct {
 	SigFake              *fakes.SigFake // fake sig lib test contract
 	HashFakeAddress      common.Address
 	HashFake             *fakes.HashFake // fake hash lib test contract
+	Erc20                *mocks.Erc20
 	Erc20Address         common.Address
-	Erc20                *mocks.Erc20         // mock erc20
-	CompoundToken        *mocks.CompoundToken // mock compound adapter
+	CompoundToken        *mocks.CompoundToken
 	CompoundTokenAddress common.Address
+	Erc4626              *mocks.Erc4626
+	Erc4626Address       common.Address
 	MarketPlaceAddress   common.Address
 	MarketPlace          *mocks.MarketPlace // mock marketplace
 	Maturity             *big.Int
@@ -62,6 +64,14 @@ func Deploy(e *Env) (*Dep, error) {
 
 	e.Blockchain.Commit()
 
+	tvAddress, _, tvContract, tvErr := mocks.DeployErc4626(e.Owner.Opts, e.Blockchain)
+
+	if tvErr != nil {
+		return nil, tvErr
+	}
+
+	e.Blockchain.Commit()
+
 	marketAddress, _, marketContract, marketErr := mocks.DeployMarketPlace(e.Owner.Opts, e.Blockchain)
 
 	if marketErr != nil {
@@ -86,10 +96,12 @@ func Deploy(e *Env) (*Dep, error) {
 		SigFake:              sigContract,
 		HashFakeAddress:      hashAddress,
 		HashFake:             hashContract,
-		Erc20Address:         ercAddress,
 		Erc20:                ercContract,
-		CompoundTokenAddress: ctAddress,
+		Erc20Address:         ercAddress,
 		CompoundToken:        ctContract,
+		CompoundTokenAddress: ctAddress,
+		Erc4626:              tvContract,
+		Erc4626Address:       tvAddress,
 		MarketPlaceAddress:   marketAddress,
 		MarketPlace:          marketContract,
 		Maturity:             maturity,

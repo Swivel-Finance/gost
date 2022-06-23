@@ -18,12 +18,12 @@ import (
 // yeah, just make it an acronym...
 type IZFVISuite struct {
 	suite.Suite
-	Env           *Env
-	Dep           *Dep
-	Erc20         *mocks.Erc20Session
-	CompoundToken *mocks.CompoundTokenSession
-	MarketPlace   *mocks.MarketPlaceSession
-	Swivel        *swivel.SwivelSession
+	Env         *Env
+	Dep         *Dep
+	Erc20       *mocks.Erc20Session
+	Erc4626     *mocks.Erc4626Session
+	MarketPlace *mocks.MarketPlaceSession
+	Swivel      *swivel.SwivelSession
 }
 
 func (s *IZFVISuite) SetupTest() {
@@ -45,8 +45,8 @@ func (s *IZFVISuite) SetupTest() {
 		},
 	}
 
-	s.CompoundToken = &mocks.CompoundTokenSession{
-		Contract: s.Dep.CompoundToken,
+	s.Erc4626 = &mocks.Erc4626Session{
+		Contract: s.Dep.Erc4626,
 		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
 		TransactOpts: bind.TransactOpts{
 			From:   s.Env.Owner.Opts.From,
@@ -90,7 +90,7 @@ func (s *IZFVISuite) TestIZFVI() {
 	s.Env.Blockchain.Commit()
 
 	// and the marketplace api methods...
-	tx, err = s.MarketPlace.CTokenAndAdapterAddressReturns(s.Dep.CompoundTokenAddress, common.HexToAddress("0x345")) // must use the actual dep addr here
+	tx, err = s.MarketPlace.CTokenAndAdapterAddressReturns(s.Dep.Erc4626Address, common.HexToAddress("0x345"))
 	assert.Nil(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
@@ -100,8 +100,8 @@ func (s *IZFVISuite) TestIZFVI() {
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
 
-	// and the ctoken mint
-	tx, err = s.CompoundToken.MintReturns(big.NewInt(0))
+	// and the 4626 deposit
+	tx, err = s.Erc4626.DepositReturns(big.NewInt(1000))
 	assert.NotNil(tx)
 	assert.Nil(err)
 	s.Env.Blockchain.Commit()
@@ -118,7 +118,7 @@ func (s *IZFVISuite) TestIZFVI() {
 	// TODO preparing an order _may_ be relocated to a helper. Possibly per package? Discuss...
 	hashOrder := fakes.HashOrder{
 		Key:        orderKey,
-		Protocol:   uint8(1),
+		Protocol:   uint8(0), // will use the Erc4626 interface
 		Maker:      s.Env.User1.Opts.From,
 		Underlying: s.Dep.Erc20Address,
 		Vault:      true,
@@ -158,7 +158,7 @@ func (s *IZFVISuite) TestIZFVI() {
 	// the order passed to the swivel contract must be of the swivel package type...
 	order := swivel.HashOrder{
 		Key:        orderKey,
-		Protocol:   uint8(1),
+		Protocol:   uint8(0),
 		Maker:      s.Env.User1.Opts.From,
 		Underlying: s.Dep.Erc20Address,
 		Vault:      true,
@@ -217,14 +217,14 @@ func (s *IZFVISuite) TestIZFVI() {
 	// the arg here should be the passed "a"
 	// assert.Equal(arg, amt)
 
-	// the call to ctoken mint, don't reuse arg as they should actually both be "a"
-	mintArg, err := s.CompoundToken.MintCalled(s.Dep.SwivelAddress)
+	// the call to deposit, don't reuse arg as they should actually both be "a"
+	mintArg, err := s.Erc4626.DepositCalled(s.Dep.SwivelAddress)
 	assert.Nil(err)
 	assert.NotNil(mintArg)
 	assert.Equal(mintArg, amt)
 
 	// mint zctoken call...
-	fillingArgs, err := s.MarketPlace.CustodialInitiateCalled(uint8(1))
+	fillingArgs, err := s.MarketPlace.CustodialInitiateCalled(uint8(0))
 	assert.Nil(err)
 	assert.NotNil(fillingArgs)
 	assert.Equal(fillingArgs.Maturity, order.Maturity)
