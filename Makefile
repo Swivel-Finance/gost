@@ -1,6 +1,7 @@
 .PHONY: compile_solidity_mock_erc compile_go_mock_erc compile_mock_erc
 .PHONY: compile_solidity_mock_compound compile_go_mock_compound compile_mock_compound
 .PHONY: compile_solidity_mock_compound_token compile_go_mock_compound_token compile_mock_compound_token
+.PHONY: compile_solidity_mock_erc_4626 compile_go_mock_erc_4626 compile_mock_erc_4626
 .PHONY: compile_solidity_mock_marketplace compile_go_mock_marketplace
 .PHONY: compile_go_mock_vaulttracker compile_go_mock_zctoken
 .PHONY: compile_mocks
@@ -33,6 +34,8 @@
 .PHONY: all
 
 # Mocks
+
+# TODO should prob add _20 here...
 compile_solidity_mock_erc:
 	@echo "compiling Mock ERC20 solidity source into abi and bin files"
 	solc -o ./test/mocks --abi --bin --overwrite ./test/mocks/Erc20.sol
@@ -43,6 +46,7 @@ compile_go_mock_erc:
 
 compile_mock_erc: compile_solidity_mock_erc compile_go_mock_erc
 
+# TODO can be removed if we do not use adapters
 compile_solidity_mock_compound:
 	@echo "compiling Mock Compound adapter source into abi and bin files"
 	solc -o ./test/mocks --abi --bin --overwrite ./test/mocks/Compound.sol
@@ -63,6 +67,16 @@ compile_go_mock_compound_token:
 
 compile_mock_compound_token: compile_solidity_mock_compound_token compile_go_mock_compound_token
 
+compile_solidity_mock_erc_4626:
+	@echo "compiling Mock Tokenized Vault source into abi and bin files"
+	solc -o ./test/mocks --abi --bin --overwrite ./test/mocks/Erc4626.sol
+
+compile_go_mock_erc_4626:
+	@echo "compiling abi and bin files to golang"
+	abigen --abi ./test/mocks/Erc4626.abi --bin ./test/mocks/Erc4626.bin -pkg mocks -type Erc4626 -out ./test/mocks/erc4626.go 
+
+compile_mock_erc_4626: compile_solidity_mock_erc_4626 compile_go_mock_erc_4626
+
 compile_solidity_mock_marketplace:
 	@echo "compiling Mock MarketPlace solidity source into abi and bin files"
 	solc -o ./test/mocks --abi --bin --overwrite ./test/mocks/MarketPlace.sol
@@ -82,7 +96,7 @@ compile_go_mock_zctoken:
 	@echo "compiling abi and bin files to golang"
 	abigen --abi ./test/marketplace/ZcToken.abi --bin ./test/marketplace/ZcToken.bin -pkg mocks -type ZcToken -out ./test/mocks/zctoken.go
 
-compile_mocks: compile_mock_erc compile_mock_compound compile_mock_compound_token compile_mock_marketplace compile_go_mock_vaulttracker compile_go_mock_zctoken
+compile_mocks: compile_mock_erc compile_mock_compound compile_mock_compound_token compile_mock_erc_4626 compile_mock_marketplace compile_go_mock_vaulttracker compile_go_mock_zctoken
 
 # Real Tokens
 compile_solidity_zct:
