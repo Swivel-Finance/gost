@@ -5,6 +5,7 @@ import (
 	test "testing"
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
+	"github.com/ethereum/go-ethereum/common"
 	assertions "github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 	"github.com/swivel-finance/gost/test/mocks"
@@ -13,12 +14,12 @@ import (
 
 type redeemZcTokenSuite struct {
 	suite.Suite
-	Env         *Env
-	Dep         *Dep
-	Erc20       *mocks.Erc20Session
-	Compound    *mocks.CompoundSession
-	MarketPlace *mocks.MarketPlaceSession
-	Swivel      *swivel.SwivelSession
+	Env           *Env
+	Dep           *Dep
+	Erc20         *mocks.Erc20Session
+	CompoundToken *mocks.CompoundTokenSession
+	MarketPlace   *mocks.MarketPlaceSession
+	Swivel        *swivel.SwivelSession
 }
 
 func (s *redeemZcTokenSuite) SetupTest() {
@@ -40,8 +41,8 @@ func (s *redeemZcTokenSuite) SetupTest() {
 		},
 	}
 
-	s.Compound = &mocks.CompoundSession{
-		Contract: s.Dep.Compound,
+	s.CompoundToken = &mocks.CompoundTokenSession{
+		Contract: s.Dep.CompoundToken,
 		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
 		TransactOpts: bind.TransactOpts{
 			From:   s.Env.Owner.Opts.From,
@@ -78,13 +79,13 @@ func (s *redeemZcTokenSuite) TestRedeemZcToken() {
 	assert.NotNil(tx)
 	assert.Nil(err)
 
-	tx, err = s.Compound.RedeemUnderlyingReturns(big.NewInt(0))
+	tx, err = s.CompoundToken.RedeemUnderlyingReturns(big.NewInt(0))
 	assert.NotNil(tx)
 	assert.Nil(err)
 
 	s.Env.Blockchain.Commit()
 
-	tx, err = s.MarketPlace.CTokenAndAdapterAddressReturns(s.Dep.CompoundTokenAddress, s.Dep.CompoundAddress) // must use the actual dep addr here
+	tx, err = s.MarketPlace.CTokenAndAdapterAddressReturns(s.Dep.CompoundTokenAddress, common.HexToAddress("0x123"))
 	assert.Nil(err)
 	assert.NotNil(tx)
 
@@ -99,7 +100,7 @@ func (s *redeemZcTokenSuite) TestRedeemZcToken() {
 	s.Env.Blockchain.Commit()
 
 	amount := big.NewInt(123456)
-	tx, err = s.Swivel.RedeemZcToken(uint8(0), underlying, maturity, amount)
+	tx, err = s.Swivel.RedeemZcToken(uint8(1), underlying, maturity, amount)
 	assert.Nil(err)
 	assert.NotNil(tx)
 
@@ -116,13 +117,13 @@ func (s *redeemZcTokenSuite) TestRedeemZcTokenRedeemUnderlyingFails() {
 	underlying := s.Dep.Erc20Address
 	maturity := s.Dep.Maturity
 
-	tx, err := s.Compound.RedeemUnderlyingReturns(big.NewInt(1))
+	tx, err := s.CompoundToken.RedeemUnderlyingReturns(big.NewInt(1))
 	assert.NotNil(tx)
 	assert.Nil(err)
 
 	s.Env.Blockchain.Commit()
 
-	tx, err = s.MarketPlace.CTokenAndAdapterAddressReturns(s.Dep.CompoundTokenAddress, s.Dep.CompoundAddress) // must use the actual dep addr here
+	tx, err = s.MarketPlace.CTokenAndAdapterAddressReturns(s.Dep.CompoundTokenAddress, common.HexToAddress("0x123"))
 	assert.Nil(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
@@ -135,9 +136,9 @@ func (s *redeemZcTokenSuite) TestRedeemZcTokenRedeemUnderlyingFails() {
 	s.Env.Blockchain.Commit()
 
 	amount := big.NewInt(123456)
-	tx, err = s.Swivel.RedeemZcToken(uint8(0), underlying, maturity, amount)
+	tx, err = s.Swivel.RedeemZcToken(uint8(1), underlying, maturity, amount)
 	assert.NotNil(err)
-	assert.Regexp("compound redemption failed", err.Error())
+	assert.Regexp("withdraw failed", err.Error())
 	assert.Nil(tx)
 }
 

@@ -30,8 +30,8 @@ var (
 
 // CompoundTokenMetaData contains all meta data concerning the CompoundToken contract.
 var CompoundTokenMetaData = &bind.MetaData{
-	ABI: "[{\"inputs\":[],\"name\":\"exchangeRateCurrent\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"n\",\"type\":\"uint256\"}],\"name\":\"exchangeRateCurrentReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"n\",\"type\":\"uint256\"}],\"name\":\"mint\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"mintCalled\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"n\",\"type\":\"uint256\"}],\"name\":\"mintReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"n\",\"type\":\"uint256\"}],\"name\":\"redeemUnderlying\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"redeemUnderlyingCalled\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"n\",\"type\":\"uint256\"}],\"name\":\"redeemUnderlyingReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"supplyRatePerBlock\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"n\",\"type\":\"uint256\"}],\"name\":\"supplyRatePerBlockReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"underlying\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"a\",\"type\":\"address\"}],\"name\":\"underlyingReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]",
-	Bin: "0x608060405234801561001057600080fd5b50610494806100206000396000f3fe608060405234801561001057600080fd5b50600436106100b45760003560e01c8063bd6d894d11610071578063bd6d894d1461018d578063c6bf1552146101ab578063d4e7fdd4146101c7578063d6bcd7aa146101e5578063e7a7b9ce14610203578063e7ba67741461021f576100b4565b806329d9ce3e146100b95780636f307dc3146100d5578063852a12e3146100f35780639ff9f1d414610123578063a0712d681461013f578063ae9d70b01461016f575b600080fd5b6100d360048036038101906100ce9190610352565b61023b565b005b6100dd610245565b6040516100ea91906103c0565b60405180910390f35b61010d60048036038101906101089190610352565b61026f565b60405161011a91906103ea565b60405180910390f35b61013d60048036038101906101389190610352565b610282565b005b61015960048036038101906101549190610352565b61028c565b60405161016691906103ea565b60405180910390f35b61017761029f565b60405161018491906103ea565b60405180910390f35b6101956102a9565b6040516101a291906103ea565b60405180910390f35b6101c560048036038101906101c09190610352565b6102b3565b005b6101cf6102bd565b6040516101dc91906103ea565b60405180910390f35b6101ed6102c3565b6040516101fa91906103ea565b60405180910390f35b61021d60048036038101906102189190610352565b6102c9565b005b61023960048036038101906102349190610431565b6102d3565b005b8060028190555050565b6000600460009054906101000a900473ffffffffffffffffffffffffffffffffffffffff16905090565b6000816003819055506002549050919050565b8060058190555050565b6000816001819055506000549050919050565b6000600654905090565b6000600554905090565b8060068190555050565b60015481565b60035481565b8060008190555050565b80600460006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555050565b600080fd5b6000819050919050565b61032f8161031c565b811461033a57600080fd5b50565b60008135905061034c81610326565b92915050565b60006020828403121561036857610367610317565b5b60006103768482850161033d565b91505092915050565b600073ffffffffffffffffffffffffffffffffffffffff82169050919050565b60006103aa8261037f565b9050919050565b6103ba8161039f565b82525050565b60006020820190506103d560008301846103b1565b92915050565b6103e48161031c565b82525050565b60006020820190506103ff60008301846103db565b92915050565b61040e8161039f565b811461041957600080fd5b50565b60008135905061042b81610405565b92915050565b60006020828403121561044757610446610317565b5b60006104558482850161041c565b9150509291505056fea2646970667358221220c4e2b710412a907943694ad048d54febe9fa5c4c5b055c5997f9e4d15cfaed3e64736f6c634300080d0033",
+	ABI: "[{\"inputs\":[],\"name\":\"exchangeRateCurrent\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"n\",\"type\":\"uint256\"}],\"name\":\"exchangeRateCurrentReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"n\",\"type\":\"uint256\"}],\"name\":\"mint\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"mintCalled\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"n\",\"type\":\"uint256\"}],\"name\":\"mintReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"n\",\"type\":\"uint256\"}],\"name\":\"redeemUnderlying\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"redeemUnderlyingCalled\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"n\",\"type\":\"uint256\"}],\"name\":\"redeemUnderlyingReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"supplyRatePerBlock\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"n\",\"type\":\"uint256\"}],\"name\":\"supplyRatePerBlockReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"underlying\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"a\",\"type\":\"address\"}],\"name\":\"underlyingReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]",
+	Bin: "0x608060405234801561001057600080fd5b50610556806100206000396000f3fe608060405234801561001057600080fd5b50600436106100b45760003560e01c8063ae9d70b011610071578063ae9d70b01461019f578063bd6d894d146101bd578063c6bf1552146101db578063e7a7b9ce146101f7578063e7ba677414610213578063ee4db5701461022f576100b4565b806329d9ce3e146100b957806364f670ee146100d55780636f307dc314610105578063852a12e3146101235780639ff9f1d414610153578063a0712d681461016f575b600080fd5b6100d360048036038101906100ce9190610414565b61025f565b005b6100ef60048036038101906100ea919061049f565b610269565b6040516100fc91906104db565b60405180910390f35b61010d610281565b60405161011a9190610505565b60405180910390f35b61013d60048036038101906101389190610414565b6102ab565b60405161014a91906104db565b60405180910390f35b61016d60048036038101906101689190610414565b6102fb565b005b61018960048036038101906101849190610414565b610305565b60405161019691906104db565b60405180910390f35b6101a7610355565b6040516101b491906104db565b60405180910390f35b6101c561035f565b6040516101d291906104db565b60405180910390f35b6101f560048036038101906101f09190610414565b610369565b005b610211600480360381019061020c9190610414565b610373565b005b61022d6004803603810190610228919061049f565b61037d565b005b6102496004803603810190610244919061049f565b6103c1565b60405161025691906104db565b60405180910390f35b8060028190555050565b60036020528060005260406000206000915090505481565b6000600460009054906101000a900473ffffffffffffffffffffffffffffffffffffffff16905090565b600081600360003373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020819055506002549050919050565b8060058190555050565b600081600160003373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020819055506000549050919050565b6000600654905090565b6000600554905090565b8060068190555050565b8060008190555050565b80600460006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555050565b60016020528060005260406000206000915090505481565b600080fd5b6000819050919050565b6103f1816103de565b81146103fc57600080fd5b50565b60008135905061040e816103e8565b92915050565b60006020828403121561042a576104296103d9565b5b6000610438848285016103ff565b91505092915050565b600073ffffffffffffffffffffffffffffffffffffffff82169050919050565b600061046c82610441565b9050919050565b61047c81610461565b811461048757600080fd5b50565b60008135905061049981610473565b92915050565b6000602082840312156104b5576104b46103d9565b5b60006104c38482850161048a565b91505092915050565b6104d5816103de565b82525050565b60006020820190506104f060008301846104cc565b92915050565b6104ff81610461565b82525050565b600060208201905061051a60008301846104f6565b9291505056fea264697066735822122092ba460e200bf6f29a9abadb6583cbb1f8614d2c7f2767bb1946f5c2e5f3821164736f6c634300080d0033",
 }
 
 // CompoundTokenABI is the input ABI used to generate the binding from.
@@ -232,12 +232,12 @@ func (_CompoundToken *CompoundTokenCallerSession) ExchangeRateCurrent() (*big.In
 	return _CompoundToken.Contract.ExchangeRateCurrent(&_CompoundToken.CallOpts)
 }
 
-// MintCalled is a free data retrieval call binding the contract method 0xd4e7fdd4.
+// MintCalled is a free data retrieval call binding the contract method 0xee4db570.
 //
-// Solidity: function mintCalled() view returns(uint256)
-func (_CompoundToken *CompoundTokenCaller) MintCalled(opts *bind.CallOpts) (*big.Int, error) {
+// Solidity: function mintCalled(address ) view returns(uint256)
+func (_CompoundToken *CompoundTokenCaller) MintCalled(opts *bind.CallOpts, arg0 common.Address) (*big.Int, error) {
 	var out []interface{}
-	err := _CompoundToken.contract.Call(opts, &out, "mintCalled")
+	err := _CompoundToken.contract.Call(opts, &out, "mintCalled", arg0)
 
 	if err != nil {
 		return *new(*big.Int), err
@@ -249,26 +249,26 @@ func (_CompoundToken *CompoundTokenCaller) MintCalled(opts *bind.CallOpts) (*big
 
 }
 
-// MintCalled is a free data retrieval call binding the contract method 0xd4e7fdd4.
+// MintCalled is a free data retrieval call binding the contract method 0xee4db570.
 //
-// Solidity: function mintCalled() view returns(uint256)
-func (_CompoundToken *CompoundTokenSession) MintCalled() (*big.Int, error) {
-	return _CompoundToken.Contract.MintCalled(&_CompoundToken.CallOpts)
+// Solidity: function mintCalled(address ) view returns(uint256)
+func (_CompoundToken *CompoundTokenSession) MintCalled(arg0 common.Address) (*big.Int, error) {
+	return _CompoundToken.Contract.MintCalled(&_CompoundToken.CallOpts, arg0)
 }
 
-// MintCalled is a free data retrieval call binding the contract method 0xd4e7fdd4.
+// MintCalled is a free data retrieval call binding the contract method 0xee4db570.
 //
-// Solidity: function mintCalled() view returns(uint256)
-func (_CompoundToken *CompoundTokenCallerSession) MintCalled() (*big.Int, error) {
-	return _CompoundToken.Contract.MintCalled(&_CompoundToken.CallOpts)
+// Solidity: function mintCalled(address ) view returns(uint256)
+func (_CompoundToken *CompoundTokenCallerSession) MintCalled(arg0 common.Address) (*big.Int, error) {
+	return _CompoundToken.Contract.MintCalled(&_CompoundToken.CallOpts, arg0)
 }
 
-// RedeemUnderlyingCalled is a free data retrieval call binding the contract method 0xd6bcd7aa.
+// RedeemUnderlyingCalled is a free data retrieval call binding the contract method 0x64f670ee.
 //
-// Solidity: function redeemUnderlyingCalled() view returns(uint256)
-func (_CompoundToken *CompoundTokenCaller) RedeemUnderlyingCalled(opts *bind.CallOpts) (*big.Int, error) {
+// Solidity: function redeemUnderlyingCalled(address ) view returns(uint256)
+func (_CompoundToken *CompoundTokenCaller) RedeemUnderlyingCalled(opts *bind.CallOpts, arg0 common.Address) (*big.Int, error) {
 	var out []interface{}
-	err := _CompoundToken.contract.Call(opts, &out, "redeemUnderlyingCalled")
+	err := _CompoundToken.contract.Call(opts, &out, "redeemUnderlyingCalled", arg0)
 
 	if err != nil {
 		return *new(*big.Int), err
@@ -280,18 +280,18 @@ func (_CompoundToken *CompoundTokenCaller) RedeemUnderlyingCalled(opts *bind.Cal
 
 }
 
-// RedeemUnderlyingCalled is a free data retrieval call binding the contract method 0xd6bcd7aa.
+// RedeemUnderlyingCalled is a free data retrieval call binding the contract method 0x64f670ee.
 //
-// Solidity: function redeemUnderlyingCalled() view returns(uint256)
-func (_CompoundToken *CompoundTokenSession) RedeemUnderlyingCalled() (*big.Int, error) {
-	return _CompoundToken.Contract.RedeemUnderlyingCalled(&_CompoundToken.CallOpts)
+// Solidity: function redeemUnderlyingCalled(address ) view returns(uint256)
+func (_CompoundToken *CompoundTokenSession) RedeemUnderlyingCalled(arg0 common.Address) (*big.Int, error) {
+	return _CompoundToken.Contract.RedeemUnderlyingCalled(&_CompoundToken.CallOpts, arg0)
 }
 
-// RedeemUnderlyingCalled is a free data retrieval call binding the contract method 0xd6bcd7aa.
+// RedeemUnderlyingCalled is a free data retrieval call binding the contract method 0x64f670ee.
 //
-// Solidity: function redeemUnderlyingCalled() view returns(uint256)
-func (_CompoundToken *CompoundTokenCallerSession) RedeemUnderlyingCalled() (*big.Int, error) {
-	return _CompoundToken.Contract.RedeemUnderlyingCalled(&_CompoundToken.CallOpts)
+// Solidity: function redeemUnderlyingCalled(address ) view returns(uint256)
+func (_CompoundToken *CompoundTokenCallerSession) RedeemUnderlyingCalled(arg0 common.Address) (*big.Int, error) {
+	return _CompoundToken.Contract.RedeemUnderlyingCalled(&_CompoundToken.CallOpts, arg0)
 }
 
 // SupplyRatePerBlock is a free data retrieval call binding the contract method 0xae9d70b0.
