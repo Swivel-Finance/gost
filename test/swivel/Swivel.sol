@@ -572,6 +572,11 @@ contract Swivel {
     } else if (p == uint8(Protocols.Yearn)) {
       // yearn vault api states that deposit returns shares as uint256
       return IYearn(c).deposit(a) >= 0;
+    } else if (p == uint8(Protocols.Aave)) {
+      // Aave deposit is void
+      IAave(c).deposit();
+      // as mentioned in the TODO above
+      return true;
     } else {
       // we will allow protocol[0] to also function as a catchall for Erc4626
       // NOTE: deposit, as per the spec, returns 'shares' but it is unknown if 0 would revert, thus we'll check for 0 or greater
