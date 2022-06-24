@@ -6,7 +6,6 @@
 
 pragma solidity 0.8.13;
 
-// TODO this could inherit from the ERC20 mock if needed
 contract YearnVault {
   /// @dev allows us to dictate return from deposit().
   uint256 private depositReturn;

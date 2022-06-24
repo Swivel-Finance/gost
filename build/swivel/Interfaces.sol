@@ -24,6 +24,11 @@ interface IYearn {
   function withdraw(uint256) external returns (uint256);
 }
 
+interface IAave {
+  function deposit(address, uint256, address, uint16) external; // void
+  function withdraw(address, uint256, address) external returns (uint256);
+}
+
 interface IMarketPlace {
   // adds notional and mints zctokens
   function mintZcTokenAddingNotional(uint8, address, uint256, address, uint256) external returns (bool);

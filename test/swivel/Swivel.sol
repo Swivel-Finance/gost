@@ -30,6 +30,11 @@ contract Swivel {
   bytes32 public immutable domain;
   address public immutable marketPlace;
   address public admin;
+  
+  /// @dev address(es) of 3rd party protocol contracts needed by an interface
+  // TODO immutable?
+  address public aaveAddr;
+
   uint16 constant public MIN_FEENOMINATOR = 33;
   /// @dev holds the fee demoninators for [zcTokenInitiate, zcTokenExit, vaultInitiate, vaultExit]
   uint16[4] public feenominators;
@@ -51,11 +56,13 @@ contract Swivel {
   /// @notice Emitted on a change to the feenominators array
   event SetFee(uint256 indexed index, uint256 indexed feenominator);
 
-  /// @param m deployed MarketPlace contract address
-  constructor(address m) {
+  /// @param m Deployed MarketPlace contract address
+  /// @param a Address of a deployed Aave contract implementing our interface
+  constructor(address m, address a) {
     admin = msg.sender;
     domain = Hash.domain(NAME, VERSION, block.chainid, address(this));
     marketPlace = m;
+    aaveAddr = a;
     feenominators = [200, 600, 400, 200];
   }
 
@@ -116,7 +123,7 @@ contract Swivel {
 
     // perform the actual deposit type transaction, specific to a protocol
     // TODO discuss the require or simply fire-and-forget
-    require(deposit(o.protocol, cTokenAddr, principalFilled), 'deposit failed');
+    require(deposit(o.protocol, o.underlying, cTokenAddr, principalFilled), 'deposit failed');
     // alert marketplace
     require(mPlace.custodialInitiate(o.protocol, o.underlying, o.maturity, o.maker, msg.sender, principalFilled), 'custodial initiate failed');
 
@@ -153,7 +160,7 @@ contract Swivel {
     (cTokenAddr,) = mPlace.cTokenAndAdapterAddress(o.protocol, o.underlying, o.maturity);
 
     // perform the actual deposit type transaction, specific to a protocol
-    require(deposit(o.protocol, cTokenAddr, a), 'deposit failed');
+    require(deposit(o.protocol, o.underlying, cTokenAddr, a), 'deposit failed');
     // alert marketplace 
     require(mPlace.custodialInitiate(o.protocol, o.underlying, o.maturity, msg.sender, o.maker, a), 'custodial initiate failed');
 
@@ -322,7 +329,7 @@ contract Swivel {
     address cTokenAddr;
     (cTokenAddr,) = mPlace.cTokenAndAdapterAddress(o.protocol, o.underlying, o.maturity);
 
-    require(withdraw(o.protocol, cTokenAddr, a), 'withdraw failed');
+    require(withdraw(o.protocol, o.underlying, cTokenAddr, a), 'withdraw failed');
 
     IErc20 uToken = IErc20(o.underlying);
     // transfer principal-premium  back to fixed exit party now that the interest coupon and zcb have been redeemed
@@ -357,7 +364,7 @@ contract Swivel {
     (cTokenAddr,) = mPlace.cTokenAndAdapterAddress(o.protocol, o.underlying, o.maturity);
     uint256 principalFilled = (a * o.principal) / o.premium;
 
-    require(withdraw(o.protocol, cTokenAddr, principalFilled), 'withdraw failed');
+    require(withdraw(o.protocol, o.underlying, cTokenAddr, principalFilled), 'withdraw failed');
 
     IErc20 uToken = IErc20(o.underlying);
     // transfer principal-premium-fee back to fixed exit party now that the interest coupon and zcb have been redeemed
@@ -479,7 +486,7 @@ contract Swivel {
     (cTokenAddr,) = mPlace.cTokenAndAdapterAddress(p, u, m);
     
     // the underlying deposit is directed to the appropriate abstraction
-    require(deposit(p, cTokenAddr, a), 'deposit failed');
+    require(deposit(p, u, cTokenAddr, a), 'deposit failed');
     require(mPlace.mintZcTokenAddingNotional(p, u, m, msg.sender, a), 'mint ZcToken adding Notional failed');
 
     return true;
@@ -498,7 +505,7 @@ contract Swivel {
     address cTokenAddr;
     (cTokenAddr,) = mPlace.cTokenAndAdapterAddress(p, u, m);
 
-    require(withdraw(p, cTokenAddr, a), 'withdraw failed');
+    require(withdraw(p, u, cTokenAddr, a), 'withdraw failed');
 
     Safe.transfer(IErc20(u), msg.sender, a);
 
@@ -518,7 +525,7 @@ contract Swivel {
     address cTokenAddr;
     (cTokenAddr,) = mPlace.cTokenAndAdapterAddress(p, u, m);
 
-    require(withdraw(p, cTokenAddr, redeemed), 'withdraw failed');
+    require(withdraw(p, u, cTokenAddr, redeemed), 'withdraw failed');
 
     // transfer underlying back to msg.sender
     Safe.transfer(IErc20(u), msg.sender, redeemed);
@@ -538,7 +545,7 @@ contract Swivel {
     address cTokenAddr;
     (cTokenAddr,) = mPlace.cTokenAndAdapterAddress(p, u, m);
 
-    require(withdraw(p, cTokenAddr, redeemed), 'withdraw failed');
+    require(withdraw(p, u, cTokenAddr, redeemed), 'withdraw failed');
 
     // transfer underlying back to msg.sender
     Safe.transfer(IErc20(u), msg.sender, redeemed);
@@ -563,9 +570,10 @@ contract Swivel {
   /// @notice Use the Protocol Enum to direct deposit type transactions to their specific library abstraction
   /// @dev This functionality is an abstraction used by `IVFZI`, `IZFVI` and `splitUnderlying`
   /// @param p Protocol Enum Value
+  /// @param u Address of an underlying token (used by Aave)
   /// @param c Compounding token address
   /// @param a Amount to deposit
-  function deposit(uint8 p, address c, uint256 a) internal returns (bool) {
+  function deposit(uint8 p, address u, address c, uint256 a) internal returns (bool) {
     // TODO as stated elsewhere, we may choose to simply return true here and not attempt to measure against any expected return
     if (p == uint8(Protocols.Compound)) { // TODO is Rari a drop in here?
       return ICompound(c).mint(a) == 0;
@@ -573,8 +581,9 @@ contract Swivel {
       // yearn vault api states that deposit returns shares as uint256
       return IYearn(c).deposit(a) >= 0;
     } else if (p == uint8(Protocols.Aave)) {
-      // Aave deposit is void
-      IAave(c).deposit();
+      // Aave deposit is void. NOTE the change in pattern here where our interface is not wrapping a compounding token directly, but
+      // a specified protocol contract whose address we have set
+      IAave(aaveAddr).deposit(u, a, address(this), 0);
       // as mentioned in the TODO above
       return true;
     } else {
@@ -589,15 +598,19 @@ contract Swivel {
   /// Note that while there is an external method `withdraw` also on this contract the unique method signatures (and visibility)
   /// exclude any possible clashing
   /// @param p Protocol Enum Value
+  /// @param u Address of an underlying token (used by Aave)
   /// @param c Compounding token address
   /// @param a Amount to withdraw
-  function withdraw(uint8 p, address c, uint256 a) internal returns (bool) {
+  function withdraw(uint8 p, address u, address c, uint256 a) internal returns (bool) {
     // TODO as stated elsewhere, we may choose to simply return true here and not attempt to measure against any expected return
     if (p == uint8(Protocols.Compound)) { // TODO is Rari a drop in here?
       return ICompound(c).redeemUnderlying(a) == 0;
     } else if (p == uint8(Protocols.Yearn)) {
       // yearn vault api states that withdraw returns uint256
       return IYearn(c).withdraw(a) >= 0;
+    } else if (p == uint8(Protocols.Aave)) {
+      // Aave v2 docs state that withraw returns uint256
+      return IAave(aaveAddr).withdraw(u, a, address(this)) >= 0;
     } else {
       // we will allow protocol[0] to also function as a catchall for Erc4626
       return IErc4626(c).withdraw(a, address(this), address(this)) >= 0;

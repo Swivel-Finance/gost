@@ -14,12 +14,12 @@ import (
 
 type redeemVaultInterestSuite struct {
 	suite.Suite
-	Env           *Env
-	Dep           *Dep
-	Erc20         *mocks.Erc20Session
-	CompoundToken *mocks.CompoundTokenSession
-	MarketPlace   *mocks.MarketPlaceSession
-	Swivel        *swivel.SwivelSession
+	Env         *Env
+	Dep         *Dep
+	Erc20       *mocks.Erc20Session
+	AavePool    *mocks.AavePoolSession
+	MarketPlace *mocks.MarketPlaceSession
+	Swivel      *swivel.SwivelSession
 }
 
 func (s *redeemVaultInterestSuite) SetupTest() {
@@ -41,8 +41,8 @@ func (s *redeemVaultInterestSuite) SetupTest() {
 		},
 	}
 
-	s.CompoundToken = &mocks.CompoundTokenSession{
-		Contract: s.Dep.CompoundToken,
+	s.AavePool = &mocks.AavePoolSession{
+		Contract: s.Dep.AavePool,
 		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
 		TransactOpts: bind.TransactOpts{
 			From:   s.Env.Owner.Opts.From,
@@ -79,13 +79,14 @@ func (s *redeemVaultInterestSuite) TestRedeemVaultInterest() {
 	assert.NotNil(tx)
 	assert.Nil(err)
 
-	tx, err = s.CompoundToken.RedeemUnderlyingReturns(big.NewInt(0))
+	tx, err = s.AavePool.WithdrawReturns(big.NewInt(10000))
 	assert.NotNil(tx)
 	assert.Nil(err)
 
 	s.Env.Blockchain.Commit()
 
-	tx, err = s.MarketPlace.CTokenAndAdapterAddressReturns(s.Dep.CompoundTokenAddress, common.HexToAddress("0x123"))
+	// cToken addres not important in this case...
+	tx, err = s.MarketPlace.CTokenAndAdapterAddressReturns(common.HexToAddress("0x123"), common.HexToAddress("0x234"))
 	assert.Nil(err)
 	assert.NotNil(tx)
 
@@ -98,7 +99,7 @@ func (s *redeemVaultInterestSuite) TestRedeemVaultInterest() {
 
 	s.Env.Blockchain.Commit()
 
-	tx, err = s.Swivel.RedeemVaultInterest(uint8(1), underlying, maturity)
+	tx, err = s.Swivel.RedeemVaultInterest(uint8(4), underlying, maturity)
 	assert.Nil(err)
 	assert.NotNil(tx)
 
@@ -108,6 +109,13 @@ func (s *redeemVaultInterestSuite) TestRedeemVaultInterest() {
 	transferred, err := s.Erc20.TransferCalled(s.Env.Owner.Opts.From)
 	assert.Nil(err)
 	assert.Equal(redeemed, transferred)
+
+	// check the args sent to the aave pool mock
+	txArgs, err := s.AavePool.WithdrawCalled(underlying)
+	assert.Nil(err)
+	assert.NotNil(txArgs)
+	assert.Equal(txArgs.To, s.Dep.SwivelAddress)
+	assert.Equal(txArgs.Amount, redeemed)
 }
 
 func (s *redeemVaultInterestSuite) TestRedeemVaultInterestUnderlyingFails() {
@@ -115,13 +123,13 @@ func (s *redeemVaultInterestSuite) TestRedeemVaultInterestUnderlyingFails() {
 	underlying := s.Dep.Erc20Address
 	maturity := s.Dep.Maturity
 
-	tx, err := s.CompoundToken.RedeemUnderlyingReturns(big.NewInt(0))
+	tx, err := s.AavePool.WithdrawReturns(big.NewInt(0))
 	assert.NotNil(tx)
 	assert.Nil(err)
 
 	s.Env.Blockchain.Commit()
 
-	tx, err = s.MarketPlace.CTokenAndAdapterAddressReturns(s.Dep.CompoundTokenAddress, common.HexToAddress("0x123"))
+	tx, err = s.MarketPlace.CTokenAndAdapterAddressReturns(common.HexToAddress("0x123"), common.HexToAddress("0x234"))
 	assert.Nil(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
@@ -132,7 +140,7 @@ func (s *redeemVaultInterestSuite) TestRedeemVaultInterestUnderlyingFails() {
 
 	s.Env.Blockchain.Commit()
 
-	tx, err = s.Swivel.RedeemVaultInterest(uint8(1), underlying, maturity)
+	tx, err = s.Swivel.RedeemVaultInterest(uint8(4), underlying, maturity)
 	assert.NotNil(err)
 	assert.Regexp("transfer failed", err.Error())
 	assert.Nil(tx)
