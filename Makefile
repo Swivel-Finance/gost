@@ -2,6 +2,7 @@
 .PHONY: compile_solidity_mock_compound compile_go_mock_compound compile_mock_compound
 .PHONY: compile_solidity_mock_compound_token compile_go_mock_compound_token compile_mock_compound_token
 .PHONY: compile_solidity_mock_erc_4626 compile_go_mock_erc_4626 compile_mock_erc_4626
+.PHONY: compile_solidity_mock_yearn_vault compile_go_mock_yearn_vault compile_mock_yearn_vault
 .PHONY: compile_solidity_mock_marketplace compile_go_mock_marketplace
 .PHONY: compile_go_mock_vaulttracker compile_go_mock_zctoken
 .PHONY: compile_mocks
@@ -77,6 +78,16 @@ compile_go_mock_erc_4626:
 
 compile_mock_erc_4626: compile_solidity_mock_erc_4626 compile_go_mock_erc_4626
 
+compile_solidity_mock_yearn_vault:
+	@echo "compiling Mock Yearn Vault source into abi and bin files"
+	solc -o ./test/mocks --abi --bin --overwrite ./test/mocks/YearnVault.sol
+
+compile_go_mock_yearn_vault:
+	@echo "compiling abi and bin files to golang"
+	abigen --abi ./test/mocks/YearnVault.abi --bin ./test/mocks/YearnVault.bin -pkg mocks -type YearnVault -out ./test/mocks/yearnvault.go 
+
+compile_mock_yearn_vault: compile_solidity_mock_yearn_vault compile_go_mock_yearn_vault
+
 compile_solidity_mock_marketplace:
 	@echo "compiling Mock MarketPlace solidity source into abi and bin files"
 	solc -o ./test/mocks --abi --bin --overwrite ./test/mocks/MarketPlace.sol
@@ -96,7 +107,7 @@ compile_go_mock_zctoken:
 	@echo "compiling abi and bin files to golang"
 	abigen --abi ./test/marketplace/ZcToken.abi --bin ./test/marketplace/ZcToken.bin -pkg mocks -type ZcToken -out ./test/mocks/zctoken.go
 
-compile_mocks: compile_mock_erc compile_mock_compound compile_mock_compound_token compile_mock_erc_4626 compile_mock_marketplace compile_go_mock_vaulttracker compile_go_mock_zctoken
+compile_mocks: compile_mock_erc compile_mock_compound compile_mock_compound_token compile_mock_erc_4626 compile_mock_yearn_vault compile_mock_marketplace compile_go_mock_vaulttracker compile_go_mock_zctoken
 
 # Real Tokens
 compile_solidity_zct:

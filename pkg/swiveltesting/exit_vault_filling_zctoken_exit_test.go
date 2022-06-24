@@ -18,12 +18,12 @@ import (
 // yeah, just make it an acronym...
 type EVFZESuite struct {
 	suite.Suite
-	Env           *Env
-	Dep           *Dep
-	Erc20         *mocks.Erc20Session
-	CompoundToken *mocks.CompoundTokenSession
-	MarketPlace   *mocks.MarketPlaceSession
-	Swivel        *swivel.SwivelSession
+	Env         *Env
+	Dep         *Dep
+	Erc20       *mocks.Erc20Session
+	YearnVault  *mocks.YearnVaultSession
+	MarketPlace *mocks.MarketPlaceSession
+	Swivel      *swivel.SwivelSession
 }
 
 func (s *EVFZESuite) SetupTest() {
@@ -45,8 +45,8 @@ func (s *EVFZESuite) SetupTest() {
 		},
 	}
 
-	s.CompoundToken = &mocks.CompoundTokenSession{
-		Contract: s.Dep.CompoundToken,
+	s.YearnVault = &mocks.YearnVaultSession{
+		Contract: s.Dep.YearnVault,
 		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
 		TransactOpts: bind.TransactOpts{
 			From:   s.Env.Owner.Opts.From,
@@ -89,13 +89,13 @@ func (s *EVFZESuite) TestEVFZE() {
 	s.Env.Blockchain.Commit()
 
 	// and the ctoken redeem...
-	tx, err = s.CompoundToken.RedeemUnderlyingReturns(big.NewInt(0))
+	tx, err = s.YearnVault.WithdrawReturns(big.NewInt(100))
 	assert.NotNil(tx)
 	assert.Nil(err)
 	s.Env.Blockchain.Commit()
 
 	// and the marketplace api methods...
-	tx, err = s.MarketPlace.CTokenAndAdapterAddressReturns(s.Dep.CompoundTokenAddress, common.HexToAddress("0x123"))
+	tx, err = s.MarketPlace.CTokenAndAdapterAddressReturns(s.Dep.YearnVaultAddress, common.HexToAddress("0x123"))
 	assert.Nil(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
@@ -117,7 +117,7 @@ func (s *EVFZESuite) TestEVFZE() {
 	// TODO preparing an order _may_ be relocated to a helper. Possibly per package? Discuss...
 	hashOrder := fakes.HashOrder{
 		Key:        orderKey,
-		Protocol:   uint8(1),
+		Protocol:   uint8(3),
 		Maker:      s.Env.User1.Opts.From,
 		Underlying: s.Dep.Erc20Address,
 		Vault:      false,
@@ -157,7 +157,7 @@ func (s *EVFZESuite) TestEVFZE() {
 	// the order passed to the swivel contract must be of the swivel package type...
 	order := swivel.HashOrder{
 		Key:        orderKey,
-		Protocol:   uint8(1),
+		Protocol:   uint8(3),
 		Maker:      s.Env.User1.Opts.From,
 		Underlying: s.Dep.Erc20Address,
 		Vault:      false,
@@ -207,7 +207,7 @@ func (s *EVFZESuite) TestEVFZE() {
 	assert.Equal(amt2.Cmp(big.NewInt(0)), 1) // should be non zero
 
 	// market zctoken burn...
-	burnArgs, err := s.MarketPlace.CustodialExitCalled(uint8(1))
+	burnArgs, err := s.MarketPlace.CustodialExitCalled(uint8(3))
 	assert.Nil(err)
 	assert.NotNil(burnArgs)
 	assert.Equal(burnArgs.Maturity, order.Maturity)
