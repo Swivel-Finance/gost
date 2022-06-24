@@ -566,8 +566,12 @@ contract Swivel {
   /// @param c Compounding token address
   /// @param a Amount to deposit
   function deposit(uint8 p, address c, uint256 a) internal returns (bool) {
-    if (p == uint8(Protocols.Compound)) {
-      return ICompoundToken(c).mint(a) == 0;
+    // TODO as stated elsewhere, we may choose to simply return true here and not attempt to measure against any expected return
+    if (p == uint8(Protocols.Compound)) { // TODO is Rari a drop in here?
+      return ICompound(c).mint(a) == 0;
+    } else if (p == uint8(Protocols.Yearn)) {
+      // yearn vault api states that deposit returns shares as uint256
+      return IYearn(c).deposit(a) >= 0;
     } else {
       // we will allow protocol[0] to also function as a catchall for Erc4626
       // NOTE: deposit, as per the spec, returns 'shares' but it is unknown if 0 would revert, thus we'll check for 0 or greater
@@ -576,14 +580,19 @@ contract Swivel {
   }
 
   /// @notice Use the Protocol Enum to direct withdraw type transactions to their specific library abstraction
-  /// @dev This functionality is an abstraction used by ``, `` and ``. Note that while there is an extarnal method
-  /// `withdraw` also on this contract the unique method signatures (and visibility) exclude any possible clashing
+  /// @dev This functionality is an abstraction used by `EVFZE`, `EZFVE`, `combineTokens`, `redeemZcToken` and `redeemVaultInterest`.
+  /// Note that while there is an external method `withdraw` also on this contract the unique method signatures (and visibility)
+  /// exclude any possible clashing
   /// @param p Protocol Enum Value
   /// @param c Compounding token address
   /// @param a Amount to withdraw
   function withdraw(uint8 p, address c, uint256 a) internal returns (bool) {
-    if (p == uint8(Protocols.Compound)) {
-      return ICompoundToken(c).redeemUnderlying(a) == 0;
+    // TODO as stated elsewhere, we may choose to simply return true here and not attempt to measure against any expected return
+    if (p == uint8(Protocols.Compound)) { // TODO is Rari a drop in here?
+      return ICompound(c).redeemUnderlying(a) == 0;
+    } else if (p == uint8(Protocols.Yearn)) {
+      // yearn vault api states that withdraw returns uint256
+      return IYearn(c).withdraw(a) >= 0;
     } else {
       // we will allow protocol[0] to also function as a catchall for Erc4626
       return IErc4626(c).withdraw(a, address(this), address(this)) >= 0;
