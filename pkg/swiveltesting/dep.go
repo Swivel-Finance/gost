@@ -23,6 +23,8 @@ type Dep struct {
 	Erc4626Address       common.Address
 	YearnVault           *mocks.YearnVault
 	YearnVaultAddress    common.Address
+	AavePool             *mocks.AavePool
+	AavePoolAddress      common.Address
 	MarketPlaceAddress   common.Address
 	MarketPlace          *mocks.MarketPlace // mock marketplace
 	Maturity             *big.Int
@@ -82,6 +84,14 @@ func Deploy(e *Env) (*Dep, error) {
 
 	e.Blockchain.Commit()
 
+	apAddress, _, apContract, apErr := mocks.DeployAavePool(e.Owner.Opts, e.Blockchain)
+
+	if apErr != nil {
+		return nil, apErr
+	}
+
+	e.Blockchain.Commit()
+
 	marketAddress, _, marketContract, marketErr := mocks.DeployMarketPlace(e.Owner.Opts, e.Blockchain)
 
 	if marketErr != nil {
@@ -90,8 +100,8 @@ func Deploy(e *Env) (*Dep, error) {
 
 	e.Blockchain.Commit()
 
-	// deploy swivel contract...
-	swivelAddress, _, swivelContract, swivelErr := swivel.DeploySwivel(e.Owner.Opts, e.Blockchain, marketAddress)
+	// deploy swivel contract... TODO change the aaveAddr to the actual mock deployed pool when implemented
+	swivelAddress, _, swivelContract, swivelErr := swivel.DeploySwivel(e.Owner.Opts, e.Blockchain, marketAddress, apAddress)
 
 	// TODO call marketPlace swivel contract address setter when implemented...
 
@@ -114,6 +124,8 @@ func Deploy(e *Env) (*Dep, error) {
 		Erc4626Address:       erc4626Address,
 		YearnVault:           yvContract,
 		YearnVaultAddress:    yvAddress,
+		AavePool:             apContract,
+		AavePoolAddress:      apAddress,
 		MarketPlaceAddress:   marketAddress,
 		MarketPlace:          marketContract,
 		Maturity:             maturity,
