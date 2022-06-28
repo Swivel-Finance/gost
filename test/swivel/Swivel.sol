@@ -574,7 +574,7 @@ contract Swivel {
   /// @param c Compounding token address
   /// @param a Amount to deposit
   function deposit(uint8 p, address u, address c, uint256 a) internal returns (bool) {
-    // TODO as stated elsewhere, we may choose to simply return true here and not attempt to measure against any expected return
+    // TODO as stated elsewhere, we may choose to simply return true in all and not attempt to measure against any expected return
     if (p == uint8(Protocols.Compound)) { // TODO is Rari a drop in here?
       return ICompound(c).mint(a) == 0;
     } else if (p == uint8(Protocols.Yearn)) {
@@ -583,8 +583,13 @@ contract Swivel {
     } else if (p == uint8(Protocols.Aave)) {
       // Aave deposit is void. NOTE the change in pattern here where our interface is not wrapping a compounding token directly, but
       // a specified protocol contract whose address we have set
+      // TODO explain the Aave deposit args
       IAave(aaveAddr).deposit(u, a, address(this), 0);
-      // as mentioned in the TODO above
+      return true;
+    } else if (p == uint8(Protocols.Euler)) {
+      // Euler deposit is void.
+      // TODO explain the 0 (primary account)
+      IEuler(c).deposit(0, a);
       return true;
     } else {
       // we will allow protocol[0] to also function as a catchall for Erc4626
@@ -602,7 +607,7 @@ contract Swivel {
   /// @param c Compounding token address
   /// @param a Amount to withdraw
   function withdraw(uint8 p, address u, address c, uint256 a) internal returns (bool) {
-    // TODO as stated elsewhere, we may choose to simply return true here and not attempt to measure against any expected return
+    // TODO as stated elsewhere, we may choose to simply return true in all and not attempt to measure against any expected return
     if (p == uint8(Protocols.Compound)) { // TODO is Rari a drop in here?
       return ICompound(c).redeemUnderlying(a) == 0;
     } else if (p == uint8(Protocols.Yearn)) {
@@ -610,7 +615,13 @@ contract Swivel {
       return IYearn(c).withdraw(a) >= 0;
     } else if (p == uint8(Protocols.Aave)) {
       // Aave v2 docs state that withraw returns uint256
+      // TODO explain the withdraw args
       return IAave(aaveAddr).withdraw(u, a, address(this)) >= 0;
+    } else if (p == uint8(Protocols.Euler)) {
+      // Euler withdraw is void
+      // TODO explain the 0
+      IEuler(c).withdraw(0, a);
+      return true;
     } else {
       // we will allow protocol[0] to also function as a catchall for Erc4626
       return IErc4626(c).withdraw(a, address(this), address(this)) >= 0;

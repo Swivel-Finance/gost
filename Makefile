@@ -4,6 +4,7 @@
 .PHONY: compile_solidity_mock_erc_4626 compile_go_mock_erc_4626 compile_mock_erc_4626
 .PHONY: compile_solidity_mock_yearn_vault compile_go_mock_yearn_vault compile_mock_yearn_vault
 .PHONY: compile_solidity_mock_aave_pool compile_go_mock_aave_pool compile_mock_aave_pool
+.PHONY: compile_solidity_mock_euler_token compile_go_mock_euler_token compile_mock_euler_token
 .PHONY: compile_solidity_mock_marketplace compile_go_mock_marketplace
 .PHONY: compile_go_mock_vaulttracker compile_go_mock_zctoken
 .PHONY: compile_mocks
@@ -35,7 +36,7 @@
 
 .PHONY: all
 
-# Mocks
+# ------------------------------------------------------- MOCKS -------------------------------------------------------------
 
 # TODO should prob add _20 here...
 compile_solidity_mock_erc:
@@ -48,6 +49,7 @@ compile_go_mock_erc:
 
 compile_mock_erc: compile_solidity_mock_erc compile_go_mock_erc
 
+# compound adapter
 compile_solidity_mock_compound:
 	@echo "compiling Mock Compound adapter source into abi and bin files"
 	solc -o ./test/mocks --abi --bin --overwrite ./test/mocks/Compound.sol
@@ -58,6 +60,7 @@ compile_go_mock_compound:
 
 compile_mock_compound: compile_solidity_mock_compound compile_go_mock_compound
 
+# compound token
 compile_solidity_mock_compound_token:
 	@echo "compiling Mock Compound Token source into abi and bin files"
 	solc -o ./test/mocks --abi --bin --overwrite ./test/mocks/CompoundToken.sol
@@ -68,6 +71,7 @@ compile_go_mock_compound_token:
 
 compile_mock_compound_token: compile_solidity_mock_compound_token compile_go_mock_compound_token
 
+# erc4626 tokenized vault
 compile_solidity_mock_erc_4626:
 	@echo "compiling Mock Tokenized Vault source into abi and bin files"
 	solc -o ./test/mocks --abi --bin --overwrite ./test/mocks/Erc4626.sol
@@ -78,6 +82,7 @@ compile_go_mock_erc_4626:
 
 compile_mock_erc_4626: compile_solidity_mock_erc_4626 compile_go_mock_erc_4626
 
+# yearn vault
 compile_solidity_mock_yearn_vault:
 	@echo "compiling Mock Yearn Vault source into abi and bin files"
 	solc -o ./test/mocks --abi --bin --overwrite ./test/mocks/YearnVault.sol
@@ -88,6 +93,7 @@ compile_go_mock_yearn_vault:
 
 compile_mock_yearn_vault: compile_solidity_mock_yearn_vault compile_go_mock_yearn_vault
 
+# aave pool
 compile_solidity_mock_aave_pool:
 	@echo "compiling Mock Aave Pool source into abi and bin files"
 	solc -o ./test/mocks --abi --bin --overwrite ./test/mocks/AavePool.sol
@@ -97,6 +103,17 @@ compile_go_mock_aave_pool:
 	abigen --abi ./test/mocks/AavePool.abi --bin ./test/mocks/AavePool.bin -pkg mocks -type AavePool -out ./test/mocks/aavepool.go 
 
 compile_mock_aave_pool: compile_solidity_mock_aave_pool compile_go_mock_aave_pool
+
+# euler token
+compile_solidity_mock_euler_token:
+	@echo "compiling Mock Euler Token source into abi and bin files"
+	solc -o ./test/mocks --abi --bin --overwrite ./test/mocks/EulerToken.sol
+
+compile_go_mock_euler_token:
+	@echo "compiling abi and bin files to golang"
+	abigen --abi ./test/mocks/EulerToken.abi --bin ./test/mocks/EulerToken.bin -pkg mocks -type EulerToken -out ./test/mocks/eulertoken.go 
+
+compile_mock_euler_token: compile_solidity_mock_euler_token compile_go_mock_euler_token
 
 compile_solidity_mock_marketplace:
 	@echo "compiling Mock MarketPlace solidity source into abi and bin files"
@@ -108,7 +125,6 @@ compile_go_mock_marketplace:
 
 compile_mock_marketplace: compile_solidity_mock_marketplace compile_go_mock_marketplace
 
-# vaulttracker and zctoken do not require a solidity compile step as they are directly imported by another contract which compiles them
 compile_go_mock_vaulttracker:
 	@echo "compiling abi and bin files to golang"
 	abigen --abi ./test/marketplace/VaultTracker.abi --bin ./test/marketplace/VaultTracker.bin -pkg mocks -type VaultTracker -out ./test/mocks/vaulttracker.go
@@ -117,9 +133,10 @@ compile_go_mock_zctoken:
 	@echo "compiling abi and bin files to golang"
 	abigen --abi ./test/marketplace/ZcToken.abi --bin ./test/marketplace/ZcToken.bin -pkg mocks -type ZcToken -out ./test/mocks/zctoken.go
 
-compile_mocks: compile_mock_erc compile_mock_compound compile_mock_compound_token compile_mock_erc_4626 compile_mock_yearn_vault compile_mock_aave_pool compile_mock_marketplace compile_go_mock_vaulttracker compile_go_mock_zctoken
+compile_mocks: compile_mock_erc compile_mock_compound compile_mock_compound_token compile_mock_erc_4626 compile_mock_yearn_vault compile_mock_aave_pool compile_mock_euler_token compile_mock_marketplace compile_go_mock_vaulttracker compile_go_mock_zctoken
 
-# Real Tokens
+# -------------------------------------------------- REAL TOKENS ------------------------------------------------------------------------------------------
+
 compile_solidity_zct:
 	@echo "compiling ZCT solidity source into abi and bin files"
 	solc -o ./test/tokens --abi --bin --overwrite ./test/tokens/ZcToken.sol
@@ -132,7 +149,8 @@ compile_zct: compile_solidity_zct compile_go_zct
 
 compile_tokens: compile_zct
 
-# Fakes
+# -------------------------------------------------- FAKES -----------------------------------------------------------------------------------------------
+
 compile_solidity_sig_fake:
 	@echo "compiling Sig and Fake source into abi and bin files"
 	solc -o ./test/fakes --abi --bin --overwrite ./test/fakes/SigFake.sol
@@ -155,7 +173,9 @@ compile_hash_fake: compile_solidity_hash_fake compile_go_hash_fake
 
 compile_fakes: compile_sig_fake compile_hash_fake
 
-# Adapters
+# ------------------------------------------------ ADAPTERS ------------------------------------------------------------------------------------------
+
+# compound (test)
 compile_solidity_compound_test:
 	@echo "compiling Compound adapter source into abi and bin files"
 	solc -o ./test/adapters --optimize --optimize-runs=15000 --abi --bin --overwrite ./test/adapters/Compound.sol
@@ -166,7 +186,8 @@ compile_go_compound_test:
 
 compile_adapters: compile_solidity_compound_test compile_go_compound_test
 
-# Contracts
+# ----------------------------------------------- CONTRACTS (TEST) ------------------------------------------------------------------------------------------
+#
 compile_solidity_swivel_test:
 	@echo "compiling Swivel solidity source into abi and bin files"
 	solc -o ./test/swivel --optimize --optimize-runs=15000 --abi --bin --overwrite ./test/swivel/Swivel.sol
@@ -199,7 +220,9 @@ compile_vaulttracker_test: compile_solidity_vaulttracker_test compile_go_vaulttr
 
 compile_test: compile_adapters compile_fakes compile_tokens compile_swivel_test compile_marketplace_test compile_vaulttracker_test compile_mocks
 
-# Cleaning
+# --------------------------------------------- CLEANING ----------------------------------------------------------------------------------------
+
+# test
 clean_test_abi:
 	@echo "removing abi files from test/ dirs"
 	rm test/**/*.abi
@@ -214,6 +237,7 @@ clean_test_go:
 
 clean_test: clean_test_abi clean_test_bin clean_test_go
 
+# build
 clean_build_sol:
 	@echo "removing sol files from build/ dirs"
 	rm build/**/*.sol
@@ -232,7 +256,8 @@ clean_build_go:
 
 clean_build: clean_build_sol clean_build_abi clean_build_bin clean_build_go
 
-# Copying to build
+# ---------------------------------- COPY TO BUILD ----------------------------------------------------------------------------------------------
+
 copy_zctoken_to_build:
 	@echo "copying ZcToken files to marketplace build"
 	cp test/tokens/Hash.sol build/marketplace
@@ -269,6 +294,8 @@ copy_adapters_to_build:
 
 copy_to_build: copy_zctoken_to_build copy_vaulttracker_to_build copy_marketplace_to_build copy_swivel_to_build copy_adapters_to_build
 
+# ---------------------------------- COMPILE BUILD ------------------------------------------------------------------------------------------
+
 compile_marketplace_build:
 	@echo "compiling MarketPlace solidity build source into deploy ready files"
 	solc -o ./build/marketplace --optimize --optimize-runs=6000 --abi --bin --overwrite ./build/marketplace/MarketPlace.sol
@@ -280,5 +307,7 @@ compile_swivel_build:
 	abigen --abi ./build/swivel/Swivel.abi --bin ./build/swivel/Swivel.bin -pkg swivel -type Swivel -out ./build/swivel/swivel.go 
 
 compile_build: compile_marketplace_build compile_swivel_build
+
+# ------------------------------ ALL -------------------------------------------------------------------------------------------------
 
 all: clean_test compile_test clean_build copy_to_build compile_build
