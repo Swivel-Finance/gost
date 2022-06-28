@@ -17,6 +17,7 @@ type redeemZcTokenSuite struct {
 	Env           *Env
 	Dep           *Dep
 	Erc20         *mocks.Erc20Session
+	EulerToken    *mocks.EulerTokenSession
 	CompoundToken *mocks.CompoundTokenSession
 	MarketPlace   *mocks.MarketPlaceSession
 	Swivel        *swivel.SwivelSession
@@ -34,6 +35,15 @@ func (s *redeemZcTokenSuite) SetupTest() {
 
 	s.Erc20 = &mocks.Erc20Session{
 		Contract: s.Dep.Erc20,
+		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
+		TransactOpts: bind.TransactOpts{
+			From:   s.Env.Owner.Opts.From,
+			Signer: s.Env.Owner.Opts.Signer,
+		},
+	}
+
+	s.EulerToken = &mocks.EulerTokenSession{
+		Contract: s.Dep.EulerToken,
 		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
 		TransactOpts: bind.TransactOpts{
 			From:   s.Env.Owner.Opts.From,
@@ -79,13 +89,9 @@ func (s *redeemZcTokenSuite) TestRedeemZcToken() {
 	assert.NotNil(tx)
 	assert.Nil(err)
 
-	tx, err = s.CompoundToken.RedeemUnderlyingReturns(big.NewInt(0))
-	assert.NotNil(tx)
-	assert.Nil(err)
-
 	s.Env.Blockchain.Commit()
 
-	tx, err = s.MarketPlace.CTokenAndAdapterAddressReturns(s.Dep.CompoundTokenAddress, common.HexToAddress("0x123"))
+	tx, err = s.MarketPlace.CTokenAndAdapterAddressReturns(s.Dep.EulerTokenAddress, common.HexToAddress("0x123"))
 	assert.Nil(err)
 	assert.NotNil(tx)
 
@@ -100,7 +106,7 @@ func (s *redeemZcTokenSuite) TestRedeemZcToken() {
 	s.Env.Blockchain.Commit()
 
 	amount := big.NewInt(123456)
-	tx, err = s.Swivel.RedeemZcToken(uint8(1), underlying, maturity, amount)
+	tx, err = s.Swivel.RedeemZcToken(uint8(5), underlying, maturity, amount)
 	assert.Nil(err)
 	assert.NotNil(tx)
 
@@ -110,9 +116,14 @@ func (s *redeemZcTokenSuite) TestRedeemZcToken() {
 	transferred, err := s.Erc20.TransferCalled(s.Env.Owner.Opts.From)
 	assert.Nil(err)
 	assert.Equal(redeemed, transferred)
+
+	withdrawn, err := s.EulerToken.WithdrawCalled(big.NewInt(0))
+	assert.NotNil(withdrawn)
+	assert.Nil(err)
+	assert.Equal(withdrawn, redeemed)
 }
 
-func (s *redeemZcTokenSuite) TestRedeemZcTokenRedeemUnderlyingFails() {
+func (s *redeemZcTokenSuite) TestCompoundRedeemZcTokenRedeemUnderlyingFails() {
 	assert := assertions.New(s.T())
 	underlying := s.Dep.Erc20Address
 	maturity := s.Dep.Maturity
