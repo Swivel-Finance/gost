@@ -1,5 +1,4 @@
 .PHONY: compile_solidity_mock_erc compile_go_mock_erc compile_mock_erc
-.PHONY: compile_solidity_mock_compound compile_go_mock_compound compile_mock_compound
 .PHONY: compile_solidity_mock_compound_token compile_go_mock_compound_token compile_mock_compound_token
 .PHONY: compile_solidity_mock_erc_4626 compile_go_mock_erc_4626 compile_mock_erc_4626
 .PHONY: compile_solidity_mock_yearn_vault compile_go_mock_yearn_vault compile_mock_yearn_vault
@@ -48,17 +47,6 @@ compile_go_mock_erc:
 	abigen --abi ./test/mocks/Erc20.abi --bin ./test/mocks/Erc20.bin -pkg mocks -type Erc20 -out ./test/mocks/erc20.go 
 
 compile_mock_erc: compile_solidity_mock_erc compile_go_mock_erc
-
-# compound adapter
-compile_solidity_mock_compound:
-	@echo "compiling Mock Compound adapter source into abi and bin files"
-	solc -o ./test/mocks --abi --bin --overwrite ./test/mocks/Compound.sol
-
-compile_go_mock_compound:
-	@echo "compiling abi and bin files to golang"
-	abigen --abi ./test/mocks/Compound.abi --bin ./test/mocks/Compound.bin -pkg mocks -type Compound -out ./test/mocks/compound.go 
-
-compile_mock_compound: compile_solidity_mock_compound compile_go_mock_compound
 
 # compound token
 compile_solidity_mock_compound_token:
@@ -133,7 +121,7 @@ compile_go_mock_zctoken:
 	@echo "compiling abi and bin files to golang"
 	abigen --abi ./test/marketplace/ZcToken.abi --bin ./test/marketplace/ZcToken.bin -pkg mocks -type ZcToken -out ./test/mocks/zctoken.go
 
-compile_mocks: compile_mock_erc compile_mock_compound compile_mock_compound_token compile_mock_erc_4626 compile_mock_yearn_vault compile_mock_aave_pool compile_mock_euler_token compile_mock_marketplace compile_go_mock_vaulttracker compile_go_mock_zctoken
+compile_mocks: compile_mock_erc compile_mock_compound_token compile_mock_erc_4626 compile_mock_yearn_vault compile_mock_aave_pool compile_mock_euler_token compile_mock_marketplace compile_go_mock_vaulttracker compile_go_mock_zctoken
 
 # -------------------------------------------------- REAL TOKENS ------------------------------------------------------------------------------------------
 
@@ -275,24 +263,20 @@ copy_vaulttracker_to_build:
 copy_marketplace_to_build:
 	@echo "copying marketplace files to marketplace build"
 	cp test/marketplace/Interfaces.sol build/marketplace
+	cp test/marketplace/Protocols.sol build/marketplace
+	cp test/marketplace/Compounding.sol build/marketplace
 	cp test/marketplace/MarketPlace.sol build/marketplace
 
 copy_swivel_to_build:
 	@echo "copying swivel files to marketplace build"
 	cp test/swivel/Interfaces.sol build/swivel
+	cp test/swivel/Protocols.sol build/swivel
 	cp test/swivel/Hash.sol build/swivel
 	cp test/swivel/Sig.sol build/swivel
 	cp test/swivel/Safe.sol build/swivel
 	cp test/swivel/Swivel.sol build/swivel
 
-copy_adapters_to_build:
-	# the adapter files do not have to be rebuilt in build
-	cp test/adapters/Compound.sol build/adapters
-	cp test/adapters/Compound.abi build/adapters
-	cp test/adapters/Compound.bin build/adapters
-	cp test/adapters/compound.go build/adapters
-
-copy_to_build: copy_zctoken_to_build copy_vaulttracker_to_build copy_marketplace_to_build copy_swivel_to_build copy_adapters_to_build
+copy_to_build: copy_zctoken_to_build copy_vaulttracker_to_build copy_marketplace_to_build copy_swivel_to_build
 
 # ---------------------------------- COMPILE BUILD ------------------------------------------------------------------------------------------
 

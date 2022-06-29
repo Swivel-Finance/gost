@@ -13,10 +13,10 @@ import (
 
 type transferNotionalFromSuite struct {
 	suite.Suite
-	Env          *Env
-	Dep          *Dep
-	Compounding  *mocks.CompoundSession
-	VaultTracker *vaulttracker.VaultTrackerSession // *Session objects are created by the go bindings
+	Env           *Env
+	Dep           *Dep
+	CompoundToken *mocks.CompoundTokenSession
+	VaultTracker  *vaulttracker.VaultTrackerSession // *Session objects are created by the go bindings
 }
 
 func (s *transferNotionalFromSuite) SetupTest() {
@@ -34,8 +34,8 @@ func (s *transferNotionalFromSuite) SetupTest() {
 	}
 	s.Env.Blockchain.Commit()
 
-	s.Compounding = &mocks.CompoundSession{
-		Contract: s.Dep.Compounding,
+	s.CompoundToken = &mocks.CompoundTokenSession{
+		Contract: s.Dep.CompoundToken,
 		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
 		TransactOpts: bind.TransactOpts{
 			From:   s.Env.Owner.Opts.From,
@@ -58,7 +58,7 @@ func (s *transferNotionalFromSuite) TestTransferNotionalFrom() {
 	assert := assertions.New(s.T())
 
 	rate1 := big.NewInt(123456789)
-	tx, err := s.Compounding.ExchangeRateReturns(rate1)
+	tx, err := s.CompoundToken.ExchangeRateCurrentReturns(rate1)
 	assert.Nil(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
@@ -104,7 +104,7 @@ func (s *transferNotionalFromSuite) TestTransferNotionalFromAmountExceedsFail() 
 	assert := assertions.New(s.T())
 
 	rate1 := big.NewInt(123456789)
-	tx, err := s.Compounding.ExchangeRateReturns(rate1)
+	tx, err := s.CompoundToken.ExchangeRateCurrentReturns(rate1)
 	assert.Nil(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()

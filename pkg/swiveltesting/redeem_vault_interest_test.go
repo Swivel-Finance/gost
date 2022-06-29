@@ -86,7 +86,7 @@ func (s *redeemVaultInterestSuite) TestRedeemVaultInterest() {
 	s.Env.Blockchain.Commit()
 
 	// cToken addres not important in this case...
-	tx, err = s.MarketPlace.CTokenAndAdapterAddressReturns(common.HexToAddress("0x123"), common.HexToAddress("0x234"))
+	tx, err = s.MarketPlace.CTokenAddressReturns(common.HexToAddress("0x123"))
 	assert.Nil(err)
 	assert.NotNil(tx)
 
@@ -129,7 +129,7 @@ func (s *redeemVaultInterestSuite) TestRedeemVaultInterestUnderlyingFails() {
 
 	s.Env.Blockchain.Commit()
 
-	tx, err = s.MarketPlace.CTokenAndAdapterAddressReturns(common.HexToAddress("0x123"), common.HexToAddress("0x234"))
+	tx, err = s.MarketPlace.CTokenAddressReturns(common.HexToAddress("0x123"))
 	assert.Nil(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()

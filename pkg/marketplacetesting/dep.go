@@ -12,24 +12,24 @@ type Dep struct {
 	Erc20        *mocks.Erc20
 	Erc20Address common.Address
 
-	Compounding        *mocks.Compound
-	CompoundingAddress common.Address
+	CompoundToken        *mocks.CompoundToken
+	CompoundTokenAddress common.Address
 
 	MarketPlaceAddress common.Address
 	MarketPlace        *marketplace.MarketPlace
 
 	Maturity *big.Int
 
-	SwivelAddress        common.Address
-	CompoundTokenAddress common.Address
+	SwivelAddress common.Address
 }
 
 func Deploy(e *Env) (*Dep, error) {
 	maturity := big.NewInt(MATURITY)
-	compAddress, _, compContract, compErr := mocks.DeployCompound(e.Owner.Opts, e.Blockchain)
 
-	if compErr != nil {
-		return nil, compErr
+	ctAddress, _, ctContract, ctErr := mocks.DeployCompoundToken(e.Owner.Opts, e.Blockchain)
+
+	if ctErr != nil {
+		return nil, ctErr
 	}
 
 	e.Blockchain.Commit()
@@ -54,12 +54,11 @@ func Deploy(e *Env) (*Dep, error) {
 	return &Dep{
 		MarketPlaceAddress:   marketAddress,
 		MarketPlace:          marketContract,
-		CompoundingAddress:   compAddress,
-		Compounding:          compContract,
 		Erc20Address:         ercAddress,
 		Erc20:                ercContract,
+		CompoundToken:        ctContract,
+		CompoundTokenAddress: ctAddress,
 		SwivelAddress:        common.HexToAddress("0x123aBc"),
-		CompoundTokenAddress: common.HexToAddress("0x234Bcd"),
 		Maturity:             maturity,
 	}, nil
 }

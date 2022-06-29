@@ -9,11 +9,10 @@ import (
 )
 
 type Dep struct {
-	Compounding        *mocks.Compound // deployed Compound Adapter, implements ICompounding
-	CompoundingAddress common.Address
+	CompoundToken        *mocks.CompoundToken
+	CompoundTokenAddress common.Address
 
-	CompoundingTokenAddress common.Address
-	SwivelAddress           common.Address
+	SwivelAddress common.Address
 
 	VaultTracker        *vaulttracker.VaultTracker
 	VaultTrackerAddress common.Address
@@ -23,26 +22,25 @@ type Dep struct {
 
 func Deploy(e *Env) (*Dep, error) {
 	maturity := big.NewInt(MATURITY)
-	compAddress, _, compContract, compErr := mocks.DeployCompound(e.Owner.Opts, e.Blockchain)
 
-	if compErr != nil {
-		return nil, compErr
+	ctAddress, _, ctContract, ctErr := mocks.DeployCompoundToken(e.Owner.Opts, e.Blockchain)
+
+	if ctErr != nil {
+		return nil, ctErr
 	}
 
 	e.Blockchain.Commit()
 
-	// compounding token address can be mocked (contract communicates with the adapter, not the token directly)
-	ctAddress := common.HexToAddress("0x123Abc")
 	// swivel address can be mocked
 	swivelAddress := common.HexToAddress("0x234bCd")
 
-	// deploy contract...
+	// deploy contract...NOTE that the vaulttracker has to be deployed with a particular protocol. deploy them separately to mitigate
 	trackerAddress, _, trackerContract, trackerErr := vaulttracker.DeployVaultTracker(
 		e.Owner.Opts,
 		e.Blockchain,
+		uint8(1), // Compound for now TODO change to 0 when Erc4626 is in place
 		maturity,
 		ctAddress,
-		compAddress,
 		swivelAddress,
 	)
 
@@ -53,12 +51,11 @@ func Deploy(e *Env) (*Dep, error) {
 	e.Blockchain.Commit()
 
 	return &Dep{
-		Compounding:             compContract,
-		CompoundingAddress:      compAddress,
-		CompoundingTokenAddress: ctAddress,
-		Maturity:                maturity,
-		SwivelAddress:           swivelAddress,
-		VaultTrackerAddress:     trackerAddress,
-		VaultTracker:            trackerContract,
+		CompoundToken:        ctContract,
+		CompoundTokenAddress: ctAddress,
+		Maturity:             maturity,
+		SwivelAddress:        swivelAddress,
+		VaultTrackerAddress:  trackerAddress,
+		VaultTracker:         trackerContract,
 	}, nil
 }

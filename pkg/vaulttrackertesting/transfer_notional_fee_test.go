@@ -13,10 +13,10 @@ import (
 
 type transferNotionalFeeSuite struct {
 	suite.Suite
-	Env          *Env
-	Dep          *Dep
-	Compounding  *mocks.CompoundSession
-	VaultTracker *vaulttracker.VaultTrackerSession
+	Env           *Env
+	Dep           *Dep
+	CompoundToken *mocks.CompoundTokenSession
+	VaultTracker  *vaulttracker.VaultTrackerSession
 }
 
 func (s *transferNotionalFeeSuite) SetupTest() {
@@ -31,8 +31,8 @@ func (s *transferNotionalFeeSuite) SetupTest() {
 	assert.Nil(err)
 	s.Env.Blockchain.Commit()
 
-	s.Compounding = &mocks.CompoundSession{
-		Contract: s.Dep.Compounding,
+	s.CompoundToken = &mocks.CompoundTokenSession{
+		Contract: s.Dep.CompoundToken,
 		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
 		TransactOpts: bind.TransactOpts{
 			From:   s.Env.Owner.Opts.From,
@@ -55,7 +55,7 @@ func (s *transferNotionalFeeSuite) TestTransferNotionalFee() {
 	assert := assertions.New(s.T())
 
 	rate1 := big.NewInt(1)
-	tx, err := s.Compounding.ExchangeRateReturns(rate1)
+	tx, err := s.CompoundToken.ExchangeRateCurrentReturns(rate1)
 	assert.Nil(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()

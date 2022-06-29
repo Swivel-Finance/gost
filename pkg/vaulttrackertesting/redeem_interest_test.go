@@ -16,10 +16,10 @@ import (
 
 type redeemInterestSuite struct {
 	suite.Suite
-	Env          *Env
-	Dep          *Dep
-	Compounding  *mocks.CompoundSession
-	VaultTracker *vaulttracker.VaultTrackerSession
+	Env           *Env
+	Dep           *Dep
+	CompoundToken *mocks.CompoundTokenSession
+	VaultTracker  *vaulttracker.VaultTrackerSession
 }
 
 func (s *redeemInterestSuite) SetupTest() {
@@ -37,8 +37,8 @@ func (s *redeemInterestSuite) SetupTest() {
 	}
 	s.Env.Blockchain.Commit()
 
-	s.Compounding = &mocks.CompoundSession{
-		Contract: s.Dep.Compounding,
+	s.CompoundToken = &mocks.CompoundTokenSession{
+		Contract: s.Dep.CompoundToken,
 		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
 		TransactOpts: bind.TransactOpts{
 			From:   s.Env.Owner.Opts.From,
@@ -60,7 +60,7 @@ func (s *redeemInterestSuite) TestRedeemInterestNotMatured() {
 	assert := assertions.New(s.T())
 
 	rate1 := big.NewInt(123456789)
-	tx, err := s.Compounding.ExchangeRateReturns(rate1)
+	tx, err := s.CompoundToken.ExchangeRateCurrentReturns(rate1)
 	assert.Nil(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
@@ -92,7 +92,7 @@ func (s *redeemInterestSuite) TestRedeemInterestNotMatured() {
 	assert.Equal(vault.Redeemable.Cmp(redeemable1), 0)
 
 	rate2 := big.NewInt(723456789)
-	tx, err = s.Compounding.ExchangeRateReturns(rate2)
+	tx, err = s.CompoundToken.ExchangeRateCurrentReturns(rate2)
 	assert.NotNil(tx)
 	assert.Nil(err)
 	s.Env.Blockchain.Commit()
@@ -115,7 +115,7 @@ func (s *redeemInterestSuite) TestRedeemInterestNotMatured() {
 	assert.Equal(redeemable2, vault.Redeemable)
 
 	rate3 := big.NewInt(823456789)
-	tx, err = s.Compounding.ExchangeRateReturns(rate3)
+	tx, err = s.CompoundToken.ExchangeRateCurrentReturns(rate3)
 	assert.NotNil(tx)
 	assert.Nil(err)
 	s.Env.Blockchain.Commit()
@@ -150,7 +150,7 @@ func (s *redeemInterestSuite) TestRedeemInterestMatured() {
 	assert := assertions.New(s.T())
 
 	rate1 := big.NewInt(123456789)
-	tx, err := s.Compounding.ExchangeRateReturns(rate1)
+	tx, err := s.CompoundToken.ExchangeRateCurrentReturns(rate1)
 	assert.Nil(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
@@ -182,7 +182,7 @@ func (s *redeemInterestSuite) TestRedeemInterestMatured() {
 	assert.Equal(vault.Redeemable.Cmp(redeemable1), 0)
 
 	rate2 := big.NewInt(723456789)
-	tx, err = s.Compounding.ExchangeRateReturns(rate2)
+	tx, err = s.CompoundToken.ExchangeRateCurrentReturns(rate2)
 	assert.NotNil(tx)
 	assert.Nil(err)
 	s.Env.Blockchain.Commit()
@@ -205,7 +205,7 @@ func (s *redeemInterestSuite) TestRedeemInterestMatured() {
 	assert.Equal(redeemable2, vault.Redeemable)
 
 	rate3 := big.NewInt(823456789)
-	tx, err = s.Compounding.ExchangeRateReturns(rate3)
+	tx, err = s.CompoundToken.ExchangeRateCurrentReturns(rate3)
 	assert.NotNil(tx)
 	assert.Nil(err)
 	s.Env.Blockchain.Commit()
@@ -221,7 +221,7 @@ func (s *redeemInterestSuite) TestRedeemInterestMatured() {
 	assert.NotNil(tx)
 
 	rate4 := big.NewInt(923456789)
-	tx, err = s.Compounding.ExchangeRateReturns(rate4)
+	tx, err = s.CompoundToken.ExchangeRateCurrentReturns(rate4)
 	assert.NotNil(tx)
 	assert.Nil(err)
 	s.Env.Blockchain.Commit()

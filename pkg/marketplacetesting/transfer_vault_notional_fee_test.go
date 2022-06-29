@@ -13,11 +13,11 @@ import (
 
 type vaultTransferFeeSuite struct {
 	suite.Suite
-	Env         *Env
-	Dep         *Dep
-	Erc20       *mocks.Erc20Session
-	Compounding *mocks.CompoundSession
-	MarketPlace *marketplace.MarketPlaceSession
+	Env           *Env
+	Dep           *Dep
+	Erc20         *mocks.Erc20Session
+	CompoundToken *mocks.CompoundTokenSession
+	MarketPlace   *marketplace.MarketPlaceSession
 }
 
 func (s *vaultTransferFeeSuite) SetupTest() {
@@ -37,8 +37,8 @@ func (s *vaultTransferFeeSuite) SetupTest() {
 		},
 	}
 
-	s.Compounding = &mocks.CompoundSession{
-		Contract: s.Dep.Compounding,
+	s.CompoundToken = &mocks.CompoundTokenSession{
+		Contract: s.Dep.CompoundToken,
 		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
 		TransactOpts: bind.TransactOpts{
 			From:   s.Env.Owner.Opts.From,
@@ -77,15 +77,15 @@ func (s *vaultTransferFeeSuite) TestVaultTransferFee() {
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
 
-	tx, err = s.Compounding.UnderlyingReturns(underlying)
+	tx, err = s.CompoundToken.UnderlyingReturns(underlying)
 	assert.Nil(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
 
 	tx, err = s.MarketPlace.CreateMarket(
+		uint8(1),
 		maturity,
 		ctoken,
-		s.Dep.CompoundingAddress,
 		"awesome market",
 		"AM",
 	)
@@ -95,7 +95,7 @@ func (s *vaultTransferFeeSuite) TestVaultTransferFee() {
 	s.Env.Blockchain.Commit()
 
 	// find that vault, wrap it in a mock...
-	market, err := s.MarketPlace.Markets(uint8(0), underlying, maturity)
+	market, err := s.MarketPlace.Markets(uint8(1), underlying, maturity)
 	assert.Nil(err)
 	assert.Equal(market.CTokenAddr, ctoken)
 
@@ -117,7 +117,7 @@ func (s *vaultTransferFeeSuite) TestVaultTransferFee() {
 
 	amount := big.NewInt(100)
 
-	tx, err = s.MarketPlace.TransferVaultNotionalFee(uint8(0), underlying, maturity, user1Opts.From, amount)
+	tx, err = s.MarketPlace.TransferVaultNotionalFee(uint8(1), underlying, maturity, user1Opts.From, amount)
 	assert.Nil(err)
 	assert.NotNil(tx)
 

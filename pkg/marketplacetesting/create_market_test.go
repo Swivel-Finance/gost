@@ -14,11 +14,11 @@ import (
 
 type createMarketSuite struct {
 	suite.Suite
-	Env         *Env
-	Dep         *Dep
-	Erc20       *mocks.Erc20Session
-	Compounding *mocks.CompoundSession
-	MarketPlace *marketplace.MarketPlaceSession // *Session objects are created by the go bindings
+	Env           *Env
+	Dep           *Dep
+	Erc20         *mocks.Erc20Session
+	CompoundToken *mocks.CompoundTokenSession
+	MarketPlace   *marketplace.MarketPlaceSession // *Session objects are created by the go bindings
 }
 
 func (s *createMarketSuite) SetupSuite() {
@@ -41,8 +41,8 @@ func (s *createMarketSuite) SetupSuite() {
 		},
 	}
 
-	s.Compounding = &mocks.CompoundSession{
-		Contract: s.Dep.Compounding,
+	s.CompoundToken = &mocks.CompoundTokenSession{
+		Contract: s.Dep.CompoundToken,
 		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
 		TransactOpts: bind.TransactOpts{
 			From:   s.Env.Owner.Opts.From,
@@ -77,9 +77,9 @@ func (s *createMarketSuite) TestCreateFailsWhenPaused() {
 	s.Env.Blockchain.Commit()
 
 	tx, err = s.MarketPlace.CreateMarket(
+		uint8(1),
 		maturity,
 		ctoken,
-		s.Dep.CompoundingAddress,
 		"nope",
 		"NM",
 	)
@@ -107,7 +107,7 @@ func (s *createMarketSuite) TestCreateMarket18Decimals() {
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
 
-	tx, err = s.Compounding.UnderlyingReturns(underlying)
+	tx, err = s.CompoundToken.UnderlyingReturns(underlying)
 	assert.Nil(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
@@ -115,9 +115,9 @@ func (s *createMarketSuite) TestCreateMarket18Decimals() {
 	maturity := big.NewInt(123456789)
 
 	tx, err = s.MarketPlace.CreateMarket(
+		uint8(1),
 		maturity,
 		ctoken,
-		s.Dep.CompoundingAddress,
 		"awesome market",
 		"AM",
 	)
@@ -127,7 +127,7 @@ func (s *createMarketSuite) TestCreateMarket18Decimals() {
 	s.Env.Blockchain.Commit()
 
 	// we should be able to fetch the market now...
-	market, err := s.MarketPlace.Markets(uint8(0), underlying, maturity)
+	market, err := s.MarketPlace.Markets(uint8(1), underlying, maturity)
 	assert.Nil(err)
 	assert.Equal(market.CTokenAddr, ctoken)
 	assert.NotEqual(market.ZcToken, common.HexToAddress("0x0"))
@@ -158,7 +158,7 @@ func (s *createMarketSuite) TestCreateMarket6Decimals() {
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
 
-	tx, err = s.Compounding.UnderlyingReturns(underlying)
+	tx, err = s.CompoundToken.UnderlyingReturns(underlying)
 	assert.Nil(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
@@ -166,9 +166,9 @@ func (s *createMarketSuite) TestCreateMarket6Decimals() {
 	maturity := big.NewInt(123456781)
 
 	tx, err = s.MarketPlace.CreateMarket(
+		uint8(1),
 		maturity,
 		ctoken,
-		s.Dep.CompoundingAddress,
 		"awesomer market",
 		"ARM",
 	)
@@ -178,7 +178,7 @@ func (s *createMarketSuite) TestCreateMarket6Decimals() {
 	s.Env.Blockchain.Commit()
 
 	// we should be able to fetch the market now...
-	market, err := s.MarketPlace.Markets(uint8(0), underlying, maturity)
+	market, err := s.MarketPlace.Markets(uint8(1), underlying, maturity)
 	assert.Nil(err)
 	assert.Equal(market.CTokenAddr, ctoken)
 	assert.NotEqual(market.ZcToken, common.HexToAddress("0x0"))

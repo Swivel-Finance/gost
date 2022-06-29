@@ -3,13 +3,13 @@
 pragma solidity 0.8.13;
 
 import './Interfaces.sol';
+import './Compounding.sol';
 import './ZcToken.sol';
 import './VaultTracker.sol';
 
 contract MarketPlace {
   struct Market {
     address cTokenAddr;
-    address adapterAddr;
     address zcToken;
     address vaultTracker;
     uint256 maturityRate;
@@ -50,30 +50,23 @@ contract MarketPlace {
   }
 
   /// @notice Allows the owner to create new markets
+  /// @param p Protocol associated with the new market
   /// @param m Maturity timestamp of the new market
   /// @param c Compounding Token address associated with the new market
-  /// @param a Deployed adapter address to use for this new market
   /// @param n Name of the new market zcToken
   /// @param s Symbol of the new market zcToken
   function createMarket(
+    uint8 p,
     uint256 m,
     address c,
-    address a,
     string memory n,
     string memory s
   ) external authorized(admin) unpaused() returns (bool) {
     require(swivel != address(0), 'swivel contract address not set');
 
-    uint8 protocol;
-    address underAddr;
+    address underAddr = Compounding.underlying(p, c);
 
-    {
-      ICompounding adapter = ICompounding(a);
-      protocol = adapter.PROTOCOL();
-      underAddr = adapter.underlying(c);
-    }
-
-    require(markets[protocol][underAddr][m].vaultTracker == address(0), 'market already exists');
+    require(markets[p][underAddr][m].vaultTracker == address(0), 'market already exists');
 
     address zct;
     address tracker;
@@ -81,12 +74,12 @@ contract MarketPlace {
     {
       uint8 decimals = IErc20(underAddr).decimals();
       zct = address(new ZcToken(underAddr, m, n, s, decimals));
-      tracker = address(new VaultTracker(m, c, a, swivel));
+      tracker = address(new VaultTracker(p, m, c, swivel));
     }
 
-    markets[protocol][underAddr][m] = Market(c, a, zct, tracker, 0);
+    markets[p][underAddr][m] = Market(c, zct, tracker, 0);
 
-    emit Create(protocol, underAddr, m, c, zct, tracker);
+    emit Create(p, underAddr, m, c, zct, tracker);
 
     return true;
   }
@@ -102,7 +95,7 @@ contract MarketPlace {
     require(block.timestamp >= m, "maturity not reached");
 
     // set the base maturity cToken exchange rate at maturity to the current cToken exchange rate
-    uint256 exchangeRate = ICompounding(market.adapterAddr).exchangeRate(market.cTokenAddr);
+    uint256 exchangeRate = Compounding.exchangeRate(p, market.cTokenAddr);
     markets[p][u][m].maturityRate = exchangeRate;
 
     // TODO remove the require here? why?
@@ -187,10 +180,10 @@ contract MarketPlace {
   /// @param u Underlying token address associated with the market
   /// @param m Maturity timestamp of the market
   /// @param a Amount of zcTokens being redeemed
-  function calculateReturn(uint8 p, address u, uint256 m, uint256 a) internal returns (uint256) {
+  function calculateReturn(uint8 p, address u, uint256 m, uint256 a) internal view returns (uint256) {
     Market memory market = markets[p][u][m];
 
-    uint256 exchangeRate = ICompounding(market.adapterAddr).exchangeRate(market.cTokenAddr);
+    uint256 exchangeRate = Compounding.exchangeRate(p, market.cTokenAddr);
 
     return (a * exchangeRate) / market.maturityRate;
   }
@@ -199,9 +192,9 @@ contract MarketPlace {
   /// @param p Protocol Enum value associated with this market
   /// @param u Underlying token address associated with the market
   /// @param m Maturity timestamp of the market
-  function cTokenAndAdapterAddress(uint8 p, address u, uint256 m) external view returns (address, address) {
+  function cTokenAddress(uint8 p, address u, uint256 m) external view returns (address) {
     Market memory market = markets[p][u][m];
-    return (market.cTokenAddr, market.adapterAddr);
+    return market.cTokenAddr;
   }
 
   /// @notice Called by swivel IVFZI && IZFVI

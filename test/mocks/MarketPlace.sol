@@ -12,7 +12,7 @@ contract MarketPlace {
     uint256 amount;
   }
 
-  mapping (uint8 => MethodArgs) public cTokenAndAdapterAddressCalled;
+  mapping (uint8 => MethodArgs) public cTokenAddressCalled;
   mapping (uint8 => MethodArgs) public custodialInitiateCalled;
   mapping (uint8 => MethodArgs) public custodialExitCalled;
   mapping (uint8 => MethodArgs) public p2pZcTokenExchangeCalled;
@@ -24,7 +24,6 @@ contract MarketPlace {
   mapping (uint8 => MethodArgs) public redeemVaultInterestCalled;
 
   address private cTokenAddr;
-  address private adapterAddr;
   bool private custodialInitiateReturn;
   bool private custodialExitReturn;
   bool private p2pZcTokenExchangeReturn;
@@ -35,17 +34,16 @@ contract MarketPlace {
   uint256 private redeemZcTokenReturn;
   uint256 private redeemVaultInterestReturn;
 
-  function cTokenAndAdapterAddressReturns(address c, address a) external {
+  function cTokenAddressReturns(address c) external {
     cTokenAddr = c;
-    adapterAddr = a;
   }
 
-  function cTokenAndAdapterAddress(uint8 p, address u, uint256 m) external returns (address, address) {
+  function cTokenAddress(uint8 p, address u, uint256 m) external returns (address) {
     MethodArgs memory args; 
     args.underlying = u;
     args.maturity = m;
-    cTokenAndAdapterAddressCalled[p] = args;
-    return (cTokenAddr, adapterAddr);
+    cTokenAddressCalled[p] = args;
+    return cTokenAddr;
   }
 
   function custodialInitiateReturns(bool b) external {
