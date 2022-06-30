@@ -4,6 +4,13 @@ pragma solidity 0.8.13;
 
 import './Protocols.sol'; // NOTE: if size restrictions become extreme we can use ints (implicit enum)
 
+interface IErc4626 {
+  /// @dev Converts the given 'assets' (uint256) to 'shares', returning that amount
+  function convertToAssets(uint256) external view returns (uint256);
+  /// @dev The address of the underlying ERC20 token
+  function asset() external view returns (address);
+}
+
 interface ICompoundToken {
   function exchangeRateCurrent() external view returns(uint256);
   function underlying() external view returns(address);
@@ -25,8 +32,7 @@ library Compounding {
       // TODO this
       return c;
     } else {
-      // TODO this
-      return c;      
+      return IErc4626(c).asset();      
     }
   }
 
@@ -45,8 +51,8 @@ library Compounding {
       // TODO this
       return 0;
     } else {
-      // TODO this
-      return 0;      
+      // TODO the magic const here? 1e26? The interface states it would be an amount of shares...
+      return IErc4626(c).convertToAssets(1e26);
     }
   }
 }

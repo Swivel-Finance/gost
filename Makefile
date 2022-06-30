@@ -15,8 +15,6 @@
 .PHONY: compile_solidity_hash_fake compile_go_hash_fake compile_hash_fake
 .PHONY: compile_fakes
 
-.PHONY: compile_solidity_compound_test compile_go_compound_test
-.PHONY: compile_adapters
 
 .PHONY: compile_solidity_swivel_test compile_go_swivel_test compile_swivel_test
 .PHONY: compile_solidity_marketplace_test compile_go_marketplace_test compile_marketplace_test
@@ -29,7 +27,7 @@
 .PHONY: clean_build_sol clean_build_abi clean_build_bin clean_build_go
 .PHONY: clean_build
 
-.PHONY: copy_zctoken_to_build copy_adapters_to_build copy_vaulttracker_to_build copy_marketplace_to_build copy_swivel_to_build
+.PHONY: copy_zctoken_to_build copy_vaulttracker_to_build copy_marketplace_to_build copy_swivel_to_build
 .PHONY: copy_to_build
 .PHONY: compile_marketplace_build compile_swivel_build compile_build
 
@@ -161,21 +159,8 @@ compile_hash_fake: compile_solidity_hash_fake compile_go_hash_fake
 
 compile_fakes: compile_sig_fake compile_hash_fake
 
-# ------------------------------------------------ ADAPTERS ------------------------------------------------------------------------------------------
-
-# compound (test)
-compile_solidity_compound_test:
-	@echo "compiling Compound adapter source into abi and bin files"
-	solc -o ./test/adapters --optimize --optimize-runs=15000 --abi --bin --overwrite ./test/adapters/Compound.sol
-
-compile_go_compound_test:
-	@echo "compiling adapter abi and bin files to golang"
-	abigen --abi ./test/adapters/Compound.abi --bin ./test/adapters/Compound.bin -pkg adapters -type Compound -out ./test/adapters/compound.go 
-
-compile_adapters: compile_solidity_compound_test compile_go_compound_test
-
 # ----------------------------------------------- CONTRACTS (TEST) ------------------------------------------------------------------------------------------
-#
+
 compile_solidity_swivel_test:
 	@echo "compiling Swivel solidity source into abi and bin files"
 	solc -o ./test/swivel --optimize --optimize-runs=15000 --abi --bin --overwrite ./test/swivel/Swivel.sol
@@ -206,7 +191,7 @@ compile_go_vaulttracker_test:
 
 compile_vaulttracker_test: compile_solidity_vaulttracker_test compile_go_vaulttracker_test
 
-compile_test: compile_adapters compile_fakes compile_tokens compile_swivel_test compile_marketplace_test compile_vaulttracker_test compile_mocks
+compile_test: compile_fakes compile_tokens compile_swivel_test compile_marketplace_test compile_vaulttracker_test compile_mocks
 
 # --------------------------------------------- CLEANING ----------------------------------------------------------------------------------------
 
