@@ -4,6 +4,11 @@ pragma solidity 0.8.13;
 
 import './Protocols.sol'; // NOTE: if size restrictions become extreme we can use ints (implicit enum)
 
+interface IErc4626 {
+  /// @dev Converts the given 'assets' (uint256) to 'shares', returning that amount
+  function convertToAssets(uint256) external view returns (uint256);
+}
+
 interface ICompoundToken {
   function exchangeRateCurrent() external view returns(uint256);
 }
@@ -24,8 +29,7 @@ library Compounding {
       // TODO this
       return 0;
     } else {
-      // TODO this
-      return 0;      
+      return IErc4626(c).convertToAssets(1e26);
     }
   }
 }

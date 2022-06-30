@@ -12,6 +12,9 @@ type Dep struct {
 	CompoundToken        *mocks.CompoundToken
 	CompoundTokenAddress common.Address
 
+	Erc4626        *mocks.Erc4626
+	Erc4626Address common.Address
+
 	SwivelAddress common.Address
 
 	VaultTracker        *vaulttracker.VaultTracker
@@ -31,14 +34,21 @@ func Deploy(e *Env) (*Dep, error) {
 
 	e.Blockchain.Commit()
 
+	erc4626Address, _, erc4626Contract, erc4626Err := mocks.DeployErc4626(e.Owner.Opts, e.Blockchain)
+
+	if erc4626Err != nil {
+		return nil, erc4626Err
+	}
+
+	e.Blockchain.Commit()
+
 	// swivel address can be mocked
 	swivelAddress := common.HexToAddress("0x234bCd")
 
-	// deploy contract...NOTE that the vaulttracker has to be deployed with a particular protocol. deploy them separately to mitigate
 	trackerAddress, _, trackerContract, trackerErr := vaulttracker.DeployVaultTracker(
 		e.Owner.Opts,
 		e.Blockchain,
-		uint8(1), // Compound for now TODO change to 0 when Erc4626 is in place
+		uint8(1), // Compound here
 		maturity,
 		ctAddress,
 		swivelAddress,
@@ -53,6 +63,8 @@ func Deploy(e *Env) (*Dep, error) {
 	return &Dep{
 		CompoundToken:        ctContract,
 		CompoundTokenAddress: ctAddress,
+		Erc4626:              erc4626Contract,
+		Erc4626Address:       erc4626Address,
 		Maturity:             maturity,
 		SwivelAddress:        swivelAddress,
 		VaultTrackerAddress:  trackerAddress,
