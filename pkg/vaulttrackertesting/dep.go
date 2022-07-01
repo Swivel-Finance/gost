@@ -15,6 +15,9 @@ type Dep struct {
 	Erc4626        *mocks.Erc4626
 	Erc4626Address common.Address
 
+	YearnVault        *mocks.YearnVault
+	YearnVaultAddress common.Address
+
 	SwivelAddress common.Address
 
 	VaultTracker        *vaulttracker.VaultTracker
@@ -42,6 +45,14 @@ func Deploy(e *Env) (*Dep, error) {
 
 	e.Blockchain.Commit()
 
+	yvAddress, _, yvContract, yvErr := mocks.DeployYearnVault(e.Owner.Opts, e.Blockchain)
+
+	if yvErr != nil {
+		return nil, yvErr
+	}
+
+	e.Blockchain.Commit()
+
 	// swivel address can be mocked
 	swivelAddress := common.HexToAddress("0x234bCd")
 
@@ -65,6 +76,8 @@ func Deploy(e *Env) (*Dep, error) {
 		CompoundTokenAddress: ctAddress,
 		Erc4626:              erc4626Contract,
 		Erc4626Address:       erc4626Address,
+		YearnVault:           yvContract,
+		YearnVaultAddress:    yvAddress,
 		Maturity:             maturity,
 		SwivelAddress:        swivelAddress,
 		VaultTrackerAddress:  trackerAddress,

@@ -18,6 +18,9 @@ type Dep struct {
 	Erc4626        *mocks.Erc4626
 	Erc4626Address common.Address
 
+	YearnVault        *mocks.YearnVault
+	YearnVaultAddress common.Address
+
 	MarketPlaceAddress common.Address
 	MarketPlace        *marketplace.MarketPlace
 
@@ -53,7 +56,14 @@ func Deploy(e *Env) (*Dep, error) {
 
 	e.Blockchain.Commit()
 
-	// deploy contract...
+	yvAddress, _, yvContract, yvErr := mocks.DeployYearnVault(e.Owner.Opts, e.Blockchain)
+
+	if yvErr != nil {
+		return nil, yvErr
+	}
+
+	e.Blockchain.Commit()
+
 	marketAddress, _, marketContract, marketErr := marketplace.DeployMarketPlace(e.Owner.Opts, e.Blockchain)
 
 	if marketErr != nil {
@@ -71,6 +81,8 @@ func Deploy(e *Env) (*Dep, error) {
 		CompoundTokenAddress: ctAddress,
 		Erc4626:              erc4626Contract,
 		Erc4626Address:       erc4626Address,
+		YearnVault:           yvContract,
+		YearnVaultAddress:    yvAddress,
 		SwivelAddress:        common.HexToAddress("0x123aBc"),
 		Maturity:             maturity,
 	}, nil

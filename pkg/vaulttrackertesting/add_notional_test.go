@@ -52,7 +52,6 @@ func (s *addNotionalSuite) SetupTest() {
 		panic(err)
 	}
 
-	// binding owner to both, kind of why it exists - but could be any of the env wallets
 	s.VaultTracker = &vaulttracker.VaultTrackerSession{
 		Contract: contract,
 		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
