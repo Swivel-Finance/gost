@@ -13,6 +13,13 @@ interface IErc4626 {
 
 interface ICompoundToken {
   function exchangeRateCurrent() external view returns(uint256);
+  /// @dev The address of the underlying ERC20 token
+  function underlying() external view returns(address);
+}
+
+interface IYearnVault {
+  function pricePerShare() external view returns (uint256);
+  /// @dev The address of the underlying ERC20 token
   function underlying() external view returns(address);
 }
 
@@ -23,8 +30,7 @@ library Compounding {
     if (p == uint8(Protocols.Compound)) { // TODO is Rari a drop in here?
       return ICompoundToken(c).underlying();
     } else if (p == uint8(Protocols.Yearn)) {
-      // TODO this
-      return c;
+      return IYearnVault(c).underlying();
     } else if (p == uint8(Protocols.Aave)) {
       // TODO this
       return c;
@@ -42,8 +48,7 @@ library Compounding {
     if (p == uint8(Protocols.Compound)) { // TODO is Rari a drop in here?
       return ICompoundToken(c).exchangeRateCurrent(); // TODO the alternative method to this
     } else if (p == uint8(Protocols.Yearn)) {
-      // TODO this
-      return 0;
+      return IYearnVault(c).pricePerShare();
     } else if (p == uint8(Protocols.Aave)) {
       // TODO this
       return 0;

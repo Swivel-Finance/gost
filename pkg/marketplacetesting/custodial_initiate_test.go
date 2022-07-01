@@ -17,6 +17,7 @@ type custodialInitiateSuite struct {
 	Dep           *Dep
 	Erc20         *mocks.Erc20Session
 	CompoundToken *mocks.CompoundTokenSession
+	YearnVault    *mocks.YearnVaultSession
 	MarketPlace   *marketplace.MarketPlaceSession // *Session objects are created by the go bindings
 }
 
@@ -44,6 +45,15 @@ func (s *custodialInitiateSuite) SetupTest() {
 
 	s.CompoundToken = &mocks.CompoundTokenSession{
 		Contract: s.Dep.CompoundToken,
+		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
+		TransactOpts: bind.TransactOpts{
+			From:   s.Env.Owner.Opts.From,
+			Signer: s.Env.Owner.Opts.Signer,
+		},
+	}
+
+	s.YearnVault = &mocks.YearnVaultSession{
+		Contract: s.Dep.YearnVault,
 		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
 		TransactOpts: bind.TransactOpts{
 			From:   s.Env.Owner.Opts.From,
@@ -95,20 +105,21 @@ func (s *custodialInitiateSuite) TestCustodialInitiate() {
 
 	underlying := s.Dep.Erc20Address
 	maturity := s.Dep.Maturity
-	ctoken := s.Dep.CompoundTokenAddress
+	// use yearn protocol for this test
+	ctoken := s.Dep.YearnVaultAddress
 
 	tx, err := s.Erc20.DecimalsReturns(uint8(18))
 	assert.Nil(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
 
-	tx, err = s.CompoundToken.UnderlyingReturns(underlying)
+	tx, err = s.YearnVault.UnderlyingReturns(underlying)
 	assert.Nil(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
 
 	tx, err = s.MarketPlace.CreateMarket(
-		uint8(1),
+		uint8(3), // yearn protocol
 		maturity,
 		ctoken,
 		"awesome market",
@@ -123,7 +134,7 @@ func (s *custodialInitiateSuite) TestCustodialInitiate() {
 	user1Opts := s.Env.User1.Opts
 
 	// we should be able to fetch the market now...
-	market, err := s.MarketPlace.Markets(uint8(1), underlying, maturity)
+	market, err := s.MarketPlace.Markets(uint8(3), underlying, maturity)
 	assert.Nil(err)
 	assert.Equal(market.CTokenAddr, ctoken)
 
@@ -161,7 +172,7 @@ func (s *custodialInitiateSuite) TestCustodialInitiate() {
 	s.Env.Blockchain.Commit()
 
 	amount := big.NewInt(100)
-	tx, err = s.MarketPlace.CustodialInitiate(uint8(1), underlying, maturity, ownerOpts.From, user1Opts.From, amount)
+	tx, err = s.MarketPlace.CustodialInitiate(uint8(3), underlying, maturity, ownerOpts.From, user1Opts.From, amount)
 	assert.Nil(err)
 	assert.NotNil(tx)
 

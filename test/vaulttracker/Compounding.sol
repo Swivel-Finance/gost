@@ -10,7 +10,13 @@ interface IErc4626 {
 }
 
 interface ICompoundToken {
+  // TODO comment
   function exchangeRateCurrent() external view returns(uint256);
+}
+
+interface IYearnVault {
+  // TODO comment
+  function pricePerShare() external view returns (uint256);
 }
 
 library Compounding {
@@ -20,8 +26,7 @@ library Compounding {
     if (p == uint8(Protocols.Compound)) { // TODO is Rari a drop in here?
       return ICompoundToken(c).exchangeRateCurrent(); // TODO the alternative method to this
     } else if (p == uint8(Protocols.Yearn)) {
-      // TODO this
-      return 0;
+      return IYearnVault(c).pricePerShare();
     } else if (p == uint8(Protocols.Aave)) {
       // TODO this
       return 0;
