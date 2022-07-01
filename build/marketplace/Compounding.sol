@@ -51,7 +51,7 @@ library Compounding {
       // TODO this
       return 0;
     } else {
-      // TODO the magic const here? 1e26? The interface states it would be an amount of shares...
+      // NOTE: the 1e26 const is a degree of precision to enforce on the return
       return IErc4626(c).convertToAssets(1e26);
     }
   }
