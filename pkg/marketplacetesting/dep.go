@@ -15,6 +15,9 @@ type Dep struct {
 	CompoundToken        *mocks.CompoundToken
 	CompoundTokenAddress common.Address
 
+	Erc4626        *mocks.Erc4626
+	Erc4626Address common.Address
+
 	MarketPlaceAddress common.Address
 	MarketPlace        *marketplace.MarketPlace
 
@@ -34,10 +37,18 @@ func Deploy(e *Env) (*Dep, error) {
 
 	e.Blockchain.Commit()
 
-	ercAddress, _, ercContract, ercErr := mocks.DeployErc20(e.Owner.Opts, e.Blockchain)
+	erc4626Address, _, erc4626Contract, erc4626Err := mocks.DeployErc4626(e.Owner.Opts, e.Blockchain)
 
-	if ercErr != nil {
-		return nil, ercErr
+	if erc4626Err != nil {
+		return nil, erc4626Err
+	}
+
+	e.Blockchain.Commit()
+
+	erc20Address, _, erc20Contract, erc20Err := mocks.DeployErc20(e.Owner.Opts, e.Blockchain)
+
+	if erc20Err != nil {
+		return nil, erc20Err
 	}
 
 	e.Blockchain.Commit()
@@ -54,10 +65,12 @@ func Deploy(e *Env) (*Dep, error) {
 	return &Dep{
 		MarketPlaceAddress:   marketAddress,
 		MarketPlace:          marketContract,
-		Erc20Address:         ercAddress,
-		Erc20:                ercContract,
+		Erc20Address:         erc20Address,
+		Erc20:                erc20Contract,
 		CompoundToken:        ctContract,
 		CompoundTokenAddress: ctAddress,
+		Erc4626:              erc4626Contract,
+		Erc4626Address:       erc4626Address,
 		SwivelAddress:        common.HexToAddress("0x123aBc"),
 		Maturity:             maturity,
 	}, nil
