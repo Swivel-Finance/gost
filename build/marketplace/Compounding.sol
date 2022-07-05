@@ -23,6 +23,17 @@ interface IYearnVault {
   function underlying() external view returns(address);
 }
 
+interface IAavePool {
+   /// @dev Returns the normalized income of the reserve given the address of the underlying asset of the reserve
+  function getReserveNormalizedIncome(address) external view returns (uint256);
+}
+
+interface IAaveToken {
+  // TODO comments
+  function POOL() external view returns (address);
+  function UNDERLYING_ASSET_ADDRESS() external view returns (address);
+}
+
 library Compounding {
   /// @param p Protocol Enum value
   /// @param c Compounding token address
@@ -32,8 +43,7 @@ library Compounding {
     } else if (p == uint8(Protocols.Yearn)) {
       return IYearnVault(c).underlying();
     } else if (p == uint8(Protocols.Aave)) {
-      // TODO this
-      return c;
+      return IAaveToken(c).UNDERLYING_ASSET_ADDRESS();
     } else if (p == uint8(Protocols.Euler)) {
       // TODO this
       return c;
@@ -50,8 +60,8 @@ library Compounding {
     } else if (p == uint8(Protocols.Yearn)) {
       return IYearnVault(c).pricePerShare();
     } else if (p == uint8(Protocols.Aave)) {
-      // TODO this
-      return 0;
+      IAaveToken aToken = IAaveToken(c);
+      return IAavePool(aToken.POOL()).getReserveNormalizedIncome(aToken.UNDERLYING_ASSET_ADDRESS());
     } else if (p == uint8(Protocols.Euler)) {
       // TODO this
       return 0;

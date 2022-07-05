@@ -20,6 +20,8 @@ type matureMarketSuite struct {
 	Dep           *Dep
 	Erc20         *mocks.Erc20Session
 	CompoundToken *mocks.CompoundTokenSession
+	AaveToken     *mocks.AaveTokenSession
+	AavePool      *mocks.AavePoolSession
 	MarketPlace   *marketplace.MarketPlaceSession // *Session objects are created by the go bindings
 }
 
@@ -46,6 +48,24 @@ func (s *matureMarketSuite) SetupTest() {
 
 	s.CompoundToken = &mocks.CompoundTokenSession{
 		Contract: s.Dep.CompoundToken,
+		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
+		TransactOpts: bind.TransactOpts{
+			From:   s.Env.Owner.Opts.From,
+			Signer: s.Env.Owner.Opts.Signer,
+		},
+	}
+
+	s.AaveToken = &mocks.AaveTokenSession{
+		Contract: s.Dep.AaveToken,
+		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
+		TransactOpts: bind.TransactOpts{
+			From:   s.Env.Owner.Opts.From,
+			Signer: s.Env.Owner.Opts.Signer,
+		},
+	}
+
+	s.AavePool = &mocks.AavePoolSession{
+		Contract: s.Dep.AavePool,
 		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
 		TransactOpts: bind.TransactOpts{
 			From:   s.Env.Owner.Opts.From,
@@ -152,20 +172,25 @@ func (s *matureMarketSuite) TestMaturityReached() {
 	assert := assertions.New(s.T())
 	underlying := s.Dep.Erc20Address
 	maturity := s.Dep.Maturity
-	ctoken := s.Dep.CompoundTokenAddress
+	ctoken := s.Dep.AaveTokenAddress
 
 	tx, err := s.Erc20.DecimalsReturns(uint8(18))
 	assert.Nil(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
 
-	tx, err = s.CompoundToken.UnderlyingReturns(underlying)
+	tx, err = s.AaveToken.UNDERLYINGReturns(underlying)
+	assert.Nil(err)
+	assert.NotNil(tx)
+	s.Env.Blockchain.Commit()
+
+	tx, err = s.AaveToken.POOLReturns(s.Dep.AavePoolAddress)
 	assert.Nil(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
 
 	tx, err = s.MarketPlace.CreateMarket(
-		uint8(1),
+		uint8(4),
 		maturity,
 		ctoken,
 		"awesome market",
@@ -177,7 +202,7 @@ func (s *matureMarketSuite) TestMaturityReached() {
 	s.Env.Blockchain.Commit()
 
 	// we should be able to fetch the market now...
-	market, err := s.MarketPlace.Markets(uint8(1), underlying, maturity)
+	market, err := s.MarketPlace.Markets(uint8(4), underlying, maturity)
 	assert.Nil(err)
 	assert.Equal(market.CTokenAddr, ctoken)
 
@@ -216,26 +241,22 @@ func (s *matureMarketSuite) TestMaturityReached() {
 	s.Env.Blockchain.Commit()
 
 	rate := big.NewInt(123456789)
-	tx, err = s.CompoundToken.ExchangeRateCurrentReturns(rate)
+	tx, err = s.AavePool.GetReserveNormalizedIncomeReturns(rate)
 	assert.Nil(err)
 	assert.NotNil(tx)
 
 	s.Env.Blockchain.Commit()
 
-	tx, err = s.MarketPlace.MatureMarket(uint8(1), underlying, maturity)
+	tx, err = s.MarketPlace.MatureMarket(uint8(4), underlying, maturity)
 	assert.Nil(err)
 	assert.NotNil(tx)
 
 	s.Env.Blockchain.Commit()
 
 	// re-fetch the market so the change is reflected...
-	market, err = s.MarketPlace.Markets(uint8(1), underlying, maturity)
+	market, err = s.MarketPlace.Markets(uint8(4), underlying, maturity)
 	assert.Nil(err)
 	assert.Equal(rate, market.MaturityRate)
-
-	// mature, err := s.MarketPlace.Mature(underlying, maturity)
-	// assert.Nil(err)
-	// assert.Equal(true, mature)
 
 	receipt, err := s.Env.Blockchain.TransactionReceipt(context.Background(), tx.Hash())
 	assert.Nil(err)

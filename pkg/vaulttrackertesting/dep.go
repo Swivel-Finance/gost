@@ -11,19 +11,18 @@ import (
 type Dep struct {
 	CompoundToken        *mocks.CompoundToken
 	CompoundTokenAddress common.Address
-
-	Erc4626        *mocks.Erc4626
-	Erc4626Address common.Address
-
-	YearnVault        *mocks.YearnVault
-	YearnVaultAddress common.Address
-
-	SwivelAddress common.Address
-
-	VaultTracker        *vaulttracker.VaultTracker
-	VaultTrackerAddress common.Address
-
-	Maturity *big.Int
+	Erc4626              *mocks.Erc4626
+	Erc4626Address       common.Address
+	YearnVault           *mocks.YearnVault
+	YearnVaultAddress    common.Address
+	AaveToken            *mocks.AaveToken
+	AaveTokenAddress     common.Address
+	AavePool             *mocks.AavePool
+	AavePoolAddress      common.Address
+	SwivelAddress        common.Address
+	VaultTracker         *vaulttracker.VaultTracker
+	VaultTrackerAddress  common.Address
+	Maturity             *big.Int
 }
 
 func Deploy(e *Env) (*Dep, error) {
@@ -53,6 +52,22 @@ func Deploy(e *Env) (*Dep, error) {
 
 	e.Blockchain.Commit()
 
+	atAddress, _, atContract, atErr := mocks.DeployAaveToken(e.Owner.Opts, e.Blockchain)
+
+	if atErr != nil {
+		return nil, atErr
+	}
+
+	e.Blockchain.Commit()
+
+	apAddress, _, apContract, apErr := mocks.DeployAavePool(e.Owner.Opts, e.Blockchain)
+
+	if apErr != nil {
+		return nil, apErr
+	}
+
+	e.Blockchain.Commit()
+
 	// swivel address can be mocked
 	swivelAddress := common.HexToAddress("0x234bCd")
 
@@ -78,6 +93,10 @@ func Deploy(e *Env) (*Dep, error) {
 		Erc4626Address:       erc4626Address,
 		YearnVault:           yvContract,
 		YearnVaultAddress:    yvAddress,
+		AaveToken:            atContract,
+		AaveTokenAddress:     atAddress,
+		AavePool:             apContract,
+		AavePoolAddress:      apAddress,
 		Maturity:             maturity,
 		SwivelAddress:        swivelAddress,
 		VaultTrackerAddress:  trackerAddress,

@@ -23,9 +23,8 @@ contract Swivel {
   address public immutable marketPlace;
   address public admin;
   
-  /// @dev address(es) of 3rd party protocol contracts needed by an interface
-  // TODO immutable?
-  address public aaveAddr;
+  /// @dev address of a deployed Aave contract implementing IAave
+  address public aaveAddr; // TODO immutable?
 
   uint16 constant public MIN_FEENOMINATOR = 33;
   /// @dev holds the fee demoninators for [zcTokenInitiate, zcTokenExit, vaultInitiate, vaultExit]

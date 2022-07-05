@@ -13,12 +13,24 @@ contract AavePool {
     address to;
     uint16 code;
   }
+
+  /// @dev allows us to dictate the return from getReserveNormalizedIncome()
+  uint256 private getReserveNormalizedIncomeReturn;
   /// @dev the last args deposit was called with. NOTE that Aave deposit is void
   mapping (address => TransactArgs) public depositCalled;
   /// @dev allows us to dictate return from withdraw().
   uint256 private withdrawReturn;
   /// @dev the last args withdraw was called with
   mapping (address => TransactArgs) public withdrawCalled;
+
+  // NOTE: using the .sol feature of omitting argument name to prevent compiler nagging
+  function getReserveNormalizedIncome(address) public view returns (uint256) {
+    return getReserveNormalizedIncomeReturn;
+  }
+
+  function getReserveNormalizedIncomeReturns(uint256 n) public {
+    getReserveNormalizedIncomeReturn = n;
+  }
 
   function deposit(address u, uint256 a, address o, uint16 c) public {
     TransactArgs memory args;

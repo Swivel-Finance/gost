@@ -2,6 +2,7 @@
 .PHONY: compile_solidity_mock_compound_token compile_go_mock_compound_token compile_mock_compound_token
 .PHONY: compile_solidity_mock_erc_4626 compile_go_mock_erc_4626 compile_mock_erc_4626
 .PHONY: compile_solidity_mock_yearn_vault compile_go_mock_yearn_vault compile_mock_yearn_vault
+.PHONY: compile_solidity_mock_aave_token compile_go_mock_aave_token compile_mock_aave_token
 .PHONY: compile_solidity_mock_aave_pool compile_go_mock_aave_pool compile_mock_aave_pool
 .PHONY: compile_solidity_mock_euler_token compile_go_mock_euler_token compile_mock_euler_token
 .PHONY: compile_solidity_mock_marketplace compile_go_mock_marketplace
@@ -79,6 +80,17 @@ compile_go_mock_yearn_vault:
 
 compile_mock_yearn_vault: compile_solidity_mock_yearn_vault compile_go_mock_yearn_vault
 
+# aave token
+compile_solidity_mock_aave_token:
+	@echo "compiling Mock Aave Token source into abi and bin files"
+	solc -o ./test/mocks --abi --bin --overwrite ./test/mocks/AaveToken.sol
+
+compile_go_mock_aave_token:
+	@echo "compiling abi and bin files to golang"
+	abigen --abi ./test/mocks/AaveToken.abi --bin ./test/mocks/AaveToken.bin -pkg mocks -type AaveToken -out ./test/mocks/aavetoken.go 
+
+compile_mock_aave_token: compile_solidity_mock_aave_token compile_go_mock_aave_token
+
 # aave pool
 compile_solidity_mock_aave_pool:
 	@echo "compiling Mock Aave Pool source into abi and bin files"
@@ -119,7 +131,7 @@ compile_go_mock_zctoken:
 	@echo "compiling abi and bin files to golang"
 	abigen --abi ./test/marketplace/ZcToken.abi --bin ./test/marketplace/ZcToken.bin -pkg mocks -type ZcToken -out ./test/mocks/zctoken.go
 
-compile_mocks: compile_mock_erc compile_mock_compound_token compile_mock_erc_4626 compile_mock_yearn_vault compile_mock_aave_pool compile_mock_euler_token compile_mock_marketplace compile_go_mock_vaulttracker compile_go_mock_zctoken
+compile_mocks: compile_mock_erc compile_mock_compound_token compile_mock_erc_4626 compile_mock_yearn_vault compile_mock_aave_token compile_mock_aave_pool compile_mock_euler_token compile_mock_marketplace compile_go_mock_vaulttracker compile_go_mock_zctoken
 
 # -------------------------------------------------- REAL TOKENS ------------------------------------------------------------------------------------------
 
@@ -267,7 +279,7 @@ copy_to_build: copy_zctoken_to_build copy_vaulttracker_to_build copy_marketplace
 
 compile_marketplace_build:
 	@echo "compiling MarketPlace solidity build source into deploy ready files"
-	solc -o ./build/marketplace --optimize --optimize-runs=5000 --abi --bin --overwrite ./build/marketplace/MarketPlace.sol
+	solc -o ./build/marketplace --optimize --optimize-runs=1500 --abi --bin --overwrite ./build/marketplace/MarketPlace.sol
 	abigen --abi ./build/marketplace/MarketPlace.abi --bin ./build/marketplace/MarketPlace.bin -pkg marketplace -type MarketPlace -out ./build/marketplace/marketplace.go 
 
 compile_swivel_build:
