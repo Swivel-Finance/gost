@@ -70,8 +70,8 @@ library Compounding {
       IAaveToken aToken = IAaveToken(c);
       return IAavePool(aToken.POOL()).getReserveNormalizedIncome(aToken.UNDERLYING_ASSET_ADDRESS());
     } else if (p == uint8(Protocols.Euler)) {
-      // NOTE: the 1e27 const is a degree of precision to enforce on the return
-      return IEulerToken(c).convertBalanceToUnderlying(1e27);
+      // NOTE: the 1e26 const is a degree of precision to enforce on the return
+      return IEulerToken(c).convertBalanceToUnderlying(1e26);
     } else {
       // NOTE: the 1e26 const is a degree of precision to enforce on the return
       return IErc4626(c).convertToAssets(1e26);
