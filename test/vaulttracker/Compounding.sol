@@ -30,6 +30,11 @@ interface IAaveToken {
   function UNDERLYING_ASSET_ADDRESS() external view returns (address);
 }
 
+interface IEulerToken {
+  /// @notice Convert an eToken balance to an underlying amount, taking into account current exchange rate
+  function convertBalanceToUnderlying(uint256) external view returns(uint256);
+}
+
 library Compounding {
   /// @param p Protocol Enum value
   /// @param c Compounding token address
@@ -42,9 +47,10 @@ library Compounding {
       IAaveToken aToken = IAaveToken(c);
       return IAavePool(aToken.POOL()).getReserveNormalizedIncome(aToken.UNDERLYING_ASSET_ADDRESS());
     } else if (p == uint8(Protocols.Euler)) {
-      // TODO this
-      return 0;
+      // NOTE: the 1e27 const is a degree of precision to enforce on the return
+      return IEulerToken(c).convertBalanceToUnderlying(1e27);
     } else {
+      // NOTE: the 1e26 const is a degree of precision to enforce on the return
       return IErc4626(c).convertToAssets(1e26);
     }
   }

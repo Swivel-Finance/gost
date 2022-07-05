@@ -7,19 +7,19 @@ import './Protocols.sol'; // NOTE: if size restrictions become extreme we can us
 interface IErc4626 {
   /// @dev Converts the given 'assets' (uint256) to 'shares', returning that amount
   function convertToAssets(uint256) external view returns (uint256);
-  /// @dev The address of the underlying ERC20 token
+  /// @dev The address of the underlying asset
   function asset() external view returns (address);
 }
 
 interface ICompoundToken {
   function exchangeRateCurrent() external view returns(uint256);
-  /// @dev The address of the underlying ERC20 token
+  /// @dev The address of the underlying asset
   function underlying() external view returns(address);
 }
 
 interface IYearnVault {
   function pricePerShare() external view returns (uint256);
-  /// @dev The address of the underlying ERC20 token
+  /// @dev The address of the underlying asset
   function underlying() external view returns(address);
 }
 
@@ -29,9 +29,17 @@ interface IAavePool {
 }
 
 interface IAaveToken {
-  // TODO comments
+  // @dev Deployed ddress of the associated Aave Pool
   function POOL() external view returns (address);
+  /// @dev The address of the underlying asset
   function UNDERLYING_ASSET_ADDRESS() external view returns (address);
+}
+
+interface IEulerToken {
+  /// @notice Convert an eToken balance to an underlying amount, taking into account current exchange rate
+  function convertBalanceToUnderlying(uint256) external view returns(uint256);
+  /// @dev The address of the underlying asset
+  function underlyingAsset() external view returns(address);
 }
 
 library Compounding {
@@ -45,8 +53,7 @@ library Compounding {
     } else if (p == uint8(Protocols.Aave)) {
       return IAaveToken(c).UNDERLYING_ASSET_ADDRESS();
     } else if (p == uint8(Protocols.Euler)) {
-      // TODO this
-      return c;
+      return IEulerToken(c).underlyingAsset();
     } else {
       return IErc4626(c).asset();      
     }
@@ -63,8 +70,8 @@ library Compounding {
       IAaveToken aToken = IAaveToken(c);
       return IAavePool(aToken.POOL()).getReserveNormalizedIncome(aToken.UNDERLYING_ASSET_ADDRESS());
     } else if (p == uint8(Protocols.Euler)) {
-      // TODO this
-      return 0;
+      // NOTE: the 1e27 const is a degree of precision to enforce on the return
+      return IEulerToken(c).convertBalanceToUnderlying(1e27);
     } else {
       // NOTE: the 1e26 const is a degree of precision to enforce on the return
       return IErc4626(c).convertToAssets(1e26);

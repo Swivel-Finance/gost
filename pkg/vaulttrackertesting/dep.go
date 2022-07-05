@@ -19,6 +19,8 @@ type Dep struct {
 	AaveTokenAddress     common.Address
 	AavePool             *mocks.AavePool
 	AavePoolAddress      common.Address
+	EulerToken           *mocks.EulerToken
+	EulerTokenAddress    common.Address
 	SwivelAddress        common.Address
 	VaultTracker         *vaulttracker.VaultTracker
 	VaultTrackerAddress  common.Address
@@ -66,6 +68,14 @@ func Deploy(e *Env) (*Dep, error) {
 		return nil, apErr
 	}
 
+	etAddress, _, etContract, etErr := mocks.DeployEulerToken(e.Owner.Opts, e.Blockchain)
+
+	if etErr != nil {
+		return nil, etErr
+	}
+
+	e.Blockchain.Commit()
+
 	e.Blockchain.Commit()
 
 	// swivel address can be mocked
@@ -97,6 +107,8 @@ func Deploy(e *Env) (*Dep, error) {
 		AaveTokenAddress:     atAddress,
 		AavePool:             apContract,
 		AavePoolAddress:      apAddress,
+		EulerToken:           etContract,
+		EulerTokenAddress:    etAddress,
 		Maturity:             maturity,
 		SwivelAddress:        swivelAddress,
 		VaultTrackerAddress:  trackerAddress,

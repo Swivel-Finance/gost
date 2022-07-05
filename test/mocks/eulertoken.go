@@ -30,8 +30,8 @@ var (
 
 // EulerTokenMetaData contains all meta data concerning the EulerToken contract.
 var EulerTokenMetaData = &bind.MetaData{
-	ABI: "[{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"i\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"a\",\"type\":\"uint256\"}],\"name\":\"deposit\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"depositCalled\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"i\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"a\",\"type\":\"uint256\"}],\"name\":\"withdraw\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"withdrawCalled\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"}]",
-	Bin: "0x608060405234801561001057600080fd5b50610258806100206000396000f3fe608060405234801561001057600080fd5b506004361061004c5760003560e01c8063022ddcdb14610051578063441a3e70146100815780635024c2791461009d578063e2bbb158146100cd575b600080fd5b61006b6004803603810190610066919061018b565b6100e9565b60405161007891906101c7565b60405180910390f35b61009b600480360381019061009691906101e2565b610101565b005b6100b760048036038101906100b2919061018b565b61011d565b6040516100c491906101c7565b60405180910390f35b6100e760048036038101906100e291906101e2565b610135565b005b60006020528060005260406000206000915090505481565b8060016000848152602001908152602001600020819055505050565b60016020528060005260406000206000915090505481565b80600080848152602001908152602001600020819055505050565b600080fd5b6000819050919050565b61016881610155565b811461017357600080fd5b50565b6000813590506101858161015f565b92915050565b6000602082840312156101a1576101a0610150565b5b60006101af84828501610176565b91505092915050565b6101c181610155565b82525050565b60006020820190506101dc60008301846101b8565b92915050565b600080604083850312156101f9576101f8610150565b5b600061020785828601610176565b925050602061021885828601610176565b915050925092905056fea2646970667358221220136200ac0b40878cf1f3afc658a9c5f45b361026b30623c525a13d2e99ca061d64736f6c634300080d0033",
+	ABI: "[{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"convertBalanceToUnderlying\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"n\",\"type\":\"uint256\"}],\"name\":\"convertBalanceToUnderlyingReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"i\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"a\",\"type\":\"uint256\"}],\"name\":\"deposit\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"depositCalled\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"underlyingAsset\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"a\",\"type\":\"address\"}],\"name\":\"underlyingAssetReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"i\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"a\",\"type\":\"uint256\"}],\"name\":\"withdraw\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"withdrawCalled\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"}]",
+	Bin: "0x608060405234801561001057600080fd5b50610452806100206000396000f3fe608060405234801561001057600080fd5b50600436106100885760003560e01c8063441a3e701161005b578063441a3e70146101255780635024c279146101415780637158da7c14610171578063e2bbb1581461018f57610088565b8063010ad6d11461008d578063022ddcdb146100bd5780632a646f07146100ed5780634167cc2b14610109575b600080fd5b6100a760048036038101906100a291906102d0565b6101ab565b6040516100b4919061030c565b60405180910390f35b6100d760048036038101906100d291906102d0565b6101b7565b6040516100e4919061030c565b60405180910390f35b610107600480360381019061010291906102d0565b6101cf565b005b610123600480360381019061011e9190610385565b6101d9565b005b61013f600480360381019061013a91906103b2565b61021c565b005b61015b600480360381019061015691906102d0565b610238565b604051610168919061030c565b60405180910390f35b610179610250565b6040516101869190610401565b60405180910390f35b6101a960048036038101906101a491906103b2565b610279565b005b60006001549050919050565b60026020528060005260406000206000915090505481565b8060018190555050565b806000806101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555050565b8060036000848152602001908152602001600020819055505050565b60036020528060005260406000206000915090505481565b60008060009054906101000a900473ffffffffffffffffffffffffffffffffffffffff16905090565b8060026000848152602001908152602001600020819055505050565b600080fd5b6000819050919050565b6102ad8161029a565b81146102b857600080fd5b50565b6000813590506102ca816102a4565b92915050565b6000602082840312156102e6576102e5610295565b5b60006102f4848285016102bb565b91505092915050565b6103068161029a565b82525050565b600060208201905061032160008301846102fd565b92915050565b600073ffffffffffffffffffffffffffffffffffffffff82169050919050565b600061035282610327565b9050919050565b61036281610347565b811461036d57600080fd5b50565b60008135905061037f81610359565b92915050565b60006020828403121561039b5761039a610295565b5b60006103a984828501610370565b91505092915050565b600080604083850312156103c9576103c8610295565b5b60006103d7858286016102bb565b92505060206103e8858286016102bb565b9150509250929050565b6103fb81610347565b82525050565b600060208201905061041660008301846103f2565b9291505056fea2646970667358221220a56c44cb229d1eaa2bacbf46912baefe11d5cc982d67a7ecaabc98260a7dc6e564736f6c634300080d0033",
 }
 
 // EulerTokenABI is the input ABI used to generate the binding from.
@@ -201,6 +201,37 @@ func (_EulerToken *EulerTokenTransactorRaw) Transact(opts *bind.TransactOpts, me
 	return _EulerToken.Contract.contract.Transact(opts, method, params...)
 }
 
+// ConvertBalanceToUnderlying is a free data retrieval call binding the contract method 0x010ad6d1.
+//
+// Solidity: function convertBalanceToUnderlying(uint256 ) view returns(uint256)
+func (_EulerToken *EulerTokenCaller) ConvertBalanceToUnderlying(opts *bind.CallOpts, arg0 *big.Int) (*big.Int, error) {
+	var out []interface{}
+	err := _EulerToken.contract.Call(opts, &out, "convertBalanceToUnderlying", arg0)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
+}
+
+// ConvertBalanceToUnderlying is a free data retrieval call binding the contract method 0x010ad6d1.
+//
+// Solidity: function convertBalanceToUnderlying(uint256 ) view returns(uint256)
+func (_EulerToken *EulerTokenSession) ConvertBalanceToUnderlying(arg0 *big.Int) (*big.Int, error) {
+	return _EulerToken.Contract.ConvertBalanceToUnderlying(&_EulerToken.CallOpts, arg0)
+}
+
+// ConvertBalanceToUnderlying is a free data retrieval call binding the contract method 0x010ad6d1.
+//
+// Solidity: function convertBalanceToUnderlying(uint256 ) view returns(uint256)
+func (_EulerToken *EulerTokenCallerSession) ConvertBalanceToUnderlying(arg0 *big.Int) (*big.Int, error) {
+	return _EulerToken.Contract.ConvertBalanceToUnderlying(&_EulerToken.CallOpts, arg0)
+}
+
 // DepositCalled is a free data retrieval call binding the contract method 0x022ddcdb.
 //
 // Solidity: function depositCalled(uint256 ) view returns(uint256)
@@ -230,6 +261,37 @@ func (_EulerToken *EulerTokenSession) DepositCalled(arg0 *big.Int) (*big.Int, er
 // Solidity: function depositCalled(uint256 ) view returns(uint256)
 func (_EulerToken *EulerTokenCallerSession) DepositCalled(arg0 *big.Int) (*big.Int, error) {
 	return _EulerToken.Contract.DepositCalled(&_EulerToken.CallOpts, arg0)
+}
+
+// UnderlyingAsset is a free data retrieval call binding the contract method 0x7158da7c.
+//
+// Solidity: function underlyingAsset() view returns(address)
+func (_EulerToken *EulerTokenCaller) UnderlyingAsset(opts *bind.CallOpts) (common.Address, error) {
+	var out []interface{}
+	err := _EulerToken.contract.Call(opts, &out, "underlyingAsset")
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
+}
+
+// UnderlyingAsset is a free data retrieval call binding the contract method 0x7158da7c.
+//
+// Solidity: function underlyingAsset() view returns(address)
+func (_EulerToken *EulerTokenSession) UnderlyingAsset() (common.Address, error) {
+	return _EulerToken.Contract.UnderlyingAsset(&_EulerToken.CallOpts)
+}
+
+// UnderlyingAsset is a free data retrieval call binding the contract method 0x7158da7c.
+//
+// Solidity: function underlyingAsset() view returns(address)
+func (_EulerToken *EulerTokenCallerSession) UnderlyingAsset() (common.Address, error) {
+	return _EulerToken.Contract.UnderlyingAsset(&_EulerToken.CallOpts)
 }
 
 // WithdrawCalled is a free data retrieval call binding the contract method 0x5024c279.
@@ -263,6 +325,27 @@ func (_EulerToken *EulerTokenCallerSession) WithdrawCalled(arg0 *big.Int) (*big.
 	return _EulerToken.Contract.WithdrawCalled(&_EulerToken.CallOpts, arg0)
 }
 
+// ConvertBalanceToUnderlyingReturns is a paid mutator transaction binding the contract method 0x2a646f07.
+//
+// Solidity: function convertBalanceToUnderlyingReturns(uint256 n) returns()
+func (_EulerToken *EulerTokenTransactor) ConvertBalanceToUnderlyingReturns(opts *bind.TransactOpts, n *big.Int) (*types.Transaction, error) {
+	return _EulerToken.contract.Transact(opts, "convertBalanceToUnderlyingReturns", n)
+}
+
+// ConvertBalanceToUnderlyingReturns is a paid mutator transaction binding the contract method 0x2a646f07.
+//
+// Solidity: function convertBalanceToUnderlyingReturns(uint256 n) returns()
+func (_EulerToken *EulerTokenSession) ConvertBalanceToUnderlyingReturns(n *big.Int) (*types.Transaction, error) {
+	return _EulerToken.Contract.ConvertBalanceToUnderlyingReturns(&_EulerToken.TransactOpts, n)
+}
+
+// ConvertBalanceToUnderlyingReturns is a paid mutator transaction binding the contract method 0x2a646f07.
+//
+// Solidity: function convertBalanceToUnderlyingReturns(uint256 n) returns()
+func (_EulerToken *EulerTokenTransactorSession) ConvertBalanceToUnderlyingReturns(n *big.Int) (*types.Transaction, error) {
+	return _EulerToken.Contract.ConvertBalanceToUnderlyingReturns(&_EulerToken.TransactOpts, n)
+}
+
 // Deposit is a paid mutator transaction binding the contract method 0xe2bbb158.
 //
 // Solidity: function deposit(uint256 i, uint256 a) returns()
@@ -282,6 +365,27 @@ func (_EulerToken *EulerTokenSession) Deposit(i *big.Int, a *big.Int) (*types.Tr
 // Solidity: function deposit(uint256 i, uint256 a) returns()
 func (_EulerToken *EulerTokenTransactorSession) Deposit(i *big.Int, a *big.Int) (*types.Transaction, error) {
 	return _EulerToken.Contract.Deposit(&_EulerToken.TransactOpts, i, a)
+}
+
+// UnderlyingAssetReturns is a paid mutator transaction binding the contract method 0x4167cc2b.
+//
+// Solidity: function underlyingAssetReturns(address a) returns()
+func (_EulerToken *EulerTokenTransactor) UnderlyingAssetReturns(opts *bind.TransactOpts, a common.Address) (*types.Transaction, error) {
+	return _EulerToken.contract.Transact(opts, "underlyingAssetReturns", a)
+}
+
+// UnderlyingAssetReturns is a paid mutator transaction binding the contract method 0x4167cc2b.
+//
+// Solidity: function underlyingAssetReturns(address a) returns()
+func (_EulerToken *EulerTokenSession) UnderlyingAssetReturns(a common.Address) (*types.Transaction, error) {
+	return _EulerToken.Contract.UnderlyingAssetReturns(&_EulerToken.TransactOpts, a)
+}
+
+// UnderlyingAssetReturns is a paid mutator transaction binding the contract method 0x4167cc2b.
+//
+// Solidity: function underlyingAssetReturns(address a) returns()
+func (_EulerToken *EulerTokenTransactorSession) UnderlyingAssetReturns(a common.Address) (*types.Transaction, error) {
+	return _EulerToken.Contract.UnderlyingAssetReturns(&_EulerToken.TransactOpts, a)
 }
 
 // Withdraw is a paid mutator transaction binding the contract method 0x441a3e70.
