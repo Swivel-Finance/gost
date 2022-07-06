@@ -5,7 +5,6 @@ import (
 	test "testing"
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
-	"github.com/ethereum/go-ethereum/common"
 
 	// "github.com/ethereum/go-ethereum/common"
 	// "github.com/ethereum/go-ethereum/crypto"
@@ -90,7 +89,7 @@ func (s *splitCombineSuite) TestSplit() {
 	s.Env.Blockchain.Commit()
 
 	// the marketplace mock...
-	tx, err = s.MarketPlace.CTokenAndAdapterAddressReturns(s.Dep.CompoundTokenAddress, common.HexToAddress("0x123"))
+	tx, err = s.MarketPlace.CTokenAddressReturns(s.Dep.CompoundTokenAddress)
 	assert.NotNil(tx)
 	assert.Nil(err)
 	s.Env.Blockchain.Commit()
@@ -134,7 +133,7 @@ func (s *splitCombineSuite) TestCombine() {
 	s.Env.Blockchain.Commit()
 
 	// the marketplace mock...
-	tx, err = s.MarketPlace.CTokenAndAdapterAddressReturns(s.Dep.CompoundTokenAddress, common.HexToAddress("0x123"))
+	tx, err = s.MarketPlace.CTokenAddressReturns(s.Dep.CompoundTokenAddress)
 	assert.NotNil(tx)
 	assert.Nil(err)
 	s.Env.Blockchain.Commit()

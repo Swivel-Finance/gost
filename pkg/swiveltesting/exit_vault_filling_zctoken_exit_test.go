@@ -5,7 +5,6 @@ import (
 	test "testing"
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
-	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
@@ -95,7 +94,7 @@ func (s *EVFZESuite) TestEVFZE() {
 	s.Env.Blockchain.Commit()
 
 	// and the marketplace api methods...
-	tx, err = s.MarketPlace.CTokenAndAdapterAddressReturns(s.Dep.YearnVaultAddress, common.HexToAddress("0x123"))
+	tx, err = s.MarketPlace.CTokenAddressReturns(s.Dep.YearnVaultAddress)
 	assert.Nil(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()

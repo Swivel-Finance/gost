@@ -17,10 +17,10 @@ import (
 
 type transferSuite struct {
 	suite.Suite
-	Env          *Env
-	Dep          *Dep
-	Compounding  *mocks.CompoundSession
-	VaultTracker *vaulttracker.VaultTrackerSession // *Session objects are created by the go bindings
+	Env           *Env
+	Dep           *Dep
+	CompoundToken *mocks.CompoundTokenSession
+	VaultTracker  *vaulttracker.VaultTrackerSession // *Session objects are created by the go bindings
 }
 
 func (s *transferSuite) SetupTest() {
@@ -38,8 +38,8 @@ func (s *transferSuite) SetupTest() {
 	}
 	s.Env.Blockchain.Commit()
 
-	s.Compounding = &mocks.CompoundSession{
-		Contract: s.Dep.Compounding,
+	s.CompoundToken = &mocks.CompoundTokenSession{
+		Contract: s.Dep.CompoundToken,
 		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
 		TransactOpts: bind.TransactOpts{
 			From:   s.Env.Owner.Opts.From,
@@ -73,7 +73,7 @@ func (s *transferSuite) TestTransferFailRequireAmount() {
 	assert := assertions.New(s.T())
 
 	rate1 := big.NewInt(123456789)
-	tx, err := s.Compounding.ExchangeRateReturns(rate1)
+	tx, err := s.CompoundToken.ExchangeRateCurrentReturns(rate1)
 	assert.Nil(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
@@ -110,7 +110,7 @@ func (s *transferSuite) TestTransferNotMaturedNotExistingVault() {
 	assert := assertions.New(s.T())
 
 	rate1 := big.NewInt(123456789)
-	tx, err := s.Compounding.ExchangeRateReturns(rate1)
+	tx, err := s.CompoundToken.ExchangeRateCurrentReturns(rate1)
 	assert.Nil(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
@@ -140,7 +140,7 @@ func (s *transferSuite) TestTransferNotMaturedNotExistingVault() {
 	assert.Equal(vaultO.Redeemable.Cmp(ZERO), 0)
 
 	rate2 := big.NewInt(223456789)
-	tx, err = s.Compounding.ExchangeRateReturns(rate2)
+	tx, err = s.CompoundToken.ExchangeRateCurrentReturns(rate2)
 	assert.Nil(err)
 	assert.NotNil(tx)
 
@@ -168,7 +168,7 @@ func (s *transferSuite) TestTransferNotMaturedNotExistingVault() {
 	assert.Equal(vaultU.ExchangeRate.Cmp(ZERO), 0)
 
 	rate3 := big.NewInt(323456789)
-	tx, err = s.Compounding.ExchangeRateReturns(rate3)
+	tx, err = s.CompoundToken.ExchangeRateCurrentReturns(rate3)
 	assert.Nil(err)
 	assert.NotNil(tx)
 
@@ -199,7 +199,7 @@ func (s *transferSuite) TestTransferNotMaturedExistingVault() {
 	assert := assertions.New(s.T())
 
 	rate1 := big.NewInt(123456789)
-	tx, err := s.Compounding.ExchangeRateReturns(rate1)
+	tx, err := s.CompoundToken.ExchangeRateCurrentReturns(rate1)
 	assert.Nil(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
@@ -229,7 +229,7 @@ func (s *transferSuite) TestTransferNotMaturedExistingVault() {
 	assert.Equal(vaultO.Redeemable.Cmp(ZERO), 0)
 
 	rate2 := big.NewInt(223456789)
-	tx, err = s.Compounding.ExchangeRateReturns(rate2)
+	tx, err = s.CompoundToken.ExchangeRateCurrentReturns(rate2)
 	assert.Nil(err)
 	assert.NotNil(tx)
 
@@ -257,7 +257,7 @@ func (s *transferSuite) TestTransferNotMaturedExistingVault() {
 	assert.Equal(vaultU.ExchangeRate.Cmp(ZERO), 0)
 
 	rate3 := big.NewInt(323456789)
-	tx, err = s.Compounding.ExchangeRateReturns(rate3)
+	tx, err = s.CompoundToken.ExchangeRateCurrentReturns(rate3)
 	assert.Nil(err)
 	assert.NotNil(tx)
 
@@ -305,7 +305,7 @@ func (s *transferSuite) TestTransferMaturedNotExistingVault() {
 	assert := assertions.New(s.T())
 
 	rate1 := big.NewInt(123456789)
-	tx, err := s.Compounding.ExchangeRateReturns(rate1)
+	tx, err := s.CompoundToken.ExchangeRateCurrentReturns(rate1)
 	assert.Nil(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
@@ -335,7 +335,7 @@ func (s *transferSuite) TestTransferMaturedNotExistingVault() {
 	assert.Equal(vaultO.Redeemable.Cmp(ZERO), 0)
 
 	rate2 := big.NewInt(223456789)
-	tx, err = s.Compounding.ExchangeRateReturns(rate2)
+	tx, err = s.CompoundToken.ExchangeRateCurrentReturns(rate2)
 	assert.Nil(err)
 	assert.NotNil(tx)
 
@@ -363,7 +363,7 @@ func (s *transferSuite) TestTransferMaturedNotExistingVault() {
 	assert.Equal(vaultU.ExchangeRate.Cmp(ZERO), 0)
 
 	rate3 := big.NewInt(823456789)
-	tx, err = s.Compounding.ExchangeRateReturns(rate3)
+	tx, err = s.CompoundToken.ExchangeRateCurrentReturns(rate3)
 	assert.NotNil(tx)
 	assert.Nil(err)
 	s.Env.Blockchain.Commit()
@@ -407,7 +407,7 @@ func (s *transferSuite) TestTransferMaturedExistingVault() {
 	assert := assertions.New(s.T())
 
 	rate1 := big.NewInt(123456789)
-	tx, err := s.Compounding.ExchangeRateReturns(rate1)
+	tx, err := s.CompoundToken.ExchangeRateCurrentReturns(rate1)
 	assert.Nil(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
@@ -437,7 +437,7 @@ func (s *transferSuite) TestTransferMaturedExistingVault() {
 	assert.Equal(vaultO.Redeemable.Cmp(ZERO), 0)
 
 	rate2 := big.NewInt(223456789)
-	tx, err = s.Compounding.ExchangeRateReturns(rate2)
+	tx, err = s.CompoundToken.ExchangeRateCurrentReturns(rate2)
 	assert.Nil(err)
 	assert.NotNil(tx)
 
@@ -465,7 +465,7 @@ func (s *transferSuite) TestTransferMaturedExistingVault() {
 	assert.Equal(vaultU.ExchangeRate.Cmp(ZERO), 0)
 
 	rate3 := big.NewInt(323456789)
-	tx, err = s.Compounding.ExchangeRateReturns(rate3)
+	tx, err = s.CompoundToken.ExchangeRateCurrentReturns(rate3)
 	assert.Nil(err)
 	assert.NotNil(tx)
 
@@ -487,7 +487,7 @@ func (s *transferSuite) TestTransferMaturedExistingVault() {
 	assert.Equal(vaultU.Redeemable.Cmp(ZERO), 0)
 
 	rate4 := big.NewInt(823456789)
-	tx, err = s.Compounding.ExchangeRateReturns(rate4)
+	tx, err = s.CompoundToken.ExchangeRateCurrentReturns(rate4)
 	assert.NotNil(tx)
 	assert.Nil(err)
 	s.Env.Blockchain.Commit()

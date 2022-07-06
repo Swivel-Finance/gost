@@ -30,8 +30,8 @@ var (
 
 // Erc4626MetaData contains all meta data concerning the Erc4626 contract.
 var Erc4626MetaData = &bind.MetaData{
-	ABI: "[{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"a\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"r\",\"type\":\"address\"}],\"name\":\"deposit\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"depositCalled\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"s\",\"type\":\"uint256\"}],\"name\":\"depositReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"a\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"r\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"o\",\"type\":\"address\"}],\"name\":\"withdraw\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"withdrawCalled\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"assets\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"s\",\"type\":\"uint256\"}],\"name\":\"withdrawReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]",
-	Bin: "0x608060405234801561001057600080fd5b5061055c806100206000396000f3fe608060405234801561001057600080fd5b50600436106100625760003560e01c806320a8b9cd1461006757806326cca786146100835780636e553f651461009f578063b460af94146100cf578063b79c449b146100ff578063d35147e414610130575b600080fd5b610081600480360381019061007c9190610379565b610160565b005b61009d60048036038101906100989190610379565b61016a565b005b6100b960048036038101906100b49190610404565b610174565b6040516100c69190610453565b60405180910390f35b6100e960048036038101906100e4919061046e565b6101c5565b6040516100f69190610453565b60405180910390f35b610119600480360381019061011491906104c1565b6102b2565b6040516101279291906104fd565b60405180910390f35b61014a600480360381019061014591906104c1565b6102f6565b6040516101579190610453565b60405180910390f35b8060028190555050565b8060008190555050565b600082600160008473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002081905550600054905092915050565b60006101cf61030e565b8481600001818152505082816020019073ffffffffffffffffffffffffffffffffffffffff16908173ffffffffffffffffffffffffffffffffffffffff168152505080600360008673ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1681526020019081526020016000206000820151816000015560208201518160010160006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff1602179055509050506002549150509392505050565b60036020528060005260406000206000915090508060000154908060010160009054906101000a900473ffffffffffffffffffffffffffffffffffffffff16905082565b60016020528060005260406000206000915090505481565b604051806040016040528060008152602001600073ffffffffffffffffffffffffffffffffffffffff1681525090565b600080fd5b6000819050919050565b61035681610343565b811461036157600080fd5b50565b6000813590506103738161034d565b92915050565b60006020828403121561038f5761038e61033e565b5b600061039d84828501610364565b91505092915050565b600073ffffffffffffffffffffffffffffffffffffffff82169050919050565b60006103d1826103a6565b9050919050565b6103e1816103c6565b81146103ec57600080fd5b50565b6000813590506103fe816103d8565b92915050565b6000806040838503121561041b5761041a61033e565b5b600061042985828601610364565b925050602061043a858286016103ef565b9150509250929050565b61044d81610343565b82525050565b60006020820190506104686000830184610444565b92915050565b6000806000606084860312156104875761048661033e565b5b600061049586828701610364565b93505060206104a6868287016103ef565b92505060406104b7868287016103ef565b9150509250925092565b6000602082840312156104d7576104d661033e565b5b60006104e5848285016103ef565b91505092915050565b6104f7816103c6565b82525050565b60006040820190506105126000830185610444565b61051f60208301846104ee565b939250505056fea264697066735822122005848b69d9e8fb00049e5ece0a05e003e834f9ca11bbda9e435064df99549cf664736f6c634300080d0033",
+	ABI: "[{\"inputs\":[],\"name\":\"asset\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"a\",\"type\":\"address\"}],\"name\":\"assetReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"convertToAssets\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"a\",\"type\":\"uint256\"}],\"name\":\"convertToAssetsReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"a\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"r\",\"type\":\"address\"}],\"name\":\"deposit\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"depositCalled\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"s\",\"type\":\"uint256\"}],\"name\":\"depositReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"a\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"r\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"o\",\"type\":\"address\"}],\"name\":\"withdraw\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"withdrawCalled\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"assets\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"s\",\"type\":\"uint256\"}],\"name\":\"withdrawReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]",
+	Bin: "0x608060405234801561001057600080fd5b506106bb806100206000396000f3fe608060405234801561001057600080fd5b506004361061009e5760003560e01c8063a326d8a811610066578063a326d8a814610159578063b460af9414610175578063b79c449b146101a5578063cf631143146101d6578063d35147e4146101f25761009e565b806307a2d13a146100a357806320a8b9cd146100d357806326cca786146100ef57806338d52e0f1461010b5780636e553f6514610129575b600080fd5b6100bd60048036038101906100b891906104bd565b610222565b6040516100ca91906104f9565b60405180910390f35b6100ed60048036038101906100e891906104bd565b61022e565b005b610109600480360381019061010491906104bd565b610238565b005b610113610242565b6040516101209190610555565b60405180910390f35b610143600480360381019061013e919061059c565b61026b565b60405161015091906104f9565b60405180910390f35b610173600480360381019061016e91906104bd565b6102bc565b005b61018f600480360381019061018a91906105dc565b6102c6565b60405161019c91906104f9565b60405180910390f35b6101bf60048036038101906101ba919061062f565b6103b3565b6040516101cd92919061065c565b60405180910390f35b6101f060048036038101906101eb919061062f565b6103f7565b005b61020c6004803603810190610207919061062f565b61043a565b60405161021991906104f9565b60405180910390f35b60006001549050919050565b8060048190555050565b8060028190555050565b60008060009054906101000a900473ffffffffffffffffffffffffffffffffffffffff16905090565b600082600360008473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002081905550600254905092915050565b8060018190555050565b60006102d0610452565b8481600001818152505082816020019073ffffffffffffffffffffffffffffffffffffffff16908173ffffffffffffffffffffffffffffffffffffffff168152505080600560008673ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1681526020019081526020016000206000820151816000015560208201518160010160006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff1602179055509050506004549150509392505050565b60056020528060005260406000206000915090508060000154908060010160009054906101000a900473ffffffffffffffffffffffffffffffffffffffff16905082565b806000806101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555050565b60036020528060005260406000206000915090505481565b604051806040016040528060008152602001600073ffffffffffffffffffffffffffffffffffffffff1681525090565b600080fd5b6000819050919050565b61049a81610487565b81146104a557600080fd5b50565b6000813590506104b781610491565b92915050565b6000602082840312156104d3576104d2610482565b5b60006104e1848285016104a8565b91505092915050565b6104f381610487565b82525050565b600060208201905061050e60008301846104ea565b92915050565b600073ffffffffffffffffffffffffffffffffffffffff82169050919050565b600061053f82610514565b9050919050565b61054f81610534565b82525050565b600060208201905061056a6000830184610546565b92915050565b61057981610534565b811461058457600080fd5b50565b60008135905061059681610570565b92915050565b600080604083850312156105b3576105b2610482565b5b60006105c1858286016104a8565b92505060206105d285828601610587565b9150509250929050565b6000806000606084860312156105f5576105f4610482565b5b6000610603868287016104a8565b935050602061061486828701610587565b925050604061062586828701610587565b9150509250925092565b60006020828403121561064557610644610482565b5b600061065384828501610587565b91505092915050565b600060408201905061067160008301856104ea565b61067e6020830184610546565b939250505056fea2646970667358221220d37465a70656804d4494ec24bd7627e4cac91f5bb5e564c53291336a68b08d7464736f6c634300080d0033",
 }
 
 // Erc4626ABI is the input ABI used to generate the binding from.
@@ -201,6 +201,68 @@ func (_Erc4626 *Erc4626TransactorRaw) Transact(opts *bind.TransactOpts, method s
 	return _Erc4626.Contract.contract.Transact(opts, method, params...)
 }
 
+// Asset is a free data retrieval call binding the contract method 0x38d52e0f.
+//
+// Solidity: function asset() view returns(address)
+func (_Erc4626 *Erc4626Caller) Asset(opts *bind.CallOpts) (common.Address, error) {
+	var out []interface{}
+	err := _Erc4626.contract.Call(opts, &out, "asset")
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
+}
+
+// Asset is a free data retrieval call binding the contract method 0x38d52e0f.
+//
+// Solidity: function asset() view returns(address)
+func (_Erc4626 *Erc4626Session) Asset() (common.Address, error) {
+	return _Erc4626.Contract.Asset(&_Erc4626.CallOpts)
+}
+
+// Asset is a free data retrieval call binding the contract method 0x38d52e0f.
+//
+// Solidity: function asset() view returns(address)
+func (_Erc4626 *Erc4626CallerSession) Asset() (common.Address, error) {
+	return _Erc4626.Contract.Asset(&_Erc4626.CallOpts)
+}
+
+// ConvertToAssets is a free data retrieval call binding the contract method 0x07a2d13a.
+//
+// Solidity: function convertToAssets(uint256 ) view returns(uint256)
+func (_Erc4626 *Erc4626Caller) ConvertToAssets(opts *bind.CallOpts, arg0 *big.Int) (*big.Int, error) {
+	var out []interface{}
+	err := _Erc4626.contract.Call(opts, &out, "convertToAssets", arg0)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
+}
+
+// ConvertToAssets is a free data retrieval call binding the contract method 0x07a2d13a.
+//
+// Solidity: function convertToAssets(uint256 ) view returns(uint256)
+func (_Erc4626 *Erc4626Session) ConvertToAssets(arg0 *big.Int) (*big.Int, error) {
+	return _Erc4626.Contract.ConvertToAssets(&_Erc4626.CallOpts, arg0)
+}
+
+// ConvertToAssets is a free data retrieval call binding the contract method 0x07a2d13a.
+//
+// Solidity: function convertToAssets(uint256 ) view returns(uint256)
+func (_Erc4626 *Erc4626CallerSession) ConvertToAssets(arg0 *big.Int) (*big.Int, error) {
+	return _Erc4626.Contract.ConvertToAssets(&_Erc4626.CallOpts, arg0)
+}
+
 // DepositCalled is a free data retrieval call binding the contract method 0xd35147e4.
 //
 // Solidity: function depositCalled(address ) view returns(uint256)
@@ -275,6 +337,48 @@ func (_Erc4626 *Erc4626CallerSession) WithdrawCalled(arg0 common.Address) (struc
 	Owner  common.Address
 }, error) {
 	return _Erc4626.Contract.WithdrawCalled(&_Erc4626.CallOpts, arg0)
+}
+
+// AssetReturns is a paid mutator transaction binding the contract method 0xcf631143.
+//
+// Solidity: function assetReturns(address a) returns()
+func (_Erc4626 *Erc4626Transactor) AssetReturns(opts *bind.TransactOpts, a common.Address) (*types.Transaction, error) {
+	return _Erc4626.contract.Transact(opts, "assetReturns", a)
+}
+
+// AssetReturns is a paid mutator transaction binding the contract method 0xcf631143.
+//
+// Solidity: function assetReturns(address a) returns()
+func (_Erc4626 *Erc4626Session) AssetReturns(a common.Address) (*types.Transaction, error) {
+	return _Erc4626.Contract.AssetReturns(&_Erc4626.TransactOpts, a)
+}
+
+// AssetReturns is a paid mutator transaction binding the contract method 0xcf631143.
+//
+// Solidity: function assetReturns(address a) returns()
+func (_Erc4626 *Erc4626TransactorSession) AssetReturns(a common.Address) (*types.Transaction, error) {
+	return _Erc4626.Contract.AssetReturns(&_Erc4626.TransactOpts, a)
+}
+
+// ConvertToAssetsReturns is a paid mutator transaction binding the contract method 0xa326d8a8.
+//
+// Solidity: function convertToAssetsReturns(uint256 a) returns()
+func (_Erc4626 *Erc4626Transactor) ConvertToAssetsReturns(opts *bind.TransactOpts, a *big.Int) (*types.Transaction, error) {
+	return _Erc4626.contract.Transact(opts, "convertToAssetsReturns", a)
+}
+
+// ConvertToAssetsReturns is a paid mutator transaction binding the contract method 0xa326d8a8.
+//
+// Solidity: function convertToAssetsReturns(uint256 a) returns()
+func (_Erc4626 *Erc4626Session) ConvertToAssetsReturns(a *big.Int) (*types.Transaction, error) {
+	return _Erc4626.Contract.ConvertToAssetsReturns(&_Erc4626.TransactOpts, a)
+}
+
+// ConvertToAssetsReturns is a paid mutator transaction binding the contract method 0xa326d8a8.
+//
+// Solidity: function convertToAssetsReturns(uint256 a) returns()
+func (_Erc4626 *Erc4626TransactorSession) ConvertToAssetsReturns(a *big.Int) (*types.Transaction, error) {
+	return _Erc4626.Contract.ConvertToAssetsReturns(&_Erc4626.TransactOpts, a)
 }
 
 // Deposit is a paid mutator transaction binding the contract method 0x6e553f65.

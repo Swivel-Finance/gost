@@ -54,7 +54,7 @@ func (s *vaultTrackerCtorSuite) TestCTokenAddress() {
 	assert := assertions.New(s.T())
 	addr, err := s.VaultTracker.CTokenAddr()
 	assert.Nil(err)
-	assert.Equal(s.Dep.CompoundingTokenAddress, addr)
+	assert.Equal(s.Dep.CompoundTokenAddress, addr)
 }
 
 func (s *vaultTrackerCtorSuite) TestMaturity() {

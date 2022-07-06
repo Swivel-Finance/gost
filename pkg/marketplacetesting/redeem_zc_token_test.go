@@ -14,11 +14,12 @@ import (
 
 type redeemZcTokenSuite struct {
 	suite.Suite
-	Env         *Env
-	Dep         *Dep
-	Erc20       *mocks.Erc20Session
-	Compounding *mocks.CompoundSession
-	MarketPlace *marketplace.MarketPlaceSession // *Session objects are created by the go bindings
+	Env           *Env
+	Dep           *Dep
+	Erc20         *mocks.Erc20Session
+	Erc4626       *mocks.Erc4626Session
+	CompoundToken *mocks.CompoundTokenSession
+	MarketPlace   *marketplace.MarketPlaceSession // *Session objects are created by the go bindings
 }
 
 func (s *redeemZcTokenSuite) SetupTest() {
@@ -43,8 +44,17 @@ func (s *redeemZcTokenSuite) SetupTest() {
 		},
 	}
 
-	s.Compounding = &mocks.CompoundSession{
-		Contract: s.Dep.Compounding,
+	s.Erc4626 = &mocks.Erc4626Session{
+		Contract: s.Dep.Erc4626,
+		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
+		TransactOpts: bind.TransactOpts{
+			From:   s.Env.Owner.Opts.From,
+			Signer: s.Env.Owner.Opts.Signer,
+		},
+	}
+
+	s.CompoundToken = &mocks.CompoundTokenSession{
+		Contract: s.Dep.CompoundToken,
 		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
 		TransactOpts: bind.TransactOpts{
 			From:   s.Env.Owner.Opts.From,
@@ -80,7 +90,7 @@ func (s *redeemZcTokenSuite) TestRedeemFailsWhenPaused() {
 	maturity := big.NewInt(123456789)
 	amount := big.NewInt(123456789)
 
-	tx, err = s.MarketPlace.RedeemZcToken(uint8(0), underlying, maturity, s.Env.Owner.Opts.From, amount)
+	tx, err = s.MarketPlace.RedeemZcToken(uint8(1), underlying, maturity, s.Env.Owner.Opts.From, amount)
 
 	assert.Nil(tx)
 	assert.NotNil(err)
@@ -104,15 +114,15 @@ func (s *redeemZcTokenSuite) TestRedeemZcTokenMaturedRequirementFails() {
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
 
-	tx, err = s.Compounding.UnderlyingReturns(underlying)
+	tx, err = s.CompoundToken.UnderlyingReturns(underlying)
 	assert.Nil(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
 
 	tx, err = s.MarketPlace.CreateMarket(
+		uint8(1),
 		maturity,
 		ctoken,
-		s.Dep.CompoundingAddress,
 		"awesome market",
 		"AM",
 	)
@@ -122,7 +132,7 @@ func (s *redeemZcTokenSuite) TestRedeemZcTokenMaturedRequirementFails() {
 	s.Env.Blockchain.Commit()
 
 	// we should be able to fetch the market now...
-	market, err := s.MarketPlace.Markets(uint8(0), underlying, maturity)
+	market, err := s.MarketPlace.Markets(uint8(1), underlying, maturity)
 	assert.Nil(err)
 	assert.Equal(market.CTokenAddr, ctoken)
 
@@ -156,7 +166,7 @@ func (s *redeemZcTokenSuite) TestRedeemZcTokenMaturedRequirementFails() {
 	s.Env.Blockchain.Commit()
 
 	amount := big.NewInt(123456789)
-	tx, err = s.MarketPlace.RedeemZcToken(uint8(0), underlying, maturity, s.Env.Owner.Opts.From, amount)
+	tx, err = s.MarketPlace.RedeemZcToken(uint8(1), underlying, maturity, s.Env.Owner.Opts.From, amount)
 	assert.NotNil(err)
 	assert.Regexp("maturity not reached", err.Error())
 	assert.Nil(tx)
@@ -175,15 +185,15 @@ func (s *redeemZcTokenSuite) TestRedeemZcTokenNotMatured() {
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
 
-	tx, err = s.Compounding.UnderlyingReturns(underlying)
+	tx, err = s.CompoundToken.UnderlyingReturns(underlying)
 	assert.Nil(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
 
 	tx, err = s.MarketPlace.CreateMarket(
+		uint8(1),
 		maturity,
 		ctoken,
-		s.Dep.CompoundingAddress,
 		"awesome market",
 		"AM",
 	)
@@ -193,7 +203,7 @@ func (s *redeemZcTokenSuite) TestRedeemZcTokenNotMatured() {
 	s.Env.Blockchain.Commit()
 
 	// we should be able to fetch the market now...
-	market, err := s.MarketPlace.Markets(uint8(0), underlying, maturity)
+	market, err := s.MarketPlace.Markets(uint8(1), underlying, maturity)
 	assert.Nil(err)
 	assert.Equal(market.CTokenAddr, ctoken)
 
@@ -238,7 +248,7 @@ func (s *redeemZcTokenSuite) TestRedeemZcTokenNotMatured() {
 	s.Env.Blockchain.Commit()
 
 	amount := big.NewInt(123456789)
-	tx, err = s.MarketPlace.RedeemZcToken(uint8(0), underlying, maturity, s.Env.Owner.Opts.From, amount)
+	tx, err = s.MarketPlace.RedeemZcToken(uint8(1), underlying, maturity, s.Env.Owner.Opts.From, amount)
 	assert.Nil(err)
 	assert.NotNil(tx)
 
@@ -260,15 +270,15 @@ func (s *redeemZcTokenSuite) TestRedeemZcTokenNotMaturedBurnFails() {
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
 
-	tx, err = s.Compounding.UnderlyingReturns(underlying)
+	tx, err = s.CompoundToken.UnderlyingReturns(underlying)
 	assert.Nil(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
 
 	tx, err = s.MarketPlace.CreateMarket(
+		uint8(1),
 		maturity,
 		ctoken,
-		s.Dep.CompoundingAddress,
 		"awesome market",
 		"AM",
 	)
@@ -278,7 +288,7 @@ func (s *redeemZcTokenSuite) TestRedeemZcTokenNotMaturedBurnFails() {
 	s.Env.Blockchain.Commit()
 
 	// we should be able to fetch the market now...
-	market, err := s.MarketPlace.Markets(uint8(0), underlying, maturity)
+	market, err := s.MarketPlace.Markets(uint8(1), underlying, maturity)
 	assert.Nil(err)
 	assert.Equal(market.CTokenAddr, ctoken)
 
@@ -323,7 +333,7 @@ func (s *redeemZcTokenSuite) TestRedeemZcTokenNotMaturedBurnFails() {
 	s.Env.Blockchain.Commit()
 
 	amount := big.NewInt(123456789)
-	tx, err = s.MarketPlace.RedeemZcToken(uint8(0), underlying, maturity, s.Env.Owner.Opts.From, amount)
+	tx, err = s.MarketPlace.RedeemZcToken(uint8(1), underlying, maturity, s.Env.Owner.Opts.From, amount)
 	assert.NotNil(err)
 	assert.Regexp("could not burn", err.Error())
 	assert.Nil(tx)
@@ -335,22 +345,22 @@ func (s *redeemZcTokenSuite) TestRedeemZcTokenMatured() {
 	assert := assertions.New(s.T())
 	underlying := s.Dep.Erc20Address
 	maturity := s.Dep.Maturity
-	ctoken := s.Dep.CompoundTokenAddress
+	ctoken := s.Dep.Erc4626Address
 
 	tx, err := s.Erc20.DecimalsReturns(uint8(18))
 	assert.Nil(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
 
-	tx, err = s.Compounding.UnderlyingReturns(underlying)
+	tx, err = s.Erc4626.AssetReturns(underlying)
 	assert.Nil(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
 
 	tx, err = s.MarketPlace.CreateMarket(
+		uint8(0), // Erc4626
 		maturity,
 		ctoken,
-		s.Dep.CompoundingAddress,
 		"awesome market",
 		"AM",
 	)
@@ -406,7 +416,7 @@ func (s *redeemZcTokenSuite) TestRedeemZcTokenMatured() {
 	s.Env.Blockchain.Commit()
 
 	rate := big.NewInt(223456789)
-	tx, err = s.Compounding.ExchangeRateReturns(rate)
+	tx, err = s.Erc4626.ConvertToAssetsReturns(rate)
 	assert.Nil(err)
 	assert.NotNil(tx)
 
@@ -443,15 +453,15 @@ func (s *redeemZcTokenSuite) TestRedeemZcTokenMaturedBurnFails() {
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
 
-	tx, err = s.Compounding.UnderlyingReturns(underlying)
+	tx, err = s.CompoundToken.UnderlyingReturns(underlying)
 	assert.Nil(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
 
 	tx, err = s.MarketPlace.CreateMarket(
+		uint8(1),
 		maturity,
 		ctoken,
-		s.Dep.CompoundingAddress,
 		"awesome market",
 		"AM",
 	)
@@ -461,7 +471,7 @@ func (s *redeemZcTokenSuite) TestRedeemZcTokenMaturedBurnFails() {
 	s.Env.Blockchain.Commit()
 
 	// we should be able to fetch the market now...
-	market, err := s.MarketPlace.Markets(uint8(0), underlying, maturity)
+	market, err := s.MarketPlace.Markets(uint8(1), underlying, maturity)
 	assert.Nil(err)
 	assert.Equal(market.CTokenAddr, ctoken)
 
@@ -507,20 +517,20 @@ func (s *redeemZcTokenSuite) TestRedeemZcTokenMaturedBurnFails() {
 	s.Env.Blockchain.Commit()
 
 	rate := big.NewInt(223456789)
-	tx, err = s.Compounding.ExchangeRateReturns(rate)
+	tx, err = s.CompoundToken.ExchangeRateCurrentReturns(rate)
 	assert.Nil(err)
 	assert.NotNil(tx)
 
 	s.Env.Blockchain.Commit()
 
-	tx, err = s.MarketPlace.MatureMarket(uint8(0), underlying, maturity)
+	tx, err = s.MarketPlace.MatureMarket(uint8(1), underlying, maturity)
 	assert.Nil(err)
 	assert.NotNil(tx)
 
 	s.Env.Blockchain.Commit()
 
 	amount := big.NewInt(123456789)
-	tx, err = s.MarketPlace.RedeemZcToken(uint8(0), underlying, maturity, s.Env.Owner.Opts.From, amount)
+	tx, err = s.MarketPlace.RedeemZcToken(uint8(1), underlying, maturity, s.Env.Owner.Opts.From, amount)
 	assert.NotNil(err)
 	assert.Regexp("could not burn", err.Error())
 	assert.Nil(tx)

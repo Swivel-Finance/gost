@@ -15,7 +15,7 @@ type transferNotionalFeeSuite struct {
 	suite.Suite
 	Env          *Env
 	Dep          *Dep
-	Compounding  *mocks.CompoundSession
+	YearnVault   *mocks.YearnVaultSession
 	VaultTracker *vaulttracker.VaultTrackerSession
 }
 
@@ -31,8 +31,8 @@ func (s *transferNotionalFeeSuite) SetupTest() {
 	assert.Nil(err)
 	s.Env.Blockchain.Commit()
 
-	s.Compounding = &mocks.CompoundSession{
-		Contract: s.Dep.Compounding,
+	s.YearnVault = &mocks.YearnVaultSession{
+		Contract: s.Dep.YearnVault,
 		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
 		TransactOpts: bind.TransactOpts{
 			From:   s.Env.Owner.Opts.From,
@@ -40,9 +40,16 @@ func (s *transferNotionalFeeSuite) SetupTest() {
 		},
 	}
 
-	// binding owner to both, kind of why it exists - but could be any of the env wallets
+	// deploy a vaultTracker with Protocols.Yearn
+	_, _, contract, err := vaulttracker.DeployVaultTracker(s.Env.Owner.Opts, s.Env.Blockchain, uint8(3),
+		big.NewInt(MATURITY), s.Dep.YearnVaultAddress, s.Dep.SwivelAddress)
+
+	if err != nil {
+		panic(err)
+	}
+
 	s.VaultTracker = &vaulttracker.VaultTrackerSession{
-		Contract: s.Dep.VaultTracker,
+		Contract: contract,
 		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
 		TransactOpts: bind.TransactOpts{
 			From:   s.Env.Owner.Opts.From,
@@ -55,7 +62,7 @@ func (s *transferNotionalFeeSuite) TestTransferNotionalFee() {
 	assert := assertions.New(s.T())
 
 	rate1 := big.NewInt(1)
-	tx, err := s.Compounding.ExchangeRateReturns(rate1)
+	tx, err := s.YearnVault.PricePerShareReturns(rate1)
 	assert.Nil(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()

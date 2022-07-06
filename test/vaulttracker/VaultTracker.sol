@@ -2,7 +2,7 @@
 
 pragma solidity 0.8.13;
 
-import './Interfaces.sol';
+import './Compounding.sol';
 
 contract VaultTracker {
   struct Vault {
@@ -15,27 +15,26 @@ contract VaultTracker {
 
   address public immutable admin;
   address public immutable cTokenAddr;
-  address public immutable adapterAddr;
   address public immutable swivel;
   uint256 public immutable maturity;
   uint256 public maturityRate;
+  uint8 public immutable protocol;
 
   /// @param m Maturity timestamp associated with this vault
   /// @param c Compounding Token address associated with this vault
-  /// @param a ICompounding adapter address associated with this vault
   /// @param s Address of the deployed swivel contract
-  constructor(uint256 m, address c, address a, address s) {
+  constructor(uint8 p, uint256 m, address c, address s) {
     admin = msg.sender;
+    protocol = p;
     maturity = m;
     cTokenAddr = c;
-    adapterAddr = a;
     swivel = s;
 
     // instantiate swivel's vault (unblocking transferNotionalFee)
     vaults[s] = Vault({
       notional: 0,
       redeemable: 0,
-      exchangeRate: ICompounding(a).exchangeRate(c)
+      exchangeRate: Compounding.exchangeRate(p, c)
     });
   }
 
@@ -43,7 +42,7 @@ contract VaultTracker {
   /// @param o Address that owns a vault
   /// @param a Amount of notional added
   function addNotional(address o, uint256 a) external authorized(admin) returns (bool) {
-    uint256 exchangeRate = ICompounding(adapterAddr).exchangeRate(cTokenAddr);
+    uint256 exchangeRate = Compounding.exchangeRate(protocol, cTokenAddr);
 
     Vault memory vlt = vaults[o];
 
@@ -81,11 +80,11 @@ contract VaultTracker {
 
     require(vlt.notional >= a, "amount exceeds vault balance");
 
-    uint256 yield;
-    uint256 exchangeRate = ICompounding(adapterAddr).exchangeRate(cTokenAddr);
+    uint256 exchangeRate = Compounding.exchangeRate(protocol, cTokenAddr);
 
     // if market has matured, calculate marginal interest between the maturity rate and previous position exchange rate
     // otherwise, calculate marginal exchange rate between current and previous exchange rate.
+    uint256 yield;
     if (maturityRate > 0) { // Calculate marginal interest
       yield = ((maturityRate * 1e26) / vlt.exchangeRate) - 1e26;
     } else {
@@ -111,11 +110,11 @@ contract VaultTracker {
     Vault memory vlt = vaults[o];
 
     uint256 redeemable = vlt.redeemable;
-    uint256 yield;
-    uint256 exchangeRate = ICompounding(adapterAddr).exchangeRate(cTokenAddr);
+    uint256 exchangeRate = Compounding.exchangeRate(protocol, cTokenAddr);
 
     // if market has matured, calculate marginal interest between the maturity rate and previous position exchange rate
     // otherwise, calculate marginal exchange rate between current and previous exchange rate.
+    uint256 yield;
     if (maturityRate > 0) { // Calculate marginal interest
       yield = ((maturityRate * 1e26) / vlt.exchangeRate) - 1e26;
     } else {
@@ -153,11 +152,11 @@ contract VaultTracker {
 
     require(from.notional >= a, "amount exceeds available balance");
 
-    uint256 yield;
-    uint256 exchangeRate = ICompounding(adapterAddr).exchangeRate(cTokenAddr);
+    uint256 exchangeRate = Compounding.exchangeRate(protocol, cTokenAddr);
 
     // if market has matured, calculate marginal interest between the maturity rate and previous position exchange rate
     // otherwise, calculate marginal exchange rate between current and previous exchange rate.
+    uint256 yield;
     if (maturityRate > 0) { 
       // calculate marginal interest
       yield = ((maturityRate * 1e26) / from.exchangeRate) - 1e26;
@@ -208,10 +207,10 @@ contract VaultTracker {
     // remove notional from its owner
     oVault.notional -= a;
 
-    uint256 exchangeRate = ICompounding(adapterAddr).exchangeRate(cTokenAddr);
-    uint256 yield;
+    uint256 exchangeRate = Compounding.exchangeRate(protocol, cTokenAddr);
 
     // check if exchangeRate has been stored already this block. If not, calculate marginal interest + store exchangeRate
+    uint256 yield;
     if (sVault.exchangeRate != exchangeRate) {
       // if market has matured, calculate marginal interest between the maturity rate and previous position exchange rate
       // otherwise, calculate marginal exchange rate between current and previous exchange rate.

@@ -3,20 +3,12 @@
 pragma solidity 0.8.13;
 
 import './Interfaces.sol';
+import './Protocols.sol';
 import './Hash.sol';
 import './Sig.sol';
 import './Safe.sol';
 
 contract Swivel {
-  enum Protocols {
-    Erc4626,
-    Compound,
-    Rari,
-    Yearn,
-    Aave,
-    Euler
-  }
-
   /// @dev maps the key of an order to a boolean indicating if an order was cancelled
   mapping (bytes32 => bool) public cancelled;
   /// @dev maps the key of an order to an amount representing its taken volume
@@ -31,9 +23,8 @@ contract Swivel {
   address public immutable marketPlace;
   address public admin;
   
-  /// @dev address(es) of 3rd party protocol contracts needed by an interface
-  // TODO immutable?
-  address public aaveAddr;
+  /// @dev address of a deployed Aave contract implementing IAave
+  address public aaveAddr; // TODO immutable?
 
   uint16 constant public MIN_FEENOMINATOR = 33;
   /// @dev holds the fee demoninators for [zcTokenInitiate, zcTokenExit, vaultInitiate, vaultExit]
@@ -117,9 +108,7 @@ contract Swivel {
     Safe.transferFrom(uToken, o.maker, address(this), principalFilled);
 
     IMarketPlace mPlace = IMarketPlace(marketPlace);
-    address cTokenAddr;
-    // TODO we can revert the getter on MarketPlace.sol to only cTokenAddress if desired...
-    (cTokenAddr,) = mPlace.cTokenAndAdapterAddress(o.protocol, o.underlying, o.maturity);
+    address cTokenAddr = mPlace.cTokenAddress(o.protocol, o.underlying, o.maturity);
 
     // perform the actual deposit type transaction, specific to a protocol
     // TODO discuss the require or simply fire-and-forget
@@ -156,8 +145,7 @@ contract Swivel {
     Safe.transferFrom(uToken, msg.sender, address(this), (a + fee));
 
     IMarketPlace mPlace = IMarketPlace(marketPlace);
-    address cTokenAddr;
-    (cTokenAddr,) = mPlace.cTokenAndAdapterAddress(o.protocol, o.underlying, o.maturity);
+    address cTokenAddr = mPlace.cTokenAddress(o.protocol, o.underlying, o.maturity);
 
     // perform the actual deposit type transaction, specific to a protocol
     require(deposit(o.protocol, o.underlying, cTokenAddr, a), 'deposit failed');
@@ -326,8 +314,7 @@ contract Swivel {
 
     // redeem underlying on Compound and burn cTokens
     IMarketPlace mPlace = IMarketPlace(marketPlace);
-    address cTokenAddr;
-    (cTokenAddr,) = mPlace.cTokenAndAdapterAddress(o.protocol, o.underlying, o.maturity);
+    address cTokenAddr = mPlace.cTokenAddress(o.protocol, o.underlying, o.maturity);
 
     require(withdraw(o.protocol, o.underlying, cTokenAddr, a), 'withdraw failed');
 
@@ -360,8 +347,7 @@ contract Swivel {
 
     // redeem underlying on Compound and burn cTokens
     IMarketPlace mPlace = IMarketPlace(marketPlace);
-    address cTokenAddr;
-    (cTokenAddr,) = mPlace.cTokenAndAdapterAddress(o.protocol, o.underlying, o.maturity);
+    address cTokenAddr = mPlace.cTokenAddress(o.protocol, o.underlying, o.maturity);
     uint256 principalFilled = (a * o.principal) / o.premium;
 
     require(withdraw(o.protocol, o.underlying, cTokenAddr, principalFilled), 'withdraw failed');
@@ -482,8 +468,7 @@ contract Swivel {
     Safe.transferFrom(uToken, msg.sender, address(this), a);
 
     IMarketPlace mPlace = IMarketPlace(marketPlace);
-    address cTokenAddr;
-    (cTokenAddr,) = mPlace.cTokenAndAdapterAddress(p, u, m);
+    address cTokenAddr = mPlace.cTokenAddress(p, u, m);
     
     // the underlying deposit is directed to the appropriate abstraction
     require(deposit(p, u, cTokenAddr, a), 'deposit failed');
@@ -502,8 +487,7 @@ contract Swivel {
     IMarketPlace mPlace = IMarketPlace(marketPlace);
     require(mPlace.burnZcTokenRemovingNotional(p, u, m, msg.sender, a), 'burn ZcToken removing Notional failed');
 
-    address cTokenAddr;
-    (cTokenAddr,) = mPlace.cTokenAndAdapterAddress(p, u, m);
+    address cTokenAddr = mPlace.cTokenAddress(p, u, m);
 
     require(withdraw(p, u, cTokenAddr, a), 'withdraw failed');
 
@@ -521,9 +505,8 @@ contract Swivel {
     IMarketPlace mPlace = IMarketPlace(marketPlace);
     // call marketplace to determine the amount redeemed
     uint256 redeemed = mPlace.redeemZcToken(p, u, m, msg.sender, a);
-    // redeem underlying from compound
-    address cTokenAddr;
-    (cTokenAddr,) = mPlace.cTokenAndAdapterAddress(p, u, m);
+    // redeem underlying from compounding
+    address cTokenAddr = mPlace.cTokenAddress(p, u, m);
 
     require(withdraw(p, u, cTokenAddr, redeemed), 'withdraw failed');
 
@@ -541,9 +524,8 @@ contract Swivel {
     IMarketPlace mPlace = IMarketPlace(marketPlace);
     // call marketplace to determine the amount redeemed
     uint256 redeemed = mPlace.redeemVaultInterest(p, u, m, msg.sender);
-    // redeem underlying from compound
-    address cTokenAddr;
-    (cTokenAddr,) = mPlace.cTokenAndAdapterAddress(p, u, m);
+    // redeem underlying from compounding
+    address cTokenAddr = mPlace.cTokenAddress(p, u, m);
 
     require(withdraw(p, u, cTokenAddr, redeemed), 'withdraw failed');
 

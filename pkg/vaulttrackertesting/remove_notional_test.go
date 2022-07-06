@@ -14,10 +14,10 @@ import (
 
 type removeNotionalSuite struct {
 	suite.Suite
-	Env          *Env
-	Dep          *Dep
-	Compounding  *mocks.CompoundSession
-	VaultTracker *vaulttracker.VaultTrackerSession // *Session objects are created by the go bindings
+	Env           *Env
+	Dep           *Dep
+	CompoundToken *mocks.CompoundTokenSession
+	VaultTracker  *vaulttracker.VaultTrackerSession // *Session objects are created by the go bindings
 }
 
 func (s *removeNotionalSuite) SetupTest() {
@@ -35,8 +35,8 @@ func (s *removeNotionalSuite) SetupTest() {
 	}
 	s.Env.Blockchain.Commit()
 
-	s.Compounding = &mocks.CompoundSession{
-		Contract: s.Dep.Compounding,
+	s.CompoundToken = &mocks.CompoundTokenSession{
+		Contract: s.Dep.CompoundToken,
 		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
 		TransactOpts: bind.TransactOpts{
 			From:   s.Env.Owner.Opts.From,
@@ -59,7 +59,7 @@ func (s *removeNotionalSuite) TestRemoveNotionalFailRequireAmount() {
 	assert := assertions.New(s.T())
 
 	rate1 := big.NewInt(123456789)
-	tx, err := s.Compounding.ExchangeRateReturns(rate1)
+	tx, err := s.CompoundToken.ExchangeRateCurrentReturns(rate1)
 	assert.Nil(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
@@ -96,7 +96,7 @@ func (s *removeNotionalSuite) TestRemoveNotionalNotMatured() {
 	assert := assertions.New(s.T())
 
 	rate1 := big.NewInt(123456789)
-	tx, err := s.Compounding.ExchangeRateReturns(rate1)
+	tx, err := s.CompoundToken.ExchangeRateCurrentReturns(rate1)
 	assert.Nil(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
@@ -119,7 +119,7 @@ func (s *removeNotionalSuite) TestRemoveNotionalNotMatured() {
 	s.Env.Blockchain.Commit()
 
 	rate2 := big.NewInt(723456789)
-	tx, err = s.Compounding.ExchangeRateReturns(rate2)
+	tx, err = s.CompoundToken.ExchangeRateCurrentReturns(rate2)
 	assert.NotNil(tx)
 	assert.Nil(err)
 	s.Env.Blockchain.Commit()
@@ -145,7 +145,7 @@ func (s *removeNotionalSuite) TestRemoveNotionalMatured() {
 	assert := assertions.New(s.T())
 
 	rate1 := big.NewInt(123456789)
-	tx, err := s.Compounding.ExchangeRateReturns(rate1)
+	tx, err := s.CompoundToken.ExchangeRateCurrentReturns(rate1)
 	assert.Nil(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
@@ -168,13 +168,13 @@ func (s *removeNotionalSuite) TestRemoveNotionalMatured() {
 	s.Env.Blockchain.Commit()
 
 	rate2 := big.NewInt(723456789)
-	tx, err = s.Compounding.ExchangeRateReturns(rate2)
+	tx, err = s.CompoundToken.ExchangeRateCurrentReturns(rate2)
 	assert.NotNil(tx)
 	assert.Nil(err)
 	s.Env.Blockchain.Commit()
 
 	rate3 := big.NewInt(823456789)
-	tx, err = s.Compounding.ExchangeRateReturns(rate3)
+	tx, err = s.CompoundToken.ExchangeRateCurrentReturns(rate3)
 	assert.NotNil(tx)
 	assert.Nil(err)
 	s.Env.Blockchain.Commit()
@@ -192,7 +192,7 @@ func (s *removeNotionalSuite) TestRemoveNotionalMatured() {
 	s.Env.Blockchain.Commit()
 
 	rate4 := big.NewInt(923456787)
-	tx, err = s.Compounding.ExchangeRateReturns(rate4)
+	tx, err = s.CompoundToken.ExchangeRateCurrentReturns(rate4)
 	assert.NotNil(tx)
 	assert.Nil(err)
 	s.Env.Blockchain.Commit()

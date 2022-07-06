@@ -7,6 +7,10 @@
 pragma solidity 0.8.13;
 
 contract YearnVault {
+  /// @dev allows us to dictate return from underlying().
+  address private underlyingReturn;
+  /// @dev allows us to dictate return from pricePerShare().
+  uint256 private pricePerShareReturn;
   /// @dev allows us to dictate return from deposit().
   uint256 private depositReturn;
   /// @dev the last amount deposit was called with, msg.sender -> amount
@@ -15,6 +19,22 @@ contract YearnVault {
   uint256 private withdrawReturn;
   /// @dev the last amount withdraw was called with, msg.sender -> amount
   mapping (address => uint256) public withdrawCalled;
+
+  function underlying() public view returns (address) {
+    return underlyingReturn;
+  }
+
+  function underlyingReturns(address a) public {
+    underlyingReturn = a;
+  }
+
+  function pricePerShare() public view returns (uint256) {
+    return pricePerShareReturn;
+  }
+
+  function pricePerShareReturns(uint256 p) public {
+    pricePerShareReturn = p;
+  }
 
   function deposit(uint256 a) public returns (uint256) {
     depositCalled[msg.sender] = a;

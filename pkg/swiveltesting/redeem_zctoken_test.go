@@ -5,7 +5,6 @@ import (
 	test "testing"
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
-	"github.com/ethereum/go-ethereum/common"
 	assertions "github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 	"github.com/swivel-finance/gost/test/mocks"
@@ -91,7 +90,7 @@ func (s *redeemZcTokenSuite) TestRedeemZcToken() {
 
 	s.Env.Blockchain.Commit()
 
-	tx, err = s.MarketPlace.CTokenAndAdapterAddressReturns(s.Dep.EulerTokenAddress, common.HexToAddress("0x123"))
+	tx, err = s.MarketPlace.CTokenAddressReturns(s.Dep.EulerTokenAddress)
 	assert.Nil(err)
 	assert.NotNil(tx)
 
@@ -134,7 +133,7 @@ func (s *redeemZcTokenSuite) TestCompoundRedeemZcTokenRedeemUnderlyingFails() {
 
 	s.Env.Blockchain.Commit()
 
-	tx, err = s.MarketPlace.CTokenAndAdapterAddressReturns(s.Dep.CompoundTokenAddress, common.HexToAddress("0x123"))
+	tx, err = s.MarketPlace.CTokenAddressReturns(s.Dep.CompoundTokenAddress)
 	assert.Nil(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()

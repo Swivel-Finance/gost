@@ -23,10 +23,10 @@ contract VaultTracker {
   mapping (address => uint256) public transferNotionalFeeCalled;
 
   address public cTokenAddr;
-  address public adapterAddr;
   address public swivel;
   address public redeemInterestCalled;
   uint256 public matureVaultCalled;
+  uint8 public protocol;
 
   uint256 private maturityReturn;
   uint256 private redeemInterestReturn;
@@ -39,13 +39,14 @@ contract VaultTracker {
   bool private transferNotionalFromReturn;
   bool private transferNotionalFeeReturn;
 
+  /// @param p protocol enum value
   /// @param m maturity
   /// @param c cToken address
   /// @param s deployed swivel contract address
-  constructor(uint256 m, address c, address a, address s) {
+  constructor(uint8 p, uint256 m, address c, address s) {
+    protocol = p;
     maturityReturn = m;
     cTokenAddr = c;
-    adapterAddr = a;
     swivel = s;
   }
 

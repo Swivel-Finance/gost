@@ -16,7 +16,7 @@ type addNotionalSuite struct {
 	suite.Suite
 	Env          *Env
 	Dep          *Dep
-	Compounding  *mocks.CompoundSession
+	Erc4626      *mocks.Erc4626Session
 	VaultTracker *vaulttracker.VaultTrackerSession // *Session objects are created by the go bindings
 }
 
@@ -35,8 +35,8 @@ func (s *addNotionalSuite) SetupTest() {
 	}
 	s.Env.Blockchain.Commit()
 
-	s.Compounding = &mocks.CompoundSession{
-		Contract: s.Dep.Compounding,
+	s.Erc4626 = &mocks.Erc4626Session{
+		Contract: s.Dep.Erc4626,
 		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
 		TransactOpts: bind.TransactOpts{
 			From:   s.Env.Owner.Opts.From,
@@ -44,9 +44,16 @@ func (s *addNotionalSuite) SetupTest() {
 		},
 	}
 
-	// binding owner to both, kind of why it exists - but could be any of the env wallets
+	// deploy a vaultTracker with Protocols.Erc4626
+	_, _, contract, err := vaulttracker.DeployVaultTracker(s.Env.Owner.Opts, s.Env.Blockchain, uint8(0),
+		big.NewInt(MATURITY), s.Dep.Erc4626Address, s.Dep.SwivelAddress)
+
+	if err != nil {
+		panic(err)
+	}
+
 	s.VaultTracker = &vaulttracker.VaultTrackerSession{
-		Contract: s.Dep.VaultTracker,
+		Contract: contract,
 		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
 		TransactOpts: bind.TransactOpts{
 			From:   s.Env.Owner.Opts.From,
@@ -59,7 +66,7 @@ func (s *addNotionalSuite) TestAddNotionalCreateVault() {
 	assert := assertions.New(s.T())
 
 	rate1 := big.NewInt(123456789)
-	tx, err := s.Compounding.ExchangeRateReturns(rate1)
+	tx, err := s.Erc4626.ConvertToAssetsReturns(rate1)
 	assert.Nil(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
@@ -95,7 +102,8 @@ func (s *addNotionalSuite) TestAddNotionalNotMatured() {
 	assert := assertions.New(s.T())
 
 	rate1 := big.NewInt(123456789)
-	tx, err := s.Compounding.ExchangeRateReturns(rate1)
+	tx, err := s.Erc4626.ConvertToAssetsReturns(rate1)
+	assert.Nil(err)
 	assert.Nil(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
@@ -127,7 +135,8 @@ func (s *addNotionalSuite) TestAddNotionalNotMatured() {
 	assert.Equal(vault.Redeemable.Cmp(redeemable1), 0)
 
 	rate2 := big.NewInt(723456789)
-	tx, err = s.Compounding.ExchangeRateReturns(rate2)
+	tx, err = s.Erc4626.ConvertToAssetsReturns(rate2)
+	assert.Nil(err)
 	assert.NotNil(tx)
 	assert.Nil(err)
 	s.Env.Blockchain.Commit()
@@ -154,7 +163,8 @@ func (s *addNotionalSuite) TestAddNotionalMatured() {
 	assert := assertions.New(s.T())
 
 	rate1 := big.NewInt(123456789)
-	tx, err := s.Compounding.ExchangeRateReturns(rate1)
+	tx, err := s.Erc4626.ConvertToAssetsReturns(rate1)
+	assert.Nil(err)
 	assert.Nil(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
@@ -186,7 +196,8 @@ func (s *addNotionalSuite) TestAddNotionalMatured() {
 	assert.Equal(vault.Redeemable.Cmp(redeemable1), 0)
 
 	rate2 := big.NewInt(723456789)
-	tx, err = s.Compounding.ExchangeRateReturns(rate2)
+	tx, err = s.Erc4626.ConvertToAssetsReturns(rate2)
+	assert.Nil(err)
 	assert.NotNil(tx)
 	assert.Nil(err)
 	s.Env.Blockchain.Commit()
@@ -209,7 +220,8 @@ func (s *addNotionalSuite) TestAddNotionalMatured() {
 	assert.Equal(redeemable2, vault.Redeemable)
 
 	rate3 := big.NewInt(823456789)
-	tx, err = s.Compounding.ExchangeRateReturns(rate3)
+	tx, err = s.Erc4626.ConvertToAssetsReturns(rate3)
+	assert.Nil(err)
 	assert.NotNil(tx)
 	assert.Nil(err)
 	s.Env.Blockchain.Commit()
@@ -227,7 +239,8 @@ func (s *addNotionalSuite) TestAddNotionalMatured() {
 	s.Env.Blockchain.Commit()
 
 	rate4 := big.NewInt(923456787)
-	tx, err = s.Compounding.ExchangeRateReturns(rate4)
+	tx, err = s.Erc4626.ConvertToAssetsReturns(rate4)
+	assert.Nil(err)
 	assert.NotNil(tx)
 	assert.Nil(err)
 	s.Env.Blockchain.Commit()

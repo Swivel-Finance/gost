@@ -44,7 +44,7 @@ interface IMarketPlace {
   // returns the amount of underlying interest to send
   function redeemVaultInterest(uint8, address, uint256, address) external returns (uint256);
   // returns the cToken address for a given market
-  function cTokenAndAdapterAddress(uint8, address, uint256) external returns (address, address);
+  function cTokenAddress(uint8, address, uint256) external returns (address);
   // EVFZE FF EZFVE call this which would then burn zctoken and remove notional
   function custodialExit(uint8, address, uint256, address, address, uint256) external returns (bool);
   // IVFZI && IZFVI call this which would then mint zctoken and add notional
