@@ -17,6 +17,7 @@ type custodialExitSuite struct {
 	Dep           *Dep
 	Erc20         *mocks.Erc20Session
 	CompoundToken *mocks.CompoundTokenSession
+	EulerToken    *mocks.EulerTokenSession
 	MarketPlace   *marketplace.MarketPlaceSession // *Session objects are created by the go bindings
 }
 
@@ -44,6 +45,15 @@ func (s *custodialExitSuite) SetupTest() {
 
 	s.CompoundToken = &mocks.CompoundTokenSession{
 		Contract: s.Dep.CompoundToken,
+		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
+		TransactOpts: bind.TransactOpts{
+			From:   s.Env.Owner.Opts.From,
+			Signer: s.Env.Owner.Opts.Signer,
+		},
+	}
+
+	s.EulerToken = &mocks.EulerTokenSession{
+		Contract: s.Dep.EulerToken,
 		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
 		TransactOpts: bind.TransactOpts{
 			From:   s.Env.Owner.Opts.From,
@@ -98,16 +108,16 @@ func (s *custodialExitSuite) TestCustodialExit() {
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
 
-	tx, err = s.CompoundToken.UnderlyingReturns(s.Dep.Erc20Address)
+	tx, err = s.EulerToken.UnderlyingAssetReturns(s.Dep.Erc20Address)
 	assert.Nil(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
 
 	maturity := s.Dep.Maturity
-	ctoken := s.Dep.CompoundTokenAddress
+	ctoken := s.Dep.EulerTokenAddress
 
 	tx, err = s.MarketPlace.CreateMarket(
-		uint8(1),
+		uint8(5),
 		maturity,
 		ctoken,
 		"awesome market",
@@ -122,7 +132,7 @@ func (s *custodialExitSuite) TestCustodialExit() {
 	user1Opts := s.Env.User1.Opts
 
 	// we should be able to fetch the market now...
-	market, err := s.MarketPlace.Markets(uint8(1), s.Dep.Erc20Address, maturity)
+	market, err := s.MarketPlace.Markets(uint8(5), s.Dep.Erc20Address, maturity)
 	assert.Nil(err)
 	assert.Equal(market.CTokenAddr, ctoken)
 
@@ -160,7 +170,7 @@ func (s *custodialExitSuite) TestCustodialExit() {
 	s.Env.Blockchain.Commit()
 
 	amount := big.NewInt(100)
-	tx, err = s.MarketPlace.CustodialExit(uint8(1), s.Dep.Erc20Address, maturity, ownerOpts.From, user1Opts.From, amount)
+	tx, err = s.MarketPlace.CustodialExit(uint8(5), s.Dep.Erc20Address, maturity, ownerOpts.From, user1Opts.From, amount)
 	assert.Nil(err)
 	assert.NotNil(tx)
 

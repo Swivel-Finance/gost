@@ -19,6 +19,7 @@ type redeemInterestSuite struct {
 	Env           *Env
 	Dep           *Dep
 	CompoundToken *mocks.CompoundTokenSession
+	EulerToken    *mocks.EulerTokenSession
 	VaultTracker  *vaulttracker.VaultTrackerSession
 }
 
@@ -39,6 +40,15 @@ func (s *redeemInterestSuite) SetupTest() {
 
 	s.CompoundToken = &mocks.CompoundTokenSession{
 		Contract: s.Dep.CompoundToken,
+		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
+		TransactOpts: bind.TransactOpts{
+			From:   s.Env.Owner.Opts.From,
+			Signer: s.Env.Owner.Opts.Signer,
+		},
+	}
+
+	s.EulerToken = &mocks.EulerTokenSession{
+		Contract: s.Dep.EulerToken,
 		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
 		TransactOpts: bind.TransactOpts{
 			From:   s.Env.Owner.Opts.From,
@@ -150,13 +160,34 @@ func (s *redeemInterestSuite) TestRedeemInterestMatured() {
 	assert := assertions.New(s.T())
 
 	rate1 := big.NewInt(123456789)
-	tx, err := s.CompoundToken.ExchangeRateCurrentReturns(rate1)
+	tx, err := s.EulerToken.ConvertBalanceToUnderlyingReturns(rate1)
 	assert.Nil(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
 
+	// deploy a vaultTracker with Protocols.Aave for this test specifically
+	_, _, contract, err := vaulttracker.DeployVaultTracker(s.Env.Owner.Opts, s.Env.Blockchain, uint8(5),
+		big.NewInt(MATURITY), s.Dep.EulerTokenAddress, s.Dep.SwivelAddress)
+
+	if err != nil {
+		panic(err)
+	}
+
+	s.Env.Blockchain.Commit()
+
+	var tracker *vaulttracker.VaultTrackerSession
+
+	tracker = &vaulttracker.VaultTrackerSession{
+		Contract: contract,
+		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
+		TransactOpts: bind.TransactOpts{
+			From:   s.Env.Owner.Opts.From,
+			Signer: s.Env.Owner.Opts.Signer,
+		},
+	}
+
 	// no vault found for Owner
-	vault, err := s.VaultTracker.Vaults(s.Env.Owner.Opts.From)
+	vault, err := tracker.Vaults(s.Env.Owner.Opts.From)
 	assert.Nil(err)
 	assert.NotNil(vault)
 	assert.Equal(vault.Redeemable.Cmp(ZERO), 0)
@@ -167,14 +198,14 @@ func (s *redeemInterestSuite) TestRedeemInterestMatured() {
 	caller := s.Env.Owner.Opts.From
 	amount1 := big.NewInt(10000000)
 	redeemable1 := ZERO
-	tx, err = s.VaultTracker.AddNotional(caller, amount1)
+	tx, err = tracker.AddNotional(caller, amount1)
 	assert.Nil(err)
 	assert.NotNil(tx)
 
 	s.Env.Blockchain.Commit()
 
 	// found vault for Owner
-	vault, err = s.VaultTracker.Vaults(s.Env.Owner.Opts.From)
+	vault, err = tracker.Vaults(s.Env.Owner.Opts.From)
 	assert.Nil(err)
 	assert.NotNil(vault)
 	assert.Equal(amount1, vault.Notional)
@@ -182,7 +213,7 @@ func (s *redeemInterestSuite) TestRedeemInterestMatured() {
 	assert.Equal(vault.Redeemable.Cmp(redeemable1), 0)
 
 	rate2 := big.NewInt(723456789)
-	tx, err = s.CompoundToken.ExchangeRateCurrentReturns(rate2)
+	tx, err = s.EulerToken.ConvertBalanceToUnderlyingReturns(rate2)
 	assert.NotNil(tx)
 	assert.Nil(err)
 	s.Env.Blockchain.Commit()
@@ -191,13 +222,13 @@ func (s *redeemInterestSuite) TestRedeemInterestMatured() {
 	redeemable2 := big.NewInt(48600000)
 
 	// call AddNotional for Owner which already has vault and market is not matured
-	tx, err = s.VaultTracker.AddNotional(caller, amount1)
+	tx, err = tracker.AddNotional(caller, amount1)
 	assert.Nil(err)
 	assert.NotNil(tx)
 
 	s.Env.Blockchain.Commit()
 
-	vault, err = s.VaultTracker.Vaults(s.Env.Owner.Opts.From)
+	vault, err = tracker.Vaults(s.Env.Owner.Opts.From)
 	assert.Nil(err)
 	assert.NotNil(vault)
 	assert.Equal(amount2, vault.Notional)
@@ -205,7 +236,7 @@ func (s *redeemInterestSuite) TestRedeemInterestMatured() {
 	assert.Equal(redeemable2, vault.Redeemable)
 
 	rate3 := big.NewInt(823456789)
-	tx, err = s.CompoundToken.ExchangeRateCurrentReturns(rate3)
+	tx, err = s.EulerToken.ConvertBalanceToUnderlyingReturns(rate3)
 	assert.NotNil(tx)
 	assert.Nil(err)
 	s.Env.Blockchain.Commit()
@@ -216,18 +247,18 @@ func (s *redeemInterestSuite) TestRedeemInterestMatured() {
 	s.Env.Blockchain.Commit()
 
 	// call mature
-	tx, err = s.VaultTracker.MatureVault(rate3)
+	tx, err = tracker.MatureVault(rate3)
 	assert.Nil(err)
 	assert.NotNil(tx)
 
 	rate4 := big.NewInt(923456789)
-	tx, err = s.CompoundToken.ExchangeRateCurrentReturns(rate4)
+	tx, err = s.EulerToken.ConvertBalanceToUnderlyingReturns(rate4)
 	assert.NotNil(tx)
 	assert.Nil(err)
 	s.Env.Blockchain.Commit()
 
 	// redeem interest using rate3 (maturityRate)
-	tx, err = s.VaultTracker.RedeemInterest(caller)
+	tx, err = tracker.RedeemInterest(caller)
 	assert.Nil(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
@@ -244,7 +275,7 @@ func (s *redeemInterestSuite) TestRedeemInterestMatured() {
 	// assert.Equal(caller.Hex(), common.HexToAddress(logs[0].Topics[1].Hex()).String())
 	// assert.Equal(big.NewInt(51364505), logs[0].Topics[2].Big())
 
-	vault, err = s.VaultTracker.Vaults(s.Env.Owner.Opts.From)
+	vault, err = tracker.Vaults(s.Env.Owner.Opts.From)
 	assert.Nil(err)
 	assert.NotNil(vault)
 	assert.Equal(amount2, vault.Notional)

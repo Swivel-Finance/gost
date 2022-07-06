@@ -21,6 +21,8 @@ type Dep struct {
 	AaveTokenAddress     common.Address
 	AavePool             *mocks.AavePool
 	AavePoolAddress      common.Address
+	EulerToken           *mocks.EulerToken
+	EulerTokenAddress    common.Address
 	MarketPlaceAddress   common.Address
 	MarketPlace          *marketplace.MarketPlace
 	Maturity             *big.Int
@@ -78,6 +80,14 @@ func Deploy(e *Env) (*Dep, error) {
 
 	e.Blockchain.Commit()
 
+	etAddress, _, etContract, etErr := mocks.DeployEulerToken(e.Owner.Opts, e.Blockchain)
+
+	if etErr != nil {
+		return nil, etErr
+	}
+
+	e.Blockchain.Commit()
+
 	marketAddress, _, marketContract, marketErr := marketplace.DeployMarketPlace(e.Owner.Opts, e.Blockchain)
 
 	if marketErr != nil {
@@ -101,6 +111,8 @@ func Deploy(e *Env) (*Dep, error) {
 		AaveTokenAddress:     atAddress,
 		AavePool:             apContract,
 		AavePoolAddress:      apAddress,
+		EulerToken:           etContract,
+		EulerTokenAddress:    etAddress,
 		SwivelAddress:        common.HexToAddress("0x123aBc"),
 		Maturity:             maturity,
 	}, nil
