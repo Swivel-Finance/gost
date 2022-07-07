@@ -8,6 +8,11 @@ import './ZcToken.sol';
 import './VaultTracker.sol';
 
 contract MarketPlace {
+  /// @dev A single custom error capable of indicating a wide range of detected errors by providing
+  /// an error code value whose string representation is documented <here>, and any possible other values
+  /// that are pertinent to the error.
+  error Exception(uint8, uint256, uint256, address, address);
+
   struct Market {
     address cTokenAddr;
     address zcToken;
@@ -92,7 +97,7 @@ contract MarketPlace {
     Market memory market = markets[p][u][m];
 
     require(market.maturityRate == 0, 'market already matured');
-    require(block.timestamp >= m, "maturity not reached");
+    require(block.timestamp >= m, 'maturity not reached');
 
     // set the base maturity cToken exchange rate at maturity to the current cToken exchange rate
     uint256 exchangeRate = Compounding.exchangeRate(p, market.cTokenAddr);
@@ -292,12 +297,16 @@ contract MarketPlace {
   }
 
   modifier authorized(address a) {
-    require(msg.sender == a, 'sender must be authorized');
+    if(msg.sender != a) {
+      revert Exception(0, 0, 0, msg.sender, a);
+    }
     _;
   }
 
   modifier unpaused() {
-    require(!paused, 'markets are paused');
+    if(paused) {
+      revert Exception(1, 0, 0, address(0), address(0));
+    }
     _;
   }
 }

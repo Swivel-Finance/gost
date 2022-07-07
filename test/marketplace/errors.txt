@@ -1,0 +1,61 @@
+The implicit Errors enum:
+
+[
+  'Unauthorized', 0
+  'Paused', 1
+  ... 
+  'swivel address set', 20
+  'swivel address not set', 21
+  'market exists', 22
+  'market matured', 23
+  'market not mature', 24
+  'vaultTracker.matureVault failed', 25
+  'vaultTracker.addNotional failed', 26
+  'vaultTracker.removeNotional failed', 27
+  'vaultTracker.transferNotionalFrom failed', 28
+  'zcToken.mint failed', 29
+  'zcToken.burn failed', 30
+  'matureMarket failed', 31
+]
+
+<marketplace>
+
+setSwivel()
+'swivel contract address already set'
+
+createMarket()
+'swivel contract address not set'
+'market already exists'
+
+matureMarket()
+'market already matured'
+'maturity not reached'
+'mature vault failed'
+
+mintZcTokenAddingNotional()
+'mint ZcToken failed'
+'add notional failed'
+
+burnZcTokenRemovingNotional()
+'burn failed' 
+'remove notional failed'
+
+redeemZcToken()
+'failed to mature the market'
+'could not burn' [facepalm]
+
+custodialInitiate()
+'mint failed'
+'add notional failed'
+'burn failed'
+'remove notional failed'
+
+p2pZcTokenExchange()
+'zcToken burn failed'
+'zcToken mint failed'
+
+p2pVaultExchange()
+'transfer notional failed'
+
+transferVaultNotional()
+'vault transfer failed'

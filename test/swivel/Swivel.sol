@@ -9,6 +9,10 @@ import './Sig.sol';
 import './Safe.sol';
 
 contract Swivel {
+  /// @dev A single custom error capable of indicating a wide range of detected errors by providing
+  /// an error code value whose string representation is documented <here>, and any possible other values
+  /// that are pertinent to the error.
+  error Exception(uint8, uint256, uint256, address, address);
   /// @dev maps the key of an order to a boolean indicating if an order was cancelled
   mapping (bytes32 => bool) public cancelled;
   /// @dev maps the key of an order to an amount representing its taken volume
@@ -96,8 +100,15 @@ contract Swivel {
     bytes32 hash = validOrderHash(o, c);
 
     // checks the side, and the amount compared to available
-    require((a + filled[hash]) <= o.premium, 'taker amount > available volume');
+    uint256 amount = a + filled[hash];
+
+    // TODO remove on confirm
+    // require((a + filled[hash]) <= o.premium, 'taker amount > available volume');
+    if (amount > o.premium) {
+      revert Exception(5, amount, o.premium, address(0), address(0));
+    }
     
+    // TODO cheaper to assign amount here or keep the ADD?
     filled[hash] += a;
 
     // transfer underlying tokens
@@ -111,14 +122,26 @@ contract Swivel {
     address cTokenAddr = mPlace.cTokenAddress(o.protocol, o.underlying, o.maturity);
 
     // perform the actual deposit type transaction, specific to a protocol
-    // TODO discuss the require or simply fire-and-forget
-    require(deposit(o.protocol, o.underlying, cTokenAddr, principalFilled), 'deposit failed');
+    // TODO remove on confirm
+    // require(deposit(o.protocol, o.underlying, cTokenAddr, principalFilled), 'deposit failed');
+    if (!deposit(o.protocol, o.underlying, cTokenAddr, principalFilled)) {
+      revert Exception(6, 0, 0, address(0), address(0));
+    }
+
     // alert marketplace
-    require(mPlace.custodialInitiate(o.protocol, o.underlying, o.maturity, o.maker, msg.sender, principalFilled), 'custodial initiate failed');
+    // TODO remove on confirm
+    // require(mPlace.custodialInitiate(o.protocol, o.underlying, o.maturity, o.maker, msg.sender, principalFilled), 'custodial initiate failed');
+    if (!mPlace.custodialInitiate(o.protocol, o.underlying, o.maturity, o.maker, msg.sender, principalFilled)) {
+      revert Exception(8, 0, 0, address(0), address(0));
+    }
 
     // transfer fee in vault notional to swivel (from msg.sender)
     uint256 fee = principalFilled / feenominators[2];
-    require(mPlace.transferVaultNotionalFee(o.protocol, o.underlying, o.maturity, msg.sender, fee), 'notional fee transfer failed');
+    // TODO remove on confirm
+    // require(mPlace.transferVaultNotionalFee(o.protocol, o.underlying, o.maturity, msg.sender, fee), 'notional fee transfer failed');
+    if (!mPlace.transferVaultNotionalFee(o.protocol, o.underlying, o.maturity, msg.sender, fee)) {
+      revert Exception(10, 0, 0, address(0), address(0));
+    }
 
     emit Initiate(o.key, hash, o.maker, o.vault, o.exit, msg.sender, a, principalFilled);
   }
@@ -130,9 +153,15 @@ contract Swivel {
   /// @param c Components of a valid ECDSA signature
   function initiateZcTokenFillingVaultInitiate(Hash.Order calldata o, uint256 a, Sig.Components calldata c) internal {
     bytes32 hash = validOrderHash(o, c);
+    uint256 amount = a + filled[hash];
 
-    require((a + filled[hash]) <= o.principal, 'taker amount > available volume');
+    // TODO remove on confirm
+    // require((a + filled[hash]) <= o.principal, 'taker amount > available volume');
+    if (amount > o.principal) {
+      revert Exception(5, amount, o.principal, address(0), address(0));
+    }
 
+    // TODO assign amount or keep the ADD?
     filled[hash] += a;
 
     IErc20 uToken = IErc20(o.underlying);
@@ -148,9 +177,18 @@ contract Swivel {
     address cTokenAddr = mPlace.cTokenAddress(o.protocol, o.underlying, o.maturity);
 
     // perform the actual deposit type transaction, specific to a protocol
-    require(deposit(o.protocol, o.underlying, cTokenAddr, a), 'deposit failed');
+    // TODO remove on confirm
+    // require(deposit(o.protocol, o.underlying, cTokenAddr, a), 'deposit failed');
+    if(!deposit(o.protocol, o.underlying, cTokenAddr, a)) {
+      revert Exception(6, 0, 0, address(0), address(0));
+    }
+
     // alert marketplace 
-    require(mPlace.custodialInitiate(o.protocol, o.underlying, o.maturity, msg.sender, o.maker, a), 'custodial initiate failed');
+    // TODO remove on confirm
+    // require(mPlace.custodialInitiate(o.protocol, o.underlying, o.maturity, msg.sender, o.maker, a), 'custodial initiate failed');
+    if (!mPlace.custodialInitiate(o.protocol, o.underlying, o.maturity, msg.sender, o.maker, a)) {
+      revert Exception(8, 0, 0, address(0), address(0));
+    }
 
     emit Initiate(o.key, hash, o.maker, o.vault, o.exit, msg.sender, a, premiumFilled);
   }
@@ -162,9 +200,15 @@ contract Swivel {
   /// @param c Components of a valid ECDSA signature
   function initiateZcTokenFillingZcTokenExit(Hash.Order calldata o, uint256 a, Sig.Components calldata c) internal {
     bytes32 hash = validOrderHash(o, c);
+    uint256 amount = a + filled[hash];
 
-    require((a + filled[hash]) <= o.principal, 'taker amount > available volume');
+    // TODO remove on confirm
+    // require((a + filled[hash]) <= o.principal, 'taker amount > available volume');
+    if (amount > o.principal) {
+      revert Exception(5, amount, o.principal, address(0), address(0));
+    }
 
+    // TODO assign amount or keep the ADD?
     filled[hash] += a;
 
     uint256 premiumFilled = (a * o.premium) / o.principal;
@@ -177,7 +221,11 @@ contract Swivel {
     Safe.transferFrom(uToken, msg.sender, address(this), fee);
 
     // alert marketplace
-    require(IMarketPlace(marketPlace).p2pZcTokenExchange(o.protocol, o.underlying, o.maturity, o.maker, msg.sender, a), 'zcToken exchange failed');
+    // TODO remove on confirm
+    // require(IMarketPlace(marketPlace).p2pZcTokenExchange(o.protocol, o.underlying, o.maturity, o.maker, msg.sender, a), 'zcToken exchange failed');
+    if (!IMarketPlace(marketPlace).p2pZcTokenExchange(o.protocol, o.underlying, o.maturity, o.maker, msg.sender, a)) {
+      revert Exception(11, 0, 0, address(0), address(0));
+    }
             
     emit Initiate(o.key, hash, o.maker, o.vault, o.exit, msg.sender, a, premiumFilled);
   }
@@ -189,9 +237,15 @@ contract Swivel {
   /// @param c Components of a valid ECDSA signature
   function initiateVaultFillingVaultExit(Hash.Order calldata o, uint256 a, Sig.Components calldata c) internal {
     bytes32 hash = validOrderHash(o, c);
+    uint256 amount = a + filled[hash];
 
-    require((a + filled[hash]) <= o.premium, 'taker amount > available volume');
+    // TODO remove on confirm
+    // require((a + filled[hash]) <= o.premium, 'taker amount > available volume');
+    if (amount > o.premium) {
+      revert Exception(5, amount, o.premium, address(0), address(0));
+    }
 
+    // TODO assign amount or keep ADD?
     filled[hash] += a;
 
     Safe.transferFrom(IErc20(o.underlying), msg.sender, o.maker, a);
@@ -199,11 +253,19 @@ contract Swivel {
     IMarketPlace mPlace = IMarketPlace(marketPlace);
     uint256 principalFilled = (a * o.principal) / o.premium;
     // alert marketplace
-    require(mPlace.p2pVaultExchange(o.protocol, o.underlying, o.maturity, o.maker, msg.sender, principalFilled), 'vault exchange failed');
+    // TODO remove on confirm
+    // require(mPlace.p2pVaultExchange(o.protocol, o.underlying, o.maturity, o.maker, msg.sender, principalFilled), 'vault exchange failed');
+    if (!mPlace.p2pVaultExchange(o.protocol, o.underlying, o.maturity, o.maker, msg.sender, principalFilled)) {
+      revert Exception(12, 0, 0, address(0), address(0));
+    }
 
     // transfer fee (in vault notional) to swivel
     uint256 fee = principalFilled / feenominators[2];
-    require(mPlace.transferVaultNotionalFee(o.protocol, o.underlying, o.maturity, msg.sender, fee), "notional fee transfer failed");
+    // TODO remove on confirm
+    // require(mPlace.transferVaultNotionalFee(o.protocol, o.underlying, o.maturity, msg.sender, fee), "notional fee transfer failed");
+    if (!mPlace.transferVaultNotionalFee(o.protocol, o.underlying, o.maturity, msg.sender, fee)) {
+      revert Exception(10, 0, 0, address(0), address(0));
+    }
 
     emit Initiate(o.key, hash, o.maker, o.vault, o.exit, msg.sender, a, principalFilled);
   }
@@ -251,9 +313,15 @@ contract Swivel {
   /// @param c Components of a valid ECDSA signature
   function exitZcTokenFillingZcTokenInitiate(Hash.Order calldata o, uint256 a, Sig.Components calldata c) internal {
     bytes32 hash = validOrderHash(o, c);
+    uint256 amount = a + filled[hash];
 
-    require((a + filled[hash]) <= o.premium, 'taker amount > available volume');
+    // TODO remove on confirm
+    // require((a + filled[hash]) <= o.premium, 'taker amount > available volume');
+    if (amount > o.premium) {
+      revert Exception(5, amount, o.premium, address(0), address(0));
+    }
 
+    // TODO assign amount or keep the ADD?
     filled[hash] += a;       
 
     IErc20 uToken = IErc20(o.underlying);
@@ -267,7 +335,11 @@ contract Swivel {
     Safe.transferFrom(uToken, o.maker, address(this), fee);
 
     // alert marketplace
-    require(IMarketPlace(marketPlace).p2pZcTokenExchange(o.protocol, o.underlying, o.maturity, msg.sender, o.maker, principalFilled), 'zcToken exchange failed');
+    // TODO remove on confirm
+    // require(IMarketPlace(marketPlace).p2pZcTokenExchange(o.protocol, o.underlying, o.maturity, msg.sender, o.maker, principalFilled), 'zcToken exchange failed');
+    if (!IMarketPlace(marketPlace).p2pZcTokenExchange(o.protocol, o.underlying, o.maturity, msg.sender, o.maker, principalFilled)) {
+      revert Exception(11, 0, 0, address(0), address(0));
+    }
 
     emit Exit(o.key, hash, o.maker, o.vault, o.exit, msg.sender, a, principalFilled);
   }
@@ -279,9 +351,15 @@ contract Swivel {
   /// @param c Components of a valid ECDSA signature
   function exitVaultFillingVaultInitiate(Hash.Order calldata o, uint256 a, Sig.Components calldata c) internal {
     bytes32 hash = validOrderHash(o, c);
+    uint256 amount = a + filled[hash];
 
-    require((a + filled[hash]) <= o.principal, 'taker amount > available volume');
+    // TODO remove on confirm
+    // require((a + filled[hash]) <= o.principal, 'taker amount > available volume');
+    if (amount > o.principal) {
+      revert Exception(5, amount, o.principal, address(0), address(0));
+    }
     
+    // TODO assign amount or keep the ADD?
     filled[hash] += a;
         
     IErc20 uToken = IErc20(o.underlying);
@@ -295,7 +373,11 @@ contract Swivel {
     Safe.transferFrom(uToken, msg.sender, address(this), fee);
 
     // transfer <a> notional from sender to maker
-    require(IMarketPlace(marketPlace).p2pVaultExchange(o.protocol, o.underlying, o.maturity, msg.sender, o.maker, a), 'vault exchange failed');
+    // TODO remove on confirm
+    // require(IMarketPlace(marketPlace).p2pVaultExchange(o.protocol, o.underlying, o.maturity, msg.sender, o.maker, a), 'vault exchange failed');
+    if (!IMarketPlace(marketPlace).p2pVaultExchange(o.protocol, o.underlying, o.maturity, msg.sender, o.maker, a)) {
+      revert Exception(12, 0, 0, address(0), address(0));
+    }
 
     emit Exit(o.key, hash, o.maker, o.vault, o.exit, msg.sender, a, premiumFilled);
   }
@@ -307,16 +389,26 @@ contract Swivel {
   /// @param c Components of a valid ECDSA signature
   function exitVaultFillingZcTokenExit(Hash.Order calldata o, uint256 a, Sig.Components calldata c) internal {
     bytes32 hash = validOrderHash(o, c);
+    uint256 amount = a + filled[hash];
 
-    require((a + filled[hash]) <= o.principal, 'taker amount > available volume');
+    // TODO remove on confirm
+    // require((a + filled[hash]) <= o.principal, 'taker amount > available volume');
+    if (amount > o.principal) {
+      revert Exception(5, amount, o.principal, address(0), address(0));
+    }
 
+    // TODO assign amount or keep the ADD?
     filled[hash] += a;
 
     // redeem underlying on Compound and burn cTokens
     IMarketPlace mPlace = IMarketPlace(marketPlace);
     address cTokenAddr = mPlace.cTokenAddress(o.protocol, o.underlying, o.maturity);
 
-    require(withdraw(o.protocol, o.underlying, cTokenAddr, a), 'withdraw failed');
+    // TODO remove on confirm
+    // require(withdraw(o.protocol, o.underlying, cTokenAddr, a), 'withdraw failed');
+    if (!withdraw(o.protocol, o.underlying, cTokenAddr, a)) {
+      revert Exception(7, 0, 0, address(0), address(0));
+    }
 
     IErc20 uToken = IErc20(o.underlying);
     // transfer principal-premium  back to fixed exit party now that the interest coupon and zcb have been redeemed
@@ -328,7 +420,11 @@ contract Swivel {
     Safe.transfer(uToken, msg.sender, premiumFilled - fee);
 
     // burn zcTokens + nTokens from o.maker and msg.sender respectively
-    require(mPlace.custodialExit(o.protocol, o.underlying, o.maturity, o.maker, msg.sender, a), 'custodial exit failed');
+    // TODO remove on confirm
+    // require(mPlace.custodialExit(o.protocol, o.underlying, o.maturity, o.maker, msg.sender, a), 'custodial exit failed');
+    if (!mPlace.custodialExit(o.protocol, o.underlying, o.maturity, o.maker, msg.sender, a)) {
+      revert Exception(9, 0, 0, address(0), address(0));
+    }
 
     emit Exit(o.key, hash, o.maker, o.vault, o.exit, msg.sender, a, premiumFilled);
   }
@@ -340,9 +436,15 @@ contract Swivel {
   /// @param c Components of a valid ECDSA signature
   function exitZcTokenFillingVaultExit(Hash.Order calldata o, uint256 a, Sig.Components calldata c) internal {
     bytes32 hash = validOrderHash(o, c);
+    uint256 amount = a + filled[hash];
 
-    require((a + filled[hash]) <= o.premium, 'taker amount > available volume');
+    // TODO remove on confirm
+    // require((a + filled[hash]) <= o.premium, 'taker amount > available volume');
+    if (amount > o.premium) {
+      revert Exception(5, amount, o.premium, address(0), address(0));
+    }
     
+    // TODO assign amount or keep the ADD?
     filled[hash] += a;
 
     // redeem underlying on Compound and burn cTokens
@@ -350,7 +452,11 @@ contract Swivel {
     address cTokenAddr = mPlace.cTokenAddress(o.protocol, o.underlying, o.maturity);
     uint256 principalFilled = (a * o.principal) / o.premium;
 
-    require(withdraw(o.protocol, o.underlying, cTokenAddr, principalFilled), 'withdraw failed');
+    // TODO remove on confirm
+    // require(withdraw(o.protocol, o.underlying, cTokenAddr, principalFilled), 'withdraw failed');
+    if (!withdraw(o.protocol, o.underlying, cTokenAddr, principalFilled)) {
+      revert Exception(7, 0, 0, address(0), address(0));
+    }
 
     IErc20 uToken = IErc20(o.underlying);
     // transfer principal-premium-fee back to fixed exit party now that the interest coupon and zcb have been redeemed
@@ -359,7 +465,11 @@ contract Swivel {
     Safe.transfer(uToken, o.maker, a);
 
     // burn <principalFilled> zcTokens + nTokens from msg.sender and o.maker respectively
-    require(mPlace.custodialExit(o.protocol, o.underlying, o.maturity, msg.sender, o.maker, principalFilled), 'custodial exit failed');
+    // TODO remove on confirm
+    // require(mPlace.custodialExit(o.protocol, o.underlying, o.maturity, msg.sender, o.maker, principalFilled), 'custodial exit failed');
+    if (!mPlace.custodialExit(o.protocol, o.underlying, o.maturity, msg.sender, o.maker, principalFilled)) {
+      revert Exception(9, 0, 0, address(0), address(0));
+    }
 
     emit Exit(o.key, hash, o.maker, o.vault, o.exit, msg.sender, a, principalFilled);
   }
@@ -370,7 +480,11 @@ contract Swivel {
   function cancel(Hash.Order calldata o, Sig.Components calldata c) external returns (bool) {
     bytes32 hash = validOrderHash(o, c);
 
-    require(msg.sender == o.maker, 'sender must be maker');
+    // TODO remove on confirm
+    // require(msg.sender == o.maker, 'sender must be maker');
+    if (msg.sender != o.maker) {
+      revert Exception(15, 0, 0, msg.sender, o.maker);
+    }
 
     cancelled[hash] = true;
 
@@ -413,9 +527,18 @@ contract Swivel {
   /// @param e Address of token to withdraw
   function withdraw(address e) external authorized(admin) returns (bool) {
     uint256 when = withdrawals[e];
-    require (when != 0, 'no withdrawal scheduled');
 
-    require (block.timestamp >= when, 'withdrawal still on hold');
+    // TODO remove on confirm
+    // require (when != 0, 'no withdrawal scheduled');
+    if (when == 0) {
+      revert Exception(16, 0, 0, address(0), address(0));
+    }
+
+    // TODO remove on confirm
+    // require (block.timestamp >= when, 'withdrawal still on hold');
+    if (block.timestamp < when) {
+      revert Exception(17, block.timestamp, when, address(0), address(0));
+    }
 
     withdrawals[e] = 0;
 
@@ -429,7 +552,11 @@ contract Swivel {
   /// @param i The index of the new fee denominator
   /// @param d The new fee denominator
   function setFee(uint16 i, uint16 d) external authorized(admin) returns (bool) {
-    require(d >= MIN_FEENOMINATOR, 'fee too high');
+    // TODO remove on confirm
+    // require(d >= MIN_FEENOMINATOR, 'fee too high');
+    if (d < MIN_FEENOMINATOR) {
+      revert Exception(18, uint256(d), 0, address(0), address(0));
+    }
 
     feenominators[i] = d;
 
@@ -443,7 +570,12 @@ contract Swivel {
   /// @param c array of compound token addresses
   function approveUnderlying(address[] calldata u, address[] calldata c) external authorized(admin) returns (bool) {
     uint256 len = u.length;
-    require (len == c.length, 'array length mismatch');
+
+    // TODO remove on confirm
+    // require (len == c.length, 'array length mismatch');
+    if (len != c.length) {
+      revert Exception(19, len, c.length, address(0), address(0));
+    }
 
     uint256 max = 2**256 - 1;
 
@@ -471,8 +603,17 @@ contract Swivel {
     address cTokenAddr = mPlace.cTokenAddress(p, u, m);
     
     // the underlying deposit is directed to the appropriate abstraction
-    require(deposit(p, u, cTokenAddr, a), 'deposit failed');
-    require(mPlace.mintZcTokenAddingNotional(p, u, m, msg.sender, a), 'mint ZcToken adding Notional failed');
+    // TODO remove on confirm
+    // require(deposit(p, u, cTokenAddr, a), 'deposit failed');
+    if (!deposit(p, u, cTokenAddr, a)) {
+      revert Exception(6, 0, 0, address(0), address(0));
+    }
+
+    // TODO remove on confirm
+    // require(mPlace.mintZcTokenAddingNotional(p, u, m, msg.sender, a), 'mint ZcToken adding Notional failed');
+    if (!mPlace.mintZcTokenAddingNotional(p, u, m, msg.sender, a)) {
+      revert Exception(13, 0, 0, address(0), address(0));
+    }
 
     return true;
   }
@@ -485,11 +626,20 @@ contract Swivel {
   /// @param a Amount of zcTokens being redeemed
   function combineTokens(uint8 p, address u, uint256 m, uint256 a) external returns (bool) {
     IMarketPlace mPlace = IMarketPlace(marketPlace);
-    require(mPlace.burnZcTokenRemovingNotional(p, u, m, msg.sender, a), 'burn ZcToken removing Notional failed');
+
+    // TODO remove on confirm
+    // require(mPlace.burnZcTokenRemovingNotional(p, u, m, msg.sender, a), 'burn ZcToken removing Notional failed');
+    if (!mPlace.burnZcTokenRemovingNotional(p, u, m, msg.sender, a)) {
+      revert Exception(14, 0, 0, address(0), address(0));
+    }
 
     address cTokenAddr = mPlace.cTokenAddress(p, u, m);
 
-    require(withdraw(p, u, cTokenAddr, a), 'withdraw failed');
+    // TODO remove on confirm
+    // require(withdraw(p, u, cTokenAddr, a), 'withdraw failed');
+    if (!withdraw(p, u, cTokenAddr, a)) {
+      revert Exception(7, 0, 0, address(0), address(0));
+    }
 
     Safe.transfer(IErc20(u), msg.sender, a);
 
@@ -508,7 +658,11 @@ contract Swivel {
     // redeem underlying from compounding
     address cTokenAddr = mPlace.cTokenAddress(p, u, m);
 
-    require(withdraw(p, u, cTokenAddr, redeemed), 'withdraw failed');
+    // TODO remove on confirm
+    // require(withdraw(p, u, cTokenAddr, redeemed), 'withdraw failed');
+    if (!withdraw(p, u, cTokenAddr, redeemed)) {
+      revert Exception(7, 0, 0, address(0), address(0));
+    }
 
     // transfer underlying back to msg.sender
     Safe.transfer(IErc20(u), msg.sender, redeemed);
@@ -527,7 +681,11 @@ contract Swivel {
     // redeem underlying from compounding
     address cTokenAddr = mPlace.cTokenAddress(p, u, m);
 
-    require(withdraw(p, u, cTokenAddr, redeemed), 'withdraw failed');
+    // TODO remove on confirm
+    // require(withdraw(p, u, cTokenAddr, redeemed), 'withdraw failed');
+    if (!withdraw(p, u, cTokenAddr, redeemed)) {
+      revert Exception(7, 0, 0, address(0), address(0));
+    }
 
     // transfer underlying back to msg.sender
     Safe.transfer(IErc20(u), msg.sender, redeemed);
@@ -542,9 +700,25 @@ contract Swivel {
   function validOrderHash(Hash.Order calldata o, Sig.Components calldata c) internal view returns (bytes32) {
     bytes32 hash = Hash.order(o);
 
-    require(!cancelled[hash], 'order cancelled');
-    require(o.expiry >= block.timestamp, 'order expired');
-    require(o.maker == Sig.recover(Hash.message(domain, hash), c), 'invalid signature');
+    // TODO remove on confirm
+    // require(!cancelled[hash], 'order cancelled');
+    if (cancelled[hash]) {
+      revert Exception(2, 0, 0, address(0), address(0));
+    }
+
+    // TODO remove on confirm
+    // require(o.expiry >= block.timestamp, 'order expired');
+    if (o.expiry < block.timestamp) {
+      revert Exception(3, o.expiry, block.timestamp, address(0), address(0));
+    }
+
+    address recovered = Sig.recover(Hash.message(domain, hash), c);
+
+    // TODO remove on confirm
+    // require(o.maker == Sig.recover(Hash.message(domain, hash), c), 'invalid signature');
+    if (o.maker != recovered) {
+      revert Exception(4, 0, 0, o.maker, recovered);
+    }
 
     return hash;
   }
@@ -611,7 +785,9 @@ contract Swivel {
   }
 
   modifier authorized(address a) {
-    require(msg.sender == a, 'sender must be authorized');
+    if(msg.sender != a) {
+      revert Exception(0, 0, 0, msg.sender, a);
+    }
     _;
   }
 }

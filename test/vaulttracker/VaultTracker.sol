@@ -5,6 +5,11 @@ pragma solidity 0.8.13;
 import './Compounding.sol';
 
 contract VaultTracker {
+  /// @notice A single custom error capable of indicating a wide range of detected errors by providing
+  /// an error code value whose string representation is documented <here>, and any possible other values
+  /// that are pertinent to the error.
+  error Exception(uint8, uint256, uint256, address, address);
+
   struct Vault {
     uint256 notional;
     uint256 redeemable;
@@ -241,7 +246,9 @@ contract VaultTracker {
   }
 
   modifier authorized(address a) {
-    require(msg.sender == a, 'sender must be authorized');
+    if(msg.sender != a) {
+      revert Exception(0, 0, 0, msg.sender, a);
+    }
     _;
   }
 }
