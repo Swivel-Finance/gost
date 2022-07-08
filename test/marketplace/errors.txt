@@ -9,13 +9,12 @@ The implicit Errors enum:
   'market exists', 22
   'market matured', 23
   'market not mature', 24
-  'vaultTracker.matureVault failed', 25
-  'vaultTracker.addNotional failed', 26
-  'vaultTracker.removeNotional failed', 27
-  'vaultTracker.transferNotionalFrom failed', 28
-  'zcToken.mint failed', 29
-  'zcToken.burn failed', 30
-  'matureMarket failed', 31
+  'vaultTracker.addNotional failed', 25
+  'vaultTracker.removeNotional failed', 26
+  'vaultTracker.transferNotionalFrom failed', 27
+  'zcToken.mint failed', 28
+  'zcToken.burn failed', 29
+  'matureMarket failed', 30
 ]
 
 <marketplace>

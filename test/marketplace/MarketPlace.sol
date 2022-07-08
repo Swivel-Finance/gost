@@ -126,12 +126,8 @@ contract MarketPlace {
     uint256 exchangeRate = Compounding.exchangeRate(p, market.cTokenAddr);
     markets[p][u][m].maturityRate = exchangeRate;
 
-    // TODO remove the require here? why?
-    // TODO remove on confirm
-    // require(VaultTracker(market.vaultTracker).matureVault(exchangeRate), 'mature vault failed');
-    if (!VaultTracker(market.vaultTracker).matureVault(exchangeRate)) {
-      revert Exception(25, 0, 0, address(0), address(0));
-    }
+    // NOTE we don't check the return of this simple operation
+    VaultTracker(market.vaultTracker).matureVault(exchangeRate);
 
     emit Mature(p, u, m, exchangeRate, block.timestamp);
 
@@ -150,13 +146,13 @@ contract MarketPlace {
     // TODO remove on confirm
     // require(ZcToken(market.zcToken).mint(t, a), 'mint zcToken failed');
     if (!ZcToken(market.zcToken).mint(t, a)) {
-      revert Exception(29, 0, 0, address(0), address(0));
+      revert Exception(28, 0, 0, address(0), address(0));
     }
 
     // TODO remove on confirm
     // require(VaultTracker(market.vaultTracker).addNotional(t, a), 'add notional failed');
     if (!VaultTracker(market.vaultTracker).addNotional(t, a)) {
-      revert Exception(26, 0, 0, address(0), address(0));
+      revert Exception(25, 0, 0, address(0), address(0));
     }
     
     return true;
@@ -174,13 +170,13 @@ contract MarketPlace {
     // TODO remove on confirm
     // require(ZcToken(market.zcToken).burn(t, a), 'burn failed');
     if (!ZcToken(market.zcToken).burn(t, a)) {
-      revert Exception(30, 0, 0, address(0), address(0));
+      revert Exception(29, 0, 0, address(0), address(0));
     }
 
     // TODO remove on confirm
     // require(VaultTracker(market.vaultTracker).removeNotional(t, a), 'remove notional failed');
     if (!VaultTracker(market.vaultTracker).removeNotional(t, a)) {
-      revert Exception(27, 0, 0, address(0), address(0));
+      revert Exception(26, 0, 0, address(0), address(0));
     }
     
     return true;
@@ -200,7 +196,7 @@ contract MarketPlace {
       // TODO remove on confirm
       // require(matureMarket(p, u, m), 'failed to mature the market');
       if (!matureMarket(p, u, m)) {
-        revert Exception(31, 0, 0, address(0), address(0));
+        revert Exception(30, 0, 0, address(0), address(0));
       }
     }
 
@@ -208,7 +204,7 @@ contract MarketPlace {
     // TODO remove on confirm
     // require(ZcToken(market.zcToken).burn(t, a), 'could not burn');
     if (!ZcToken(market.zcToken).burn(t, a)) {
-      revert Exception(30, 0, 0, address(0), address(0));
+      revert Exception(29, 0, 0, address(0), address(0));
     }
 
     emit RedeemZcToken(p, u, m, t, a);
@@ -270,13 +266,13 @@ contract MarketPlace {
     // TODO remove on confirm
     // require(ZcToken(market.zcToken).mint(z, a), 'mint failed');
     if (!ZcToken(market.zcToken).mint(z, a)) {
-      revert Exception(29, 0, 0, address(0), address(0));
+      revert Exception(28, 0, 0, address(0), address(0));
     }
 
     // TODO remove on confirm
     // require(VaultTracker(market.vaultTracker).addNotional(n, a), 'add notional failed');
     if (!VaultTracker(market.vaultTracker).addNotional(n, a)) {
-      revert Exception(26, 0, 0, address(0), address(0));
+      revert Exception(25, 0, 0, address(0), address(0));
     }
 
     emit CustodialInitiate(p, u, m, z, n, a);
@@ -296,13 +292,13 @@ contract MarketPlace {
     // TODO remove on confirm
     // require(ZcToken(market.zcToken).burn(z, a), 'burn failed');
     if (!ZcToken(market.zcToken).burn(z, a)) {
-      revert Exception(30, 0, 0, address(0), address(0));
+      revert Exception(29, 0, 0, address(0), address(0));
     }
 
     // TODO remove on confirm
     // require(VaultTracker(market.vaultTracker).removeNotional(n, a), 'remove notional failed');
     if (!VaultTracker(market.vaultTracker).removeNotional(n, a)) {
-      revert Exception(27, 0, 0, address(0), address(0));
+      revert Exception(26, 0, 0, address(0), address(0));
     }
 
     emit CustodialExit(p, u, m, z, n, a);
@@ -322,13 +318,13 @@ contract MarketPlace {
     // TODO remove on confirm
     // require(ZcToken(market.zcToken).burn(f, a), 'zcToken burn failed');
     if (!ZcToken(market.zcToken).burn(f, a)) {
-      revert Exception(30, 0, 0, address(0), address(0));
+      revert Exception(29, 0, 0, address(0), address(0));
     }
 
     // TODO remove on confirm
     // require(ZcToken(market.zcToken).mint(t, a), 'zcToken mint failed');
     if (!ZcToken(market.zcToken).mint(t, a)) {
-      revert Exception(29, 0, 0, address(0), address(0));
+      revert Exception(28, 0, 0, address(0), address(0));
     }
 
     emit P2pZcTokenExchange(p, u, m, f, t, a);
@@ -347,7 +343,7 @@ contract MarketPlace {
     // TODO remove on confirm
     // require(VaultTracker(markets[p][u][m].vaultTracker).transferNotionalFrom(f, t, a), 'transfer notional failed');
     if (!VaultTracker(markets[p][u][m].vaultTracker).transferNotionalFrom(f, t, a)) {
-      revert Exception(28, 0, 0, address(0), address(0));
+      revert Exception(27, 0, 0, address(0), address(0));
     }
 
     emit P2pVaultExchange(p, u, m, f, t, a);
@@ -365,7 +361,7 @@ contract MarketPlace {
     // TODO remove on confirm
     // require(VaultTracker(markets[p][u][m].vaultTracker).transferNotionalFrom(msg.sender, t, a), 'vault transfer failed');
     if (!VaultTracker(markets[p][u][m].vaultTracker).transferNotionalFrom(msg.sender, t, a)) {
-      revert Exception(28, 0, 0, address(0), address(0));
+      revert Exception(27, 0, 0, address(0), address(0));
     }
 
     emit TransferVaultNotional(p, u, m, msg.sender, t, a);
