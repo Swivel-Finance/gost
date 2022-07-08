@@ -83,7 +83,11 @@ contract VaultTracker {
 
     Vault memory vlt = vaults[o];
 
-    require(vlt.notional >= a, "amount exceeds vault balance");
+    // TODO remove on confirm
+    // require(vlt.notional >= a, "amount exceeds vault balance");
+    if (a > vlt.notional) {
+      revert Exception(31, a, vlt.notional, address(0), address(0));
+    }
 
     uint256 exchangeRate = Compounding.exchangeRate(protocol, cTokenAddr);
 
@@ -150,12 +154,20 @@ contract VaultTracker {
   /// @param t Recipient of the amount
   /// @param a Amount to transfer
   function transferNotionalFrom(address f, address t, uint256 a) external authorized(admin) returns (bool) {
-    require(f != t, 'cannot transfer notional to self');
+    // TODO remove on confirm
+    // require(f != t, 'cannot transfer notional to self');
+    if (f == t) {
+      revert Exception(32, 0, 0, f, t);
+    }
 
     Vault memory from = vaults[f];
     Vault memory to = vaults[t];
 
-    require(from.notional >= a, "amount exceeds available balance");
+    // TODO remove on confirm
+    // require(from.notional >= a, "amount exceeds available balance");
+    if (a > from.notional) {
+      revert Exception(31, a, from.notional, address(0), address(0));
+    }
 
     uint256 exchangeRate = Compounding.exchangeRate(protocol, cTokenAddr);
 
