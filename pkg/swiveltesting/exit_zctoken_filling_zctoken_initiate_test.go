@@ -168,15 +168,14 @@ func (s *EZFZISuite) TestEZFZI() {
 	assert.Equal(amt, amount)
 
 	// first call to utoken transferfrom 'from' should be maker here...
-	// TODO this call will now be overwritten by a 2nd call with the same From, re-instate this test when the hash-key-fix goes in
-	// args, err := s.Erc20.TransferFromCalled(order.Maker)
-	// assert.Nil(err)
-	// assert.NotNil(args)
-	// assert.Equal(args.To, s.Env.Owner.Opts.From)
-	// assert.Equal(args.Amount.Cmp(amt), 1) // amount should be greater than the passed in filled premium
-
-	// this is the 2nd call to transferfrom with from as maker where the fee is transferred
 	args, err := s.Erc20.TransferFromCalled(order.Maker)
+	assert.Nil(err)
+	assert.NotNil(args)
+	assert.Equal(args.To, s.Env.Owner.Opts.From)
+	assert.Equal(args.Amount.Cmp(amt), 1) // amount should be greater than the passed in filled premium
+
+	// this is the 2nd call to transferfrom with from as msg.sender where the fee is transferred
+	args, err = s.Erc20.TransferFromCalled(s.Env.Owner.Opts.From)
 	assert.Nil(err)
 	assert.NotNil(args)
 	assert.Equal(args.To, s.Dep.SwivelAddress)      // fee goes to the swivel contract
