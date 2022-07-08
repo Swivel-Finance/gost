@@ -67,7 +67,7 @@ func (s *vaultTransferSuite) TestTransferFailsWhenPaused() {
 	underlying := s.Dep.Erc20Address
 	maturity := big.NewInt(123456789)
 
-	tx, err := s.MarketPlace.Pause(true)
+	tx, err := s.MarketPlace.Pause(uint8(1), true)
 	assert.Nil(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
@@ -79,7 +79,7 @@ func (s *vaultTransferSuite) TestTransferFailsWhenPaused() {
 	// assert.Regexp("markets are paused", err.Error())
 
 	// unpause so the other tests don't fail
-	tx, err = s.MarketPlace.Pause(false)
+	tx, err = s.MarketPlace.Pause(uint8(1), false)
 	assert.Nil(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
