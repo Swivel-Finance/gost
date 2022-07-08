@@ -3,8 +3,8 @@ The implicit Errors enum:
 [
   'unauthorized', 0
   ... 
-  'amount exceeds vault notional', 32
-  'cannot transfer notional to self' 33
+  'amount exceeds vault notional', 31
+  'cannot transfer notional to self' 32
 ]
 
 <vaulttracker text require messages>
