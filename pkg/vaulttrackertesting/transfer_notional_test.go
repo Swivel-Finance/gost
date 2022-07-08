@@ -66,7 +66,8 @@ func (s *transferSuite) TestTransferToSelfFails() {
 	tx, err := s.VaultTracker.TransferNotionalFrom(owner, owner, big.NewInt(100))
 	assert.Nil(tx)
 	assert.NotNil(err)
-	assert.Regexp("cannot transfer notional to self", err.Error())
+	// TODO custom err codes
+	// assert.Regexp("cannot transfer notional to self", err.Error())
 }
 
 func (s *transferSuite) TestTransferFailRequireAmount() {
@@ -100,7 +101,8 @@ func (s *transferSuite) TestTransferFailRequireAmount() {
 	amount2 := big.NewInt(1000)
 	tx, err = s.VaultTracker.TransferNotionalFrom(caller, s.Env.User1.Opts.From, amount2)
 	assert.NotNil(err)
-	assert.Regexp("amount exceeds available balance", err.Error())
+	// TODO custom err codes
+	// assert.Regexp("amount exceeds available balance", err.Error())
 	assert.Nil(tx)
 
 	s.Env.Blockchain.Commit()

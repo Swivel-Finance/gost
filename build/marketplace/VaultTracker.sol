@@ -5,6 +5,11 @@ pragma solidity 0.8.13;
 import './Compounding.sol';
 
 contract VaultTracker {
+  /// @notice A single custom error capable of indicating a wide range of detected errors by providing
+  /// an error code value whose string representation is documented <here>, and any possible other values
+  /// that are pertinent to the error.
+  error Exception(uint8, uint256, uint256, address, address);
+
   struct Vault {
     uint256 notional;
     uint256 redeemable;
@@ -78,7 +83,11 @@ contract VaultTracker {
 
     Vault memory vlt = vaults[o];
 
-    require(vlt.notional >= a, "amount exceeds vault balance");
+    // TODO remove on confirm
+    // require(vlt.notional >= a, "amount exceeds vault balance");
+    if (a > vlt.notional) {
+      revert Exception(31, a, vlt.notional, address(0), address(0));
+    }
 
     uint256 exchangeRate = Compounding.exchangeRate(protocol, cTokenAddr);
 
@@ -145,12 +154,20 @@ contract VaultTracker {
   /// @param t Recipient of the amount
   /// @param a Amount to transfer
   function transferNotionalFrom(address f, address t, uint256 a) external authorized(admin) returns (bool) {
-    require(f != t, 'cannot transfer notional to self');
+    // TODO remove on confirm
+    // require(f != t, 'cannot transfer notional to self');
+    if (f == t) {
+      revert Exception(32, 0, 0, f, t);
+    }
 
     Vault memory from = vaults[f];
     Vault memory to = vaults[t];
 
-    require(from.notional >= a, "amount exceeds available balance");
+    // TODO remove on confirm
+    // require(from.notional >= a, "amount exceeds available balance");
+    if (a > from.notional) {
+      revert Exception(31, a, from.notional, address(0), address(0));
+    }
 
     uint256 exchangeRate = Compounding.exchangeRate(protocol, cTokenAddr);
 
@@ -241,7 +258,9 @@ contract VaultTracker {
   }
 
   modifier authorized(address a) {
-    require(msg.sender == a, 'sender must be authorized');
+    if(msg.sender != a) {
+      revert Exception(0, 0, 0, msg.sender, a);
+    }
     _;
   }
 }

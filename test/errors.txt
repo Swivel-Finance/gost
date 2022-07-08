@@ -1,0 +1,37 @@
+The implicit Errors enum:
+
+[
+  'unauthorized', 0
+  'paused', 1
+  'order cancelled', 2
+  'order expired', 3
+  'invalid signature', 4
+  'amount > available volume', 5 
+  'deposit failed', 6
+  'withdraw failed', 7
+  'marketPlace.custodialInitiate failed', 8
+  'marketPlace.custodialExit failed', 9
+  'marketPlace.transferVaultNotionalFee failed', 10
+  'marketPlace.p2pZcTokenExchange failed', 11
+  'marketPlace.p2pVaultExchange failed', 12
+  'marketPlace.mintZcTokenAddingNotional failed', 13
+  'marketPlace.burnZcTokenAddingNotional failed', 14
+  'must be maker', 15
+  'withdrawal not scheduled', 16
+  'withdrawal on hold', 17
+  'fee too high', 18
+  'underlying and compounding array length not equal', 19
+  'swivel address set', 20
+  'swivel address not set', 21
+  'market exists', 22
+  'market matured', 23
+  'market not mature', 24
+  'vaultTracker.addNotional failed', 25
+  'vaultTracker.removeNotional failed', 26
+  'vaultTracker.transferNotionalFrom failed', 27
+  'zcToken.mint failed', 28
+  'zcToken.burn failed', 29
+  'matureMarket failed', 30
+  'amount exceeds vault notional', 31
+  'cannot transfer notional to self' 32
+]
