@@ -21,10 +21,10 @@ contract MarketPlace {
   }
 
   mapping (uint8 => mapping (address => mapping (uint256 => Market))) public markets;
+  mapping (uint8 => bool) public paused;
 
   address public admin;
   address public swivel;
-  bool public paused;
 
   event Create(uint8 indexed protocol, address indexed underlying, uint256 indexed maturity, address cToken, address zcToken, address vaultTracker);
   event Mature(uint8 indexed protocol, address indexed underlying, uint256 indexed maturity, uint256 maturityRate, uint256 matured);
@@ -69,7 +69,7 @@ contract MarketPlace {
     address c,
     string memory n,
     string memory s
-  ) external authorized(admin) unpaused() returns (bool) {
+  ) external authorized(admin) unpaused(p) returns (bool) {
     if (swivel == address(0)) {
       revert Exception(21, 0, 0, address(0), address(0));
     }
@@ -101,7 +101,7 @@ contract MarketPlace {
   /// @param p Protocol Enum value associated with the market being matured
   /// @param u Underlying token address associated with the market
   /// @param m Maturity timestamp of the market
-  function matureMarket(uint8 p, address u, uint256 m) public unpaused() returns (bool) {
+  function matureMarket(uint8 p, address u, uint256 m) public unpaused(p) returns (bool) {
     Market memory market = markets[p][u][m];
 
     if (market.maturityRate != 0) {
@@ -130,7 +130,7 @@ contract MarketPlace {
   /// @param m Maturity timestamp of the market
   /// @param t Address of the depositing user
   /// @param a Amount of notional being added
-  function mintZcTokenAddingNotional(uint8 p, address u, uint256 m, address t, uint256 a) external authorized(swivel) unpaused() returns (bool) {
+  function mintZcTokenAddingNotional(uint8 p, address u, uint256 m, address t, uint256 a) external authorized(swivel) unpaused(p) returns (bool) {
     Market memory market = markets[p][u][m];
 
     if (!ZcToken(market.zcToken).mint(t, a)) {
@@ -150,7 +150,7 @@ contract MarketPlace {
   /// @param m Maturity timestamp of the market
   /// @param t Address of the combining/redeeming user
   /// @param a Amount of zcTokens being burned
-  function burnZcTokenRemovingNotional(uint8 p, address u, uint256 m, address t, uint256 a) external authorized(swivel) unpaused() returns(bool) {
+  function burnZcTokenRemovingNotional(uint8 p, address u, uint256 m, address t, uint256 a) external authorized(swivel) unpaused(p) returns(bool) {
     Market memory market = markets[p][u][m];
 
     if (!ZcToken(market.zcToken).burn(t, a)) {
@@ -170,7 +170,7 @@ contract MarketPlace {
   /// @param m Maturity timestamp of the market
   /// @param t Address of the redeeming user
   /// @param a Amount of zcTokens being redeemed
-  function redeemZcToken(uint8 p, address u, uint256 m, address t, uint256 a) external authorized(swivel) unpaused() returns (uint256) {
+  function redeemZcToken(uint8 p, address u, uint256 m, address t, uint256 a) external authorized(swivel) unpaused(p) returns (uint256) {
     Market memory market = markets[p][u][m];
 
     // if the market has not matured, mature it and redeem exactly the amount
@@ -199,7 +199,7 @@ contract MarketPlace {
   /// @param u Underlying token address associated with the market
   /// @param m Maturity timestamp of the market
   /// @param t Address of the redeeming user
-  function redeemVaultInterest(uint8 p, address u, uint256 m, address t) external authorized(swivel) unpaused() returns (uint256) {
+  function redeemVaultInterest(uint8 p, address u, uint256 m, address t) external authorized(swivel) unpaused(p) returns (uint256) {
     // call to the floating market contract to release the position and calculate the interest generated
     uint256 interest = VaultTracker(markets[p][u][m].vaultTracker).redeemInterest(t);
 
@@ -238,7 +238,7 @@ contract MarketPlace {
   /// @param z Recipient of the minted zcToken
   /// @param n Recipient of the added notional
   /// @param a Amount of zcToken minted and notional added
-  function custodialInitiate(uint8 p, address u, uint256 m, address z, address n, uint256 a) external authorized(swivel) unpaused() returns (bool) {
+  function custodialInitiate(uint8 p, address u, uint256 m, address z, address n, uint256 a) external authorized(swivel) unpaused(p) returns (bool) {
     Market memory market = markets[p][u][m];
     if (!ZcToken(market.zcToken).mint(z, a)) {
       revert Exception(28, 0, 0, address(0), address(0));
@@ -260,7 +260,7 @@ contract MarketPlace {
   /// @param z Owner of the zcToken to be burned
   /// @param n Target to remove notional from
   /// @param a Amount of zcToken burned and notional removed
-  function custodialExit(uint8 p, address u, uint256 m, address z, address n, uint256 a) external authorized(swivel) unpaused() returns (bool) {
+  function custodialExit(uint8 p, address u, uint256 m, address z, address n, uint256 a) external authorized(swivel) unpaused(p) returns (bool) {
     Market memory market = markets[p][u][m];
     if (!ZcToken(market.zcToken).burn(z, a)) {
       revert Exception(29, 0, 0, address(0), address(0));
@@ -282,7 +282,7 @@ contract MarketPlace {
   /// @param f Owner of the zcToken to be burned
   /// @param t Target to be minted to
   /// @param a Amount of zcToken transfer
-  function p2pZcTokenExchange(uint8 p, address u, uint256 m, address f, address t, uint256 a) external authorized(swivel) unpaused() returns (bool) {
+  function p2pZcTokenExchange(uint8 p, address u, uint256 m, address f, address t, uint256 a) external authorized(swivel) unpaused(p) returns (bool) {
     Market memory market = markets[p][u][m];
     if (!ZcToken(market.zcToken).burn(f, a)) {
       revert Exception(29, 0, 0, address(0), address(0));
@@ -304,7 +304,7 @@ contract MarketPlace {
   /// @param f Owner of the notional to be transferred
   /// @param t Target to be transferred to
   /// @param a Amount of notional transfer
-  function p2pVaultExchange(uint8 p, address u, uint256 m, address f, address t, uint256 a) external authorized(swivel) unpaused() returns (bool) {
+  function p2pVaultExchange(uint8 p, address u, uint256 m, address f, address t, uint256 a) external authorized(swivel) unpaused(p) returns (bool) {
     if (!VaultTracker(markets[p][u][m].vaultTracker).transferNotionalFrom(f, t, a)) {
       revert Exception(27, 0, 0, address(0), address(0));
     }
@@ -320,7 +320,7 @@ contract MarketPlace {
   /// @param m Maturity timestamp of the market
   /// @param t Target to be transferred to
   /// @param a Amount of notional to be transferred
-  function transferVaultNotional(uint8 p, address u, uint256 m, address t, uint256 a) external unpaused() returns (bool) {
+  function transferVaultNotional(uint8 p, address u, uint256 m, address t, uint256 a) external unpaused(p) returns (bool) {
     if (!VaultTracker(markets[p][u][m].vaultTracker).transferNotionalFrom(msg.sender, t, a)) {
       revert Exception(27, 0, 0, address(0), address(0));
     }
@@ -340,11 +340,11 @@ contract MarketPlace {
     return true;
   }
 
-  // TODO this becomes per-protocol
-  /// @notice Called by admin at any point to pause / unpause market transactions
-  /// @param b Boolean which indicates the markets paused status
-  function pause(bool b) external authorized(admin) returns (bool) {
-    paused = b;
+  /// @notice Called by admin at any point to pause / unpause market transactions in a specified protocol
+  /// @param p Protocol Enum value of the protocol to be paused
+  /// @param b Boolean which indicates the (protocol) markets paused status
+  function pause(uint8 p, bool b) external authorized(admin) returns (bool) {
+    paused[p] = b;
     return true;
   }
 
@@ -355,8 +355,8 @@ contract MarketPlace {
     _;
   }
 
-  modifier unpaused() {
-    if(paused) {
+  modifier unpaused(uint8 p) {
+    if(paused[p]) {
       revert Exception(1, 0, 0, address(0), address(0));
     }
     _;
