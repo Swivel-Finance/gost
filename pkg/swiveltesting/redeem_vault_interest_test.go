@@ -78,11 +78,11 @@ func (s *redeemVaultInterestSuite) TestRedeemVaultInterest() {
 	tx, err := s.Erc20.TransferReturns(true)
 	assert.NotNil(tx)
 	assert.Nil(err)
+	s.Env.Blockchain.Commit()
 
 	tx, err = s.AavePool.WithdrawReturns(big.NewInt(10000))
 	assert.NotNil(tx)
 	assert.Nil(err)
-
 	s.Env.Blockchain.Commit()
 
 	// cToken addres not important in this case...
@@ -96,13 +96,11 @@ func (s *redeemVaultInterestSuite) TestRedeemVaultInterest() {
 	tx, err = s.MarketPlace.RedeemVaultInterestReturns(redeemed)
 	assert.Nil(err)
 	assert.NotNil(tx)
-
 	s.Env.Blockchain.Commit()
 
 	tx, err = s.Swivel.RedeemVaultInterest(uint8(4), underlying, maturity)
 	assert.Nil(err)
 	assert.NotNil(tx)
-
 	s.Env.Blockchain.Commit()
 
 	// underlying tranfer should have been called with an amount redeemed
@@ -110,12 +108,59 @@ func (s *redeemVaultInterestSuite) TestRedeemVaultInterest() {
 	assert.Nil(err)
 	assert.Equal(redeemed, transferred)
 
+	// the marketplace mock should have been called with msg.sender address
+	redeemArgs, err := s.MarketPlace.RedeemVaultInterestCalled(uint8(4))
+	assert.Nil(err)
+	assert.NotNil(redeemArgs)
+	assert.Equal(redeemArgs.One, s.Env.Owner.Opts.From)
+
 	// check the args sent to the aave pool mock
 	txArgs, err := s.AavePool.WithdrawCalled(underlying)
 	assert.Nil(err)
 	assert.NotNil(txArgs)
 	assert.Equal(txArgs.To, s.Dep.SwivelAddress)
 	assert.Equal(txArgs.Amount, redeemed)
+}
+
+func (s *redeemVaultInterestSuite) TestRedeemSwivelVaultInterest() {
+	assert := assertions.New(s.T())
+	underlying := s.Dep.Erc20Address
+	maturity := s.Dep.Maturity
+
+	tx, err := s.AavePool.WithdrawReturns(big.NewInt(10000))
+	assert.NotNil(tx)
+	assert.Nil(err)
+	s.Env.Blockchain.Commit()
+
+	// cToken addres not important in this case...
+	tx, err = s.MarketPlace.CTokenAddressReturns(common.HexToAddress("0x123"))
+	assert.Nil(err)
+	assert.NotNil(tx)
+	s.Env.Blockchain.Commit()
+
+	redeemed := big.NewInt(12345)
+	tx, err = s.MarketPlace.RedeemVaultInterestReturns(redeemed)
+	assert.Nil(err)
+	assert.NotNil(tx)
+	s.Env.Blockchain.Commit()
+
+	tx, err = s.Swivel.RedeemSwivelVaultInterest(uint8(4), underlying, maturity)
+	assert.Nil(err)
+	assert.NotNil(tx)
+	s.Env.Blockchain.Commit()
+
+	// the marketplace mock should have been called with swivel address
+	redeemArgs, err := s.MarketPlace.RedeemVaultInterestCalled(uint8(4))
+	assert.Nil(err)
+	assert.NotNil(redeemArgs)
+	assert.Equal(redeemArgs.One, s.Dep.SwivelAddress)
+
+	// check the args sent to the aave pool mock
+	withdrawArgs, err := s.AavePool.WithdrawCalled(underlying)
+	assert.Nil(err)
+	assert.NotNil(withdrawArgs)
+	assert.Equal(withdrawArgs.To, s.Dep.SwivelAddress)
+	assert.Equal(withdrawArgs.Amount, redeemed)
 }
 
 func (s *redeemVaultInterestSuite) TestRedeemVaultInterestUnderlyingFails() {
