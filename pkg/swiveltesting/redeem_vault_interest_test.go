@@ -127,41 +127,27 @@ func (s *redeemVaultInterestSuite) TestRedeemSwivelVaultInterest() {
 	underlying := s.Dep.Erc20Address
 	maturity := s.Dep.Maturity
 
-	// stub the underlying to return true or the Safe lib will revert
-	// tx, err := s.Erc20.TransferReturns(true)
-	// assert.NotNil(tx)
-	// assert.Nil(err)
-
 	tx, err := s.AavePool.WithdrawReturns(big.NewInt(10000))
 	assert.NotNil(tx)
 	assert.Nil(err)
-
 	s.Env.Blockchain.Commit()
 
 	// cToken addres not important in this case...
 	tx, err = s.MarketPlace.CTokenAddressReturns(common.HexToAddress("0x123"))
 	assert.Nil(err)
 	assert.NotNil(tx)
-
 	s.Env.Blockchain.Commit()
 
 	redeemed := big.NewInt(12345)
 	tx, err = s.MarketPlace.RedeemVaultInterestReturns(redeemed)
 	assert.Nil(err)
 	assert.NotNil(tx)
-
 	s.Env.Blockchain.Commit()
 
 	tx, err = s.Swivel.RedeemSwivelVaultInterest(uint8(4), underlying, maturity)
 	assert.Nil(err)
 	assert.NotNil(tx)
-
 	s.Env.Blockchain.Commit()
-
-	// underlying tranfer should have been called with an amount redeemed
-	// transferred, err := s.Erc20.TransferCalled(s.Env.Owner.Opts.From)
-	// assert.Nil(err)
-	// assert.Equal(redeemed, transferred)
 
 	// the marketplace mock should have been called with swivel address
 	redeemArgs, err := s.MarketPlace.RedeemVaultInterestCalled(uint8(4))
