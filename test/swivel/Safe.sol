@@ -18,18 +18,6 @@ library SafeTransferLib {
     error TRANSFER_FROM();
     error APPROVE();
 
-    function safeTransferETH(address to, uint256 amount) internal {
-        bool success;
-
-        assembly {
-            // Transfer the ETH and store if it succeeded or not.
-            success := call(gas(), to, amount, 0, 0, 0, 0)
-        }
-        if (!success) {
-            revert ETH();
-        }
-    }
-
     /*//////////////////////////////////////////////////////////////
                             ERC20 OPERATIONS
     //////////////////////////////////////////////////////////////*/
