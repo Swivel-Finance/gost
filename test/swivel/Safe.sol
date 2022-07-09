@@ -8,7 +8,7 @@ import {IErc20} from "./Interfaces.sol";
 /// @author Solmate (https://github.com/Rari-Capital/solmate/blob/main/src/utils/SafeTransferLib.sol)
 /// @dev Use with caution! Some functions in this library knowingly create dirty bits at the destination of the free memory pointer.
 /// @dev Note that none of the functions in this library check that a token has code at all! That responsibility is delegated to the caller.
-library SafeTransferLib {
+library Safe {
     /*//////////////////////////////////////////////////////////////
                              ETH OPERATIONS
     //////////////////////////////////////////////////////////////*/

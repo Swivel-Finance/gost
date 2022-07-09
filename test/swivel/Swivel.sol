@@ -111,10 +111,10 @@ contract Swivel {
 
     // transfer underlying tokens
     IErc20 uToken = IErc20(o.underlying);
-    SafeTransferLib.transferFrom(uToken, msg.sender, o.maker, a);
+    Safe.transferFrom(uToken, msg.sender, o.maker, a);
 
     uint256 principalFilled = (a * o.principal) / o.premium;
-    SafeTransferLib.transferFrom(uToken, o.maker, address(this), principalFilled);
+    Safe.transferFrom(uToken, o.maker, address(this), principalFilled);
 
     IMarketPlace mPlace = IMarketPlace(marketPlace);
     address cTokenAddr = mPlace.cTokenAddress(o.protocol, o.underlying, o.maturity);
@@ -157,11 +157,11 @@ contract Swivel {
     IErc20 uToken = IErc20(o.underlying);
 
     uint256 premiumFilled = (a * o.premium) / o.principal;
-    SafeTransferLib.transferFrom(uToken, o.maker, msg.sender, premiumFilled);
+    Safe.transferFrom(uToken, o.maker, msg.sender, premiumFilled);
 
     // transfer principal + fee in underlying to swivel (from sender)
     uint256 fee = premiumFilled / feenominators[0];
-    SafeTransferLib.transferFrom(uToken, msg.sender, address(this), (a + fee));
+    Safe.transferFrom(uToken, msg.sender, address(this), (a + fee));
 
     IMarketPlace mPlace = IMarketPlace(marketPlace);
     address cTokenAddr = mPlace.cTokenAddress(o.protocol, o.underlying, o.maturity);
@@ -199,10 +199,10 @@ contract Swivel {
 
     IErc20 uToken = IErc20(o.underlying);
     // transfer underlying tokens, then take fee
-    SafeTransferLib.transferFrom(uToken, msg.sender, o.maker, a - premiumFilled);
+    Safe.transferFrom(uToken, msg.sender, o.maker, a - premiumFilled);
 
     uint256 fee = premiumFilled / feenominators[0];
-    SafeTransferLib.transferFrom(uToken, msg.sender, address(this), fee);
+    Safe.transferFrom(uToken, msg.sender, address(this), fee);
 
     // alert marketplace
     if (!IMarketPlace(marketPlace).p2pZcTokenExchange(o.protocol, o.underlying, o.maturity, o.maker, msg.sender, a)) {
@@ -228,7 +228,7 @@ contract Swivel {
     // TODO assign amount or keep ADD?
     filled[hash] += a;
 
-    SafeTransferLib.transferFrom(IErc20(o.underlying), msg.sender, o.maker, a);
+    Safe.transferFrom(IErc20(o.underlying), msg.sender, o.maker, a);
 
     IMarketPlace mPlace = IMarketPlace(marketPlace);
     uint256 principalFilled = (a * o.principal) / o.premium;
@@ -302,12 +302,12 @@ contract Swivel {
 
     uint256 principalFilled = (a * o.principal) / o.premium;
     // transfer underlying from initiating party to exiting party, minus the price the exit party pays for the exit (premium), and the fee.
-    SafeTransferLib.transferFrom(uToken, o.maker, msg.sender, principalFilled - a);
+    Safe.transferFrom(uToken, o.maker, msg.sender, principalFilled - a);
 
     // transfer fee in underlying to swivel
     uint256 fee = principalFilled / feenominators[1];
 
-    SafeTransferLib.transferFrom(uToken, msg.sender, address(this), fee);
+    Safe.transferFrom(uToken, msg.sender, address(this), fee);
 
     // alert marketplace
     if (!IMarketPlace(marketPlace).p2pZcTokenExchange(o.protocol, o.underlying, o.maturity, msg.sender, o.maker, principalFilled)) {
@@ -337,11 +337,11 @@ contract Swivel {
 
     // transfer premium from maker to sender
     uint256 premiumFilled = (a * o.premium) / o.principal;
-    SafeTransferLib.transferFrom(uToken, o.maker, msg.sender, premiumFilled);
+    Safe.transferFrom(uToken, o.maker, msg.sender, premiumFilled);
 
     uint256 fee = premiumFilled / feenominators[3];
     // transfer fee in underlying to swivel from sender
-    SafeTransferLib.transferFrom(uToken, msg.sender, address(this), fee);
+    Safe.transferFrom(uToken, msg.sender, address(this), fee);
 
     // transfer <a> notional from sender to maker
     if (!IMarketPlace(marketPlace).p2pVaultExchange(o.protocol, o.underlying, o.maturity, msg.sender, o.maker, a)) {
@@ -378,11 +378,11 @@ contract Swivel {
     IErc20 uToken = IErc20(o.underlying);
     // transfer principal-premium  back to fixed exit party now that the interest coupon and zcb have been redeemed
     uint256 premiumFilled = (a * o.premium) / o.principal;
-    SafeTransferLib.transfer(uToken, o.maker, a - premiumFilled);
+    Safe.transfer(uToken, o.maker, a - premiumFilled);
 
     // transfer premium-fee to floating exit party
     uint256 fee = premiumFilled / feenominators[3];
-    SafeTransferLib.transfer(uToken, msg.sender, premiumFilled - fee);
+    Safe.transfer(uToken, msg.sender, premiumFilled - fee);
 
     // burn zcTokens + nTokens from o.maker and msg.sender respectively
     if (!mPlace.custodialExit(o.protocol, o.underlying, o.maturity, o.maker, msg.sender, a)) {
@@ -420,8 +420,8 @@ contract Swivel {
     IErc20 uToken = IErc20(o.underlying);
     // transfer principal-premium-fee back to fixed exit party now that the interest coupon and zcb have been redeemed
     uint256 fee = principalFilled / feenominators[1];
-    SafeTransferLib.transfer(uToken, msg.sender, principalFilled - a - fee);
-    SafeTransferLib.transfer(uToken, o.maker, a);
+    Safe.transfer(uToken, msg.sender, principalFilled - a - fee);
+    Safe.transfer(uToken, o.maker, a);
 
     // burn <principalFilled> zcTokens + nTokens from msg.sender and o.maker respectively
     if (!mPlace.custodialExit(o.protocol, o.underlying, o.maturity, msg.sender, o.maker, principalFilled)) {
@@ -494,7 +494,7 @@ contract Swivel {
     withdrawals[e] = 0;
 
     IErc20 token = IErc20(e);
-    SafeTransferLib.transfer(token, admin, IErc20(e).balanceOf(address(this)));
+    Safe.transfer(token, admin, IErc20(e).balanceOf(address(this)));
 
     return true;
   }
@@ -528,7 +528,7 @@ contract Swivel {
 
     for (uint256 i; i < len; i++) {
       IErc20 uToken = IErc20(u[i]);
-      SafeTransferLib.approve(uToken, c[i], max);
+      Safe.approve(uToken, c[i], max);
     }
 
     return true;
@@ -544,7 +544,7 @@ contract Swivel {
   /// @param a Amount of underlying being deposited
   function splitUnderlying(uint8 p, address u, uint256 m, uint256 a) external returns (bool) {
     IErc20 uToken = IErc20(u);
-    SafeTransferLib.transferFrom(uToken, msg.sender, address(this), a);
+    Safe.transferFrom(uToken, msg.sender, address(this), a);
 
     IMarketPlace mPlace = IMarketPlace(marketPlace);
     address cTokenAddr = mPlace.cTokenAddress(p, u, m);
@@ -580,7 +580,7 @@ contract Swivel {
       revert Exception(7, 0, 0, address(0), address(0));
     }
 
-    SafeTransferLib.transfer(IErc20(u), msg.sender, a);
+    Safe.transfer(IErc20(u), msg.sender, a);
 
     return true;
   }
@@ -602,7 +602,7 @@ contract Swivel {
     }
 
     // transfer underlying back to msg.sender
-    SafeTransferLib.transfer(IErc20(u), msg.sender, redeemed);
+    Safe.transfer(IErc20(u), msg.sender, redeemed);
 
     return true;
   }
@@ -623,7 +623,7 @@ contract Swivel {
     }
 
     // transfer underlying back to msg.sender
-    SafeTransferLib.transfer(IErc20(u), msg.sender, redeemed);
+    Safe.transfer(IErc20(u), msg.sender, redeemed);
 
     return true;
   }
