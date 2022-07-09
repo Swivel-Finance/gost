@@ -494,7 +494,7 @@ contract Swivel {
     withdrawals[e] = 0;
 
     IErc20 token = IErc20(e);
-    Safe.transfer(token, admin, IErc20(e).balanceOf(address(this)));
+    Safe.transfer(token, admin, token.balanceOf(address(this)));
 
     return true;
   }
