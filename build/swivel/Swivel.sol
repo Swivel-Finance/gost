@@ -628,6 +628,26 @@ contract Swivel {
     return true;
   }
 
+  /// @notice Allows Swivel to redeem any currently accrued interest (via MarketPlace)
+  /// @param p Protocol Enum value associated with this market pair
+  /// @param u Underlying token address associated with the market
+  /// @param m Maturity timestamp of the market
+  function redeemSwivelVaultInterest(uint8 p, address u, uint256 m) external returns (bool) {
+    IMarketPlace mPlace = IMarketPlace(marketPlace);
+    // call marketplace to determine the amount redeemed
+    uint256 redeemed = mPlace.redeemVaultInterest(p, u, m, address(this));
+    // redeem underlying from compounding
+    address cTokenAddr = mPlace.cTokenAddress(p, u, m);
+
+    if (!withdraw(p, u, cTokenAddr, redeemed)) {
+      revert Exception(7, 0, 0, address(0), address(0));
+    }
+
+    // NOTE: for swivel reddem there is no transfer out as there is in redeemVaultInterest
+
+    return true;
+  }
+
   /// @notice Varifies the validity of an order and it's signature.
   /// @param o An offline Swivel.Order
   /// @param c Components of a valid ECDSA signature
