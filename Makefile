@@ -245,13 +245,10 @@ clean_build: clean_build_sol clean_build_abi clean_build_bin clean_build_go
 
 copy_zctoken_to_build:
 	@echo "copying ZcToken files to marketplace build"
-	cp test/tokens/Hash.sol build/marketplace
-	cp test/tokens/PErc20.sol build/marketplace
-	cp test/tokens/IPErc20.sol build/marketplace
-	cp test/tokens/Erc2612.sol build/marketplace
-	cp test/tokens/IErc2612.sol build/marketplace
+	cp test/tokens/Erc20.sol build/marketplace
+	cp test/tokens/IERC5095.sol build/marketplace
+	cp test/tokens/IRedeemer.sol build/marketplace
 	cp test/tokens/ZcToken.sol build/marketplace
-	cp test/tokens/IZcToken.sol build/marketplace
 
 copy_vaulttracker_to_build:
 	@echo "copying vaulttracker files to marketplace build"
@@ -279,7 +276,7 @@ copy_to_build: copy_zctoken_to_build copy_vaulttracker_to_build copy_marketplace
 
 compile_marketplace_build:
 	@echo "compiling MarketPlace solidity build source into deploy ready files"
-	solc -o ./build/marketplace --optimize --optimize-runs=2000 --abi --bin --overwrite ./build/marketplace/MarketPlace.sol
+	solc -o ./build/marketplace --optimize --optimize-runs=1 --abi --bin --overwrite ./build/marketplace/MarketPlace.sol
 	abigen --abi ./build/marketplace/MarketPlace.abi --bin ./build/marketplace/MarketPlace.bin -pkg marketplace -type MarketPlace -out ./build/marketplace/marketplace.go 
 
 compile_swivel_build:

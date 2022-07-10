@@ -21,11 +21,14 @@ contract ZcToken {
   // mapping of arguments sent to transferFrom. key is passed from address.
   mapping (address => TransferFromArgs) public transferFromCalled;
 
+  uint8 public protocol;
+  address private underlyingReturn;
+  uint256 private maturityReturn;
+  address public cToken;
+  address public redeemer;
   string public name;
   string public symbol;
   uint8 public decimals;
-  address private underlyingReturn;
-  uint256 private maturityReturn;
   // a boolean flag which allows us to dictate the return of burn().
   bool private burnReturn;
   // a boolean flag which allows us to dictate the return of mint().
@@ -33,16 +36,20 @@ contract ZcToken {
   // a boolean flag which allows us to dictate the return of transferFrom().
   bool private transferFromReturn;
 
+  /// @param p Protocol Enum value
   /// @param u Underlying
   /// @param m Maturity
+  /// @param c Compounding token
+  /// @param r Redeeming contract address
   /// @param n Name
   /// @param s Symbol
   /// @param d Decimals
-  constructor(address u, uint256 m, string memory n, string memory s, uint8 d) {
-    // we can set the privates in the constructor as well...
+  constructor(uint8 p, address u, uint256 m, address c, address r, string memory n, string memory s, uint8 d) {
+    protocol = p;
     underlyingReturn = u;
     maturityReturn = m;
-
+    cToken = c;
+    redeemer = r;
     name = n;
     symbol = s;
     decimals = d;

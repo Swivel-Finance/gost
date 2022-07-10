@@ -86,7 +86,8 @@ contract MarketPlace {
 
     {
       uint8 decimals = IErc20(underAddr).decimals();
-      zct = address(new ZcToken(underAddr, m, n, s, decimals));
+      // TODO update args for the new ZcToken
+      zct = address(new ZcToken(p, underAddr, m, c, address(this), n, s, decimals));
       tracker = address(new VaultTracker(p, m, c, swivel));
     }
 

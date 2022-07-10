@@ -30,13 +30,13 @@ contract ZcToken is Erc20, IERC5095 {
 
     error Approvals(uint256 approved, uint256 amount);
 
-    constructor(address _underlying, uint256 _maturity, address _cToken, uint8 _protocol, address _redeemer, string memory _name, string memory _symbol, uint8 _decimals) 
+    constructor(uint8 _protocol, address _underlying, uint256 _maturity, address _cToken, address _redeemer, string memory _name, string memory _symbol, uint8 _decimals) 
     Erc20( _name, _symbol, _decimals) {
+        protocol = _protocol;
         underlying = _underlying;
         maturity = _maturity;
-        protocol = _protocol;
-        redeemer = IRedeemer(_redeemer);
         cToken = _cToken;
+        redeemer = IRedeemer(_redeemer);
     }
 
     /// @notice Post maturity converts an amount of principal tokens to an amount of underlying that would be returned. Returns 0 pre-maturity.
