@@ -50,9 +50,9 @@ contract Erc20 {
                             CUSTOM ERRORS
     //////////////////////////////////////////////////////////////*/
 
-    error Invalid(address signer, address owner);
+    error Invalid();
 
-    error Deadline(uint256 deadline, uint256 timestamp);
+    error Deadline();
 
     /*//////////////////////////////////////////////////////////////
                                CONSTRUCTOR
@@ -133,7 +133,7 @@ contract Erc20 {
         bytes32 s
     ) public virtual {
         if (deadline < block.timestamp) {
-            revert Deadline(deadline, block.timestamp);
+            revert Deadline();
         }
         // Unchecked because the only math done is incrementing
         // the owner's nonce which cannot realistically overflow.
@@ -163,7 +163,7 @@ contract Erc20 {
             );
 
             if (recoveredAddress != address(0) && recoveredAddress != owner) {
-                revert Invalid(msg.sender, owner);
+                revert Invalid();
             }
 
             allowance[recoveredAddress][spender] = value;
