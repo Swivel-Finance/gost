@@ -162,4 +162,22 @@ contract ZcToken is Erc20, IERC5095 {
             return redeemer.authRedeem(underlying, maturity, holder, receiver, principalAmount);     
         }
     }
+    /// @param f Address to burn from
+    /// @param a Amount to burn
+    function burn(address f, uint256 a) external onlyAdmin(address(redeemer)) returns (bool) {
+        _burn(f, a);
+        return true;
+    }
+
+    /// @param t Address recieving the minted amount
+    /// @param a The amount to mint
+    function mint(address t, uint256 a) external onlyAdmin(address(redeemer)) returns (bool) {
+        _mint(t, a);
+        return true;
+    }
+
+    modifier onlyAdmin(address a) {
+    require(msg.sender == a, 'sender must be admin');
+    _;
+  }
 }
