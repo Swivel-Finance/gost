@@ -56,6 +56,7 @@ contract MarketPlace {
     if (c != address(0)) {
       revert Exception(20, 0, 0, c, address(0)); 
     }
+    
     creator = c;
     return true;
   }

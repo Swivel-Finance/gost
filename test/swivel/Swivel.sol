@@ -19,6 +19,8 @@ contract Swivel {
   mapping (bytes32 => uint256) public filled;
   /// @dev maps a token address to a point in time, a hold, after which a withdrawal can be made
   mapping (address => uint256) public withdrawals;
+  /// @dev maps a token address to a point in time, a hold, after which an approval can be made
+  mapping (address => uint256) public approvals;
 
   string constant public NAME = 'Swivel Finance';
   string constant public VERSION = '3.0.0';
@@ -50,6 +52,10 @@ contract Swivel {
   event BlockWithdrawal(address indexed token);
   /// @notice Emitted on a change to the feenominators array
   event SetFee(uint256 indexed index, uint256 indexed feenominator);
+  /// @notice Emitted on a token approval scheduling
+  event ScheduleApproval(address indexed token, uint256 hold);
+  /// @notice Emitted on a token approval blocking
+  event BlockApproval(address indexed token);
 
   /// @param m Deployed MarketPlace contract address
   /// @param a Address of a deployed Aave contract implementing our interface
@@ -514,6 +520,27 @@ contract Swivel {
     return true;
   }
 
+  /// @notice Allows the admin to schedule the approval of tokens
+  /// @param e Address of (erc20) token to withdraw
+  function scheduleApproval(address e) external authorized(admin) returns (bool) {
+    uint256 when = block.timestamp + HOLD;
+    approvals[e] = when;
+
+    emit ScheduleApproval(e, when);
+
+    return true;
+  }
+
+  /// @notice Emergency function to block unplanned withdrawals
+  /// @param e Address of token approval to block
+  function blockApproval(address e) external authorized(admin) returns (bool) {
+      approvals[e] = 0;
+
+      emit BlockApproval(e);
+
+      return true;
+  }
+
   /// @notice Allows the admin to bulk approve given compound addresses at the underlying token, saving marginal approvals
   /// @param u array of underlying token addresses
   /// @param c array of compound token addresses
@@ -527,6 +554,17 @@ contract Swivel {
     uint256 max = 2**256 - 1;
 
     for (uint256 i; i < len; i++) {
+      uint256 when = approvals[u[i]];
+
+      if (when == 0) {
+        revert Exception(16, 0, 0, address(0), address(0));
+      }
+
+      if (block.timestamp < when) {
+        revert Exception(17, block.timestamp, when, address(0), address(0));
+      }
+
+      approvals[u[i]] = 0;
       IErc20 uToken = IErc20(u[i]);
       Safe.approve(uToken, c[i], max);
     }
