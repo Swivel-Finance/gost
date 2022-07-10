@@ -76,7 +76,7 @@ contract Swivel {
   function initiate(Hash.Order[] calldata o, uint256[] calldata a, Sig.Components[] calldata c) external returns (bool) {
     uint256 len = o.length;
     // for each order filled, routes the order to the right interaction depending on its params
-    for (uint256 i; i < len; i++) {
+    for (uint256 i; i < len;) {
       Hash.Order memory order = o[i];
       if (!order.exit) {
         if (!order.vault) {
@@ -90,6 +90,9 @@ contract Swivel {
         } else {
           initiateVaultFillingVaultExit(o[i], a[i], c[i]);
         }
+      }
+      unchecked {
+        i++;
       }
     }
 
@@ -261,7 +264,7 @@ contract Swivel {
   function exit(Hash.Order[] calldata o, uint256[] calldata a, Sig.Components[] calldata c) external returns (bool) {
     uint256 len = o.length;
     // for each order filled, routes the order to the right interaction depending on its params
-    for (uint256 i; i < len; i++) {
+    for (uint256 i; i < len;) {
       Hash.Order memory order = o[i];
       // if the order being filled is not an exit
       if (!order.exit) {
@@ -281,8 +284,11 @@ contract Swivel {
         } else {
           // if filling a vault exit with an exit, one is exiting zcTokens
           exitZcTokenFillingVaultExit(o[i], a[i], c[i]);
-        }   
-      }   
+        }  
+      unchecked {
+        i++;
+      } 
+      } 
     }
 
     return true;
@@ -552,9 +558,10 @@ contract Swivel {
     }
 
     uint256 max = 2**256 - 1;
+    uint256 when;
 
-    for (uint256 i; i < len; i++) {
-      uint256 when = approvals[u[i]];
+    for (uint256 i; i < len;) {
+      when = approvals[u[i]];
 
       if (when == 0) {
         revert Exception(16, 0, 0, address(0), address(0));
@@ -567,6 +574,9 @@ contract Swivel {
       approvals[u[i]] = 0;
       IErc20 uToken = IErc20(u[i]);
       Safe.approve(uToken, c[i], max);
+      unchecked {
+        i++;
+      }
     }
 
     return true;
