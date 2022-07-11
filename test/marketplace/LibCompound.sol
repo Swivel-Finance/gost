@@ -10,11 +10,11 @@ import "./Interfaces.sol";
 library LibCompound {
     using FixedPointMathLib for uint256;
 
-    function viewUnderlyingBalanceOf(CERC20 cToken, address user) internal view returns (uint256) {
+    function viewUnderlyingBalanceOf(ICERC20 cToken, address user) internal view returns (uint256) {
         return cToken.balanceOf(user).mulWadDown(viewExchangeRate(cToken));
     }
 
-    function viewExchangeRate(CERC20 cToken) internal view returns (uint256) {
+    function viewExchangeRate(ICERC20 cToken) internal view returns (uint256) {
         uint256 accrualBlockNumberPrior = cToken.accrualBlockNumber();
 
         if (accrualBlockNumberPrior == block.number) return cToken.exchangeRateStored();

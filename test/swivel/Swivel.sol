@@ -19,6 +19,8 @@ contract Swivel {
   mapping (bytes32 => uint256) public filled;
   /// @dev maps a token address to a point in time, a hold, after which a withdrawal can be made
   mapping (address => uint256) public withdrawals;
+  /// @dev maps a token address to a point in time, a hold, after which an approval can be made
+  mapping (address => uint256) public approvals;
 
   string constant public NAME = 'Swivel Finance';
   string constant public VERSION = '3.0.0';
@@ -33,6 +35,8 @@ contract Swivel {
   uint16 constant public MIN_FEENOMINATOR = 33;
   /// @dev holds the fee demoninators for [zcTokenInitiate, zcTokenExit, vaultInitiate, vaultExit]
   uint16[4] public feenominators;
+  /// @dev A point in time, a hold, after which a change to Fees
+  uint256 public feeChange;
 
   /// @notice Emitted on order cancellation
   event Cancel (bytes32 indexed key, bytes32 hash);
@@ -50,6 +54,14 @@ contract Swivel {
   event BlockWithdrawal(address indexed token);
   /// @notice Emitted on a change to the feenominators array
   event SetFee(uint256 indexed index, uint256 indexed feenominator);
+  /// @notice Emitted on a token approval scheduling
+  event ScheduleApproval(address indexed token, uint256 hold);
+  /// @notice Emitted on a token approval blocking
+  event BlockApproval(address indexed token);
+  /// @notice Emitted on a fee change scheduling
+  event ScheduleFeeChange(uint256 hold);
+  /// @notice Emitted on a fee change blocking
+  event BlockFeeChange();
 
   /// @param m Deployed MarketPlace contract address
   /// @param a Address of a deployed Aave contract implementing our interface
@@ -70,7 +82,7 @@ contract Swivel {
   function initiate(Hash.Order[] calldata o, uint256[] calldata a, Sig.Components[] calldata c) external returns (bool) {
     uint256 len = o.length;
     // for each order filled, routes the order to the right interaction depending on its params
-    for (uint256 i; i < len; i++) {
+    for (uint256 i; i < len;) {
       Hash.Order memory order = o[i];
       if (!order.exit) {
         if (!order.vault) {
@@ -85,6 +97,7 @@ contract Swivel {
           initiateVaultFillingVaultExit(o[i], a[i], c[i]);
         }
       }
+      unchecked {i++;}
     }
 
     return true;
@@ -255,7 +268,7 @@ contract Swivel {
   function exit(Hash.Order[] calldata o, uint256[] calldata a, Sig.Components[] calldata c) external returns (bool) {
     uint256 len = o.length;
     // for each order filled, routes the order to the right interaction depending on its params
-    for (uint256 i; i < len; i++) {
+    for (uint256 i; i < len;) {
       Hash.Order memory order = o[i];
       // if the order being filled is not an exit
       if (!order.exit) {
@@ -276,7 +289,8 @@ contract Swivel {
           // if filling a vault exit with an exit, one is exiting zcTokens
           exitZcTokenFillingVaultExit(o[i], a[i], c[i]);
         }   
-      }   
+      }
+      unchecked {i++;}
     }
 
     return true;
@@ -434,16 +448,22 @@ contract Swivel {
   /// @notice Allows a user to cancel an order, preventing it from being filled in the future
   /// @param o Order being cancelled
   /// @param c Components of a valid ECDSA signature
-  function cancel(Hash.Order calldata o, Sig.Components calldata c) external returns (bool) {
-    bytes32 hash = validOrderHash(o, c);
+  function cancel(Hash.Order[] calldata o, Sig.Components[] calldata c) external returns (bool) {
+    uint256 len = o.length;
+    for (uint256 i; i < len;) {
+      bytes32 hash = validOrderHash(o[i], c[i]);
+      if (msg.sender != o[i].maker) {
+        revert Exception(15, 0, 0, msg.sender, o[i].maker);
+      }
 
-    if (msg.sender != o.maker) {
-      revert Exception(15, 0, 0, msg.sender, o.maker);
+      cancelled[hash] = true;
+
+      emit Cancel(o[i].key, hash);
+
+      unchecked {
+        i++;
+      }
     }
-
-    cancelled[hash] = true;
-
-    emit Cancel(o.key, hash);
 
     return true;
   }
@@ -499,19 +519,79 @@ contract Swivel {
     return true;
   }
 
+  /// @notice Allows the admin to schedule the change of fees
+  function scheduleFeeChange() external authorized(admin) returns (bool) {
+    uint256 when = block.timestamp + HOLD;
+    feeChange = when;
+
+    emit ScheduleFeeChange(when);
+
+    return true;
+  }
+
+  /// @notice Emergency function to block unplanned withdrawals
+  function blockFeeChange() external authorized(admin) returns (bool) {
+      feeChange = 0;
+
+      emit BlockFeeChange();
+
+      return true;
+  }
+
+
   /// @notice Allows the admin to set a new fee denominator
   /// @param i The index of the new fee denominator
   /// @param d The new fee denominator
-  function setFee(uint16 i, uint16 d) external authorized(admin) returns (bool) {
-    if (d < MIN_FEENOMINATOR) {
-      revert Exception(18, uint256(d), 0, address(0), address(0));
+  function setFee(uint16[] memory i, uint16[] memory d) external authorized(admin) returns (bool) {
+    uint256 len = i.length;
+
+    if (len != d.length) {
+      revert Exception(19, len, d.length, address(0), address(0));
     }
 
-    feenominators[i] = d;
+    if (feeChange == 0) { revert Exception(16, 0, 0, address(0), address(0)); }
 
-    emit SetFee(i, d);
+    if (block.timestamp < feeChange) {
+      revert Exception(17, block.timestamp, feeChange, address(0), address(0));
+    }
+
+    for (uint256 x; x < len;) {
+      if (d[x] < MIN_FEENOMINATOR) {
+        revert Exception(18, uint256(d[x]), 0, address(0), address(0));
+      }
+
+      feenominators[x] = d[x];
+      emit SetFee(i[x], d[x]);
+
+      unchecked {
+        x++;
+      }
+    }
+
+    feeChange = 0;
 
     return true;
+  }
+
+  /// @notice Allows the admin to schedule the approval of tokens
+  /// @param e Address of (erc20) token to withdraw
+  function scheduleApproval(address e) external authorized(admin) returns (bool) {
+    uint256 when = block.timestamp + HOLD;
+    approvals[e] = when;
+
+    emit ScheduleApproval(e, when);
+
+    return true;
+  }
+
+  /// @notice Emergency function to block unplanned withdrawals
+  /// @param e Address of token approval to block
+  function blockApproval(address e) external authorized(admin) returns (bool) {
+      approvals[e] = 0;
+
+      emit BlockApproval(e);
+
+      return true;
   }
 
   /// @notice Allows the admin to bulk approve given compound addresses at the underlying token, saving marginal approvals
@@ -525,15 +605,29 @@ contract Swivel {
     }
 
     uint256 max = 2**256 - 1;
+    uint256 when;
 
-    for (uint256 i; i < len; i++) {
+    for (uint256 i; i < len;) {
+      when = approvals[u[i]];
+
+      if (when == 0) {
+        revert Exception(16, 0, 0, address(0), address(0));
+      }
+
+      if (block.timestamp < when) {
+        revert Exception(17, block.timestamp, when, address(0), address(0));
+      }
+
+      approvals[u[i]] = 0;
       IErc20 uToken = IErc20(u[i]);
       Safe.approve(uToken, c[i], max);
+      unchecked {
+        i++;
+      }
     }
 
     return true;
   }
-
   // ********* PROTOCOL UTILITY ***************
 
   /// @notice Allows users to deposit underlying and in the process split it into/mint 
