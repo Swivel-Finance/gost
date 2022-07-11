@@ -5,32 +5,30 @@
 .PHONY: compile_solidity_mock_aave_token compile_go_mock_aave_token compile_mock_aave_token
 .PHONY: compile_solidity_mock_aave_pool compile_go_mock_aave_pool compile_mock_aave_pool
 .PHONY: compile_solidity_mock_euler_token compile_go_mock_euler_token compile_mock_euler_token
+.PHONY: compile_solidity_mock_creator compile_go_mock_creator
 .PHONY: compile_solidity_mock_marketplace compile_go_mock_marketplace
-.PHONY: compile_go_mock_vaulttracker compile_go_mock_zctoken
 .PHONY: compile_mocks
-
-.PHONY: compile_solidity_zct compile_go_zct compile_zct
-.PHONY: compile_tokens
 
 .PHONY: compile_solidity_sig_fake compile_go_sig_fake compile_sig_fake
 .PHONY: compile_solidity_hash_fake compile_go_hash_fake compile_hash_fake
 .PHONY: compile_fakes
 
-
 .PHONY: compile_solidity_swivel_test compile_go_swivel_test compile_swivel_test
 .PHONY: compile_solidity_marketplace_test compile_go_marketplace_test compile_marketplace_test
 .PHONY: compile_solidity_vaulttracker_test compile_go_vaulttracker_test compile_vaulttracker_test
+.PHONY: compile_solidity_creator_test compile_go_creator_test compile_creator_test
 .PHONY: compile_test
 
 .PHONY: clean_test_abi clean_test_bin clean_test_go
 .PHONY: clean_test
 
 .PHONY: clean_build_sol clean_build_abi clean_build_bin clean_build_go
+
 .PHONY: clean_build
 
-.PHONY: copy_zctoken_to_build copy_vaulttracker_to_build copy_marketplace_to_build copy_swivel_to_build
+.PHONY: copy_zctoken_to_build copy_vaulttracker_to_build copy_creator_to_build copy_marketplace_to_build copy_swivel_to_build
 .PHONY: copy_to_build
-.PHONY: compile_marketplace_build compile_swivel_build compile_build
+.PHONY: compile_creator_build compile_marketplace_build compile_swivel_build compile_build
 
 .PHONY: all
 
@@ -113,6 +111,16 @@ compile_go_mock_euler_token:
 
 compile_mock_euler_token: compile_solidity_mock_euler_token compile_go_mock_euler_token
 
+compile_solidity_mock_creator:
+	@echo "compiling Mock Creator solidity source into abi and bin files"
+	solc -o ./test/mocks --abi --bin --overwrite ./test/mocks/Creator.sol
+
+compile_go_mock_creator:
+	@echo "compiling abi and bin files to golang"
+	abigen --abi ./test/mocks/Creator.abi --bin ./test/mocks/Creator.bin -pkg mocks -type Creator -out ./test/mocks/creator.go 
+
+compile_mock_creator: compile_solidity_mock_creator compile_go_mock_creator
+
 compile_solidity_mock_marketplace:
 	@echo "compiling Mock MarketPlace solidity source into abi and bin files"
 	solc -o ./test/mocks --abi --bin --overwrite ./test/mocks/MarketPlace.sol
@@ -123,29 +131,7 @@ compile_go_mock_marketplace:
 
 compile_mock_marketplace: compile_solidity_mock_marketplace compile_go_mock_marketplace
 
-compile_go_mock_vaulttracker:
-	@echo "compiling abi and bin files to golang"
-	abigen --abi ./test/marketplace/VaultTracker.abi --bin ./test/marketplace/VaultTracker.bin -pkg mocks -type VaultTracker -out ./test/mocks/vaulttracker.go
-
-compile_go_mock_zctoken:
-	@echo "compiling abi and bin files to golang"
-	abigen --abi ./test/marketplace/ZcToken.abi --bin ./test/marketplace/ZcToken.bin -pkg mocks -type ZcToken -out ./test/mocks/zctoken.go
-
-compile_mocks: compile_mock_erc compile_mock_compound_token compile_mock_erc_4626 compile_mock_yearn_vault compile_mock_aave_token compile_mock_aave_pool compile_mock_euler_token compile_mock_marketplace compile_go_mock_vaulttracker compile_go_mock_zctoken
-
-# -------------------------------------------------- REAL TOKENS ------------------------------------------------------------------------------------------
-
-compile_solidity_zct:
-	@echo "compiling ZCT solidity source into abi and bin files"
-	solc -o ./test/tokens --abi --bin --overwrite ./test/tokens/ZcToken.sol
-
-compile_go_zct:
-	@echo "compiling abi and bin files to golang"
-	abigen --abi ./test/tokens/ZcToken.abi --bin ./test/tokens/ZcToken.bin -pkg tokens -type ZcToken -out ./test/tokens/zctoken.go 
-
-compile_zct: compile_solidity_zct compile_go_zct
-
-compile_tokens: compile_zct
+compile_mocks: compile_mock_erc compile_mock_compound_token compile_mock_erc_4626 compile_mock_yearn_vault compile_mock_aave_token compile_mock_aave_pool compile_mock_euler_token compile_mock_creator compile_mock_marketplace
 
 # -------------------------------------------------- FAKES -----------------------------------------------------------------------------------------------
 
@@ -193,6 +179,16 @@ compile_go_marketplace_test:
 
 compile_marketplace_test: compile_solidity_marketplace_test compile_go_marketplace_test
 
+compile_solidity_creator_test:
+	@echo "compiling Creator solidity source into abi and bin files"
+	solc -o ./test/creator --optimize --optimize-runs=10000 --abi --bin --overwrite ./test/creator/Creator.sol
+
+compile_go_creator_test:
+	@echo "compiling abi and bin files to golang"
+	abigen --abi ./test/creator/Creator.abi --bin ./test/creator/Creator.bin -pkg creator -type Creator -out ./test/creator/creator.go 
+
+compile_creator_test: compile_solidity_creator_test compile_go_creator_test
+
 compile_solidity_vaulttracker_test:
 	@echo "compiling VaultTracker solidity source into abi and bin files"
 	solc -o ./test/vaulttracker --abi --bin --overwrite ./test/vaulttracker/VaultTracker.sol
@@ -203,7 +199,7 @@ compile_go_vaulttracker_test:
 
 compile_vaulttracker_test: compile_solidity_vaulttracker_test compile_go_vaulttracker_test
 
-compile_test: compile_fakes compile_tokens compile_swivel_test compile_marketplace_test compile_vaulttracker_test compile_mocks
+compile_test: compile_fakes compile_swivel_test compile_marketplace_test compile_creator_test compile_vaulttracker_test compile_mocks
 
 # --------------------------------------------- CLEANING ----------------------------------------------------------------------------------------
 
@@ -243,16 +239,22 @@ clean_build: clean_build_sol clean_build_abi clean_build_bin clean_build_go
 
 # ---------------------------------- COPY TO BUILD ----------------------------------------------------------------------------------------------
 
+copy_creator_to_build:
+	@echo "copying Creator files to creator build"
+	cp test/creator/Creator.sol build/creator
+
 copy_zctoken_to_build:
 	@echo "copying ZcToken files to marketplace build"
-	cp test/tokens/Erc20.sol build/marketplace
-	cp test/tokens/IERC5095.sol build/marketplace
-	cp test/tokens/IRedeemer.sol build/marketplace
-	cp test/tokens/ZcToken.sol build/marketplace
+	cp test/tokens/Erc20.sol build/creator
+	cp test/tokens/IERC5095.sol build/creator
+	cp test/tokens/IRedeemer.sol build/creator
+	cp test/tokens/ZcToken.sol build/creator
 
 copy_vaulttracker_to_build:
 	@echo "copying vaulttracker files to marketplace build"
-	cp test/vaulttracker/VaultTracker.sol build/marketplace
+	cp test/vaulttracker/VaultTracker.sol build/creator
+	cp test/vaulttracker/Compounding.sol build/creator
+	cp test/vaulttracker/Protocols.sol build/creator
 
 copy_marketplace_to_build:
 	@echo "copying marketplace files to marketplace build"
@@ -270,13 +272,18 @@ copy_swivel_to_build:
 	cp test/swivel/Safe.sol build/swivel
 	cp test/swivel/Swivel.sol build/swivel
 
-copy_to_build: copy_zctoken_to_build copy_vaulttracker_to_build copy_marketplace_to_build copy_swivel_to_build
+copy_to_build: copy_zctoken_to_build copy_vaulttracker_to_build copy_creator_to_build copy_marketplace_to_build copy_swivel_to_build
 
 # ---------------------------------- COMPILE BUILD ------------------------------------------------------------------------------------------
 
+compile_creator_build:
+	@echo "compiling Creator solidity build source into deploy ready files"
+	solc -o ./build/creator --optimize --optimize-runs=10000 --abi --bin --overwrite ./build/creator/Creator.sol
+	abigen --abi ./build/creator/Creator.abi --bin ./build/creator/Creator.bin -pkg creator -type Creator -out ./build/creator/creator.go 
+
 compile_marketplace_build:
 	@echo "compiling MarketPlace solidity build source into deploy ready files"
-	solc -o ./build/marketplace --optimize --optimize-runs=1 --abi --bin --overwrite ./build/marketplace/MarketPlace.sol
+	solc -o ./build/marketplace --optimize --optimize-runs=10000 --abi --bin --overwrite ./build/marketplace/MarketPlace.sol
 	abigen --abi ./build/marketplace/MarketPlace.abi --bin ./build/marketplace/MarketPlace.bin -pkg marketplace -type MarketPlace -out ./build/marketplace/marketplace.go 
 
 compile_swivel_build:
@@ -284,7 +291,7 @@ compile_swivel_build:
 	solc -o ./build/swivel --optimize --optimize-runs=10000 --abi --bin --overwrite ./build/swivel/Swivel.sol
 	abigen --abi ./build/swivel/Swivel.abi --bin ./build/swivel/Swivel.bin -pkg swivel -type Swivel -out ./build/swivel/swivel.go 
 
-compile_build: compile_marketplace_build compile_swivel_build
+compile_build: compile_creator_build compile_marketplace_build compile_swivel_build
 
 # ------------------------------ ALL -------------------------------------------------------------------------------------------------
 

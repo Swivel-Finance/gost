@@ -33,5 +33,6 @@ The implicit Errors enum:
   'zcToken.burn failed', 29
   'matureMarket failed', 30
   'amount exceeds vault notional', 31
-  'cannot transfer notional to self' 32
+  'cannot transfer notional to self', 32
+  'marketPlace address is not set', 33
 ]
