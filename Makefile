@@ -115,9 +115,12 @@ compile_solidity_mock_creator:
 	@echo "compiling Mock Creator solidity source into abi and bin files"
 	solc -o ./test/mocks --abi --bin --overwrite ./test/mocks/Creator.sol
 
+# include go bindings for mock ZcToken and VaultTracker here because they are needed in testing
 compile_go_mock_creator:
 	@echo "compiling abi and bin files to golang"
 	abigen --abi ./test/mocks/Creator.abi --bin ./test/mocks/Creator.bin -pkg mocks -type Creator -out ./test/mocks/creator.go 
+	abigen --abi ./test/creator/ZcToken.abi --bin ./test/creator/ZcToken.bin -pkg mocks -type ZcToken -out ./test/mocks/zctoken.go 
+	abigen --abi ./test/creator/VaultTracker.abi --bin ./test/creator/VaultTracker.bin -pkg mocks -type VaultTracker -out ./test/mocks/vaulttracker.go 
 
 compile_mock_creator: compile_solidity_mock_creator compile_go_mock_creator
 

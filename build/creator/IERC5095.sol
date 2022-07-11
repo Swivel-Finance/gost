@@ -4,11 +4,9 @@ pragma solidity ^0.8.0;
 interface IERC5095 {
 
     event Redeem(address indexed from, address indexed to, uint256 amount);
-    event Mature(uint256 timestamp);
 
     function maturity() external view returns (uint256);
     function underlying() external view returns (address);
-    function maturityRate() external view returns (uint256);
     function convertToUnderlying(uint256 principalAmount) external view returns (uint256);
     function convertToPrincipal(uint256 underlyingAmount) external view returns (uint256);
     function maxRedeem(address owner) external view returns (uint256);

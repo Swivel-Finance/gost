@@ -582,13 +582,14 @@ contract Swivel {
     return true;
   }
 
-  /// @notice Allows users to redeem zcTokens and withdraw underlying, boiling up from the zcToken instead of starting on Swivel
+  /// @notice Allows MarketPlace to complete its contractual obligation as IRedeemer, redeeming zcTokens and withdrawing underlying 
+  /// @dev Note that this bubbles up from the zcToken instead of starting on Swivel (as per the ERC5095)
   /// @notice p Protocol Enum value associated with this market pair
   /// @param u Underlying token address associated with this market pair
   /// @param c Compound token address associated with this market pair
   /// @param t Address of the user receiving the underlying tokens
   /// @param a Amount of underlying being redeemed
-  function authRedeemZcToken(uint8 p, address u, address c, address t, uint256 a) external authorized(marketPlace) returns(bool) {
+  function authRedeem(uint8 p, address u, address c, address t, uint256 a) external authorized(marketPlace) returns(bool) {
     // redeem underlying from compounding
     if (!withdraw(p, u, c, a)) {
       revert Exception(7, 0, 0, address(0), address(0));
