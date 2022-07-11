@@ -547,10 +547,9 @@ contract Swivel {
     Safe.transferFrom(uToken, msg.sender, address(this), a);
 
     IMarketPlace mPlace = IMarketPlace(marketPlace);
-    address cTokenAddr = mPlace.cTokenAddress(p, u, m);
     
     // the underlying deposit is directed to the appropriate abstraction
-    if (!deposit(p, u, cTokenAddr, a)) {
+    if (!deposit(p, u, mPlace.cTokenAddress(p, u, m), a)) {
       revert Exception(6, 0, 0, address(0), address(0));
     }
 
@@ -574,15 +573,30 @@ contract Swivel {
       revert Exception(14, 0, 0, address(0), address(0));
     }
 
-    address cTokenAddr = mPlace.cTokenAddress(p, u, m);
-
-    if (!withdraw(p, u, cTokenAddr, a)) {
+    if (!withdraw(p, u, mPlace.cTokenAddress(p, u, m), a)) {
       revert Exception(7, 0, 0, address(0), address(0));
     }
 
     Safe.transfer(IErc20(u), msg.sender, a);
 
     return true;
+  }
+
+  /// @notice Allows users to redeem zcTokens and withdraw underlying, boiling up from the zcToken instead of starting on Swivel
+  /// @notice p Protocol Enum value associated with this market pair
+  /// @param u Underlying token address associated with this market pair
+  /// @param c Compound token address associated with this market pair
+  /// @param t Address of the user receiving the underlying tokens
+  /// @param a Amount of underlying being redeemed
+  function authRedeemZcToken(uint8 p, address u, address c, address t, uint256 a) external authorized(marketPlace) returns(bool) {
+    // redeem underlying from compounding
+    if (!withdraw(p, u, c, a)) {
+      revert Exception(7, 0, 0, address(0), address(0));
+    }
+    // transfer underlying back to msg.sender
+    Safe.transfer(IErc20(u), t, a);
+
+    return (true);
   }
 
   /// @notice Allows zcToken holders to redeem their tokens for underlying tokens after maturity has been reached (via MarketPlace).
@@ -595,9 +609,7 @@ contract Swivel {
     // call marketplace to determine the amount redeemed
     uint256 redeemed = mPlace.redeemZcToken(p, u, m, msg.sender, a);
     // redeem underlying from compounding
-    address cTokenAddr = mPlace.cTokenAddress(p, u, m);
-
-    if (!withdraw(p, u, cTokenAddr, redeemed)) {
+    if (!withdraw(p, u, mPlace.cTokenAddress(p, u, m), redeemed)) {
       revert Exception(7, 0, 0, address(0), address(0));
     }
 
@@ -637,9 +649,7 @@ contract Swivel {
     // call marketplace to determine the amount redeemed
     uint256 redeemed = mPlace.redeemVaultInterest(p, u, m, address(this));
     // redeem underlying from compounding
-    address cTokenAddr = mPlace.cTokenAddress(p, u, m);
-
-    if (!withdraw(p, u, cTokenAddr, redeemed)) {
+    if (!withdraw(p, u, mPlace.cTokenAddress(p, u, m), redeemed)) {
       revert Exception(7, 0, 0, address(0), address(0));
     }
 

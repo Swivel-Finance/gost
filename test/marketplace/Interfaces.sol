@@ -35,3 +35,7 @@ interface IVaultTracker {
   function transferNotionalFee(address f, uint256 a) external returns (bool);
   function balancesOf(address o) external view returns (uint256, uint256);
 }
+
+interface ISwivel {
+  function authRedeem(uint8 p, address u, address c, address t, uint256 a) external returns (bool);
+}
