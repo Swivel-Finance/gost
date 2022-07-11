@@ -43,9 +43,7 @@ contract MarketPlace {
   /// @param s Address of the deployed swivel contract
   /// @notice We only allow this to be set once
   function setSwivel(address s) external authorized(admin) returns (bool) {
-    if (swivel != address(0)) {
-      revert Exception(20, 0, 0, swivel, address(0)); 
-    }
+    if (swivel != address(0)) { revert Exception(20, 0, 0, swivel, address(0));  }
 
     swivel = s;
     return true;
@@ -70,16 +68,11 @@ contract MarketPlace {
     string memory n,
     string memory s
   ) external authorized(admin) unpaused(p) returns (bool) {
-    if (swivel == address(0)) {
-      revert Exception(21, 0, 0, address(0), address(0));
-    }
+    if (swivel == address(0)) { revert Exception(21, 0, 0, address(0), address(0)); }
 
     address underAddr = Compounding.underlying(p, c);
 
-    if (markets[p][underAddr][m].vaultTracker != address(0)) {
-      // NOTE: not saving and publishing that found tracker addr as stack limitations...
-      revert Exception(22, 0, 0, address(0), address(0));
-    }
+    if (markets[p][underAddr][m].vaultTracker != address(0)) { revert Exception(22, 0, 0, address(0), address(0)); }
 
     (address zct, address tracker) = ICreator(creator).create(p, underAddr, m, c, swivel, n, s, IErc20(underAddr).decimals()) ;
 
@@ -97,13 +90,9 @@ contract MarketPlace {
   function matureMarket(uint8 p, address u, uint256 m) public unpaused(p) returns (bool) {
     Market memory market = markets[p][u][m];
 
-    if (market.maturityRate != 0) {
-      revert Exception(23, market.maturityRate, 0, address(0), address(0));
-    }
+    if (market.maturityRate != 0) { revert Exception(23, market.maturityRate, 0, address(0), address(0)); }
 
-    if (block.timestamp < m) {
-      revert Exception(24, block.timestamp, m, address(0), address(0));
-    }
+    if (block.timestamp < m) { revert Exception(24, block.timestamp, m, address(0), address(0)); }
 
     // set the base maturity cToken exchange rate at maturity to the current cToken exchange rate
     uint256 exchangeRate = Compounding.exchangeRate(p, market.cTokenAddr);
@@ -126,13 +115,9 @@ contract MarketPlace {
   function mintZcTokenAddingNotional(uint8 p, address u, uint256 m, address t, uint256 a) external authorized(swivel) unpaused(p) returns (bool) {
     Market memory market = markets[p][u][m];
 
-    if (!IZcToken(market.zcToken).mint(t, a)) {
-      revert Exception(28, 0, 0, address(0), address(0));
-    }
+    if (!IZcToken(market.zcToken).mint(t, a)) { revert Exception(28, 0, 0, address(0), address(0)); }
 
-    if (!IVaultTracker(market.vaultTracker).addNotional(t, a)) {
-      revert Exception(25, 0, 0, address(0), address(0));
-    }
+    if (!IVaultTracker(market.vaultTracker).addNotional(t, a)) { revert Exception(25, 0, 0, address(0), address(0)); }
     
     return true;
   }
@@ -146,13 +131,9 @@ contract MarketPlace {
   function burnZcTokenRemovingNotional(uint8 p, address u, uint256 m, address t, uint256 a) external authorized(swivel) unpaused(p) returns(bool) {
     Market memory market = markets[p][u][m];
 
-    if (!IZcToken(market.zcToken).burn(t, a)) {
-      revert Exception(29, 0, 0, address(0), address(0));
-    }
+    if (!IZcToken(market.zcToken).burn(t, a)) { revert Exception(29, 0, 0, address(0), address(0)); }
 
-    if (!IVaultTracker(market.vaultTracker).removeNotional(t, a)) {
-      revert Exception(26, 0, 0, address(0), address(0));
-    }
+    if (!IVaultTracker(market.vaultTracker).removeNotional(t, a)) { revert Exception(26, 0, 0, address(0), address(0)); }
     
     return true;
   }
@@ -168,21 +149,16 @@ contract MarketPlace {
     Market memory market = markets[p][u][m];
     // if the market has not matured, mature it...
     if (market.maturityRate == 0) {
-      if (!matureMarket(p, u, m)) {
-        revert Exception(30, 0, 0, address(0), address(0));
-      }
+      if (!matureMarket(p, u, m)) { revert Exception(30, 0, 0, address(0), address(0)); }
 
-      if (!IZcToken(market.zcToken).burn(f, a)) {
-        revert Exception(29, 0, 0, address(0), address(0));
-      }
+      if (!IZcToken(market.zcToken).burn(f, a)) { revert Exception(29, 0, 0, address(0), address(0)); }
 
       ISwivel(swivel).authRedeem(p, u, market.cTokenAddr, t, a);
 
       return (a);
     } else {
 
-      if (!IZcToken(market.zcToken).burn(f, a)) {
-        revert Exception(29, 0, 0, address(0), address(0));
+      if (!IZcToken(market.zcToken).burn(f, a)) { revert Exception(29, 0, 0, address(0), address(0));
       }
 
       uint256 amount = calculateReturn(p, u, m, a);
@@ -203,13 +179,11 @@ contract MarketPlace {
 
     // if the market has not matured, mature it and redeem exactly the amount
     if (market.maturityRate == 0) {
-      if (!matureMarket(p, u, m)) {
-        revert Exception(30, 0, 0, address(0), address(0));
+      if (!matureMarket(p, u, m)) { revert Exception(30, 0, 0, address(0), address(0));
       }
     }
 
-    if (!IZcToken(market.zcToken).burn(t, a)) {
-      revert Exception(29, 0, 0, address(0), address(0));
+    if (!IZcToken(market.zcToken).burn(t, a)) { revert Exception(29, 0, 0, address(0), address(0));
     }
 
     emit RedeemZcToken(p, u, m, t, a);
@@ -268,13 +242,9 @@ contract MarketPlace {
   /// @param a Amount of zcToken minted and notional added
   function custodialInitiate(uint8 p, address u, uint256 m, address z, address n, uint256 a) external authorized(swivel) unpaused(p) returns (bool) {
     Market memory market = markets[p][u][m];
-    if (!IZcToken(market.zcToken).mint(z, a)) {
-      revert Exception(28, 0, 0, address(0), address(0));
-    }
+    if (!IZcToken(market.zcToken).mint(z, a)) { revert Exception(28, 0, 0, address(0), address(0)); }
 
-    if (!IVaultTracker(market.vaultTracker).addNotional(n, a)) {
-      revert Exception(25, 0, 0, address(0), address(0));
-    }
+    if (!IVaultTracker(market.vaultTracker).addNotional(n, a)) { revert Exception(25, 0, 0, address(0), address(0)); }
 
     emit CustodialInitiate(p, u, m, z, n, a);
     return true;
@@ -290,13 +260,9 @@ contract MarketPlace {
   /// @param a Amount of zcToken burned and notional removed
   function custodialExit(uint8 p, address u, uint256 m, address z, address n, uint256 a) external authorized(swivel) unpaused(p) returns (bool) {
     Market memory market = markets[p][u][m];
-    if (!IZcToken(market.zcToken).burn(z, a)) {
-      revert Exception(29, 0, 0, address(0), address(0));
-    }
+    if (!IZcToken(market.zcToken).burn(z, a)) { revert Exception(29, 0, 0, address(0), address(0)); }
 
-    if (!IVaultTracker(market.vaultTracker).removeNotional(n, a)) {
-      revert Exception(26, 0, 0, address(0), address(0));
-    }
+    if (!IVaultTracker(market.vaultTracker).removeNotional(n, a)) { revert Exception(26, 0, 0, address(0), address(0)); }
 
     emit CustodialExit(p, u, m, z, n, a);
     return true;
@@ -312,13 +278,9 @@ contract MarketPlace {
   /// @param a Amount of zcToken transfer
   function p2pZcTokenExchange(uint8 p, address u, uint256 m, address f, address t, uint256 a) external authorized(swivel) unpaused(p) returns (bool) {
     Market memory market = markets[p][u][m];
-    if (!IZcToken(market.zcToken).burn(f, a)) {
-      revert Exception(29, 0, 0, address(0), address(0));
-    }
+    if (!IZcToken(market.zcToken).burn(f, a)) { revert Exception(29, 0, 0, address(0), address(0)); }
 
-    if (!IZcToken(market.zcToken).mint(t, a)) {
-      revert Exception(28, 0, 0, address(0), address(0));
-    }
+    if (!IZcToken(market.zcToken).mint(t, a)) { revert Exception(28, 0, 0, address(0), address(0)); }
 
     emit P2pZcTokenExchange(p, u, m, f, t, a);
     return true;
@@ -333,9 +295,7 @@ contract MarketPlace {
   /// @param t Target to be transferred to
   /// @param a Amount of notional transfer
   function p2pVaultExchange(uint8 p, address u, uint256 m, address f, address t, uint256 a) external authorized(swivel) unpaused(p) returns (bool) {
-    if (!IVaultTracker(markets[p][u][m].vaultTracker).transferNotionalFrom(f, t, a)) {
-      revert Exception(27, 0, 0, address(0), address(0));
-    }
+    if (!IVaultTracker(markets[p][u][m].vaultTracker).transferNotionalFrom(f, t, a)) { revert Exception(27, 0, 0, address(0), address(0)); }
 
     emit P2pVaultExchange(p, u, m, f, t, a);
     return true;
@@ -349,9 +309,7 @@ contract MarketPlace {
   /// @param t Target to be transferred to
   /// @param a Amount of notional to be transferred
   function transferVaultNotional(uint8 p, address u, uint256 m, address t, uint256 a) external unpaused(p) returns (bool) {
-    if (!IVaultTracker(markets[p][u][m].vaultTracker).transferNotionalFrom(msg.sender, t, a)) {
-      revert Exception(27, 0, 0, address(0), address(0));
-    }
+    if (!IVaultTracker(markets[p][u][m].vaultTracker).transferNotionalFrom(msg.sender, t, a)) { revert Exception(27, 0, 0, address(0), address(0)); }
 
     emit TransferVaultNotional(p, u, m, msg.sender, t, a);
     return true;
@@ -377,16 +335,12 @@ contract MarketPlace {
   }
 
   modifier authorized(address a) {
-    if(msg.sender != a) {
-      revert Exception(0, 0, 0, msg.sender, a);
-    }
+    if(msg.sender != a) { revert Exception(0, 0, 0, msg.sender, a); }
     _;
   }
 
   modifier unpaused(uint8 p) {
-    if(paused[p]) {
-      revert Exception(1, 0, 0, address(0), address(0));
-    }
+    if(paused[p]) { revert Exception(1, 0, 0, address(0), address(0)); }
     _;
   }
 }

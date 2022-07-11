@@ -115,9 +115,7 @@ contract Swivel {
     // checks the side, and the amount compared to available
     uint256 amount = a + filled[hash];
 
-    if (amount > o.premium) {
-      revert Exception(5, amount, o.premium, address(0), address(0));
-    }
+    if (amount > o.premium) { revert Exception(5, amount, o.premium, address(0), address(0)); }
     
     // TODO cheaper to assign amount here or keep the ADD?
     filled[hash] += a;
@@ -133,20 +131,14 @@ contract Swivel {
     address cTokenAddr = mPlace.cTokenAddress(o.protocol, o.underlying, o.maturity);
 
     // perform the actual deposit type transaction, specific to a protocol
-    if (!deposit(o.protocol, o.underlying, cTokenAddr, principalFilled)) {
-      revert Exception(6, 0, 0, address(0), address(0));
-    }
+    if (!deposit(o.protocol, o.underlying, cTokenAddr, principalFilled)) { revert Exception(6, 0, 0, address(0), address(0)); }
 
     // alert marketplace
-    if (!mPlace.custodialInitiate(o.protocol, o.underlying, o.maturity, o.maker, msg.sender, principalFilled)) {
-      revert Exception(8, 0, 0, address(0), address(0));
-    }
+    if (!mPlace.custodialInitiate(o.protocol, o.underlying, o.maturity, o.maker, msg.sender, principalFilled)) { revert Exception(8, 0, 0, address(0), address(0)); }
 
     // transfer fee in vault notional to swivel (from msg.sender)
     uint256 fee = principalFilled / feenominators[2];
-    if (!mPlace.transferVaultNotionalFee(o.protocol, o.underlying, o.maturity, msg.sender, fee)) {
-      revert Exception(10, 0, 0, address(0), address(0));
-    }
+    if (!mPlace.transferVaultNotionalFee(o.protocol, o.underlying, o.maturity, msg.sender, fee)) { revert Exception(10, 0, 0, address(0), address(0)); }
 
     emit Initiate(o.key, hash, o.maker, o.vault, o.exit, msg.sender, a, principalFilled);
   }
@@ -160,9 +152,7 @@ contract Swivel {
     bytes32 hash = validOrderHash(o, c);
     uint256 amount = a + filled[hash];
 
-    if (amount > o.principal) {
-      revert Exception(5, amount, o.principal, address(0), address(0));
-    }
+    if (amount > o.principal) { revert Exception(5, amount, o.principal, address(0), address(0)); }
 
     // TODO assign amount or keep the ADD?
     filled[hash] += a;
@@ -180,14 +170,10 @@ contract Swivel {
     address cTokenAddr = mPlace.cTokenAddress(o.protocol, o.underlying, o.maturity);
 
     // perform the actual deposit type transaction, specific to a protocol
-    if(!deposit(o.protocol, o.underlying, cTokenAddr, a)) {
-      revert Exception(6, 0, 0, address(0), address(0));
-    }
+    if(!deposit(o.protocol, o.underlying, cTokenAddr, a)) { revert Exception(6, 0, 0, address(0), address(0)); }
 
     // alert marketplace 
-    if (!mPlace.custodialInitiate(o.protocol, o.underlying, o.maturity, msg.sender, o.maker, a)) {
-      revert Exception(8, 0, 0, address(0), address(0));
-    }
+    if (!mPlace.custodialInitiate(o.protocol, o.underlying, o.maturity, msg.sender, o.maker, a)) { revert Exception(8, 0, 0, address(0), address(0)); }
 
     emit Initiate(o.key, hash, o.maker, o.vault, o.exit, msg.sender, a, premiumFilled);
   }
@@ -201,9 +187,7 @@ contract Swivel {
     bytes32 hash = validOrderHash(o, c);
     uint256 amount = a + filled[hash];
 
-    if (amount > o.principal) {
-      revert Exception(5, amount, o.principal, address(0), address(0));
-    }
+    if (amount > o.principal) { revert Exception(5, amount, o.principal, address(0), address(0)); }
 
     // TODO assign amount or keep the ADD?
     filled[hash] += a;
@@ -218,9 +202,7 @@ contract Swivel {
     Safe.transferFrom(uToken, msg.sender, address(this), fee);
 
     // alert marketplace
-    if (!IMarketPlace(marketPlace).p2pZcTokenExchange(o.protocol, o.underlying, o.maturity, o.maker, msg.sender, a)) {
-      revert Exception(11, 0, 0, address(0), address(0));
-    }
+    if (!IMarketPlace(marketPlace).p2pZcTokenExchange(o.protocol, o.underlying, o.maturity, o.maker, msg.sender, a)) { revert Exception(11, 0, 0, address(0), address(0)); }
             
     emit Initiate(o.key, hash, o.maker, o.vault, o.exit, msg.sender, a, premiumFilled);
   }
@@ -234,9 +216,7 @@ contract Swivel {
     bytes32 hash = validOrderHash(o, c);
     uint256 amount = a + filled[hash];
 
-    if (amount > o.premium) {
-      revert Exception(5, amount, o.premium, address(0), address(0));
-    }
+    if (amount > o.premium) { revert Exception(5, amount, o.premium, address(0), address(0)); }
 
     // TODO assign amount or keep ADD?
     filled[hash] += a;
@@ -246,15 +226,11 @@ contract Swivel {
     IMarketPlace mPlace = IMarketPlace(marketPlace);
     uint256 principalFilled = (a * o.principal) / o.premium;
     // alert marketplace
-    if (!mPlace.p2pVaultExchange(o.protocol, o.underlying, o.maturity, o.maker, msg.sender, principalFilled)) {
-      revert Exception(12, 0, 0, address(0), address(0));
-    }
+    if (!mPlace.p2pVaultExchange(o.protocol, o.underlying, o.maturity, o.maker, msg.sender, principalFilled)) { revert Exception(12, 0, 0, address(0), address(0)); }
 
     // transfer fee (in vault notional) to swivel
     uint256 fee = principalFilled / feenominators[2];
-    if (!mPlace.transferVaultNotionalFee(o.protocol, o.underlying, o.maturity, msg.sender, fee)) {
-      revert Exception(10, 0, 0, address(0), address(0));
-    }
+    if (!mPlace.transferVaultNotionalFee(o.protocol, o.underlying, o.maturity, msg.sender, fee)) { revert Exception(10, 0, 0, address(0), address(0)); }
 
     emit Initiate(o.key, hash, o.maker, o.vault, o.exit, msg.sender, a, principalFilled);
   }
@@ -305,9 +281,7 @@ contract Swivel {
     bytes32 hash = validOrderHash(o, c);
     uint256 amount = a + filled[hash];
 
-    if (amount > o.premium) {
-      revert Exception(5, amount, o.premium, address(0), address(0));
-    }
+    if (amount > o.premium) { revert Exception(5, amount, o.premium, address(0), address(0)); }
 
     // TODO assign amount or keep the ADD?
     filled[hash] += a;       
@@ -324,9 +298,7 @@ contract Swivel {
     Safe.transferFrom(uToken, msg.sender, address(this), fee);
 
     // alert marketplace
-    if (!IMarketPlace(marketPlace).p2pZcTokenExchange(o.protocol, o.underlying, o.maturity, msg.sender, o.maker, principalFilled)) {
-      revert Exception(11, 0, 0, address(0), address(0));
-    }
+    if (!IMarketPlace(marketPlace).p2pZcTokenExchange(o.protocol, o.underlying, o.maturity, msg.sender, o.maker, principalFilled)) { revert Exception(11, 0, 0, address(0), address(0)); }
 
     emit Exit(o.key, hash, o.maker, o.vault, o.exit, msg.sender, a, principalFilled);
   }
@@ -340,9 +312,7 @@ contract Swivel {
     bytes32 hash = validOrderHash(o, c);
     uint256 amount = a + filled[hash];
 
-    if (amount > o.principal) {
-      revert Exception(5, amount, o.principal, address(0), address(0));
-    }
+    if (amount > o.principal) { revert Exception(5, amount, o.principal, address(0), address(0)); }
     
     // TODO assign amount or keep the ADD?
     filled[hash] += a;
@@ -358,9 +328,7 @@ contract Swivel {
     Safe.transferFrom(uToken, msg.sender, address(this), fee);
 
     // transfer <a> notional from sender to maker
-    if (!IMarketPlace(marketPlace).p2pVaultExchange(o.protocol, o.underlying, o.maturity, msg.sender, o.maker, a)) {
-      revert Exception(12, 0, 0, address(0), address(0));
-    }
+    if (!IMarketPlace(marketPlace).p2pVaultExchange(o.protocol, o.underlying, o.maturity, msg.sender, o.maker, a)) { revert Exception(12, 0, 0, address(0), address(0)); }
 
     emit Exit(o.key, hash, o.maker, o.vault, o.exit, msg.sender, a, premiumFilled);
   }
@@ -374,9 +342,7 @@ contract Swivel {
     bytes32 hash = validOrderHash(o, c);
     uint256 amount = a + filled[hash];
 
-    if (amount > o.principal) {
-      revert Exception(5, amount, o.principal, address(0), address(0));
-    }
+    if (amount > o.principal) { revert Exception(5, amount, o.principal, address(0), address(0)); }
 
     // TODO assign amount or keep the ADD?
     filled[hash] += a;
@@ -385,9 +351,7 @@ contract Swivel {
     IMarketPlace mPlace = IMarketPlace(marketPlace);
     address cTokenAddr = mPlace.cTokenAddress(o.protocol, o.underlying, o.maturity);
 
-    if (!withdraw(o.protocol, o.underlying, cTokenAddr, a)) {
-      revert Exception(7, 0, 0, address(0), address(0));
-    }
+    if (!withdraw(o.protocol, o.underlying, cTokenAddr, a)) { revert Exception(7, 0, 0, address(0), address(0)); }
 
     IErc20 uToken = IErc20(o.underlying);
     // transfer principal-premium  back to fixed exit party now that the interest coupon and zcb have been redeemed
@@ -399,9 +363,7 @@ contract Swivel {
     Safe.transfer(uToken, msg.sender, premiumFilled - fee);
 
     // burn zcTokens + nTokens from o.maker and msg.sender respectively
-    if (!mPlace.custodialExit(o.protocol, o.underlying, o.maturity, o.maker, msg.sender, a)) {
-      revert Exception(9, 0, 0, address(0), address(0));
-    }
+    if (!mPlace.custodialExit(o.protocol, o.underlying, o.maturity, o.maker, msg.sender, a)) { revert Exception(9, 0, 0, address(0), address(0)); }
 
     emit Exit(o.key, hash, o.maker, o.vault, o.exit, msg.sender, a, premiumFilled);
   }
@@ -415,9 +377,7 @@ contract Swivel {
     bytes32 hash = validOrderHash(o, c);
     uint256 amount = a + filled[hash];
 
-    if (amount > o.premium) {
-      revert Exception(5, amount, o.premium, address(0), address(0));
-    }
+    if (amount > o.premium) { revert Exception(5, amount, o.premium, address(0), address(0)); }
     
     // TODO assign amount or keep the ADD?
     filled[hash] += a;
@@ -427,9 +387,7 @@ contract Swivel {
     address cTokenAddr = mPlace.cTokenAddress(o.protocol, o.underlying, o.maturity);
     uint256 principalFilled = (a * o.principal) / o.premium;
 
-    if (!withdraw(o.protocol, o.underlying, cTokenAddr, principalFilled)) {
-      revert Exception(7, 0, 0, address(0), address(0));
-    }
+    if (!withdraw(o.protocol, o.underlying, cTokenAddr, principalFilled)) { revert Exception(7, 0, 0, address(0), address(0)); }
 
     IErc20 uToken = IErc20(o.underlying);
     // transfer principal-premium-fee back to fixed exit party now that the interest coupon and zcb have been redeemed
@@ -438,9 +396,7 @@ contract Swivel {
     Safe.transfer(uToken, o.maker, a);
 
     // burn <principalFilled> zcTokens + nTokens from msg.sender and o.maker respectively
-    if (!mPlace.custodialExit(o.protocol, o.underlying, o.maturity, msg.sender, o.maker, principalFilled)) {
-      revert Exception(9, 0, 0, address(0), address(0));
-    }
+    if (!mPlace.custodialExit(o.protocol, o.underlying, o.maturity, msg.sender, o.maker, principalFilled)) { revert Exception(9, 0, 0, address(0), address(0)); }
 
     emit Exit(o.key, hash, o.maker, o.vault, o.exit, msg.sender, a, principalFilled);
   }
@@ -452,9 +408,7 @@ contract Swivel {
     uint256 len = o.length;
     for (uint256 i; i < len;) {
       bytes32 hash = validOrderHash(o[i], c[i]);
-      if (msg.sender != o[i].maker) {
-        revert Exception(15, 0, 0, msg.sender, o[i].maker);
-      }
+      if (msg.sender != o[i].maker) { revert Exception(15, 0, 0, msg.sender, o[i].maker); }
 
       cancelled[hash] = true;
 
@@ -503,13 +457,9 @@ contract Swivel {
   function withdraw(address e) external authorized(admin) returns (bool) {
     uint256 when = withdrawals[e];
 
-    if (when == 0) {
-      revert Exception(16, 0, 0, address(0), address(0));
-    }
+    if (when == 0) { revert Exception(16, 0, 0, address(0), address(0)); }
 
-    if (block.timestamp < when) {
-      revert Exception(17, block.timestamp, when, address(0), address(0));
-    }
+    if (block.timestamp < when) { revert Exception(17, block.timestamp, when, address(0), address(0)); }
 
     withdrawals[e] = 0;
 
@@ -545,20 +495,14 @@ contract Swivel {
   function setFee(uint16[] memory i, uint16[] memory d) external authorized(admin) returns (bool) {
     uint256 len = i.length;
 
-    if (len != d.length) {
-      revert Exception(19, len, d.length, address(0), address(0));
-    }
+    if (len != d.length) { revert Exception(19, len, d.length, address(0), address(0)); }
 
     if (feeChange == 0) { revert Exception(16, 0, 0, address(0), address(0)); }
 
-    if (block.timestamp < feeChange) {
-      revert Exception(17, block.timestamp, feeChange, address(0), address(0));
-    }
+    if (block.timestamp < feeChange) { revert Exception(17, block.timestamp, feeChange, address(0), address(0)); }
 
     for (uint256 x; x < len;) {
-      if (d[x] < MIN_FEENOMINATOR) {
-        revert Exception(18, uint256(d[x]), 0, address(0), address(0));
-      }
+      if (d[x] < MIN_FEENOMINATOR) { revert Exception(18, uint256(d[x]), 0, address(0), address(0)); }
 
       feenominators[x] = d[x];
       emit SetFee(i[x], d[x]);
@@ -600,9 +544,7 @@ contract Swivel {
   function approveUnderlying(address[] calldata u, address[] calldata c) external authorized(admin) returns (bool) {
     uint256 len = u.length;
 
-    if (len != c.length) {
-      revert Exception(19, len, c.length, address(0), address(0));
-    }
+    if (len != c.length) { revert Exception(19, len, c.length, address(0), address(0)); }
 
     uint256 max = 2**256 - 1;
     uint256 when;
@@ -610,12 +552,9 @@ contract Swivel {
     for (uint256 i; i < len;) {
       when = approvals[u[i]];
 
-      if (when == 0) {
-        revert Exception(16, 0, 0, address(0), address(0));
-      }
+      if (when == 0) { revert Exception(16, 0, 0, address(0), address(0)); }
 
-      if (block.timestamp < when) {
-        revert Exception(17, block.timestamp, when, address(0), address(0));
+      if (block.timestamp < when) { revert Exception(17, block.timestamp, when, address(0), address(0));
       }
 
       approvals[u[i]] = 0;
@@ -643,12 +582,10 @@ contract Swivel {
     IMarketPlace mPlace = IMarketPlace(marketPlace);
     
     // the underlying deposit is directed to the appropriate abstraction
-    if (!deposit(p, u, mPlace.cTokenAddress(p, u, m), a)) {
-      revert Exception(6, 0, 0, address(0), address(0));
+    if (!deposit(p, u, mPlace.cTokenAddress(p, u, m), a)) { revert Exception(6, 0, 0, address(0), address(0));
     }
 
-    if (!mPlace.mintZcTokenAddingNotional(p, u, m, msg.sender, a)) {
-      revert Exception(13, 0, 0, address(0), address(0));
+    if (!mPlace.mintZcTokenAddingNotional(p, u, m, msg.sender, a)) { revert Exception(13, 0, 0, address(0), address(0));
     }
 
     return true;
@@ -663,12 +600,10 @@ contract Swivel {
   function combineTokens(uint8 p, address u, uint256 m, uint256 a) external returns (bool) {
     IMarketPlace mPlace = IMarketPlace(marketPlace);
 
-    if (!mPlace.burnZcTokenRemovingNotional(p, u, m, msg.sender, a)) {
-      revert Exception(14, 0, 0, address(0), address(0));
+    if (!mPlace.burnZcTokenRemovingNotional(p, u, m, msg.sender, a)) { revert Exception(14, 0, 0, address(0), address(0));
     }
 
-    if (!withdraw(p, u, mPlace.cTokenAddress(p, u, m), a)) {
-      revert Exception(7, 0, 0, address(0), address(0));
+    if (!withdraw(p, u, mPlace.cTokenAddress(p, u, m), a)) { revert Exception(7, 0, 0, address(0), address(0));
     }
 
     Safe.transfer(IErc20(u), msg.sender, a);
@@ -684,9 +619,7 @@ contract Swivel {
   /// @param a Amount of underlying being redeemed
   function authRedeemZcToken(uint8 p, address u, address c, address t, uint256 a) external authorized(marketPlace) returns(bool) {
     // redeem underlying from compounding
-    if (!withdraw(p, u, c, a)) {
-      revert Exception(7, 0, 0, address(0), address(0));
-    }
+    if (!withdraw(p, u, c, a)) { revert Exception(7, 0, 0, address(0), address(0)); }
     // transfer underlying back to msg.sender
     Safe.transfer(IErc20(u), t, a);
 
@@ -703,9 +636,7 @@ contract Swivel {
     // call marketplace to determine the amount redeemed
     uint256 redeemed = mPlace.redeemZcToken(p, u, m, msg.sender, a);
     // redeem underlying from compounding
-    if (!withdraw(p, u, mPlace.cTokenAddress(p, u, m), redeemed)) {
-      revert Exception(7, 0, 0, address(0), address(0));
-    }
+    if (!withdraw(p, u, mPlace.cTokenAddress(p, u, m), redeemed)) { revert Exception(7, 0, 0, address(0), address(0)); }
 
     // transfer underlying back to msg.sender
     Safe.transfer(IErc20(u), msg.sender, redeemed);
@@ -724,9 +655,7 @@ contract Swivel {
     // redeem underlying from compounding
     address cTokenAddr = mPlace.cTokenAddress(p, u, m);
 
-    if (!withdraw(p, u, cTokenAddr, redeemed)) {
-      revert Exception(7, 0, 0, address(0), address(0));
-    }
+    if (!withdraw(p, u, cTokenAddr, redeemed)) { revert Exception(7, 0, 0, address(0), address(0)); }
 
     // transfer underlying back to msg.sender
     Safe.transfer(IErc20(u), msg.sender, redeemed);
@@ -743,9 +672,7 @@ contract Swivel {
     // call marketplace to determine the amount redeemed
     uint256 redeemed = mPlace.redeemVaultInterest(p, u, m, address(this));
     // redeem underlying from compounding
-    if (!withdraw(p, u, mPlace.cTokenAddress(p, u, m), redeemed)) {
-      revert Exception(7, 0, 0, address(0), address(0));
-    }
+    if (!withdraw(p, u, mPlace.cTokenAddress(p, u, m), redeemed)) { revert Exception(7, 0, 0, address(0), address(0)); }
 
     // NOTE: for swivel reddem there is no transfer out as there is in redeemVaultInterest
 
@@ -759,19 +686,13 @@ contract Swivel {
   function validOrderHash(Hash.Order calldata o, Sig.Components calldata c) internal view returns (bytes32) {
     bytes32 hash = Hash.order(o);
 
-    if (cancelled[hash]) {
-      revert Exception(2, 0, 0, address(0), address(0));
-    }
+    if (cancelled[hash]) { revert Exception(2, 0, 0, address(0), address(0)); }
 
-    if (o.expiry < block.timestamp) {
-      revert Exception(3, o.expiry, block.timestamp, address(0), address(0));
-    }
+    if (o.expiry < block.timestamp) { revert Exception(3, o.expiry, block.timestamp, address(0), address(0)); }
 
     address recovered = Sig.recover(Hash.message(domain, hash), c);
 
-    if (o.maker != recovered) {
-      revert Exception(4, 0, 0, o.maker, recovered);
-    }
+    if (o.maker != recovered) { revert Exception(4, 0, 0, o.maker, recovered); }
 
     return hash;
   }
@@ -838,9 +759,7 @@ contract Swivel {
   }
 
   modifier authorized(address a) {
-    if(msg.sender != a) {
-      revert Exception(0, 0, 0, msg.sender, a);
-    }
+    if(msg.sender != a) { revert Exception(0, 0, 0, msg.sender, a); }
     _;
   }
 }

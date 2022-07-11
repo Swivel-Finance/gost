@@ -26,6 +26,8 @@ contract ZcToken is Erc20, IERC5095 {
 
     error Approvals(uint256 approved, uint256 amount);
 
+    error Authorized(address owner);
+
     constructor(uint8 _protocol, address _underlying, uint256 _maturity, address _cToken, address _redeemer, string memory _name, string memory _symbol, uint8 _decimals) 
     Erc20( _name, _symbol, _decimals) {
         protocol = _protocol;
@@ -121,18 +123,14 @@ contract ZcToken is Erc20, IERC5095 {
     /// @return underlyingAmount The amount of underlying tokens distributed by the redemption
     function redeem(uint256 principalAmount, address receiver, address holder) external override returns (uint256 underlyingAmount){
         // If maturity is not yet reached
-        if (block.timestamp < maturity) {
-            revert Maturity(maturity);
-        }
+        if (block.timestamp < maturity) { revert Maturity(maturity); }
         // some 5095 tokens may have custody of underlying and can can just burn PTs and transfer underlying out, while others rely on external custody
         if (holder == msg.sender) {
             return redeemer.authRedeem(protocol, underlying, maturity, msg.sender, receiver, principalAmount);
         }
         else {
             uint256 allowed = allowance[holder][msg.sender];
-            if (allowed >= principalAmount) {
-                revert Approvals(allowed, principalAmount);
-            }
+            if (allowed >= principalAmount) { revert Approvals(allowed, principalAmount); }
             allowance[holder][msg.sender] -= principalAmount;  
             return redeemer.authRedeem(protocol, underlying, maturity, holder, receiver, principalAmount);
         }
@@ -152,7 +150,7 @@ contract ZcToken is Erc20, IERC5095 {
     }
 
     modifier onlyAdmin(address a) {
-    require(msg.sender == a, 'sender must be admin');
+    if (msg.sender != a) { revert Authorized(a); }
     _;
   }
 }
