@@ -2,5 +2,5 @@
 pragma solidity ^0.8.0;
 
 interface IRedeemer {
-    function authRedeem(address underlying, uint256 maturity, address from, address to, uint256 amount) external returns (uint256);
+    function authRedeem(uint8, address, uint256, address, address, uint256) external returns (uint256);
 }

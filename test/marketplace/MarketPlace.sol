@@ -157,8 +157,27 @@ contract MarketPlace {
     return true;
   }
 
-  // TODO THIS. question protocol? authorized?
-  // function authRedeem(...
+  /// @param p
+  /// @param u
+  /// @param m
+  /// @param f
+  /// @param t
+  /// @param a
+  function authRedeem(uint8 p, address u, uint256 m, address f, address t, uint256 a) public authorized(markets[p][u][m].zcToken) returns (bool) {
+    Market memory market = markets[p][u][m];
+    // if the market has not matured, mature it...
+    if (market.maturityRate == 0) {
+      if (!matureMarket(p, u, m)) {
+        revert Exception(30, 0, 0, address(0), address(0));
+      }
+    }
+
+    if (!IZcToken(market.zcToken).burn(f, a)) {
+      revert Exception(29, 0, 0, address(0), address(0));
+    }
+
+   // transfer? 
+  }
 
   /// @notice Allows (via swivel) zcToken holders to redeem their tokens for underlying tokens after maturity has been reached.
   /// @param p Protocol Enum value associated with this market

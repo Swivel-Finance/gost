@@ -111,7 +111,7 @@ contract ZcToken is Erc20, IERC5095 {
         // Transfer logic
         // If holder is msg.sender, skip approval check
             if (holder == msg.sender) {
-                return redeemer.authRedeem(underlying, maturity, msg.sender, receiver, previewAmount);
+                return redeemer.authRedeem(protocol, underlying, maturity, msg.sender, receiver, previewAmount);
             }
             else {
                 uint256 allowed = allowance[holder][msg.sender];
@@ -119,13 +119,13 @@ contract ZcToken is Erc20, IERC5095 {
                     revert Approvals(allowed, previewAmount);
                 }
                 allowance[holder][msg.sender] -= previewAmount;
-                return redeemer.authRedeem(underlying, maturity, holder, receiver, previewAmount);     
+                return redeemer.authRedeem(protocol, underlying, maturity, holder, receiver, previewAmount);     
             }
         }
         // If already matured
         // If holder is msg.sender, skip approval check
         if (holder == msg.sender) {
-            return redeemer.authRedeem(underlying, maturity, msg.sender, receiver, previewAmount);
+            return redeemer.authRedeem(protocol, underlying, maturity, msg.sender, receiver, previewAmount);
         }
         else {
             uint256 allowed = allowance[holder][msg.sender];
@@ -133,7 +133,7 @@ contract ZcToken is Erc20, IERC5095 {
                 revert Approvals(allowed, previewAmount);
             }
             allowance[holder][msg.sender] -= previewAmount;
-            return redeemer.authRedeem(underlying, maturity, holder, receiver, previewAmount);     
+            return redeemer.authRedeem(protocol, underlying, maturity, holder, receiver, previewAmount);     
         }
     }
     /// @notice At or after maturity, burns exactly `principalAmount` of Principal Tokens from `owner` and sends underlyingAmount of underlying tokens to `receiver`.
@@ -151,7 +151,7 @@ contract ZcToken is Erc20, IERC5095 {
         }
         // some 5095 tokens may have custody of underlying and can can just burn PTs and transfer underlying out, while others rely on external custody
         if (holder == msg.sender) {
-            return redeemer.authRedeem(underlying, maturity, msg.sender, receiver, principalAmount);
+            return redeemer.authRedeem(protocol, underlying, maturity, msg.sender, receiver, principalAmount);
         }
         else {
             uint256 allowed = allowance[holder][msg.sender];
@@ -159,7 +159,7 @@ contract ZcToken is Erc20, IERC5095 {
                 revert Approvals(allowed, principalAmount);
             }
             allowance[holder][msg.sender] -= principalAmount;
-            return redeemer.authRedeem(underlying, maturity, holder, receiver, principalAmount);     
+            return redeemer.authRedeem(protocol, underlying, maturity, holder, receiver, principalAmount);     
         }
     }
     /// @param f Address to burn from
