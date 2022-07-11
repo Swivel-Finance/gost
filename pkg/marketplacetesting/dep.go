@@ -23,6 +23,8 @@ type Dep struct {
 	AavePoolAddress      common.Address
 	EulerToken           *mocks.EulerToken
 	EulerTokenAddress    common.Address
+	CreatorAddress       common.Address
+	Creator              *mocks.Creator
 	MarketPlaceAddress   common.Address
 	MarketPlace          *marketplace.MarketPlace
 	Maturity             *big.Int
@@ -88,7 +90,15 @@ func Deploy(e *Env) (*Dep, error) {
 
 	e.Blockchain.Commit()
 
-	marketAddress, _, marketContract, marketErr := marketplace.DeployMarketPlace(e.Owner.Opts, e.Blockchain)
+	crAddress, _, crContract, crErr := mocks.DeployCreator(e.Owner.Opts, e.Blockchain)
+
+	if crErr != nil {
+		return nil, crErr
+	}
+
+	e.Blockchain.Commit()
+
+	marketAddress, _, marketContract, marketErr := marketplace.DeployMarketPlace(e.Owner.Opts, e.Blockchain, crAddress)
 
 	if marketErr != nil {
 		return nil, marketErr
@@ -97,6 +107,8 @@ func Deploy(e *Env) (*Dep, error) {
 	e.Blockchain.Commit()
 
 	return &Dep{
+		CreatorAddress:       crAddress,
+		Creator:              crContract,
 		MarketPlaceAddress:   marketAddress,
 		MarketPlace:          marketContract,
 		Erc20Address:         erc20Address,

@@ -1,0 +1,7 @@
+The implicit Errors enum:
+
+[
+  'unauthorized', 0
+  ...,
+  'marketPlace address set', 33
+]
