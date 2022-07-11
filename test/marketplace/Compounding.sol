@@ -67,9 +67,9 @@ library Compounding {
   /// @param c Compounding token address
   function exchangeRate(uint8 p, address c) internal view returns (uint256) {
     if (p == uint8(Protocols.Compound)) { // TODO is Rari a drop in here?
-      return LibCompound.viewExchangeRate(CERC20(c));
-    } else if (p == uint8(Protocols.Rari)) {
-      return LibFuse.viewExchangeRate(CERC20(c));
+      return LibCompound.viewExchangeRate(ICERC20(c));
+    } else if (p == uint8(Protocols.Rari)) { 
+      return LibFuse.viewExchangeRate(ICERC20(c));
     } else if (p == uint8(Protocols.Yearn)) {
       return IYearnVault(c).pricePerShare();
     } else if (p == uint8(Protocols.Aave)) {
