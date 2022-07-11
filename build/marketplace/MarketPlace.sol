@@ -157,8 +157,37 @@ contract MarketPlace {
     return true;
   }
 
-  // TODO THIS. question protocol? authorized?
-  // function authRedeem(...
+  /// @notice Implementation of authRedeem to fulfill the IRedeemer interface for ERC5095
+  /// @param p Protocol Enum value associated with this market
+  /// @param u Underlying token address associated with the market
+  /// @param m Maturity timestamp of the market
+  /// @param f Address of the user having their zcTokens burned
+  /// @param t Address of the user receiving underlying
+  /// @param a Amount of zcTokens being redeemed
+  /// @return Amount of underlying being withdrawn (needed for 5095 return)
+  function authRedeem(uint8 p, address u, uint256 m, address f, address t, uint256 a) public authorized(markets[p][u][m].zcToken) returns (uint256) {
+    Market memory market = markets[p][u][m];
+    // if the market has not matured, mature it...
+    if (market.maturityRate == 0) {
+      if (!matureMarket(p, u, m)) {
+        revert Exception(30, 0, 0, address(0), address(0));
+      }
+    }
+
+    if (!IZcToken(market.zcToken).burn(f, a)) {
+      revert Exception(29, 0, 0, address(0), address(0));
+    }
+
+    // depending on initial market maturity status adjust (or don't) the amount to be redemmed/returned
+    uint256 amount = market.maturityRate == 0 ? a : calculateReturn(p, u, m, a);
+
+    // TODO do we care about the bool return here? Exception?
+    ISwivel(swivel).authRedeem(p, u, market.cTokenAddr, t, amount);
+
+    emit RedeemZcToken(p, u, m, t, amount);
+
+    return amount;
+  }
 
   /// @notice Allows (via swivel) zcToken holders to redeem their tokens for underlying tokens after maturity has been reached.
   /// @param p Protocol Enum value associated with this market
