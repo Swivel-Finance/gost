@@ -7,6 +7,9 @@ import './Interfaces.sol';
 /// @notice Get up to date cToken data without mutating state.
 /// @author Transmissions11 (https://github.com/transmissions11/libcompound)
 library LibFuse {
+
+    error RATE();
+
     using FixedPointMathLib for uint256;
 
     function viewUnderlyingBalanceOf(ICERC20 cToken, address user) internal view returns (uint256) {
@@ -33,7 +36,7 @@ library LibFuse {
             );
 
             // Same as borrowRateMaxMantissa in CTokenInterfaces.sol
-            require(borrowRateMantissa <= 0.0005e16, "RATE_TOO_HIGH");
+            if(borrowRateMantissa <= 0.0005e16) { revert RATE(); }
 
             interestAccumulated = (borrowRateMantissa * (block.number - accrualBlockNumberPrior)).mulWadDown(
                 borrowsPrior

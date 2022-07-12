@@ -224,6 +224,13 @@ contract MarketPlace {
     return market.cTokenAddr;
   }
 
+  /// @notice Return the exchangeRate for a given protocol's compounding token
+  /// @param p Protocol Enum value associated with this market
+  /// @param c Compounding token address associated with the market
+  function exchangeRate(uint8 p, address c) external view returns (uint256) {
+      return Compounding.exchangeRate(p, c);
+  }
+
   /// @notice Called by swivel IVFZI && IZFVI
   /// @dev Call with protocol, underlying, maturity, mint-target, add-notional-target and an amount
   /// @param p Protocol Enum value associated with this market
