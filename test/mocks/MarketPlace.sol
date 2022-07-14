@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: UNLICENSED
 
-pragma solidity 0.8.4;
+pragma solidity >= 0.8.4;
 
 /// @dev MarketPlace is a mock whose bindings are imported by unit tests in any pkg/*testing that needs it
 contract MarketPlace {

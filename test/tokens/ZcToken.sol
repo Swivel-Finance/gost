@@ -3,7 +3,7 @@
 // NOTE: whomever decided methods which are the implementation of a stated interface
 //       need to be labeled 'override' should to be publicly flogged.
 
-pragma solidity 0.8.4;
+pragma solidity >= 0.8.4;
 
 import './Erc2612.sol';
 import './IZcToken.sol';
@@ -33,11 +33,13 @@ contract ZcToken is Erc2612, IZcToken {
       return true;
   }
 
+  /// @dev Muturity must not have been reached else we revert here.
   /// @param t Address recieving the minted amount
   /// @param a The amount to mint
   function mint(address t, uint256 a) external onlyAdmin(admin) override returns(bool) {
-      _mint(t, a);
-      return true;
+    require(block.timestamp < maturity, 'maturity reached');
+    _mint(t, a);
+    return true;
   }
 
   /// @param a Admin address

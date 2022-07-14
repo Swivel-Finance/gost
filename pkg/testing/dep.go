@@ -1,9 +1,12 @@
 package testing
 
 import (
+	"math/big"
+
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/swivel-finance/gost/test/fakes"
 	"github.com/swivel-finance/gost/test/mocks"
+	"github.com/swivel-finance/gost/test/tokens"
 )
 
 type Dep struct {
@@ -17,6 +20,8 @@ type Dep struct {
 	CErc20          *mocks.CErc20
 	FErc20Address   common.Address
 	FErc20          *mocks.FErc20
+	ZcTokenAddress  common.Address
+	ZcToken         *tokens.ZcToken
 }
 
 func Deploy(e *Env) (*Dep, error) {
@@ -64,23 +69,14 @@ func Deploy(e *Env) (*Dep, error) {
 
 	e.Blockchain.Commit()
 
-	// deploy marketplace contract... TODO we likely give the marketplace address to swivel...
-	// marketAddress, _, marketContract, marketErr := swivel.DeployMarketPlace(e.Owner.Opts, e.Blockchain)
+	// deploy a real ZcToken in order to test the maturity requirement
+	zctAddress, _, zctContract, zctErr := tokens.DeployZcToken(e.Owner.Opts, e.Blockchain, ercAddress, big.NewInt(MATURITY), "YoloToken", "YT", uint8(18))
 
-	// if marketErr != nil {
-	// return nil, marketErr
-	// }
+	if zctErr != nil {
+		return nil, zctErr
+	}
 
-	// e.Blockchain.Commit()
-
-	// deploy swivel contract...
-	// swivelAddress, _, swivelContract, swivelErr := swivel.DeploySwivel(e.Owner.Opts, e.Blockchain)
-
-	// if swivelErr != nil {
-	// return nil, swivelErr
-	// }
-
-	// e.Blockchain.Commit()
+	e.Blockchain.Commit()
 
 	return &Dep{
 		SigFakeAddress:  sigAddress,
@@ -93,5 +89,7 @@ func Deploy(e *Env) (*Dep, error) {
 		CErc20:          cercContract,
 		FErc20Address:   fercAddress,
 		FErc20:          fercContract,
+		ZcTokenAddress:  zctAddress,
+		ZcToken:         zctContract,
 	}, nil
 }
