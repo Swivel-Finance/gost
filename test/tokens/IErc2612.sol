@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Code adapted from OpenZeppelin IERCPermit
-pragma solidity 0.8.4;
+pragma solidity >= 0.8.4;
 
 /**
  * @dev Interface of the ERC2612 standard as defined in the EIP.

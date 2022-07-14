@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: UNLICENSED
 // Adapted from: https://github.com/Rari-Capital/solmate/blob/main/src/utils/SafeTransferLib.sol
-pragma solidity 0.8.4;
+pragma solidity >= 0.8.4;
 
 import {Erc20} from "./Interfaces.sol";
 /**

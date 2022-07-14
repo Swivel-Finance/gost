@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Adapted from OpenZeppelin ERC2612 (ERC20Permit)
 
-pragma solidity 0.8.4;
+pragma solidity >= 0.8.4;
 
 import './Hash.sol';
 import './PErc20.sol';

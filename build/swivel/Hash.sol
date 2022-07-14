@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: UNLICENSED
 
-pragma solidity 0.8.4;
+pragma solidity >= 0.8.4;
 
 /**
   @notice Encapsulation of the logic to produce EIP712 hashed domain and messages.

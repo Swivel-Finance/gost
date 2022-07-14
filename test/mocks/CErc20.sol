@@ -4,7 +4,7 @@
   CErc20 is a mock compound token with stubs of the methods we need for testing.
 */
 
-pragma solidity 0.8.4;
+pragma solidity >= 0.8.4;
 
 // TODO this could inherit from the ERC20 mock if needed
 contract CErc20 {
