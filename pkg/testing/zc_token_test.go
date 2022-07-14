@@ -73,6 +73,28 @@ func (s *zcTokenSuite) TestDecimals() {
 	assert.Equal(uint8(18), dec)
 }
 
+func (s *zcTokenSuite) TestMint() {
+	assert := assert.New(s.T())
+
+	// get initial totalSupply and reciever balance as both should increase
+	supply, _ := s.ZcToken.TotalSupply()
+	bal, _ := s.ZcToken.BalanceOf(s.Env.User1.Opts.From)
+
+	tx, err := s.ZcToken.Mint(s.Env.User1.Opts.From, big.NewInt(1000000))
+	assert.Nil(err)
+	assert.NotNil(tx)
+
+	s.Env.Blockchain.Commit()
+
+	// get the balances again...
+	newSupply, _ := s.ZcToken.TotalSupply()
+	newBal, _ := s.ZcToken.BalanceOf(s.Env.User1.Opts.From)
+
+	// both sohuld be greater than the previous balances...
+	assert.Equal(newSupply.Cmp(supply), 1)
+	assert.Equal(newBal.Cmp(bal), 1)
+}
+
 func (s *zcTokenSuite) TestMintFailsWhenMature() {
 	assert := assert.New(s.T())
 
