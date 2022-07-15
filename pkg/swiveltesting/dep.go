@@ -70,10 +70,8 @@ func Deploy(e *Env) (*Dep, error) {
 
 	e.Blockchain.Commit()
 
-	// deploy swivel contract...
-	swivelAddress, _, swivelContract, swivelErr := swivel.DeploySwivel(e.Owner.Opts, e.Blockchain, marketAddress)
-
-	// TODO call marketPlace swivel contract address setter when implemented...
+	// deploy swivel contract, (using a swivel staging deploy as verifier here)
+	swivelAddress, _, swivelContract, swivelErr := swivel.DeploySwivel(e.Owner.Opts, e.Blockchain, marketAddress, common.HexToAddress("0x3a09584FF42CDFe27Fe72Da0533bba24E9C28AaD"))
 
 	if swivelErr != nil {
 		return nil, swivelErr
