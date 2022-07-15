@@ -43,9 +43,10 @@ contract Swivel {
   event SetFee(uint256 indexed index, uint256 indexed feenominator);
 
   /// @param m deployed MarketPlace contract address
-  constructor(address m) {
+  /// @param v deployed contract address used as verifier
+  constructor(address m, address v) {
     admin = msg.sender;
-    domain = Hash.domain(NAME, VERSION, block.chainid, address(this));
+    domain = Hash.domain(NAME, VERSION, block.chainid, v);
     marketPlace = m;
     feenominators = [200, 600, 400, 200];
   }
