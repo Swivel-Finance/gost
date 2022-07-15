@@ -103,10 +103,59 @@ func (s *redeemZcTokenSuite) TestRedeemVaultInterest() {
 
 	s.Env.Blockchain.Commit()
 
+	// the marketplace mock should have been called with the msg.sender address
+	redeemArgs, err := s.MarketPlace.RedeemVaultInterestCalled(underlying)
+	assert.Nil(err)
+	assert.NotNil(redeemArgs)
+	assert.Equal(redeemArgs.One, s.Env.Owner.Opts.From)
+
 	// underlying tranfer should have been called with an amount redeemed
 	transferred, err := s.Erc20.TransferCalled(s.Env.Owner.Opts.From)
 	assert.Nil(err)
 	assert.Equal(redeemed, transferred)
+}
+
+func (s *redeemZcTokenSuite) TestRedeemSwivelVaultInterest() {
+	assert := assertions.New(s.T())
+	underlying := s.Dep.Erc20Address
+	maturity := s.Dep.Maturity
+
+	// stub the underlying to return true or the Safe lib will revert
+	tx, err := s.Erc20.TransferReturns(true)
+	assert.NotNil(tx)
+	assert.Nil(err)
+
+	tx, err = s.CErc20.RedeemUnderlyingReturns(big.NewInt(0))
+	assert.NotNil(tx)
+	assert.Nil(err)
+
+	s.Env.Blockchain.Commit()
+
+	tx, err = s.MarketPlace.CTokenAddressReturns(s.Dep.CErc20Address) // must use the actual dep addr here
+	assert.Nil(err)
+	assert.NotNil(tx)
+
+	s.Env.Blockchain.Commit()
+
+	redeemed := big.NewInt(567890)
+	tx, err = s.MarketPlace.RedeemVaultInterestReturns(redeemed)
+	assert.Nil(err)
+	assert.NotNil(tx)
+
+	s.Env.Blockchain.Commit()
+
+	tx, err = s.Swivel.RedeemSwivelVaultInterest(underlying, maturity)
+	assert.Nil(err)
+	assert.NotNil(tx)
+
+	s.Env.Blockchain.Commit()
+
+	// the marketplace mock should have been called with swivel address
+	redeemArgs, err := s.MarketPlace.RedeemVaultInterestCalled(underlying)
+	assert.Nil(err)
+	assert.NotNil(redeemArgs)
+	assert.Equal(redeemArgs.One, s.Dep.SwivelAddress)
+
 }
 
 func (s *redeemZcTokenSuite) TestRedeemVaultInterestUnderlyingFails() {
