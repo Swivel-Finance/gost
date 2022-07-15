@@ -514,7 +514,7 @@ contract Swivel {
     uint256 redeemed = mPlace.redeemVaultInterest(u, m, address(this));
     // redeem underlying from compound
     require(CErc20(mPlace.cTokenAddress(u, m)).redeemUnderlying(redeemed) == 0, 'compound redemption failed');
-    // NOTE: for swivel reddem there is no transfer out as there is in redeemVaultInterest
+    // NOTE: for swivel redeem there is no transfer out as there is in redeemVaultInterest
 
     return true;
   }

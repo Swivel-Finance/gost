@@ -60,8 +60,10 @@ func (s *transferNotionalFeeSuite) TestTransferNotionalFee() {
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
 
-	// add funds to the swivel vault so that exchangeRate can be set
-	tx, err = s.VaultTracker.AddNotional(s.Dep.SwivelAddress, big.NewInt(100))
+	// add funds to the swivel vault so that exchangeRate can be set, can oven use 0 to simulate first one...
+	// the reason this is here is to set the exchangeRate to the above as set to 0 in the deployment script
+	// (the CErc20 is not mocked there)
+	tx, err = s.VaultTracker.AddNotional(s.Dep.SwivelAddress, big.NewInt(0))
 	assert.Nil(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
@@ -69,8 +71,7 @@ func (s *transferNotionalFeeSuite) TestTransferNotionalFee() {
 	// user needs funds in their vault
 	userVaultAmt := big.NewInt(1000)
 	userFee := big.NewInt(500)
-	// swivel's new balance should be...
-	total := big.NewInt(600)
+	// swivel's new balance should be userFee as 1k - 500 is obvs 500...
 
 	tx, err = s.VaultTracker.AddNotional(s.Env.User1.Opts.From, userVaultAmt)
 	assert.Nil(err)
@@ -86,16 +87,16 @@ func (s *transferNotionalFeeSuite) TestTransferNotionalFee() {
 	swiVault, err := s.VaultTracker.Vaults(s.Dep.SwivelAddress)
 	assert.Nil(err)
 	assert.NotNil(swiVault)
-	assert.Equal(swiVault.Notional, total)
-	// s.T().Log(swiVault.Notional)
-	// s.T().Log(swiVault.ExchangeRate)
+	assert.Equal(swiVault.Notional, userFee)
+	s.T().Log(swiVault.Notional)
+	s.T().Log(swiVault.ExchangeRate)
 
 	userVault, err := s.VaultTracker.Vaults(s.Env.User1.Opts.From)
 	assert.Nil(err)
 	assert.NotNil(userVault)
 	assert.Equal(userFee, userVault.Notional)
-	// s.T().Log(userVault.Notional)
-	// s.T().Log(userVault.ExchangeRate)
+	s.T().Log(userVault.Notional)
+	s.T().Log(userVault.ExchangeRate)
 }
 
 func TestTrackerTransferNotionalFeeSuite(t *test.T) {
