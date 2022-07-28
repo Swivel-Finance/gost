@@ -19,6 +19,9 @@ type redeemZcTokenSuite struct {
 	Erc20         *mocks.Erc20Session
 	Erc4626       *mocks.Erc4626Session
 	CompoundToken *mocks.CompoundTokenSession
+	Creator       *mocks.CreatorSession
+	ZcToken       *mocks.ZcTokenSession
+	VaultTracker  *mocks.VaultTrackerSession
 	MarketPlace   *marketplace.MarketPlaceSession // *Session objects are created by the go bindings
 }
 
@@ -55,6 +58,33 @@ func (s *redeemZcTokenSuite) SetupTest() {
 
 	s.CompoundToken = &mocks.CompoundTokenSession{
 		Contract: s.Dep.CompoundToken,
+		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
+		TransactOpts: bind.TransactOpts{
+			From:   s.Env.Owner.Opts.From,
+			Signer: s.Env.Owner.Opts.Signer,
+		},
+	}
+
+	s.Creator = &mocks.CreatorSession{
+		Contract: s.Dep.Creator,
+		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
+		TransactOpts: bind.TransactOpts{
+			From:   s.Env.Owner.Opts.From,
+			Signer: s.Env.Owner.Opts.Signer,
+		},
+	}
+
+	s.ZcToken = &mocks.ZcTokenSession{
+		Contract: s.Dep.ZcToken,
+		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
+		TransactOpts: bind.TransactOpts{
+			From:   s.Env.Owner.Opts.From,
+			Signer: s.Env.Owner.Opts.Signer,
+		},
+	}
+
+	s.VaultTracker = &mocks.VaultTrackerSession{
+		Contract: s.Dep.VaultTracker,
 		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
 		TransactOpts: bind.TransactOpts{
 			From:   s.Env.Owner.Opts.From,
@@ -107,7 +137,7 @@ func (s *redeemZcTokenSuite) TestRedeemZcTokenMaturedRequirementFails() {
 	assert := assertions.New(s.T())
 	underlying := s.Dep.Erc20Address
 	maturity := s.Dep.Maturity
-	ctoken := s.Dep.CompoundTokenAddress
+	cToken := s.Dep.CompoundTokenAddress
 
 	tx, err := s.Erc20.DecimalsReturns(uint8(18))
 	assert.Nil(err)
@@ -119,10 +149,15 @@ func (s *redeemZcTokenSuite) TestRedeemZcTokenMaturedRequirementFails() {
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
 
+	tx, err = s.Creator.CreateReturns(s.Dep.ZcTokenAddress, s.Dep.VaultTrackerAddress)
+	assert.Nil(err)
+	assert.NotNil(tx)
+	s.Env.Blockchain.Commit()
+
 	tx, err = s.MarketPlace.CreateMarket(
 		uint8(1),
 		maturity,
-		ctoken,
+		cToken,
 		"awesome market",
 		"AM",
 	)
@@ -134,35 +169,11 @@ func (s *redeemZcTokenSuite) TestRedeemZcTokenMaturedRequirementFails() {
 	// we should be able to fetch the market now...
 	market, err := s.MarketPlace.Markets(uint8(1), underlying, maturity)
 	assert.Nil(err)
-	assert.Equal(market.CTokenAddr, ctoken)
+	assert.Equal(market.CTokenAddr, cToken)
 
-	zcTokenContract, err := mocks.NewZcToken(market.ZcToken, s.Env.Blockchain)
-	zcToken := &mocks.ZcTokenSession{
-		Contract: zcTokenContract,
-		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
-		TransactOpts: bind.TransactOpts{
-			From:   s.Env.Owner.Opts.From,
-			Signer: s.Env.Owner.Opts.Signer,
-		},
-	}
-
-	zcMaturity, err := zcToken.Maturity()
-	assert.Equal(maturity, zcMaturity)
-
-	vaultTrackerContract, err := mocks.NewVaultTracker(market.VaultTracker, s.Env.Blockchain)
-	vaultTracker := &mocks.VaultTrackerSession{
-		Contract: vaultTrackerContract,
-		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
-		TransactOpts: bind.TransactOpts{
-			From:   s.Env.Owner.Opts.From,
-			Signer: s.Env.Owner.Opts.Signer,
-		},
-	}
-
-	tx, err = vaultTracker.MatureVaultReturns(true)
+	tx, err = s.VaultTracker.MatureVaultReturns(true)
 	assert.Nil(err)
 	assert.NotNil(tx)
-
 	s.Env.Blockchain.Commit()
 
 	amount := big.NewInt(123456789)
@@ -179,7 +190,7 @@ func (s *redeemZcTokenSuite) TestRedeemZcTokenNotMatured() {
 	assert := assertions.New(s.T())
 	underlying := s.Dep.Erc20Address
 	maturity := s.Dep.Maturity
-	ctoken := s.Dep.CompoundTokenAddress
+	cToken := s.Dep.CompoundTokenAddress
 
 	tx, err := s.Erc20.DecimalsReturns(uint8(18))
 	assert.Nil(err)
@@ -191,10 +202,15 @@ func (s *redeemZcTokenSuite) TestRedeemZcTokenNotMatured() {
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
 
+	tx, err = s.Creator.CreateReturns(s.Dep.ZcTokenAddress, s.Dep.VaultTrackerAddress)
+	assert.Nil(err)
+	assert.NotNil(tx)
+	s.Env.Blockchain.Commit()
+
 	tx, err = s.MarketPlace.CreateMarket(
 		uint8(1),
 		maturity,
-		ctoken,
+		cToken,
 		"awesome market",
 		"AM",
 	)
@@ -206,41 +222,16 @@ func (s *redeemZcTokenSuite) TestRedeemZcTokenNotMatured() {
 	// we should be able to fetch the market now...
 	market, err := s.MarketPlace.Markets(uint8(1), underlying, maturity)
 	assert.Nil(err)
-	assert.Equal(market.CTokenAddr, ctoken)
+	assert.Equal(market.CTokenAddr, cToken)
 
-	zcTokenContract, err := mocks.NewZcToken(market.ZcToken, s.Env.Blockchain)
-	zcToken := &mocks.ZcTokenSession{
-		Contract: zcTokenContract,
-		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
-		TransactOpts: bind.TransactOpts{
-			From:   s.Env.Owner.Opts.From,
-			Signer: s.Env.Owner.Opts.Signer,
-		},
-	}
-
-	zcMaturity, err := zcToken.Maturity()
-	assert.Equal(maturity, zcMaturity)
-
-	tx, err = zcToken.BurnReturns(true)
+	tx, err = s.ZcToken.BurnReturns(true)
 	assert.Nil(err)
 	assert.NotNil(tx)
-
 	s.Env.Blockchain.Commit()
 
-	vaultTrackerContract, err := mocks.NewVaultTracker(market.VaultTracker, s.Env.Blockchain)
-	vaultTracker := &mocks.VaultTrackerSession{
-		Contract: vaultTrackerContract,
-		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
-		TransactOpts: bind.TransactOpts{
-			From:   s.Env.Owner.Opts.From,
-			Signer: s.Env.Owner.Opts.Signer,
-		},
-	}
-
-	tx, err = vaultTracker.MatureVaultReturns(true)
+	tx, err = s.VaultTracker.MatureVaultReturns(true)
 	assert.Nil(err)
 	assert.NotNil(tx)
-
 	s.Env.Blockchain.Commit()
 
 	// move past the maturity
@@ -255,7 +246,7 @@ func (s *redeemZcTokenSuite) TestRedeemZcTokenNotMatured() {
 
 	s.Env.Blockchain.Commit()
 
-	burnAmount, err := zcToken.BurnCalled(s.Env.Owner.Opts.From)
+	burnAmount, err := s.ZcToken.BurnCalled(s.Env.Owner.Opts.From)
 	assert.Nil(err)
 	assert.Equal(amount, burnAmount)
 }
@@ -264,7 +255,7 @@ func (s *redeemZcTokenSuite) TestRedeemZcTokenNotMaturedBurnFails() {
 	assert := assertions.New(s.T())
 	underlying := s.Dep.Erc20Address
 	maturity := s.Dep.Maturity
-	ctoken := s.Dep.CompoundTokenAddress
+	cToken := s.Dep.CompoundTokenAddress
 
 	tx, err := s.Erc20.DecimalsReturns(uint8(18))
 	assert.Nil(err)
@@ -276,10 +267,15 @@ func (s *redeemZcTokenSuite) TestRedeemZcTokenNotMaturedBurnFails() {
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
 
+	tx, err = s.Creator.CreateReturns(s.Dep.ZcTokenAddress, s.Dep.VaultTrackerAddress)
+	assert.Nil(err)
+	assert.NotNil(tx)
+	s.Env.Blockchain.Commit()
+
 	tx, err = s.MarketPlace.CreateMarket(
 		uint8(1),
 		maturity,
-		ctoken,
+		cToken,
 		"awesome market",
 		"AM",
 	)
@@ -291,41 +287,16 @@ func (s *redeemZcTokenSuite) TestRedeemZcTokenNotMaturedBurnFails() {
 	// we should be able to fetch the market now...
 	market, err := s.MarketPlace.Markets(uint8(1), underlying, maturity)
 	assert.Nil(err)
-	assert.Equal(market.CTokenAddr, ctoken)
+	assert.Equal(market.CTokenAddr, cToken)
 
-	zcTokenContract, err := mocks.NewZcToken(market.ZcToken, s.Env.Blockchain)
-	zcToken := &mocks.ZcTokenSession{
-		Contract: zcTokenContract,
-		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
-		TransactOpts: bind.TransactOpts{
-			From:   s.Env.Owner.Opts.From,
-			Signer: s.Env.Owner.Opts.Signer,
-		},
-	}
-
-	zcMaturity, err := zcToken.Maturity()
-	assert.Equal(maturity, zcMaturity)
-
-	tx, err = zcToken.BurnReturns(false)
+	tx, err = s.ZcToken.BurnReturns(false)
 	assert.Nil(err)
 	assert.NotNil(tx)
-
 	s.Env.Blockchain.Commit()
 
-	vaultTrackerContract, err := mocks.NewVaultTracker(market.VaultTracker, s.Env.Blockchain)
-	vaultTracker := &mocks.VaultTrackerSession{
-		Contract: vaultTrackerContract,
-		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
-		TransactOpts: bind.TransactOpts{
-			From:   s.Env.Owner.Opts.From,
-			Signer: s.Env.Owner.Opts.Signer,
-		},
-	}
-
-	tx, err = vaultTracker.MatureVaultReturns(true)
+	tx, err = s.VaultTracker.MatureVaultReturns(true)
 	assert.Nil(err)
 	assert.NotNil(tx)
-
 	s.Env.Blockchain.Commit()
 
 	// move past the maturity
@@ -347,7 +318,7 @@ func (s *redeemZcTokenSuite) TestRedeemZcTokenMatured() {
 	assert := assertions.New(s.T())
 	underlying := s.Dep.Erc20Address
 	maturity := s.Dep.Maturity
-	ctoken := s.Dep.Erc4626Address
+	cToken := s.Dep.Erc4626Address
 
 	tx, err := s.Erc20.DecimalsReturns(uint8(18))
 	assert.Nil(err)
@@ -359,10 +330,15 @@ func (s *redeemZcTokenSuite) TestRedeemZcTokenMatured() {
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
 
+	tx, err = s.Creator.CreateReturns(s.Dep.ZcTokenAddress, s.Dep.VaultTrackerAddress)
+	assert.Nil(err)
+	assert.NotNil(tx)
+	s.Env.Blockchain.Commit()
+
 	tx, err = s.MarketPlace.CreateMarket(
 		uint8(0), // Erc4626
 		maturity,
-		ctoken,
+		cToken,
 		"awesome market",
 		"AM",
 	)
@@ -374,41 +350,16 @@ func (s *redeemZcTokenSuite) TestRedeemZcTokenMatured() {
 	// we should be able to fetch the market now...
 	market, err := s.MarketPlace.Markets(uint8(0), underlying, maturity)
 	assert.Nil(err)
-	assert.Equal(market.CTokenAddr, ctoken)
+	assert.Equal(market.CTokenAddr, cToken)
 
-	zcTokenContract, err := mocks.NewZcToken(market.ZcToken, s.Env.Blockchain)
-	zcToken := &mocks.ZcTokenSession{
-		Contract: zcTokenContract,
-		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
-		TransactOpts: bind.TransactOpts{
-			From:   s.Env.Owner.Opts.From,
-			Signer: s.Env.Owner.Opts.Signer,
-		},
-	}
-
-	zcMaturity, err := zcToken.Maturity()
-	assert.Equal(maturity, zcMaturity)
-
-	tx, err = zcToken.BurnReturns(true)
+	tx, err = s.ZcToken.BurnReturns(true)
 	assert.Nil(err)
 	assert.NotNil(tx)
-
 	s.Env.Blockchain.Commit()
 
-	vaultTrackerContract, err := mocks.NewVaultTracker(market.VaultTracker, s.Env.Blockchain)
-	vaultTracker := &mocks.VaultTrackerSession{
-		Contract: vaultTrackerContract,
-		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
-		TransactOpts: bind.TransactOpts{
-			From:   s.Env.Owner.Opts.From,
-			Signer: s.Env.Owner.Opts.Signer,
-		},
-	}
-
-	tx, err = vaultTracker.MatureVaultReturns(true)
+	tx, err = s.VaultTracker.MatureVaultReturns(true)
 	assert.Nil(err)
 	assert.NotNil(tx)
-
 	s.Env.Blockchain.Commit()
 
 	// move past the maturity
@@ -437,18 +388,16 @@ func (s *redeemZcTokenSuite) TestRedeemZcTokenMatured() {
 
 	s.Env.Blockchain.Commit()
 
-	burnAmount, err := zcToken.BurnCalled(s.Env.Owner.Opts.From)
+	burnAmount, err := s.ZcToken.BurnCalled(s.Env.Owner.Opts.From)
 	assert.Nil(err)
 	assert.Equal(amount, burnAmount)
-
-	s.Env.Blockchain.Commit()
 }
 
 func (s *redeemZcTokenSuite) TestRedeemZcTokenMaturedBurnFails() {
 	assert := assertions.New(s.T())
 	underlying := s.Dep.Erc20Address
 	maturity := s.Dep.Maturity
-	ctoken := s.Dep.CompoundTokenAddress
+	cToken := s.Dep.CompoundTokenAddress
 
 	tx, err := s.Erc20.DecimalsReturns(uint8(18))
 	assert.Nil(err)
@@ -460,10 +409,15 @@ func (s *redeemZcTokenSuite) TestRedeemZcTokenMaturedBurnFails() {
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
 
+	tx, err = s.Creator.CreateReturns(s.Dep.ZcTokenAddress, s.Dep.VaultTrackerAddress)
+	assert.Nil(err)
+	assert.NotNil(tx)
+	s.Env.Blockchain.Commit()
+
 	tx, err = s.MarketPlace.CreateMarket(
 		uint8(1),
 		maturity,
-		ctoken,
+		cToken,
 		"awesome market",
 		"AM",
 	)
@@ -475,41 +429,16 @@ func (s *redeemZcTokenSuite) TestRedeemZcTokenMaturedBurnFails() {
 	// we should be able to fetch the market now...
 	market, err := s.MarketPlace.Markets(uint8(1), underlying, maturity)
 	assert.Nil(err)
-	assert.Equal(market.CTokenAddr, ctoken)
+	assert.Equal(market.CTokenAddr, cToken)
 
-	zcTokenContract, err := mocks.NewZcToken(market.ZcToken, s.Env.Blockchain)
-	zcToken := &mocks.ZcTokenSession{
-		Contract: zcTokenContract,
-		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
-		TransactOpts: bind.TransactOpts{
-			From:   s.Env.Owner.Opts.From,
-			Signer: s.Env.Owner.Opts.Signer,
-		},
-	}
-
-	zcMaturity, err := zcToken.Maturity()
-	assert.Equal(maturity, zcMaturity)
-
-	tx, err = zcToken.BurnReturns(false)
+	tx, err = s.ZcToken.BurnReturns(false)
 	assert.Nil(err)
 	assert.NotNil(tx)
-
 	s.Env.Blockchain.Commit()
 
-	vaultTrackerContract, err := mocks.NewVaultTracker(market.VaultTracker, s.Env.Blockchain)
-	vaultTracker := &mocks.VaultTrackerSession{
-		Contract: vaultTrackerContract,
-		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
-		TransactOpts: bind.TransactOpts{
-			From:   s.Env.Owner.Opts.From,
-			Signer: s.Env.Owner.Opts.Signer,
-		},
-	}
-
-	tx, err = vaultTracker.MatureVaultReturns(true)
+	tx, err = s.VaultTracker.MatureVaultReturns(true)
 	assert.Nil(err)
 	assert.NotNil(tx)
-
 	s.Env.Blockchain.Commit()
 
 	// move past the maturity
@@ -522,7 +451,6 @@ func (s *redeemZcTokenSuite) TestRedeemZcTokenMaturedBurnFails() {
 	tx, err = s.CompoundToken.ExchangeRateCurrentReturns(rate)
 	assert.Nil(err)
 	assert.NotNil(tx)
-
 	s.Env.Blockchain.Commit()
 
 	tx, err = s.MarketPlace.MatureMarket(uint8(1), underlying, maturity)
@@ -537,8 +465,6 @@ func (s *redeemZcTokenSuite) TestRedeemZcTokenMaturedBurnFails() {
 	// TODO extract the custom error codes?
 	// assert.Regexp("could not burn", err.Error())
 	assert.Nil(tx)
-
-	s.Env.Blockchain.Commit()
 }
 
 func TestRedeemZcTokenSuite(t *test.T) {

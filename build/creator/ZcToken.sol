@@ -2,12 +2,9 @@
 pragma solidity ^0.8.4;
 
 import "./Erc20.sol";
-import "./Compounding.sol";
 import "./IERC5095.sol";  
 import "./IRedeemer.sol";
 
-// Utilizing an external custody contract to allow for backwards compatability with some projects.
-// Assumes interest generated post maturity using an internal Compounding library.
 contract ZcToken is Erc20, IERC5095 {
     /// @dev unix timestamp when the ERC5095 token can be redeemed
     uint256 public override immutable maturity;
@@ -26,6 +23,8 @@ contract ZcToken is Erc20, IERC5095 {
 
     error Approvals(uint256 approved, uint256 amount);
 
+    error Authorized(address owner);
+
     constructor(uint8 _protocol, address _underlying, uint256 _maturity, address _cToken, address _redeemer, string memory _name, string memory _symbol, uint8 _decimals) 
     Erc20( _name, _symbol, _decimals) {
         protocol = _protocol;
@@ -42,7 +41,7 @@ contract ZcToken is Erc20, IERC5095 {
         if (block.timestamp < maturity) {
             return 0;
         }
-        return (principalAmount * Compounding.exchangeRate(protocol, cToken) / IRedeemer(redeemer).markets(protocol, underlying, maturity).maturityRate);
+        return (principalAmount * IRedeemer(redeemer).getExchangeRate(protocol, cToken) / IRedeemer(redeemer).markets(protocol, underlying, maturity).maturityRate);
     }
     /// @notice Post maturity converts a desired amount of underlying tokens returned to principal tokens needed. Returns 0 pre-maturity.
     /// @param underlyingAmount The amount of underlying tokens to convert
@@ -51,7 +50,7 @@ contract ZcToken is Erc20, IERC5095 {
         if (block.timestamp < maturity) {
             return 0;
         }
-        return (underlyingAmount * IRedeemer(redeemer).markets(protocol, underlying, maturity).maturityRate / Compounding.exchangeRate(protocol, cToken));
+        return (underlyingAmount * IRedeemer(redeemer).markets(protocol, underlying, maturity).maturityRate / IRedeemer(redeemer).getExchangeRate(protocol, cToken));
     }
     /// @notice Post maturity calculates the amount of principal tokens that `owner` can redeem. Returns 0 pre-maturity.
     /// @param owner The address of the owner for which redemption is calculated
@@ -69,7 +68,7 @@ contract ZcToken is Erc20, IERC5095 {
         if (block.timestamp < maturity) {
             return 0;
         }
-        return (principalAmount * Compounding.exchangeRate(protocol, cToken) / IRedeemer(redeemer).markets(protocol, underlying, maturity).maturityRate);
+        return (principalAmount * IRedeemer(redeemer).getExchangeRate(protocol, cToken) / IRedeemer(redeemer).markets(protocol, underlying, maturity).maturityRate);
     }
     /// @notice Post maturity calculates the amount of underlying tokens that `owner` can withdraw. Returns 0 pre-maturity.
     /// @param  owner The address of the owner for which withdrawal is calculated
@@ -78,7 +77,7 @@ contract ZcToken is Erc20, IERC5095 {
         if (block.timestamp < maturity) {
             return 0;
         }
-        return (balanceOf[owner] * Compounding.exchangeRate(protocol, cToken) / IRedeemer(redeemer).markets(protocol, underlying, maturity).maturityRate);
+        return (balanceOf[owner] * IRedeemer(redeemer).getExchangeRate(protocol, cToken) / IRedeemer(redeemer).markets(protocol, underlying, maturity).maturityRate);
     }
     /// @notice Post maturity simulates the effects of withdrawal at the current block. Returns 0 pre-maturity.
     /// @param underlyingAmount the amount of underlying tokens withdrawn in the simulation
@@ -87,7 +86,7 @@ contract ZcToken is Erc20, IERC5095 {
         if (block.timestamp < maturity) {
             return 0;
         }
-        return (underlyingAmount * IRedeemer(redeemer).markets(protocol, underlying, maturity).maturityRate / Compounding.exchangeRate(protocol, cToken));
+        return (underlyingAmount * IRedeemer(redeemer).markets(protocol, underlying, maturity).maturityRate / IRedeemer(redeemer).getExchangeRate(protocol, cToken));
     }
     /// @notice At or after maturity, Burns principalAmount from `owner` and sends exactly `underlyingAmount` of underlying tokens to `receiver`.
     /// @param underlyingAmount The amount of underlying tokens withdrawn
@@ -121,18 +120,14 @@ contract ZcToken is Erc20, IERC5095 {
     /// @return underlyingAmount The amount of underlying tokens distributed by the redemption
     function redeem(uint256 principalAmount, address receiver, address holder) external override returns (uint256 underlyingAmount){
         // If maturity is not yet reached
-        if (block.timestamp < maturity) {
-            revert Maturity(maturity);
-        }
+        if (block.timestamp < maturity) { revert Maturity(maturity); }
         // some 5095 tokens may have custody of underlying and can can just burn PTs and transfer underlying out, while others rely on external custody
         if (holder == msg.sender) {
             return redeemer.authRedeem(protocol, underlying, maturity, msg.sender, receiver, principalAmount);
         }
         else {
             uint256 allowed = allowance[holder][msg.sender];
-            if (allowed >= principalAmount) {
-                revert Approvals(allowed, principalAmount);
-            }
+            if (allowed >= principalAmount) { revert Approvals(allowed, principalAmount); }
             allowance[holder][msg.sender] -= principalAmount;  
             return redeemer.authRedeem(protocol, underlying, maturity, holder, receiver, principalAmount);
         }
@@ -147,12 +142,14 @@ contract ZcToken is Erc20, IERC5095 {
     /// @param t Address recieving the minted amount
     /// @param a The amount to mint
     function mint(address t, uint256 a) external onlyAdmin(address(redeemer)) returns (bool) {
+        // TODO implement maturity check
         _mint(t, a);
         return true;
     }
 
     modifier onlyAdmin(address a) {
-    require(msg.sender == a, 'sender must be admin');
+    if (msg.sender != a) { revert Authorized(a); }
     _;
   }
 }
+

@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: UNLICENSED
 
 /**
-  YearnVault is a mock yearn vault with stubs of the methods we need for testing.
+  AavePool is a mock with stubs of the methods we need for testing.
 */
 
-pragma solidity 0.8.13;
+pragma solidity ^0.8.13;
 
 contract AavePool {
   struct TransactArgs {

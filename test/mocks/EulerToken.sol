@@ -4,7 +4,7 @@
   Euler is a mock IEuler Token token with stubs of the methods we need for testing.
 */
 
-pragma solidity 0.8.13;
+pragma solidity ^0.8.13;
 
 contract EulerToken {
   /// @dev allows us to dictate return from underlyingAsset().

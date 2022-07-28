@@ -17,6 +17,9 @@ type vaultTransferSuite struct {
 	Dep           *Dep
 	Erc20         *mocks.Erc20Session
 	CompoundToken *mocks.CompoundTokenSession
+	Creator       *mocks.CreatorSession
+	ZcToken       *mocks.ZcTokenSession
+	VaultTracker  *mocks.VaultTrackerSession
 	MarketPlace   *marketplace.MarketPlaceSession // *Session objects are created by the go bindings
 }
 
@@ -39,6 +42,24 @@ func (s *vaultTransferSuite) SetupTest() {
 
 	s.CompoundToken = &mocks.CompoundTokenSession{
 		Contract: s.Dep.CompoundToken,
+		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
+		TransactOpts: bind.TransactOpts{
+			From:   s.Env.Owner.Opts.From,
+			Signer: s.Env.Owner.Opts.Signer,
+		},
+	}
+
+	s.Creator = &mocks.CreatorSession{
+		Contract: s.Dep.Creator,
+		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
+		TransactOpts: bind.TransactOpts{
+			From:   s.Env.Owner.Opts.From,
+			Signer: s.Env.Owner.Opts.Signer,
+		},
+	}
+
+	s.VaultTracker = &mocks.VaultTrackerSession{
+		Contract: s.Dep.VaultTracker,
 		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
 		TransactOpts: bind.TransactOpts{
 			From:   s.Env.Owner.Opts.From,
@@ -94,7 +115,7 @@ func (s *vaultTransferSuite) TestVaultTransfer() {
 	// make a market so that a vault is deployed
 	underlying := s.Dep.Erc20Address
 	maturity := big.NewInt(1234567)
-	ctoken := s.Dep.CompoundTokenAddress
+	cToken := s.Dep.CompoundTokenAddress
 
 	tx, err := s.Erc20.DecimalsReturns(uint8(18))
 	assert.Nil(err)
@@ -106,10 +127,15 @@ func (s *vaultTransferSuite) TestVaultTransfer() {
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
 
+	tx, err = s.Creator.CreateReturns(s.Dep.ZcTokenAddress, s.Dep.VaultTrackerAddress)
+	assert.Nil(err)
+	assert.NotNil(tx)
+	s.Env.Blockchain.Commit()
+
 	tx, err = s.MarketPlace.CreateMarket(
 		uint8(1),
 		maturity,
-		ctoken,
+		cToken,
 		"awesome market",
 		"AM",
 	)
@@ -121,20 +147,10 @@ func (s *vaultTransferSuite) TestVaultTransfer() {
 	// find that vault, wrap it in a mock...
 	market, err := s.MarketPlace.Markets(uint8(1), underlying, maturity)
 	assert.Nil(err)
-	assert.Equal(market.CTokenAddr, ctoken)
-
-	vaultTrackerContract, err := mocks.NewVaultTracker(market.VaultTracker, s.Env.Blockchain)
-	vaultTracker := &mocks.VaultTrackerSession{
-		Contract: vaultTrackerContract,
-		CallOpts: bind.CallOpts{From: ownerOpts.From, Pending: false},
-		TransactOpts: bind.TransactOpts{
-			From:   ownerOpts.From,
-			Signer: ownerOpts.Signer,
-		},
-	}
+	assert.Equal(market.CTokenAddr, cToken)
 
 	// stub the mock vaulttracker...
-	tx, err = vaultTracker.TransferNotionalFromReturns(true)
+	tx, err = s.VaultTracker.TransferNotionalFromReturns(true)
 	assert.Nil(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
@@ -148,7 +164,7 @@ func (s *vaultTransferSuite) TestVaultTransfer() {
 	s.Env.Blockchain.Commit()
 
 	// marketplace should have called transfer with the msg.sender as owner
-	transferArgs, err := vaultTracker.TransferNotionalFromCalled(ownerOpts.From)
+	transferArgs, err := s.VaultTracker.TransferNotionalFromCalled(ownerOpts.From)
 	assert.Nil(err)
 	assert.Equal(user1Opts.From, transferArgs.To)
 	assert.Equal(amount, transferArgs.Amount)

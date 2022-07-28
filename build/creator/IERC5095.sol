@@ -7,13 +7,13 @@ interface IERC5095 {
 
     function maturity() external view returns (uint256);
     function underlying() external view returns (address);
-    function convertToUnderlying(uint256 principalAmount) external view returns (uint256);
-    function convertToPrincipal(uint256 underlyingAmount) external view returns (uint256);
-    function maxRedeem(address owner) external view returns (uint256);
-    function previewRedeem(uint256 principalAmount) external view returns (uint256);
-    function maxWithdraw(address owner) external view returns (uint256);
-    function previewWithdraw(uint256 principalAmount) external view returns (uint256);  
+    function convertToUnderlying(uint256) external view returns (uint256);
+    function convertToPrincipal(uint256) external view returns (uint256);
+    function maxRedeem(address) external view returns (uint256);
+    function previewRedeem(uint256) external view returns (uint256);
+    function maxWithdraw(address) external view returns (uint256);
+    function previewWithdraw(uint256) external view returns (uint256);  
 
-    function withdraw(uint256 underlyingAmount, address receiver, address owner) external returns (uint256);
-    function redeem(uint256 principalAmount, address receiver, address owner) external returns (uint256);
+    function withdraw(uint256, address, address) external returns (uint256);
+    function redeem(uint256, address, address) external returns (uint256);
 }

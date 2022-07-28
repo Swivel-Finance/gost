@@ -17,6 +17,7 @@ type cTokenAddrSuite struct {
 	Dep           *Dep
 	Erc20         *mocks.Erc20Session
 	CompoundToken *mocks.CompoundTokenSession
+	Creator       *mocks.CreatorSession
 	MarketPlace   *marketplace.MarketPlaceSession // *Session objects are created by the go bindings
 }
 
@@ -48,6 +49,15 @@ func (s *cTokenAddrSuite) SetupSuite() {
 		},
 	}
 
+	s.Creator = &mocks.CreatorSession{
+		Contract: s.Dep.Creator,
+		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
+		TransactOpts: bind.TransactOpts{
+			From:   s.Env.Owner.Opts.From,
+			Signer: s.Env.Owner.Opts.Signer,
+		},
+	}
+
 	s.MarketPlace = &marketplace.MarketPlaceSession{
 		Contract: s.Dep.MarketPlace,
 		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
@@ -67,7 +77,7 @@ func (s *cTokenAddrSuite) TestSetCTokenAddr() {
 	// addresses can be BS in this test...
 	underlying := s.Dep.Erc20Address
 	maturity := big.NewInt(123456789)
-	cTokenAddr := s.Dep.CompoundTokenAddress
+	cToken := s.Dep.CompoundTokenAddress
 
 	tx, err := s.Erc20.DecimalsReturns(uint8(18))
 	assert.Nil(err)
@@ -79,10 +89,16 @@ func (s *cTokenAddrSuite) TestSetCTokenAddr() {
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
 
+	// stub the return for Creator.create so the market is created with zctoken and vaulttracker addresses
+	tx, err = s.Creator.CreateReturns(s.Dep.ZcTokenAddress, s.Dep.VaultTrackerAddress)
+	assert.Nil(err)
+	assert.NotNil(tx)
+	s.Env.Blockchain.Commit()
+
 	tx, err = s.MarketPlace.CreateMarket(
 		uint8(1),
 		maturity,
-		cTokenAddr,
+		cToken,
 		"awesome market",
 		"AM",
 	)
@@ -91,9 +107,9 @@ func (s *cTokenAddrSuite) TestSetCTokenAddr() {
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
 
-	cTokenAddr, err = s.MarketPlace.CTokenAddress(uint8(1), underlying, maturity)
+	cTokenAddr, err := s.MarketPlace.CTokenAddress(uint8(1), underlying, maturity)
 	assert.Nil(err)
-	assert.Equal(cTokenAddr, cTokenAddr)
+	assert.Equal(cTokenAddr, cToken)
 }
 
 func TestCTokenAddrSuite(t *test.T) {

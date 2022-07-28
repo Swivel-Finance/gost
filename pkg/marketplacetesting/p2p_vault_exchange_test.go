@@ -17,6 +17,8 @@ type p2pVaultExchangeSuite struct {
 	Dep           *Dep
 	Erc20         *mocks.Erc20Session
 	CompoundToken *mocks.CompoundTokenSession
+	Creator       *mocks.CreatorSession
+	VaultTracker  *mocks.VaultTrackerSession
 	MarketPlace   *marketplace.MarketPlaceSession // *Session objects are created by the go bindings
 }
 
@@ -48,6 +50,24 @@ func (s *p2pVaultExchangeSuite) SetupTest() {
 
 	s.CompoundToken = &mocks.CompoundTokenSession{
 		Contract: s.Dep.CompoundToken,
+		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
+		TransactOpts: bind.TransactOpts{
+			From:   s.Env.Owner.Opts.From,
+			Signer: s.Env.Owner.Opts.Signer,
+		},
+	}
+
+	s.Creator = &mocks.CreatorSession{
+		Contract: s.Dep.Creator,
+		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
+		TransactOpts: bind.TransactOpts{
+			From:   s.Env.Owner.Opts.From,
+			Signer: s.Env.Owner.Opts.Signer,
+		},
+	}
+
+	s.VaultTracker = &mocks.VaultTrackerSession{
+		Contract: s.Dep.VaultTracker,
 		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
 		TransactOpts: bind.TransactOpts{
 			From:   s.Env.Owner.Opts.From,
@@ -98,7 +118,7 @@ func (s *p2pVaultExchangeSuite) TestP2PVaultExchange() {
 	assert := assertions.New(s.T())
 	underlying := s.Dep.Erc20Address
 	maturity := s.Dep.Maturity
-	ctoken := s.Dep.CompoundTokenAddress
+	cToken := s.Dep.CompoundTokenAddress
 
 	tx, err := s.Erc20.DecimalsReturns(uint8(18))
 	assert.Nil(err)
@@ -110,10 +130,16 @@ func (s *p2pVaultExchangeSuite) TestP2PVaultExchange() {
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
 
+	// return the deployed mocks
+	tx, err = s.Creator.CreateReturns(s.Dep.ZcTokenAddress, s.Dep.VaultTrackerAddress)
+	assert.Nil(err)
+	assert.NotNil(tx)
+	s.Env.Blockchain.Commit()
+
 	tx, err = s.MarketPlace.CreateMarket(
 		uint8(1),
 		maturity,
-		ctoken,
+		cToken,
 		"awesome market",
 		"AM",
 	)
@@ -129,21 +155,9 @@ func (s *p2pVaultExchangeSuite) TestP2PVaultExchange() {
 	// we should be able to fetch the market now...
 	market, err := s.MarketPlace.Markets(uint8(1), underlying, maturity)
 	assert.Nil(err)
-	assert.Equal(market.CTokenAddr, ctoken)
+	assert.Equal(market.CTokenAddr, cToken)
 
-	s.Env.Blockchain.Commit()
-
-	vaultTrackerContract, err := mocks.NewVaultTracker(market.VaultTracker, s.Env.Blockchain)
-	vaultTracker := &mocks.VaultTrackerSession{
-		Contract: vaultTrackerContract,
-		CallOpts: bind.CallOpts{From: ownerOpts.From, Pending: false},
-		TransactOpts: bind.TransactOpts{
-			From:   ownerOpts.From,
-			Signer: ownerOpts.Signer,
-		},
-	}
-
-	tx, err = vaultTracker.TransferNotionalFromReturns(true)
+	tx, err = s.VaultTracker.TransferNotionalFromReturns(true)
 	assert.Nil(err)
 	assert.NotNil(tx)
 
@@ -156,19 +170,17 @@ func (s *p2pVaultExchangeSuite) TestP2PVaultExchange() {
 
 	s.Env.Blockchain.Commit()
 
-	transferNotionalFromArgs, err := vaultTracker.TransferNotionalFromCalled(ownerOpts.From)
+	transferNotionalFromArgs, err := s.VaultTracker.TransferNotionalFromCalled(ownerOpts.From)
 	assert.Nil(err)
 	assert.Equal(user1Opts.From, transferNotionalFromArgs.To)
 	assert.Equal(amount, transferNotionalFromArgs.Amount)
-
-	s.Env.Blockchain.Commit()
 }
 
 func (s *p2pVaultExchangeSuite) TestP2PVaultExchangeTransferNotionalFromFails() {
 	assert := assertions.New(s.T())
 	underlying := s.Dep.Erc20Address
 	maturity := s.Dep.Maturity
-	ctoken := s.Dep.CompoundTokenAddress
+	cToken := s.Dep.CompoundTokenAddress
 
 	tx, err := s.Erc20.DecimalsReturns(uint8(18))
 	assert.Nil(err)
@@ -180,10 +192,16 @@ func (s *p2pVaultExchangeSuite) TestP2PVaultExchangeTransferNotionalFromFails() 
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
 
+	// return the deployed mocks
+	tx, err = s.Creator.CreateReturns(s.Dep.ZcTokenAddress, s.Dep.VaultTrackerAddress)
+	assert.Nil(err)
+	assert.NotNil(tx)
+	s.Env.Blockchain.Commit()
+
 	tx, err = s.MarketPlace.CreateMarket(
 		uint8(1),
 		maturity,
-		ctoken,
+		cToken,
 		"awesome market",
 		"AM",
 	)
@@ -198,19 +216,9 @@ func (s *p2pVaultExchangeSuite) TestP2PVaultExchangeTransferNotionalFromFails() 
 	// we should be able to fetch the market now...
 	market, err := s.MarketPlace.Markets(uint8(1), underlying, maturity)
 	assert.Nil(err)
-	assert.Equal(market.CTokenAddr, ctoken)
+	assert.Equal(market.CTokenAddr, cToken)
 
-	vaultTrackerContract, err := mocks.NewVaultTracker(market.VaultTracker, s.Env.Blockchain)
-	vaultTracker := &mocks.VaultTrackerSession{
-		Contract: vaultTrackerContract,
-		CallOpts: bind.CallOpts{From: ownerOpts.From, Pending: false},
-		TransactOpts: bind.TransactOpts{
-			From:   ownerOpts.From,
-			Signer: ownerOpts.Signer,
-		},
-	}
-
-	tx, err = vaultTracker.TransferNotionalFromReturns(false)
+	tx, err = s.VaultTracker.TransferNotionalFromReturns(false)
 	assert.Nil(err)
 	assert.NotNil(tx)
 
@@ -222,8 +230,6 @@ func (s *p2pVaultExchangeSuite) TestP2PVaultExchangeTransferNotionalFromFails() 
 	// TODO extract the custom error codes?
 	// assert.Regexp("transfer notional failed", err.Error())
 	assert.Nil(tx)
-
-	s.Env.Blockchain.Commit()
 }
 
 func TestP2PVaultExchangeSuite(t *test.T) {

@@ -1,8 +1,10 @@
 // SPDX-License-Identifier: UNLICENSED
 
-pragma solidity 0.8.13;
+pragma solidity ^0.8.13;
 
 import './Protocols.sol'; // NOTE: if size restrictions become extreme we can use ints (implicit enum)
+import './LibCompound.sol';
+import './LibFuse.sol';
 
 interface IErc4626 {
   /// @dev Converts the given 'assets' (uint256) to 'shares', returning that amount
@@ -46,7 +48,7 @@ library Compounding {
   /// @param p Protocol Enum value
   /// @param c Compounding token address
   function underlying(uint8 p, address c) internal view returns (address) {
-    if (p == uint8(Protocols.Compound)) { // TODO is Rari a drop in here?
+    if (p == uint8(Protocols.Compound) || p == uint8(Protocols.Rari)) {
       return ICompoundToken(c).underlying();
     } else if (p == uint8(Protocols.Yearn)) {
       return IYearnVault(c).underlying();
@@ -62,8 +64,10 @@ library Compounding {
   /// @param p Protocol Enum value
   /// @param c Compounding token address
   function exchangeRate(uint8 p, address c) internal view returns (uint256) {
-    if (p == uint8(Protocols.Compound)) { // TODO is Rari a drop in here?
-      return ICompoundToken(c).exchangeRateCurrent(); // TODO the alternative method to this
+    if (p == uint8(Protocols.Compound)) {
+      return LibCompound.viewExchangeRate(ICERC20(c));
+    } else if (p == uint8(Protocols.Rari)) { 
+      return LibFuse.viewExchangeRate(ICERC20(c));
     } else if (p == uint8(Protocols.Yearn)) {
       return IYearnVault(c).pricePerShare();
     } else if (p == uint8(Protocols.Aave)) {

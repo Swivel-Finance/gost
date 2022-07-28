@@ -18,6 +18,9 @@ type custodialExitSuite struct {
 	Erc20         *mocks.Erc20Session
 	CompoundToken *mocks.CompoundTokenSession
 	EulerToken    *mocks.EulerTokenSession
+	Creator       *mocks.CreatorSession
+	ZcToken       *mocks.ZcTokenSession
+	VaultTracker  *mocks.VaultTrackerSession
 	MarketPlace   *marketplace.MarketPlaceSession // *Session objects are created by the go bindings
 }
 
@@ -61,6 +64,34 @@ func (s *custodialExitSuite) SetupTest() {
 		},
 	}
 
+	// a creator mock to get VaultTracker and ZcToken deploys from
+	s.Creator = &mocks.CreatorSession{
+		Contract: s.Dep.Creator,
+		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
+		TransactOpts: bind.TransactOpts{
+			From:   s.Env.Owner.Opts.From,
+			Signer: s.Env.Owner.Opts.Signer,
+		},
+	}
+
+	s.ZcToken = &mocks.ZcTokenSession{
+		Contract: s.Dep.ZcToken,
+		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
+		TransactOpts: bind.TransactOpts{
+			From:   s.Env.Owner.Opts.From,
+			Signer: s.Env.Owner.Opts.Signer,
+		},
+	}
+
+	s.VaultTracker = &mocks.VaultTrackerSession{
+		Contract: s.Dep.VaultTracker,
+		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
+		TransactOpts: bind.TransactOpts{
+			From:   s.Env.Owner.Opts.From,
+			Signer: s.Env.Owner.Opts.Signer,
+		},
+	}
+
 	// binding owner to both, kind of why it exists - but could be any of the env wallets
 	s.MarketPlace = &marketplace.MarketPlaceSession{
 		Contract: s.Dep.MarketPlace,
@@ -91,6 +122,7 @@ func (s *custodialExitSuite) TestExitFailsWhenPaused() {
 	tx, err = s.MarketPlace.CustodialExit(uint8(1), s.Dep.Erc20Address, maturity, s.Env.Owner.Opts.From, s.Env.User1.Opts.From, amount)
 	assert.Nil(tx)
 	assert.NotNil(err)
+	// TODO can we fetch the code out of the custom error reverts?
 	// assert.Regexp("markets are paused", err.Error())
 
 	// unpause so the other tests don't fail
@@ -113,13 +145,19 @@ func (s *custodialExitSuite) TestCustodialExit() {
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
 
+	// return the deployed mocks
+	tx, err = s.Creator.CreateReturns(s.Dep.ZcTokenAddress, s.Dep.VaultTrackerAddress)
+	assert.Nil(err)
+	assert.NotNil(tx)
+	s.Env.Blockchain.Commit()
+
 	maturity := s.Dep.Maturity
-	ctoken := s.Dep.EulerTokenAddress
+	cToken := s.Dep.EulerTokenAddress
 
 	tx, err = s.MarketPlace.CreateMarket(
 		uint8(5),
 		maturity,
-		ctoken,
+		cToken,
 		"awesome market",
 		"AM",
 	)
@@ -134,59 +172,39 @@ func (s *custodialExitSuite) TestCustodialExit() {
 	// we should be able to fetch the market now...
 	market, err := s.MarketPlace.Markets(uint8(5), s.Dep.Erc20Address, maturity)
 	assert.Nil(err)
-	assert.Equal(market.CTokenAddr, ctoken)
+	assert.Equal(market.CTokenAddr, cToken)
 
-	zcTokenContract, err := mocks.NewZcToken(market.ZcToken, s.Env.Blockchain)
-	zcToken := &mocks.ZcTokenSession{
-		Contract: zcTokenContract,
-		CallOpts: bind.CallOpts{From: ownerOpts.From, Pending: false},
-		TransactOpts: bind.TransactOpts{
-			From:   ownerOpts.From,
-			Signer: ownerOpts.Signer,
-		},
-	}
+	// creator should recieve expected arguments
+	createArgs, _ := s.Creator.CreateCalled(uint8(5))
+	assert.Equal(createArgs.Underlying, s.Dep.Erc20Address)
+	assert.Equal(createArgs.Maturity, maturity)
+	// no need to test all of them, that is done elsewhere
 
-	zcMaturity, err := zcToken.Maturity()
-	assert.Equal(maturity, zcMaturity)
-
-	tx, err = zcToken.BurnReturns(true)
+	tx, err = s.ZcToken.BurnReturns(true)
 	assert.Nil(err)
 	assert.NotNil(tx)
+	s.Env.Blockchain.Commit()
 
-	vaultTrackerContract, err := mocks.NewVaultTracker(market.VaultTracker, s.Env.Blockchain)
-	vaultTracker := &mocks.VaultTrackerSession{
-		Contract: vaultTrackerContract,
-		CallOpts: bind.CallOpts{From: ownerOpts.From, Pending: false},
-		TransactOpts: bind.TransactOpts{
-			From:   ownerOpts.From,
-			Signer: ownerOpts.Signer,
-		},
-	}
-
-	tx, err = vaultTracker.RemoveNotionalReturns(true)
+	tx, err = s.VaultTracker.RemoveNotionalReturns(true)
 	assert.Nil(err)
 	assert.NotNil(tx)
-
 	s.Env.Blockchain.Commit()
 
 	amount := big.NewInt(100)
 	tx, err = s.MarketPlace.CustodialExit(uint8(5), s.Dep.Erc20Address, maturity, ownerOpts.From, user1Opts.From, amount)
 	assert.Nil(err)
 	assert.NotNil(tx)
-
 	s.Env.Blockchain.Commit()
 
-	mintAmount, err := zcToken.BurnCalled(ownerOpts.From)
+	mintAmount, err := s.ZcToken.BurnCalled(ownerOpts.From)
 	assert.Nil(err)
 	assert.Equal(amount, mintAmount)
 
 	s.Env.Blockchain.Commit()
 
-	addNotionalAmount, err := vaultTracker.RemoveNotionalCalled(user1Opts.From)
+	addNotionalAmount, err := s.VaultTracker.RemoveNotionalCalled(user1Opts.From)
 	assert.Nil(err)
 	assert.Equal(amount, addNotionalAmount)
-
-	s.Env.Blockchain.Commit()
 }
 
 func (s *custodialExitSuite) TestCustodialInitiateBurnFails() {
@@ -203,12 +221,12 @@ func (s *custodialExitSuite) TestCustodialInitiateBurnFails() {
 	s.Env.Blockchain.Commit()
 
 	maturity := s.Dep.Maturity
-	ctoken := s.Dep.CompoundTokenAddress
+	cToken := s.Dep.CompoundTokenAddress
 
 	tx, err = s.MarketPlace.CreateMarket(
 		uint8(1),
 		maturity,
-		ctoken,
+		cToken,
 		"awesome market",
 		"AM",
 	)
@@ -223,36 +241,13 @@ func (s *custodialExitSuite) TestCustodialInitiateBurnFails() {
 	// we should be able to fetch the market now...
 	market, err := s.MarketPlace.Markets(uint8(1), s.Dep.Erc20Address, maturity)
 	assert.Nil(err)
-	assert.Equal(market.CTokenAddr, ctoken)
+	assert.Equal(market.CTokenAddr, cToken)
 
-	zcTokenContract, err := mocks.NewZcToken(market.ZcToken, s.Env.Blockchain)
-	zcToken := &mocks.ZcTokenSession{
-		Contract: zcTokenContract,
-		CallOpts: bind.CallOpts{From: ownerOpts.From, Pending: false},
-		TransactOpts: bind.TransactOpts{
-			From:   ownerOpts.From,
-			Signer: ownerOpts.Signer,
-		},
-	}
-
-	zcMaturity, err := zcToken.Maturity()
-	assert.Equal(maturity, zcMaturity)
-
-	tx, err = zcToken.BurnReturns(false)
+	tx, err = s.ZcToken.BurnReturns(false)
 	assert.Nil(err)
 	assert.NotNil(tx)
 
-	vaultTrackerContract, err := mocks.NewVaultTracker(market.VaultTracker, s.Env.Blockchain)
-	vaultTracker := &mocks.VaultTrackerSession{
-		Contract: vaultTrackerContract,
-		CallOpts: bind.CallOpts{From: ownerOpts.From, Pending: false},
-		TransactOpts: bind.TransactOpts{
-			From:   ownerOpts.From,
-			Signer: ownerOpts.Signer,
-		},
-	}
-
-	tx, err = vaultTracker.AddNotionalReturns(true)
+	tx, err = s.VaultTracker.AddNotionalReturns(true)
 	assert.Nil(err)
 	assert.NotNil(tx)
 
@@ -264,7 +259,6 @@ func (s *custodialExitSuite) TestCustodialInitiateBurnFails() {
 	// TODO extract the custom error codes?
 	// assert.Regexp("burn failed", err.Error())
 	assert.Nil(tx)
-
 	s.Env.Blockchain.Commit()
 }
 
@@ -282,12 +276,12 @@ func (s *custodialExitSuite) TestCustodialInitiateRemoveNotionalFails() {
 	s.Env.Blockchain.Commit()
 
 	maturity := s.Dep.Maturity
-	ctoken := s.Dep.CompoundTokenAddress
+	cToken := s.Dep.CompoundTokenAddress
 
 	tx, err = s.MarketPlace.CreateMarket(
 		uint8(1),
 		maturity,
-		ctoken,
+		cToken,
 		"awesome market",
 		"AM",
 	)
@@ -302,36 +296,13 @@ func (s *custodialExitSuite) TestCustodialInitiateRemoveNotionalFails() {
 	// we should be able to fetch the market now...
 	market, err := s.MarketPlace.Markets(uint8(1), s.Dep.Erc20Address, maturity)
 	assert.Nil(err)
-	assert.Equal(market.CTokenAddr, ctoken)
+	assert.Equal(market.CTokenAddr, cToken)
 
-	zcTokenContract, err := mocks.NewZcToken(market.ZcToken, s.Env.Blockchain)
-	zcToken := &mocks.ZcTokenSession{
-		Contract: zcTokenContract,
-		CallOpts: bind.CallOpts{From: ownerOpts.From, Pending: false},
-		TransactOpts: bind.TransactOpts{
-			From:   ownerOpts.From,
-			Signer: ownerOpts.Signer,
-		},
-	}
-
-	zcMaturity, err := zcToken.Maturity()
-	assert.Equal(maturity, zcMaturity)
-
-	tx, err = zcToken.BurnReturns(true)
+	tx, err = s.ZcToken.BurnReturns(true)
 	assert.Nil(err)
 	assert.NotNil(tx)
 
-	vaultTrackerContract, err := mocks.NewVaultTracker(market.VaultTracker, s.Env.Blockchain)
-	vaultTracker := &mocks.VaultTrackerSession{
-		Contract: vaultTrackerContract,
-		CallOpts: bind.CallOpts{From: ownerOpts.From, Pending: false},
-		TransactOpts: bind.TransactOpts{
-			From:   ownerOpts.From,
-			Signer: ownerOpts.Signer,
-		},
-	}
-
-	tx, err = vaultTracker.RemoveNotionalReturns(false)
+	tx, err = s.VaultTracker.RemoveNotionalReturns(false)
 	assert.Nil(err)
 	assert.NotNil(tx)
 
@@ -343,7 +314,6 @@ func (s *custodialExitSuite) TestCustodialInitiateRemoveNotionalFails() {
 	// TODO extract the custom error codes?
 	// assert.Regexp("remove notional failed", err.Error())
 	assert.Nil(tx)
-
 	s.Env.Blockchain.Commit()
 }
 

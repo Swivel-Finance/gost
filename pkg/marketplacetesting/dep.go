@@ -29,6 +29,10 @@ type Dep struct {
 	MarketPlace          *marketplace.MarketPlace
 	Maturity             *big.Int
 	SwivelAddress        common.Address
+	ZcToken              *mocks.ZcToken
+	ZcTokenAddress       common.Address
+	VaultTracker         *mocks.VaultTracker
+	VaultTrackerAddress  common.Address
 }
 
 func Deploy(e *Env) (*Dep, error) {
@@ -106,6 +110,26 @@ func Deploy(e *Env) (*Dep, error) {
 
 	e.Blockchain.Commit()
 
+	swivAddress := common.HexToAddress("0x123aBc")
+
+	// NOTE the public properties on the mock can be changed per spec
+	zcAddress, _, zcContract, zcErr := mocks.DeployZcToken(e.Owner.Opts, e.Blockchain, uint8(1), erc20Address, big.NewInt(MATURITY), ctAddress, marketAddress, "", "", uint8(18))
+
+	if zcErr != nil {
+		return nil, zcErr
+	}
+
+	e.Blockchain.Commit()
+
+	// NOTE same as ZcToken WRT properties...
+	vtAddress, _, vtContract, vtErr := mocks.DeployVaultTracker(e.Owner.Opts, e.Blockchain, uint8(1), big.NewInt(MATURITY), ctAddress, swivAddress)
+
+	if vtErr != nil {
+		return nil, vtErr
+	}
+
+	e.Blockchain.Commit()
+
 	return &Dep{
 		CreatorAddress:       crAddress,
 		Creator:              crContract,
@@ -125,7 +149,11 @@ func Deploy(e *Env) (*Dep, error) {
 		AavePoolAddress:      apAddress,
 		EulerToken:           etContract,
 		EulerTokenAddress:    etAddress,
-		SwivelAddress:        common.HexToAddress("0x123aBc"),
+		SwivelAddress:        swivAddress,
 		Maturity:             maturity,
+		ZcToken:              zcContract,
+		ZcTokenAddress:       zcAddress,
+		VaultTracker:         vtContract,
+		VaultTrackerAddress:  vtAddress,
 	}, nil
 }
