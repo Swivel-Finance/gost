@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: UNLICENSED
 
-pragma solidity 0.8.13;
+pragma solidity ^0.8.13;
 
 import './ZcToken.sol';
 import './VaultTracker.sol';
@@ -33,8 +33,8 @@ contract Creator {
     uint256 m,
     address c,
     address sw,
-    string memory n,
-    string memory s,
+    string calldata n,
+    string calldata s,
     uint8 d
   ) external authorized(marketPlace) returns (address, address) {
     address zct = address(new ZcToken(p, u, m, c, marketPlace, n, s, d));

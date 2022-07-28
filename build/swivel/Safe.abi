@@ -1,1 +1,1 @@
-[{"inputs":[],"name":"APPROVE","type":"error"},{"inputs":[],"name":"ETH","type":"error"},{"inputs":[],"name":"TRANSFER","type":"error"},{"inputs":[],"name":"TRANSFER_FROM","type":"error"}]
+[{"inputs":[],"name":"ApproveFailed","type":"error"},{"inputs":[],"name":"ETHTransferFailed","type":"error"},{"inputs":[],"name":"TransferFailed","type":"error"},{"inputs":[],"name":"TransferFromFailed","type":"error"}]

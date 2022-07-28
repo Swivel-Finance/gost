@@ -16,6 +16,8 @@ type redeemVaultInterestSuite struct {
 	Env           *Env
 	Dep           *Dep
 	Erc20         *mocks.Erc20Session
+	Creator       *mocks.CreatorSession
+	VaultTracker  *mocks.VaultTrackerSession
 	CompoundToken *mocks.CompoundTokenSession
 	MarketPlace   *marketplace.MarketPlaceSession // *Session objects are created by the go bindings
 }
@@ -43,6 +45,24 @@ func (s *redeemVaultInterestSuite) SetupTest() {
 
 	s.CompoundToken = &mocks.CompoundTokenSession{
 		Contract: s.Dep.CompoundToken,
+		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
+		TransactOpts: bind.TransactOpts{
+			From:   s.Env.Owner.Opts.From,
+			Signer: s.Env.Owner.Opts.Signer,
+		},
+	}
+
+	s.Creator = &mocks.CreatorSession{
+		Contract: s.Dep.Creator,
+		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
+		TransactOpts: bind.TransactOpts{
+			From:   s.Env.Owner.Opts.From,
+			Signer: s.Env.Owner.Opts.Signer,
+		},
+	}
+
+	s.VaultTracker = &mocks.VaultTrackerSession{
+		Contract: s.Dep.VaultTracker,
 		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
 		TransactOpts: bind.TransactOpts{
 			From:   s.Env.Owner.Opts.From,
@@ -91,7 +111,7 @@ func (s *redeemVaultInterestSuite) TestRedeemFailsWhenPaused() {
 func (s *redeemVaultInterestSuite) TestRedeemVaultInterest() {
 	assert := assertions.New(s.T())
 	maturity := s.Dep.Maturity
-	ctokenAddr := s.Dep.CompoundTokenAddress
+	cToken := s.Dep.CompoundTokenAddress
 
 	tx, err := s.Erc20.DecimalsReturns(uint8(18))
 	assert.Nil(err)
@@ -103,10 +123,15 @@ func (s *redeemVaultInterestSuite) TestRedeemVaultInterest() {
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
 
+	tx, err = s.Creator.CreateReturns(s.Dep.ZcTokenAddress, s.Dep.VaultTrackerAddress)
+	assert.Nil(err)
+	assert.NotNil(tx)
+	s.Env.Blockchain.Commit()
+
 	tx, err = s.MarketPlace.CreateMarket(
 		uint8(1),
 		maturity,
-		ctokenAddr,
+		cToken,
 		"awesome market",
 		"AM",
 	)
@@ -118,33 +143,10 @@ func (s *redeemVaultInterestSuite) TestRedeemVaultInterest() {
 	// we should be able to fetch the market now...
 	market, err := s.MarketPlace.Markets(uint8(1), s.Dep.Erc20Address, maturity)
 	assert.Nil(err)
-	assert.Equal(market.CTokenAddr, ctokenAddr)
-
-	zcTokenContract, err := mocks.NewZcToken(market.ZcToken, s.Env.Blockchain)
-	zcToken := &mocks.ZcTokenSession{
-		Contract: zcTokenContract,
-		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
-		TransactOpts: bind.TransactOpts{
-			From:   s.Env.Owner.Opts.From,
-			Signer: s.Env.Owner.Opts.Signer,
-		},
-	}
-
-	zcMaturity, err := zcToken.Maturity()
-	assert.Equal(maturity, zcMaturity)
-
-	vaultTrackerContract, err := mocks.NewVaultTracker(market.VaultTracker, s.Env.Blockchain)
-	vaultTracker := &mocks.VaultTrackerSession{
-		Contract: vaultTrackerContract,
-		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
-		TransactOpts: bind.TransactOpts{
-			From:   s.Env.Owner.Opts.From,
-			Signer: s.Env.Owner.Opts.Signer,
-		},
-	}
+	assert.Equal(market.CTokenAddr, cToken)
 
 	vaultInterest := big.NewInt(123456789)
-	tx, err = vaultTracker.RedeemInterestReturns(vaultInterest)
+	tx, err = s.VaultTracker.RedeemInterestReturns(vaultInterest)
 	assert.Nil(err)
 	assert.NotNil(tx)
 
@@ -157,7 +159,7 @@ func (s *redeemVaultInterestSuite) TestRedeemVaultInterest() {
 	s.Env.Blockchain.Commit()
 
 	// the vaulttracker mock should now retain the address it was passed
-	address, err := vaultTracker.RedeemInterestCalled()
+	address, err := s.VaultTracker.RedeemInterestCalled()
 	assert.Nil(err)
 	assert.NotNil(address)
 	assert.Equal(address, s.Env.Owner.Opts.From)

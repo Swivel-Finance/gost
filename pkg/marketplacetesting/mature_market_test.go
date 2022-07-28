@@ -22,6 +22,8 @@ type matureMarketSuite struct {
 	CompoundToken *mocks.CompoundTokenSession
 	AaveToken     *mocks.AaveTokenSession
 	AavePool      *mocks.AavePoolSession
+	Creator       *mocks.CreatorSession
+	VaultTracker  *mocks.VaultTrackerSession
 	MarketPlace   *marketplace.MarketPlaceSession // *Session objects are created by the go bindings
 }
 
@@ -66,6 +68,24 @@ func (s *matureMarketSuite) SetupTest() {
 
 	s.AavePool = &mocks.AavePoolSession{
 		Contract: s.Dep.AavePool,
+		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
+		TransactOpts: bind.TransactOpts{
+			From:   s.Env.Owner.Opts.From,
+			Signer: s.Env.Owner.Opts.Signer,
+		},
+	}
+
+	s.Creator = &mocks.CreatorSession{
+		Contract: s.Dep.Creator,
+		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
+		TransactOpts: bind.TransactOpts{
+			From:   s.Env.Owner.Opts.From,
+			Signer: s.Env.Owner.Opts.Signer,
+		},
+	}
+
+	s.VaultTracker = &mocks.VaultTrackerSession{
+		Contract: s.Dep.VaultTracker,
 		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
 		TransactOpts: bind.TransactOpts{
 			From:   s.Env.Owner.Opts.From,
@@ -118,7 +138,7 @@ func (s *matureMarketSuite) TestMaturityNotReached() {
 	// addresses can be BS in this test as well...
 	underlying := s.Dep.Erc20Address
 	maturity := s.Dep.Maturity
-	ctoken := s.Dep.CompoundTokenAddress
+	cToken := s.Dep.CompoundTokenAddress
 
 	tx, err := s.Erc20.DecimalsReturns(uint8(18))
 	assert.Nil(err)
@@ -130,10 +150,16 @@ func (s *matureMarketSuite) TestMaturityNotReached() {
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
 
+	// return the deployed mocks
+	tx, err = s.Creator.CreateReturns(s.Dep.ZcTokenAddress, s.Dep.VaultTrackerAddress)
+	assert.Nil(err)
+	assert.NotNil(tx)
+	s.Env.Blockchain.Commit()
+
 	tx, err = s.MarketPlace.CreateMarket(
 		uint8(1),
 		maturity,
-		ctoken,
+		cToken,
 		"awesome market",
 		"AM",
 	)
@@ -145,35 +171,20 @@ func (s *matureMarketSuite) TestMaturityNotReached() {
 	// we should be able to fetch the market now...
 	market, err := s.MarketPlace.Markets(uint8(1), underlying, maturity)
 	assert.Nil(err)
-	assert.Equal(market.CTokenAddr, ctoken)
-
-	zcTokenContract, err := mocks.NewZcToken(market.ZcToken, s.Env.Blockchain)
-	zcToken := &mocks.ZcTokenSession{
-		Contract: zcTokenContract,
-		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
-		TransactOpts: bind.TransactOpts{
-			From:   s.Env.Owner.Opts.From,
-			Signer: s.Env.Owner.Opts.Signer,
-		},
-	}
-
-	zcMaturity, err := zcToken.Maturity()
-	assert.Equal(maturity, zcMaturity)
+	assert.Equal(market.CTokenAddr, cToken)
 
 	tx, err = s.MarketPlace.MatureMarket(uint8(1), underlying, maturity)
 	assert.NotNil(err)
 	// TODO extract the custom error codes?
 	// assert.Regexp("maturity not reached", err.Error())
 	assert.Nil(tx)
-
-	s.Env.Blockchain.Commit()
 }
 
 func (s *matureMarketSuite) TestMaturityReached() {
 	assert := assertions.New(s.T())
 	underlying := s.Dep.Erc20Address
 	maturity := s.Dep.Maturity
-	ctoken := s.Dep.AaveTokenAddress
+	cToken := s.Dep.AaveTokenAddress
 
 	tx, err := s.Erc20.DecimalsReturns(uint8(18))
 	assert.Nil(err)
@@ -190,10 +201,16 @@ func (s *matureMarketSuite) TestMaturityReached() {
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
 
+	// return the deployed mocks
+	tx, err = s.Creator.CreateReturns(s.Dep.ZcTokenAddress, s.Dep.VaultTrackerAddress)
+	assert.Nil(err)
+	assert.NotNil(tx)
+	s.Env.Blockchain.Commit()
+
 	tx, err = s.MarketPlace.CreateMarket(
 		uint8(4),
 		maturity,
-		ctoken,
+		cToken,
 		"awesome market",
 		"AM",
 	)
@@ -205,32 +222,9 @@ func (s *matureMarketSuite) TestMaturityReached() {
 	// we should be able to fetch the market now...
 	market, err := s.MarketPlace.Markets(uint8(4), underlying, maturity)
 	assert.Nil(err)
-	assert.Equal(market.CTokenAddr, ctoken)
+	assert.Equal(market.CTokenAddr, cToken)
 
-	zcTokenContract, err := mocks.NewZcToken(market.ZcToken, s.Env.Blockchain)
-	zcToken := &mocks.ZcTokenSession{
-		Contract: zcTokenContract,
-		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
-		TransactOpts: bind.TransactOpts{
-			From:   s.Env.Owner.Opts.From,
-			Signer: s.Env.Owner.Opts.Signer,
-		},
-	}
-
-	zcMaturity, err := zcToken.Maturity()
-	assert.Equal(maturity, zcMaturity)
-
-	vaultTrackerContract, err := mocks.NewVaultTracker(market.VaultTracker, s.Env.Blockchain)
-	vaultTracker := &mocks.VaultTrackerSession{
-		Contract: vaultTrackerContract,
-		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
-		TransactOpts: bind.TransactOpts{
-			From:   s.Env.Owner.Opts.From,
-			Signer: s.Env.Owner.Opts.Signer,
-		},
-	}
-
-	tx, err = vaultTracker.MatureVaultReturns(true)
+	tx, err = s.VaultTracker.MatureVaultReturns(true)
 	assert.Nil(err)
 	assert.NotNil(tx)
 
@@ -271,91 +265,6 @@ func (s *matureMarketSuite) TestMaturityReached() {
 	assert.Equal(underlying.Hex(), common.HexToAddress(logs[0].Topics[2].Hex()).String())
 	assert.Equal(maturity, logs[0].Topics[3].Big())
 }
-
-/* TODO remove when confirm not checking the return value of .matureVault is acceptable
-func (s *matureMarketSuite) TestVaultMaturityNotReachedRequireFail() {
-	assert := assertions.New(s.T())
-	underlying := s.Dep.Erc20Address
-	maturity := s.Dep.Maturity
-	ctoken := s.Dep.CompoundTokenAddress
-
-	tx, err := s.Erc20.DecimalsReturns(uint8(18))
-	assert.Nil(err)
-	assert.NotNil(tx)
-	s.Env.Blockchain.Commit()
-
-	tx, err = s.CompoundToken.UnderlyingReturns(underlying)
-	assert.Nil(err)
-	assert.NotNil(tx)
-	s.Env.Blockchain.Commit()
-
-	tx, err = s.MarketPlace.CreateMarket(
-		uint8(1),
-		maturity,
-		ctoken,
-		"awesome market",
-		"AM",
-	)
-
-	assert.Nil(err)
-	assert.NotNil(tx)
-	s.Env.Blockchain.Commit()
-
-	// we should be able to fetch the market now...
-	market, err := s.MarketPlace.Markets(uint8(1), underlying, maturity)
-	assert.Nil(err)
-	assert.Equal(market.CTokenAddr, ctoken)
-
-	zcTokenContract, err := mocks.NewZcToken(market.ZcToken, s.Env.Blockchain)
-	zcToken := &mocks.ZcTokenSession{
-		Contract: zcTokenContract,
-		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
-		TransactOpts: bind.TransactOpts{
-			From:   s.Env.Owner.Opts.From,
-			Signer: s.Env.Owner.Opts.Signer,
-		},
-	}
-
-	zcMaturity, err := zcToken.Maturity()
-	assert.Equal(maturity, zcMaturity)
-
-	vaultTrackerContract, err := mocks.NewVaultTracker(market.VaultTracker, s.Env.Blockchain)
-	vaultTracker := &mocks.VaultTrackerSession{
-		Contract: vaultTrackerContract,
-		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
-		TransactOpts: bind.TransactOpts{
-			From:   s.Env.Owner.Opts.From,
-			Signer: s.Env.Owner.Opts.Signer,
-		},
-	}
-
-	tx, err = vaultTracker.MatureVaultReturns(false)
-	assert.Nil(err)
-	assert.NotNil(tx)
-
-	s.Env.Blockchain.Commit()
-
-	// move past the maturity
-	err = s.Env.Blockchain.AdjustTime(MATURITY * time.Second)
-	assert.Nil(err)
-	s.Env.Blockchain.Commit()
-
-	rate := big.NewInt(123456789)
-	tx, err = s.CompoundToken.ExchangeRateCurrentReturns(rate)
-	assert.Nil(err)
-	assert.NotNil(tx)
-
-	s.Env.Blockchain.Commit()
-
-	tx, err = s.MarketPlace.MatureMarket(uint8(1), underlying, maturity)
-	assert.NotNil(err)
-	// TODO extract the custom error codes?
-	// assert.Regexp("mature vault failed", err.Error())
-	assert.Nil(tx)
-
-	s.Env.Blockchain.Commit()
-}
-*/
 
 func TestMatureMarketSuite(t *test.T) {
 	suite.Run(t, &matureMarketSuite{})

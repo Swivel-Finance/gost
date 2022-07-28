@@ -83,6 +83,7 @@ func (s *addNotionalSuite) TestAddNotionalCreateVault() {
 	caller := s.Env.Owner.Opts.From
 	amount1 := big.NewInt(10000000)
 	redeemable1 := ZERO
+
 	tx, err = s.VaultTracker.AddNotional(caller, amount1)
 	assert.Nil(err)
 	assert.NotNil(tx)

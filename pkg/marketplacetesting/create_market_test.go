@@ -5,7 +5,6 @@ import (
 	test "testing"
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
-	"github.com/ethereum/go-ethereum/common"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 	"github.com/swivel-finance/gost/test/marketplace"
@@ -18,6 +17,7 @@ type createMarketSuite struct {
 	Dep           *Dep
 	Erc20         *mocks.Erc20Session
 	CompoundToken *mocks.CompoundTokenSession
+	Creator       *mocks.CreatorSession
 	MarketPlace   *marketplace.MarketPlaceSession // *Session objects are created by the go bindings
 }
 
@@ -50,6 +50,15 @@ func (s *createMarketSuite) SetupSuite() {
 		},
 	}
 
+	s.Creator = &mocks.CreatorSession{
+		Contract: s.Dep.Creator,
+		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
+		TransactOpts: bind.TransactOpts{
+			From:   s.Env.Owner.Opts.From,
+			Signer: s.Env.Owner.Opts.Signer,
+		},
+	}
+
 	// binding owner to both, kind of why it exists - but could be any of the env wallets
 	s.MarketPlace = &marketplace.MarketPlaceSession{
 		Contract: s.Dep.MarketPlace,
@@ -69,17 +78,20 @@ func (s *createMarketSuite) TestCreateFailsWhenPaused() {
 	assert := assert.New(s.T())
 
 	maturity := big.NewInt(123456789)
-	ctoken := s.Dep.CompoundTokenAddress
+	cToken := s.Dep.CompoundTokenAddress
 
 	tx, err := s.MarketPlace.Pause(uint8(1), true)
 	assert.Nil(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
 
+	// we'd need to stub the underlying() and decimals() call but this will fail before that...
+	// also no need to stub creator here, paused() occurs first...
+
 	tx, err = s.MarketPlace.CreateMarket(
 		uint8(1),
 		maturity,
-		ctoken,
+		cToken,
 		"nope",
 		"NM",
 	)
@@ -100,7 +112,7 @@ func (s *createMarketSuite) TestCreateMarket18Decimals() {
 	assert := assert.New(s.T())
 
 	underlying := s.Dep.Erc20Address
-	ctoken := s.Dep.CompoundTokenAddress
+	cToken := s.Dep.CompoundTokenAddress
 
 	// stub underlying (erc20) methods...
 	tx, err := s.Erc20.DecimalsReturns(uint8(18))
@@ -113,12 +125,18 @@ func (s *createMarketSuite) TestCreateMarket18Decimals() {
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
 
+	// stub the return for Creator.create so the market is created with zctoken and vaulttracker addresses
+	tx, err = s.Creator.CreateReturns(s.Dep.ZcTokenAddress, s.Dep.VaultTrackerAddress)
+	assert.Nil(err)
+	assert.NotNil(tx)
+	s.Env.Blockchain.Commit()
+
 	maturity := big.NewInt(123456789)
 
 	tx, err = s.MarketPlace.CreateMarket(
 		uint8(1),
 		maturity,
-		ctoken,
+		cToken,
 		"awesome market",
 		"AM",
 	)
@@ -130,29 +148,27 @@ func (s *createMarketSuite) TestCreateMarket18Decimals() {
 	// we should be able to fetch the market now...
 	market, err := s.MarketPlace.Markets(uint8(1), underlying, maturity)
 	assert.Nil(err)
-	assert.Equal(market.CTokenAddr, ctoken)
-	assert.NotEqual(market.ZcToken, common.HexToAddress("0x0"))
-	assert.NotEqual(market.VaultTracker, common.HexToAddress("0x0"))
+	assert.Equal(market.CTokenAddr, cToken)
+	assert.Equal(market.ZcToken, s.Dep.ZcTokenAddress)
+	assert.Equal(market.VaultTracker, s.Dep.VaultTrackerAddress)
 
-	zcTokenContract, err := mocks.NewZcToken(market.ZcToken, s.Env.Blockchain)
-	zcToken := &mocks.ZcTokenSession{
-		Contract: zcTokenContract,
-		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
-		TransactOpts: bind.TransactOpts{
-			From:   s.Env.Owner.Opts.From,
-			Signer: s.Env.Owner.Opts.Signer,
-		},
-	}
-
-	decimals, err := zcToken.Decimals()
-	assert.Equal(decimals, uint8(18))
+	// creator should recieve expected arguments
+	createArgs, _ := s.Creator.CreateCalled(uint8(1))
+	assert.Equal(createArgs.Underlying, underlying)
+	assert.Equal(createArgs.Maturity, maturity)
+	assert.Equal(createArgs.CToken, cToken)
+	assert.Equal(createArgs.Swivel, s.Dep.SwivelAddress)
+	assert.Equal(createArgs.Name, "awesome market")
+	assert.Equal(createArgs.Symbol, "AM")
+	assert.Equal(createArgs.Decimals, uint8(18)) // gotten from underlying
 }
 
 func (s *createMarketSuite) TestCreateMarket6Decimals() {
 	assert := assert.New(s.T())
 
 	underlying := s.Dep.Erc20Address
-	ctoken := s.Dep.CompoundTokenAddress
+	cToken := s.Dep.CompoundTokenAddress
+
 	// stub underlying (erc20) methods...
 	tx, err := s.Erc20.DecimalsReturns(uint8(6))
 	assert.Nil(err)
@@ -164,12 +180,17 @@ func (s *createMarketSuite) TestCreateMarket6Decimals() {
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
 
+	tx, err = s.Creator.CreateReturns(s.Dep.ZcTokenAddress, s.Dep.VaultTrackerAddress)
+	assert.Nil(err)
+	assert.NotNil(tx)
+	s.Env.Blockchain.Commit()
+
 	maturity := big.NewInt(123456781)
 
 	tx, err = s.MarketPlace.CreateMarket(
 		uint8(1),
 		maturity,
-		ctoken,
+		cToken,
 		"awesomer market",
 		"ARM",
 	)
@@ -181,22 +202,19 @@ func (s *createMarketSuite) TestCreateMarket6Decimals() {
 	// we should be able to fetch the market now...
 	market, err := s.MarketPlace.Markets(uint8(1), underlying, maturity)
 	assert.Nil(err)
-	assert.Equal(market.CTokenAddr, ctoken)
-	assert.NotEqual(market.ZcToken, common.HexToAddress("0x0"))
-	assert.NotEqual(market.VaultTracker, common.HexToAddress("0x0"))
+	assert.Equal(market.CTokenAddr, cToken)
+	assert.Equal(market.ZcToken, s.Dep.ZcTokenAddress)
+	assert.Equal(market.VaultTracker, s.Dep.VaultTrackerAddress)
 
-	zcTokenContract, err := mocks.NewZcToken(market.ZcToken, s.Env.Blockchain)
-	zcToken := &mocks.ZcTokenSession{
-		Contract: zcTokenContract,
-		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
-		TransactOpts: bind.TransactOpts{
-			From:   s.Env.Owner.Opts.From,
-			Signer: s.Env.Owner.Opts.Signer,
-		},
-	}
-
-	decimals, err := zcToken.Decimals()
-	assert.Equal(decimals, uint8(6))
+	// creator should recieve expected arguments
+	createArgs, _ := s.Creator.CreateCalled(uint8(1))
+	assert.Equal(createArgs.Underlying, underlying)
+	assert.Equal(createArgs.Maturity, maturity)
+	assert.Equal(createArgs.CToken, cToken)
+	assert.Equal(createArgs.Swivel, s.Dep.SwivelAddress)
+	assert.Equal(createArgs.Name, "awesomer market")
+	assert.Equal(createArgs.Symbol, "ARM")
+	assert.Equal(createArgs.Decimals, uint8(6)) // gotten from underlying
 }
 
 func TestCreateMarketSuite(t *test.T) {

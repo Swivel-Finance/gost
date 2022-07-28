@@ -17,6 +17,8 @@ type p2pZCTokenExchangeSuite struct {
 	Dep           *Dep
 	Erc20         *mocks.Erc20Session
 	CompoundToken *mocks.CompoundTokenSession
+	Creator       *mocks.CreatorSession
+	ZcToken       *mocks.ZcTokenSession
 	MarketPlace   *marketplace.MarketPlaceSession // *Session objects are created by the go bindings
 }
 
@@ -48,6 +50,24 @@ func (s *p2pZCTokenExchangeSuite) SetupTest() {
 
 	s.CompoundToken = &mocks.CompoundTokenSession{
 		Contract: s.Dep.CompoundToken,
+		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
+		TransactOpts: bind.TransactOpts{
+			From:   s.Env.Owner.Opts.From,
+			Signer: s.Env.Owner.Opts.Signer,
+		},
+	}
+
+	s.Creator = &mocks.CreatorSession{
+		Contract: s.Dep.Creator,
+		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
+		TransactOpts: bind.TransactOpts{
+			From:   s.Env.Owner.Opts.From,
+			Signer: s.Env.Owner.Opts.Signer,
+		},
+	}
+
+	s.ZcToken = &mocks.ZcTokenSession{
+		Contract: s.Dep.ZcToken,
 		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
 		TransactOpts: bind.TransactOpts{
 			From:   s.Env.Owner.Opts.From,
@@ -98,7 +118,7 @@ func (s *p2pZCTokenExchangeSuite) TestP2PZCTokenExchange() {
 	assert := assertions.New(s.T())
 	underlying := s.Dep.Erc20Address
 	maturity := s.Dep.Maturity
-	ctoken := s.Dep.CompoundTokenAddress
+	cToken := s.Dep.CompoundTokenAddress
 
 	tx, err := s.Erc20.DecimalsReturns(uint8(18))
 	assert.Nil(err)
@@ -110,10 +130,15 @@ func (s *p2pZCTokenExchangeSuite) TestP2PZCTokenExchange() {
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
 
+	tx, err = s.Creator.CreateReturns(s.Dep.ZcTokenAddress, s.Dep.VaultTrackerAddress)
+	assert.Nil(err)
+	assert.NotNil(tx)
+	s.Env.Blockchain.Commit()
+
 	tx, err = s.MarketPlace.CreateMarket(
 		uint8(1),
 		maturity,
-		ctoken,
+		cToken,
 		"awesome market",
 		"AM",
 	)
@@ -129,35 +154,16 @@ func (s *p2pZCTokenExchangeSuite) TestP2PZCTokenExchange() {
 	// we should be able to fetch the market now...
 	market, err := s.MarketPlace.Markets(uint8(1), underlying, maturity)
 	assert.Nil(err)
-	assert.Equal(market.CTokenAddr, ctoken)
+	assert.Equal(market.CTokenAddr, cToken)
 
-	s.Env.Blockchain.Commit()
-
-	zcTokenContract, err := mocks.NewZcToken(market.ZcToken, s.Env.Blockchain)
-	zcToken := &mocks.ZcTokenSession{
-		Contract: zcTokenContract,
-		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
-		TransactOpts: bind.TransactOpts{
-			From:   s.Env.Owner.Opts.From,
-			Signer: s.Env.Owner.Opts.Signer,
-		},
-	}
-
-	zcMaturity, err := zcToken.Maturity()
-	assert.Equal(maturity, zcMaturity)
-
-	s.Env.Blockchain.Commit()
-
-	tx, err = zcToken.BurnReturns(true)
+	tx, err = s.ZcToken.BurnReturns(true)
 	assert.Nil(err)
 	assert.NotNil(tx)
-
 	s.Env.Blockchain.Commit()
 
-	tx, err = zcToken.MintReturns(true)
+	tx, err = s.ZcToken.MintReturns(true)
 	assert.Nil(err)
 	assert.NotNil(tx)
-
 	s.Env.Blockchain.Commit()
 
 	amount := big.NewInt(100)
@@ -167,11 +173,11 @@ func (s *p2pZCTokenExchangeSuite) TestP2PZCTokenExchange() {
 
 	s.Env.Blockchain.Commit()
 
-	burnAmt, err := zcToken.BurnCalled(ownerOpts.From)
+	burnAmt, err := s.ZcToken.BurnCalled(ownerOpts.From)
 	assert.Nil(err)
 	assert.Equal(amount, burnAmt)
 
-	mintAmt, err := zcToken.MintCalled(user1Opts.From)
+	mintAmt, err := s.ZcToken.MintCalled(user1Opts.From)
 	assert.Nil(err)
 	assert.Equal(amount, mintAmt)
 }

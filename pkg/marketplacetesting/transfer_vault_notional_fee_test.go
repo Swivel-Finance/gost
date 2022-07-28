@@ -17,6 +17,8 @@ type vaultTransferFeeSuite struct {
 	Dep           *Dep
 	Erc20         *mocks.Erc20Session
 	CompoundToken *mocks.CompoundTokenSession
+	Creator       *mocks.CreatorSession
+	VaultTracker  *mocks.VaultTrackerSession
 	MarketPlace   *marketplace.MarketPlaceSession
 }
 
@@ -55,6 +57,24 @@ func (s *vaultTransferFeeSuite) SetupTest() {
 		},
 	}
 
+	s.Creator = &mocks.CreatorSession{
+		Contract: s.Dep.Creator,
+		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
+		TransactOpts: bind.TransactOpts{
+			From:   s.Env.Owner.Opts.From,
+			Signer: s.Env.Owner.Opts.Signer,
+		},
+	}
+
+	s.VaultTracker = &mocks.VaultTrackerSession{
+		Contract: s.Dep.VaultTracker,
+		CallOpts: bind.CallOpts{From: s.Env.Owner.Opts.From, Pending: false},
+		TransactOpts: bind.TransactOpts{
+			From:   s.Env.Owner.Opts.From,
+			Signer: s.Env.Owner.Opts.Signer,
+		},
+	}
+
 	// the swivel address must be set, using owner here for ease of mocking
 	_, err = s.MarketPlace.SetSwivel(s.Env.Owner.Opts.From)
 	assert.Nil(err)
@@ -64,13 +84,13 @@ func (s *vaultTransferFeeSuite) SetupTest() {
 func (s *vaultTransferFeeSuite) TestVaultTransferFee() {
 	assert := assertions.New(s.T())
 
-	ownerOpts := s.Env.Owner.Opts
+	// ownerOpts := s.Env.Owner.Opts
 	user1Opts := s.Env.User1.Opts
 
 	// make a market so that a vault is deployed
 	underlying := s.Dep.Erc20Address
 	maturity := big.NewInt(1234567)
-	ctoken := s.Dep.CompoundTokenAddress
+	cToken := s.Dep.CompoundTokenAddress
 
 	tx, err := s.Erc20.DecimalsReturns(uint8(18))
 	assert.Nil(err)
@@ -82,10 +102,15 @@ func (s *vaultTransferFeeSuite) TestVaultTransferFee() {
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
 
+	tx, err = s.Creator.CreateReturns(s.Dep.ZcTokenAddress, s.Dep.VaultTrackerAddress)
+	assert.Nil(err)
+	assert.NotNil(tx)
+	s.Env.Blockchain.Commit()
+
 	tx, err = s.MarketPlace.CreateMarket(
 		uint8(1),
 		maturity,
-		ctoken,
+		cToken,
 		"awesome market",
 		"AM",
 	)
@@ -97,20 +122,10 @@ func (s *vaultTransferFeeSuite) TestVaultTransferFee() {
 	// find that vault, wrap it in a mock...
 	market, err := s.MarketPlace.Markets(uint8(1), underlying, maturity)
 	assert.Nil(err)
-	assert.Equal(market.CTokenAddr, ctoken)
-
-	vaultTrackerContract, err := mocks.NewVaultTracker(market.VaultTracker, s.Env.Blockchain)
-	vaultTracker := &mocks.VaultTrackerSession{
-		Contract: vaultTrackerContract,
-		CallOpts: bind.CallOpts{From: ownerOpts.From, Pending: false},
-		TransactOpts: bind.TransactOpts{
-			From:   ownerOpts.From,
-			Signer: ownerOpts.Signer,
-		},
-	}
+	assert.Equal(market.CTokenAddr, cToken)
 
 	// stub the mock vaulttracker...
-	tx, err = vaultTracker.TransferNotionalFeeReturns(true)
+	tx, err = s.VaultTracker.TransferNotionalFeeReturns(true)
 	assert.Nil(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
@@ -124,7 +139,7 @@ func (s *vaultTransferFeeSuite) TestVaultTransferFee() {
 	s.Env.Blockchain.Commit()
 
 	// marketplace should simply have passed the args thru...
-	transferFee, err := vaultTracker.TransferNotionalFeeCalled(user1Opts.From)
+	transferFee, err := s.VaultTracker.TransferNotionalFeeCalled(user1Opts.From)
 	assert.Nil(err)
 	assert.Equal(big.NewInt(100), transferFee)
 }

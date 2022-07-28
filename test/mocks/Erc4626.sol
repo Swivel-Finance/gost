@@ -4,7 +4,7 @@
   Erc4626 is a mock tokenized vault with stubs of the methods we need for testing.
 */
 
-pragma solidity 0.8.13;
+pragma solidity ^0.8.13;
 
 contract Erc4626 {
   struct WithdrawArgs {
