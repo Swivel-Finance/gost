@@ -4,6 +4,13 @@ pragma solidity ^0.8.13;
 
 /// @dev MarketPlace is a mock whose bindings are imported by unit tests in any pkg/*testing that needs it
 contract MarketPlace {
+  struct Market {
+    address cTokenAddr;
+    address zcToken;
+    address vaultTracker;
+    uint256 maturityRate;
+  }
+
   struct MethodArgs {
     address underlying;
     uint256 maturity;
@@ -12,6 +19,7 @@ contract MarketPlace {
     uint256 amount;
   }
 
+  mapping (uint8 => mapping (address => mapping (uint256 => Market))) public markets;
   mapping (uint8 => MethodArgs) public cTokenAddressCalled;
   mapping (uint8 => MethodArgs) public custodialInitiateCalled;
   mapping (uint8 => MethodArgs) public custodialExitCalled;
@@ -22,6 +30,7 @@ contract MarketPlace {
   mapping (uint8 => MethodArgs) public transferVaultNotionalFeeCalled;
   mapping (uint8 => MethodArgs) public redeemZcTokenCalled;
   mapping (uint8 => MethodArgs) public redeemVaultInterestCalled;
+  mapping (uint8 => address) public exchangeRateCalled;
 
   address private cTokenAddr;
   bool private custodialInitiateReturn;
@@ -33,6 +42,17 @@ contract MarketPlace {
   bool private transferVaultNotionalFeeReturn;
   uint256 private redeemZcTokenReturn;
   uint256 private redeemVaultInterestReturn;
+  uint256 private exchangeRateReturn;
+
+  /// @param p Protocol enum value
+  /// @param u Underlying asset address
+  /// @param m Maturity
+  /// @param c Compounding token address
+  /// @param z ZcToken address for the market
+  /// @param v VaultTracker address for the market
+  function createMarket(uint8 p, address u, uint256 m, address c, address z, address v) external {
+    markets[p][u][m] = Market(c, z, v, 0);
+  }
 
   function cTokenAddressReturns(address c) external {
     cTokenAddr = c;
@@ -192,5 +212,14 @@ contract MarketPlace {
     redeemVaultInterestCalled[p] = args;
 
     return redeemVaultInterestReturn;
+  }
+
+  function exchangeRateReturns(uint256 a) external {
+    exchangeRateReturn = a;
+  }
+
+  function exchangeRate(uint8 p, address c) external returns (uint256) {
+    exchangeRateCalled[p] = c;
+    return exchangeRateReturn;
   }
 }

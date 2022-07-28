@@ -13,6 +13,9 @@
 .PHONY: compile_solidity_hash_fake compile_go_hash_fake compile_hash_fake
 .PHONY: compile_fakes
 
+.PHONY: compile_solidity_zctoken_test compile_go_zctoken_test compile_zctoken_test
+.PHONY: compile_tokens_test
+
 .PHONY: compile_solidity_swivel_test compile_go_swivel_test compile_swivel_test
 .PHONY: compile_solidity_marketplace_test compile_go_marketplace_test compile_marketplace_test
 .PHONY: compile_solidity_vaulttracker_test compile_go_vaulttracker_test compile_vaulttracker_test
@@ -160,6 +163,20 @@ compile_hash_fake: compile_solidity_hash_fake compile_go_hash_fake
 
 compile_fakes: compile_sig_fake compile_hash_fake
 
+# --------------------------------------------- TOKENS (TEST) -----------------------------------------------------------------------------------
+
+compile_solidity_zctoken_test:
+	@echo "compiling Swivel solidity source into abi and bin files"
+	solc -o ./test/tokens --optimize --optimize-runs=10000 --abi --bin --overwrite ./test/tokens/ZcToken.sol
+
+compile_go_zctoken_test:
+	@echo "compiling abi and bin files to golang"
+	abigen --abi ./test/tokens/ZcToken.abi --bin ./test/tokens/ZcToken.bin -pkg tokens -type ZcToken -out ./test/tokens/zctoken.go 
+
+compile_zctoken_test: compile_solidity_zctoken_test compile_go_zctoken_test
+
+compile_tokens_test: compile_zctoken_test
+
 # ----------------------------------------------- CONTRACTS (TEST) ------------------------------------------------------------------------------------------
 
 compile_solidity_swivel_test:
@@ -202,7 +219,7 @@ compile_go_vaulttracker_test:
 
 compile_vaulttracker_test: compile_solidity_vaulttracker_test compile_go_vaulttracker_test
 
-compile_test: compile_fakes compile_swivel_test compile_marketplace_test compile_creator_test compile_vaulttracker_test compile_mocks
+compile_test: compile_fakes compile_tokens_test compile_swivel_test compile_marketplace_test compile_creator_test compile_vaulttracker_test compile_mocks
 
 # --------------------------------------------- CLEANING ----------------------------------------------------------------------------------------
 
