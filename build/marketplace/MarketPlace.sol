@@ -35,6 +35,7 @@ contract MarketPlace {
   event P2pVaultExchange(uint8 indexed protocol, address indexed underlying, uint256 indexed maturity, address from, address to, uint256 amount);
   event TransferVaultNotional(uint8 indexed protocol, address indexed underlying, uint256 indexed maturity, address from, address to, uint256 amount);
 
+  /// @param c Address of the deployed creator contract
   constructor(address c) {
     admin = msg.sender;
     creator = c;

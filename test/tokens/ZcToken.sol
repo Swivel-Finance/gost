@@ -31,86 +31,87 @@ contract ZcToken is Erc20, IERC5095 {
         underlying = _underlying;
         maturity = _maturity;
         cToken = _cToken;
-        // TODO historically we just store the address and hydrate via interface. should we break that pattern here?
         redeemer = _redeemer;
     }
 
     /// @notice Post maturity converts an amount of principal tokens to an amount of underlying that would be returned. Returns 0 pre-maturity.
     /// @param principalAmount The amount of principal tokens to convert
-    /// @return underlyingAmount The amount of underlying tokens returned by the conversion
-    function convertToUnderlying(uint256 principalAmount) external override view returns (uint256 underlyingAmount){
+    /// @return The amount of underlying tokens returned by the conversion
+    function convertToUnderlying(uint256 principalAmount) external override view returns (uint256) {
         if (block.timestamp < maturity) {
             return 0;
         }
 
         // NOTE we weren't even using the pre-hydrated redeemer in most of these anyway...
-        return (principalAmount * IRedeemer(redeemer).exchangeRate(protocol, cToken) / IRedeemer(redeemer).markets(protocol, underlying, maturity).maturityRate);
+        return principalAmount * IRedeemer(redeemer).exchangeRate(protocol, cToken) / IRedeemer(redeemer).markets(protocol, underlying, maturity).maturityRate;
     }
 
     /// @notice Post maturity converts a desired amount of underlying tokens returned to principal tokens needed. Returns 0 pre-maturity.
     /// @param underlyingAmount The amount of underlying tokens to convert
-    /// @return principalAmount The amount of principal tokens returned by the conversion
-    function convertToPrincipal(uint256 underlyingAmount) external override view returns (uint256 principalAmount){
+    /// @return The amount of principal tokens returned by the conversion
+    function convertToPrincipal(uint256 underlyingAmount) external override view returns (uint256) {
         if (block.timestamp < maturity) {
             return 0;
         }
 
-        return (underlyingAmount * IRedeemer(redeemer).markets(protocol, underlying, maturity).maturityRate / IRedeemer(redeemer).exchangeRate(protocol, cToken));
+        return underlyingAmount * IRedeemer(redeemer).markets(protocol, underlying, maturity).maturityRate / IRedeemer(redeemer).exchangeRate(protocol, cToken);
     }
 
     /// @notice Post maturity calculates the amount of principal tokens that `owner` can redeem. Returns 0 pre-maturity.
     /// @param owner The address of the owner for which redemption is calculated
-    /// @return maxPrincipalAmount The maximum amount of principal tokens that `owner` can redeem.
-    function maxRedeem(address owner) external override view returns (uint256 maxPrincipalAmount){
+    /// @return The maximum amount of principal tokens that `owner` can redeem.
+    function maxRedeem(address owner) external override view returns (uint256) {
         if (block.timestamp < maturity) {
             return 0;
         }
-        return (balanceOf[owner]);
+        return balanceOf[owner];
     }
 
     /// @notice Post maturity simulates the effects of redeemption at the current block. Returns 0 pre-maturity.
     /// @param principalAmount the amount of principal tokens redeemed in the simulation
-    /// @return underlyingAmount The maximum amount of underlying returned by `principalAmount` of PT redemption
-    function previewRedeem(uint256 principalAmount) external override view returns (uint256 underlyingAmount){
+    /// @return The maximum amount of underlying returned by `principalAmount` of PT redemption
+    function previewRedeem(uint256 principalAmount) external override view returns (uint256) {
         if (block.timestamp < maturity) {
             return 0;
         }
 
-        return (principalAmount * IRedeemer(redeemer).exchangeRate(protocol, cToken) / IRedeemer(redeemer).markets(protocol, underlying, maturity).maturityRate);
+        return principalAmount * IRedeemer(redeemer).exchangeRate(protocol, cToken) / IRedeemer(redeemer).markets(protocol, underlying, maturity).maturityRate;
     }
 
     /// @notice Post maturity calculates the amount of underlying tokens that `owner` can withdraw. Returns 0 pre-maturity.
     /// @param  owner The address of the owner for which withdrawal is calculated
-    /// @return maxUnderlyingAmount The maximum amount of underlying tokens that `owner` can withdraw.
-    function maxWithdraw(address owner) external override view returns (uint256 maxUnderlyingAmount){
+    /// @return The maximum amount of underlying tokens that `owner` can withdraw.
+    function maxWithdraw(address owner) external override view returns (uint256) {
         if (block.timestamp < maturity) {
             return 0;
         }
 
-        return (balanceOf[owner] * IRedeemer(redeemer).exchangeRate(protocol, cToken) / IRedeemer(redeemer).markets(protocol, underlying, maturity).maturityRate);
+        return balanceOf[owner] * IRedeemer(redeemer).exchangeRate(protocol, cToken) / IRedeemer(redeemer).markets(protocol, underlying, maturity).maturityRate;
     }
 
     /// @notice Post maturity simulates the effects of withdrawal at the current block. Returns 0 pre-maturity.
     /// @param underlyingAmount the amount of underlying tokens withdrawn in the simulation
-    /// @return principalAmount The amount of principal tokens required for the withdrawal of `underlyingAmount`
-    function previewWithdraw(uint256 underlyingAmount) public override view returns (uint256 principalAmount){
+    /// @return The amount of principal tokens required for the withdrawal of `underlyingAmount`
+    function previewWithdraw(uint256 underlyingAmount) public override view returns (uint256) {
         if (block.timestamp < maturity) {
             return 0;
         }
 
-        return (underlyingAmount * IRedeemer(redeemer).markets(protocol, underlying, maturity).maturityRate / IRedeemer(redeemer).exchangeRate(protocol, cToken));
+        return underlyingAmount * IRedeemer(redeemer).markets(protocol, underlying, maturity).maturityRate / IRedeemer(redeemer).exchangeRate(protocol, cToken);
     }
     /// @notice At or after maturity, Burns principalAmount from `owner` and sends exactly `underlyingAmount` of underlying tokens to `receiver`.
     /// @param underlyingAmount The amount of underlying tokens withdrawn
     /// @param receiver The receiver of the underlying tokens being withdrawn
-    /// @return principalAmount The amount of principal tokens burnt by the withdrawal (TODO is this named return correct then?)
-    function withdraw(uint256 underlyingAmount, address receiver, address holder) external override returns (uint256 principalAmount){
-        // TODO removing both the `this.foo` and `external` bits of this pattern as it's simply an unnecessary misdirection. Discuss.
-        uint256 previewAmount = previewWithdraw(underlyingAmount);
-        // If maturity is not yet reached
+    /// @return The amount of principal tokens burnt by the withdrawal
+    function withdraw(uint256 underlyingAmount, address receiver, address holder) external override returns (uint256) {
+        // If maturity is not yet reached. TODO this is moved from underneath the previewAmount call - should have been here before? Discuss.
         if (block.timestamp < maturity) {
             revert Maturity(maturity);
         }
+
+        // TODO removing both the `this.foo` and `external` bits of this pattern as it's simply an unnecessary misdirection. Discuss.
+        uint256 previewAmount = previewWithdraw(underlyingAmount);
+        
         // Transfer logic: If holder is msg.sender, skip approval check
         if (holder == msg.sender) {
             IRedeemer(redeemer).authRedeem(protocol, underlying, maturity, msg.sender, receiver, previewAmount);
@@ -123,15 +124,14 @@ contract ZcToken is Erc20, IERC5095 {
             IRedeemer(redeemer).authRedeem(protocol, underlying, maturity, holder, receiver, previewAmount); 
         }
 
-        // TODO why use named return statements if not using them? Discuss.
         return previewAmount;
     }
 
     /// @notice At or after maturity, burns exactly `principalAmount` of Principal Tokens from `owner` and sends underlyingAmount of underlying tokens to `receiver`.
     /// @param principalAmount The amount of principal tokens being redeemed
     /// @param receiver The receiver of the underlying tokens being withdrawn
-    /// @return underlyingAmount The amount of underlying tokens distributed by the redemption
-    function redeem(uint256 principalAmount, address receiver, address holder) external override returns (uint256 underlyingAmount){
+    /// @return The amount of underlying tokens distributed by the redemption
+    function redeem(uint256 principalAmount, address receiver, address holder) external override returns (uint256) {
         // If maturity is not yet reached
         if (block.timestamp < maturity) {
           revert Maturity(maturity);
