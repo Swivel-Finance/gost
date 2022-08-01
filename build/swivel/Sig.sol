@@ -12,7 +12,8 @@ library Sig {
 
   error S();
   error V();
-  error SIG_LENGTH();
+  error Length();
+  error ZeroAddress();
 
   /// @param h Hashed data which was originally signed
   /// @param c signature struct containing V,R and S
@@ -24,22 +25,17 @@ library Sig {
       revert S();
     }
 
-    if(c.v != 27 && c.v != 28) {
+    if (c.v != 27 && c.v != 28) {
       revert V();
     }
 
-    return ecrecover(h, c.v, c.r, c.s);
-  }
+    address recovered = ecrecover(h, c.v, c.r, c.s);
 
-  /// @param h Hashed data which was originally signed
-  /// @param sig Valid ECDSA signature
-  /// @dev splitAndRecover should only be used if it is known that the resulting 
-  /// verifying bit (V) will be 27 || 28. Otherwise use recover, possibly calling split first.
-  /// @return The recovered address
-  function splitAndRecover(bytes32 h, bytes memory sig) internal pure returns (address) {
-    (uint8 v, bytes32 r, bytes32 s) = split(sig);
+    if (recovered == address(0)) {
+      revert ZeroAddress();
+    }
 
-    return ecrecover(h, v, r, s);
+    return recovered;
   }
 
   /// @param sig Valid ECDSA signature
@@ -48,7 +44,7 @@ library Sig {
   /// @return s Next 32 bytes
   function split(bytes memory sig) internal pure returns (uint8, bytes32, bytes32) {
     if (sig.length != 65) {
-      revert SIG_LENGTH();
+      revert Length();
     }
 
     bytes32 r;
