@@ -69,6 +69,47 @@ func (s *sigTestSuite) TestRecover() {
 	assert.Equal(addr, s.Env.User1.Opts.From)
 }
 
+func (s *sigTestSuite) TestRecoverFailOnV() {
+	assert := assert.New(s.T())
+
+	msg := []byte("So we put tests in your tests so you can test while you test")
+	hash := crypto.Keccak256Hash(msg)
+
+	// sign with user1...
+	sig, err := crypto.Sign(hash.Bytes(), s.Env.User1.PK)
+	// the go bindings return a struct here -> { V: R: S: }
+	vrs, err := s.Dep.SigFake.SplitTest(nil, sig)
+
+	_, err = s.Dep.SigFake.RecoverTest(nil, hash, vrs)
+
+	assert.NotNil(err)
+}
+
+func (s *sigTestSuite) TestRecoverFailOn0Address() {
+	assert := assert.New(s.T())
+
+	msg := []byte("So we put tests in your tests so you can test while you test")
+	hash := crypto.Keccak256Hash(msg)
+
+	// sign with user1...
+	sig, err := crypto.Sign(hash.Bytes(), s.Env.User1.PK)
+	// the go bindings return a struct here -> { V: R: S: }
+	vrs, err := s.Dep.SigFake.SplitTest(nil, sig)
+
+	// crypto.Sign will produce a split whose V is 0 or 1
+	// NOTE: 27 or 28 are acceptable
+	if vrs.V < 27 {
+		vrs.V += 27
+	}
+
+	// mess with the r such that ecrecover will fail
+	vrs.R = [32]byte{}
+
+	_, err = s.Dep.SigFake.RecoverTest(nil, hash, vrs)
+
+	assert.NotNil(err)
+}
+
 func TestSigSuite(t *test.T) {
 	suite.Run(t, &sigTestSuite{})
 }
