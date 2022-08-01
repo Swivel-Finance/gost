@@ -4,6 +4,13 @@ pragma solidity ^0.8.13;
 
 /// @dev MarketPlace is a mock whose bindings are imported by unit tests in any pkg/*testing that needs it
 contract MarketPlace {
+  struct Market {
+    address cTokenAddr;
+    address zcToken;
+    address vaultTracker;
+    uint256 maturityRate;
+  }
+
   struct MethodArgs {
     address underlying;
     uint256 maturity;
@@ -12,6 +19,7 @@ contract MarketPlace {
     uint256 amount;
   }
 
+  mapping (uint8 => mapping (address => mapping (uint256 => Market))) public markets;
   mapping (uint8 => MethodArgs) public cTokenAddressCalled;
   mapping (uint8 => MethodArgs) public custodialInitiateCalled;
   mapping (uint8 => MethodArgs) public custodialExitCalled;
@@ -21,7 +29,9 @@ contract MarketPlace {
   mapping (uint8 => MethodArgs) public burnZcTokenRemovingNotionalCalled;
   mapping (uint8 => MethodArgs) public transferVaultNotionalFeeCalled;
   mapping (uint8 => MethodArgs) public redeemZcTokenCalled;
+  mapping (uint8 => MethodArgs) public authRedeemCalled;
   mapping (uint8 => MethodArgs) public redeemVaultInterestCalled;
+  // mapping (uint8 => address) public exchangeRateCalled;
 
   address private cTokenAddr;
   bool private custodialInitiateReturn;
@@ -32,7 +42,21 @@ contract MarketPlace {
   bool private burnZcTokenRemovingNotionalReturn;
   bool private transferVaultNotionalFeeReturn;
   uint256 private redeemZcTokenReturn;
+  uint256 private authRedeemReturn;
   uint256 private redeemVaultInterestReturn;
+  uint256 private exchangeRateReturn;
+  // NOTE not implementing authRedeemReturn ATM as the value is not checked in the protocol
+
+  /// @param p Protocol enum value
+  /// @param u Underlying asset address
+  /// @param m Maturity
+  /// @param c Compounding token address
+  /// @param z ZcToken address for the market
+  /// @param v VaultTracker address for the market
+  /// @param r Maturity rate
+  function createMarket(uint8 p, address u, uint256 m, address c, address z, address v, uint256 r) external {
+    markets[p][u][m] = Market(c, z, v, r);
+  }
 
   function cTokenAddressReturns(address c) external {
     cTokenAddr = c;
@@ -180,6 +204,22 @@ contract MarketPlace {
     return redeemZcTokenReturn;
   }
 
+  function authRedeemReturns(uint256 a) external {
+    authRedeemReturn = a;
+  }
+
+  function authRedeem(uint8 p, address u, uint256 m, address f, address t, uint256 a) external returns(uint256) {
+    MethodArgs memory args;
+    args.underlying = u;
+    args.maturity = m;
+    args.one = f;
+    args.two = t;
+    args.amount = a;
+    authRedeemCalled[p] = args;
+
+    return authRedeemReturn;
+  }
+
   function redeemVaultInterestReturns(uint256 a) external {
     redeemVaultInterestReturn = a;
   }
@@ -192,5 +232,15 @@ contract MarketPlace {
     redeemVaultInterestCalled[p] = args;
 
     return redeemVaultInterestReturn;
+  }
+
+  function exchangeRateReturns(uint256 a) external {
+    exchangeRateReturn = a;
+  }
+
+  function exchangeRate(uint8, address) external view returns (uint256) {
+    // NOTE: we cant write here as the interface specifies a view...
+    // exchangeRateCalled[p] = c;
+    return exchangeRateReturn;
   }
 }
