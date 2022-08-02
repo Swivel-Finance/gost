@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.4;
 
-import "./Erc20.sol";
-import "./IERC5095.sol";  
-import "./IRedeemer.sol";
+import './Erc20.sol';
+import './IERC5095.sol';  
+import './IRedeemer.sol';
 
 contract ZcToken is Erc20, IERC5095 {
     /// @dev unix timestamp when the ERC5095 token can be redeemed

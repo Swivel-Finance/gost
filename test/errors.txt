@@ -34,5 +34,6 @@ The implicit Errors enum:
   'matureMarket failed', 30
   'amount exceeds vault notional', 31
   'cannot transfer notional to self', 32
-  'marketPlace address is not set', 33
+  'marketPlace address set', 33
+  'marketPlace address not set', 34
 ]

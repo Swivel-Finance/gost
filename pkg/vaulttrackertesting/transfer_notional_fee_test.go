@@ -40,9 +40,9 @@ func (s *transferNotionalFeeSuite) SetupTest() {
 		},
 	}
 
-	// deploy a vaultTracker with Protocols.Yearn
+	// deploy a vaultTracker with Protocols.Yearn (owner address as marketPlace address proxy)
 	_, _, contract, err := vaulttracker.DeployVaultTracker(s.Env.Owner.Opts, s.Env.Blockchain, uint8(3),
-		big.NewInt(MATURITY), s.Dep.YearnVaultAddress, s.Dep.SwivelAddress)
+		big.NewInt(MATURITY), s.Dep.YearnVaultAddress, s.Dep.SwivelAddress, s.Env.Owner.Opts.From)
 
 	if err != nil {
 		panic(err)

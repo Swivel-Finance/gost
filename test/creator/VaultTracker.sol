@@ -24,6 +24,7 @@ contract VaultTracker {
 
   address public cTokenAddr;
   address public swivel;
+  address public marketPlace;
   address public redeemInterestCalled;
   uint256 public matureVaultCalled;
   uint8 public protocol;
@@ -43,11 +44,13 @@ contract VaultTracker {
   /// @param m maturity
   /// @param c cToken address
   /// @param s deployed swivel contract address
-  constructor(uint8 p, uint256 m, address c, address s) {
+  /// @param mp deployed marketPlace contract address
+  constructor(uint8 p, uint256 m, address c, address s, address mp) {
     protocol = p;
     maturityReturn = m;
     cTokenAddr = c;
     swivel = s;
+    marketPlace = mp;
   }
 
   function redeemInterestReturns(uint256 a) public {

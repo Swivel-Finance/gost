@@ -37,8 +37,12 @@ contract Creator {
     string calldata s,
     uint8 d
   ) external authorized(marketPlace) returns (address, address) {
+    if (marketPlace == address(0)) {
+      revert Exception(34, 0, 0, marketPlace, address(0));
+    }
+
     address zct = address(new ZcToken(p, u, m, c, marketPlace, n, s, d));
-    address tracker = address(new VaultTracker(p, m, c, sw));
+    address tracker = address(new VaultTracker(p, m, c, sw, marketPlace));
 
     return (zct, tracker);
   }

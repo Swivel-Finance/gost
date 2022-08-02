@@ -74,9 +74,9 @@ func (s *transferNotionalFromSuite) SetupTest() {
 	}
 	s.Env.Blockchain.Commit()
 
-	// deploy a vaultTracker with Protocols.Aave
+	// deploy a vaultTracker with Protocols.Aave (owner address as marketPlace proxy)
 	_, _, contract, err := vaulttracker.DeployVaultTracker(s.Env.Owner.Opts, s.Env.Blockchain, uint8(4),
-		big.NewInt(MATURITY), s.Dep.AaveTokenAddress, s.Dep.SwivelAddress)
+		big.NewInt(MATURITY), s.Dep.AaveTokenAddress, s.Dep.SwivelAddress, s.Env.Owner.Opts.From)
 
 	if err != nil {
 		// panic(err)
