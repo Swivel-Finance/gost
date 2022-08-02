@@ -43,9 +43,9 @@ func (s *vaultTrackerCtorSuite) SetupSuite() {
 	}
 }
 
-func (s *vaultTrackerCtorSuite) TestAdmin() {
+func (s *vaultTrackerCtorSuite) TestMarketPlace() {
 	assert := assertions.New(s.T())
-	addr, err := s.VaultTracker.Admin()
+	addr, err := s.VaultTracker.MarketPlace()
 	assert.Nil(err)
 	assert.Equal(addr, s.Env.Owner.Opts.From)
 }

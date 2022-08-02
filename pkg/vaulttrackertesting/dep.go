@@ -88,6 +88,7 @@ func Deploy(e *Env) (*Dep, error) {
 		maturity,
 		ctAddress,
 		swivelAddress,
+		e.Owner.Opts.From, // we use the bound session owner as "marketPlace" here as it will be the caller in these unit tests
 	)
 
 	if trackerErr != nil {

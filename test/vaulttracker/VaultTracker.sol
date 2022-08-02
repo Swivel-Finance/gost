@@ -18,8 +18,8 @@ contract VaultTracker {
 
   mapping(address => Vault) public vaults;
 
-  address public immutable admin;
   address public immutable cTokenAddr;
+  address public immutable marketPlace;
   address public immutable swivel;
   uint256 public immutable maturity;
   uint256 public maturityRate;
@@ -28,12 +28,13 @@ contract VaultTracker {
   /// @param m Maturity timestamp associated with this vault
   /// @param c Compounding Token address associated with this vault
   /// @param s Address of the deployed swivel contract
-  constructor(uint8 p, uint256 m, address c, address s) {
-    admin = msg.sender;
+  /// @param mp Address of the designated admin, which is the Marketplace addess stored by the Creator contract
+  constructor(uint8 p, uint256 m, address c, address s, address mp) {
     protocol = p;
     maturity = m;
     cTokenAddr = c;
     swivel = s;
+    marketPlace = mp;
 
     // instantiate swivel's vault (unblocking transferNotionalFee)
     vaults[s] = Vault({
@@ -46,7 +47,7 @@ contract VaultTracker {
   /// @notice Adds notional to a given address
   /// @param o Address that owns a vault
   /// @param a Amount of notional added
-  function addNotional(address o, uint256 a) external authorized(admin) returns (bool) {
+  function addNotional(address o, uint256 a) external authorized(marketPlace) returns (bool) {
     uint256 exchangeRate = Compounding.exchangeRate(protocol, cTokenAddr);
 
     Vault memory vlt = vaults[o];
@@ -79,7 +80,7 @@ contract VaultTracker {
   /// @notice Removes notional from a given address
   /// @param o Address that owns a vault
   /// @param a Amount of notional to remove
-  function removeNotional(address o, uint256 a) external authorized(admin) returns (bool) {
+  function removeNotional(address o, uint256 a) external authorized(marketPlace) returns (bool) {
 
     Vault memory vlt = vaults[o];
 
@@ -112,7 +113,7 @@ contract VaultTracker {
 
   /// @notice Redeem's interest accrued by a given address
   /// @param o Address that owns a vault
-  function redeemInterest(address o) external authorized(admin) returns (uint256) {
+  function redeemInterest(address o) external authorized(marketPlace) returns (uint256) {
 
     Vault memory vlt = vaults[o];
 
@@ -142,7 +143,7 @@ contract VaultTracker {
 
   /// @notice Matures the vault
   /// @param c The current cToken exchange rate
-  function matureVault(uint256 c) external authorized(admin) returns (bool) {
+  function matureVault(uint256 c) external authorized(marketPlace) returns (bool) {
     maturityRate = c;
     return true;
   }
@@ -151,7 +152,7 @@ contract VaultTracker {
   /// @param f Owner of the amount
   /// @param t Recipient of the amount
   /// @param a Amount to transfer
-  function transferNotionalFrom(address f, address t, uint256 a) external authorized(admin) returns (bool) {
+  function transferNotionalFrom(address f, address t, uint256 a) external authorized(marketPlace) returns (bool) {
     if (f == t) {
       revert Exception(32, 0, 0, f, t);
     }
@@ -211,7 +212,7 @@ contract VaultTracker {
   /// @notice Transfers, in notional, a fee payment to the Swivel contract without recalculating marginal interest for the owner
   /// @param f Owner of the amount
   /// @param a Amount to transfer
-  function transferNotionalFee(address f, uint256 a) external authorized(admin) returns(bool) {
+  function transferNotionalFee(address f, uint256 a) external authorized(marketPlace) returns(bool) {
     Vault memory oVault = vaults[f];
     Vault memory sVault = vaults[swivel];
 

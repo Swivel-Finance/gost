@@ -44,9 +44,9 @@ func (s *addNotionalSuite) SetupTest() {
 		},
 	}
 
-	// deploy a vaultTracker with Protocols.Erc4626
+	// deploy a vaultTracker with Protocols.Erc4626 (owner address is used to proxy marketPlace address)
 	_, _, contract, err := vaulttracker.DeployVaultTracker(s.Env.Owner.Opts, s.Env.Blockchain, uint8(0),
-		big.NewInt(MATURITY), s.Dep.Erc4626Address, s.Dep.SwivelAddress)
+		big.NewInt(MATURITY), s.Dep.Erc4626Address, s.Dep.SwivelAddress, s.Env.Owner.Opts.From)
 
 	if err != nil {
 		panic(err)

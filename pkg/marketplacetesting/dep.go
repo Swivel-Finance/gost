@@ -122,7 +122,7 @@ func Deploy(e *Env) (*Dep, error) {
 	e.Blockchain.Commit()
 
 	// NOTE same as ZcToken WRT properties...
-	vtAddress, _, vtContract, vtErr := mocks.DeployVaultTracker(e.Owner.Opts, e.Blockchain, uint8(1), big.NewInt(MATURITY), ctAddress, swivAddress)
+	vtAddress, _, vtContract, vtErr := mocks.DeployVaultTracker(e.Owner.Opts, e.Blockchain, uint8(1), big.NewInt(MATURITY), ctAddress, swivAddress, marketAddress)
 
 	if vtErr != nil {
 		return nil, vtErr

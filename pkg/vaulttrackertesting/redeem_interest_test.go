@@ -165,9 +165,9 @@ func (s *redeemInterestSuite) TestRedeemInterestMatured() {
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
 
-	// deploy a vaultTracker with Protocols.Aave for this test specifically
+	// deploy a vaultTracker with Protocols.Aave for this test specifically (owner address as marketPlace proxy)
 	_, _, contract, err := vaulttracker.DeployVaultTracker(s.Env.Owner.Opts, s.Env.Blockchain, uint8(5),
-		big.NewInt(MATURITY), s.Dep.EulerTokenAddress, s.Dep.SwivelAddress)
+		big.NewInt(MATURITY), s.Dep.EulerTokenAddress, s.Dep.SwivelAddress, s.Env.Owner.Opts.From)
 
 	if err != nil {
 		panic(err)
