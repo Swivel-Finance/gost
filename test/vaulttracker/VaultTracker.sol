@@ -71,7 +71,8 @@ contract VaultTracker {
       vlt.notional = a;
     }
 
-    vlt.exchangeRate = exchangeRate;
+    // set vault's exchange rate to the lower of (maturityRate, exchangeRate) if vault has matured, otherwise exchangeRate
+    vlt.exchangeRate = (maturityRate > 0 && maturityRate < exchangeRate) ? maturityRate : exchangeRate;
     vaults[o] = vlt;
 
     return true;
