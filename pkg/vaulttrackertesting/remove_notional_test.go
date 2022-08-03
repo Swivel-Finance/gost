@@ -209,7 +209,8 @@ func (s *removeNotionalSuite) TestRemoveNotionalMatured() {
 	assert.Nil(err)
 	assert.NotNil(vault)
 	assert.Equal(vault.Notional.Cmp(ZERO), 0)
-	assert.Equal(rate4, vault.ExchangeRate)
+	// will now be rate 3 (maturity rate) as vault is mature
+	assert.Equal(rate3, vault.ExchangeRate)
 	assert.Equal(big.NewInt(56700000), vault.Redeemable)
 }
 

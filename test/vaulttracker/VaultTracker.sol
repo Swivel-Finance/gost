@@ -71,7 +71,8 @@ contract VaultTracker {
       vlt.notional = a;
     }
 
-    vlt.exchangeRate = exchangeRate;
+    // set vault's exchange rate to the lower of (maturityRate, exchangeRate) if vault has matured, otherwise exchangeRate
+    vlt.exchangeRate = (maturityRate > 0 && maturityRate < exchangeRate) ? maturityRate : exchangeRate;
     vaults[o] = vlt;
 
     return true;
@@ -104,8 +105,8 @@ contract VaultTracker {
     // remove amount from position, Add interest to position, reset cToken exchange rate
     vlt.redeemable += interest;
     vlt.notional -= a;
-    vlt.exchangeRate = exchangeRate;
-
+    // set vault's exchange rate to the lower of (maturityRate, exchangeRate) if vault has matured, otherwise exchangeRate
+    vlt.exchangeRate = (maturityRate > 0 && maturityRate < exchangeRate) ? maturityRate : exchangeRate;
     vaults[o] = vlt;
 
     return true;
@@ -132,7 +133,7 @@ contract VaultTracker {
 
     uint256 interest = (yield * vlt.notional) / 1e26;
 
-    vlt.exchangeRate = exchangeRate;
+    vlt.exchangeRate = (maturityRate > 0 && maturityRate < exchangeRate) ? maturityRate : exchangeRate;
     vlt.redeemable = 0;
 
     vaults[o] = vlt;
@@ -180,7 +181,7 @@ contract VaultTracker {
     // remove amount from position, Add interest to position, reset cToken exchange rate
     from.redeemable += interest;
     from.notional -= a;
-    from.exchangeRate = exchangeRate;
+    from.exchangeRate = (maturityRate > 0 && maturityRate < exchangeRate) ? maturityRate : exchangeRate;
 
     vaults[f] = from;
 
@@ -203,7 +204,7 @@ contract VaultTracker {
       to.notional = a;
     }
 
-    to.exchangeRate = exchangeRate;
+    to.exchangeRate = (maturityRate > 0 && maturityRate < exchangeRate) ? maturityRate : exchangeRate;
     vaults[t] = to;
 
     return true;
@@ -235,7 +236,7 @@ contract VaultTracker {
       uint256 interest = (yield * sVault.notional) / 1e26;
       // add interest and amount, reset cToken exchange rate
       sVault.redeemable += interest;
-      sVault.exchangeRate = exchangeRate;
+      sVault.exchangeRate = (maturityRate > 0 && maturityRate < exchangeRate) ? maturityRate : exchangeRate;
     }
     // add notional to swivel's vault
     sVault.notional += a;

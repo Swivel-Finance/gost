@@ -220,6 +220,7 @@ func (s *addNotionalSuite) TestAddNotionalMatured() {
 	assert.Equal(rate2, vault.ExchangeRate)
 	assert.Equal(redeemable2, vault.Redeemable)
 
+	// compared this < rate 4 if matured
 	rate3 := big.NewInt(823456789)
 	tx, err = s.Erc4626.ConvertToAssetsReturns(rate3)
 	assert.Nil(err)
@@ -239,6 +240,11 @@ func (s *addNotionalSuite) TestAddNotionalMatured() {
 
 	s.Env.Blockchain.Commit()
 
+	// the vault maturityRate should be rate3 now
+	mRate, _ := s.VaultTracker.MaturityRate()
+	assert.Equal(rate3, mRate)
+
+	// compared maturityrate < this if matured
 	rate4 := big.NewInt(923456787)
 	tx, err = s.Erc4626.ConvertToAssetsReturns(rate4)
 	assert.Nil(err)
@@ -260,7 +266,8 @@ func (s *addNotionalSuite) TestAddNotionalMatured() {
 	assert.Nil(err)
 	assert.NotNil(vault)
 	assert.Equal(amount3, vault.Notional)
-	assert.Equal(rate4, vault.ExchangeRate)
+	// should now be rate3 (maturityRate) as it is lower than rate4 (exchangeRate)
+	assert.Equal(rate3, vault.ExchangeRate)
 	assert.Equal(redeemable3, vault.Redeemable)
 }
 
