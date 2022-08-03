@@ -306,7 +306,7 @@ copy_to_build: copy_zctoken_to_build copy_vaulttracker_to_build copy_creator_to_
 
 compile_creator_build:
 	@echo "compiling Creator solidity build source into deploy ready files"
-	solc -o ./build/creator --optimize --optimize-runs=1000 --abi --bin --overwrite ./build/creator/Creator.sol
+	solc -o ./build/creator --optimize --optimize-runs=1700 --abi --bin --overwrite ./build/creator/Creator.sol
 	abigen --abi ./build/creator/Creator.abi --bin ./build/creator/Creator.bin -pkg creator -type Creator -out ./build/creator/creator.go 
 
 compile_marketplace_build:

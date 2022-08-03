@@ -279,7 +279,8 @@ func (s *redeemInterestSuite) TestRedeemInterestMatured() {
 	assert.Nil(err)
 	assert.NotNil(vault)
 	assert.Equal(amount2, vault.Notional)
-	assert.Equal(rate4, vault.ExchangeRate)
+	// will now be rate 3 (maturity rate) as vault is mature
+	assert.Equal(rate3, vault.ExchangeRate)
 	assert.Equal(vault.Redeemable.Cmp(ZERO), 0)
 }
 
