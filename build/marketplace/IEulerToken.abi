@@ -1,1 +1,0 @@
-[{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"convertBalanceToUnderlying","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"underlyingAsset","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"}]
