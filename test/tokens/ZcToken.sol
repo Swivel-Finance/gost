@@ -162,7 +162,11 @@ contract ZcToken is Erc20, IERC5095 {
     /// @param t Address recieving the minted amount
     /// @param a The amount to mint
     function mint(address t, uint256 a) external onlyAdmin(address(redeemer)) returns (bool) {
-        // TODO implement maturity check
+        // disallow minting past maturity
+        if (block.timestamp > maturity) {
+          revert Maturity(maturity);
+        }
+
         _mint(t, a);
         return true;
     }
