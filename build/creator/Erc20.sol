@@ -162,7 +162,7 @@ contract Erc20 {
                 s
             );
 
-            if (recoveredAddress != address(0) && recoveredAddress != owner) {
+            if (recoveredAddress == address(0) || recoveredAddress != owner) {
                 revert Invalid(msg.sender, owner);
             }
 
