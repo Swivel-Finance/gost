@@ -23,6 +23,8 @@ contract Swivel {
   string constant public NAME = 'Swivel Finance';
   string constant public VERSION = '3.0.0';
   uint256 constant public HOLD = 3 days;
+  /// @dev point in time at which a fee change may take place
+  uint256 public feeChange;
   bytes32 public immutable domain;
   address public immutable marketPlace;
   address public admin;
@@ -46,10 +48,14 @@ contract Swivel {
   event Exit(bytes32 indexed key, bytes32 hash, address indexed maker, bool vault, bool exit, address indexed sender, uint256 amount, uint256 filled);
   /// @notice Emitted on token withdrawal scheduling
   event ScheduleWithdrawal(address indexed token, uint256 hold);
+  /// @notice Emitted on fee change scheduling
+  event ScheduleFeeChange(uint256 hold);
   /// @notice Emitted on token withdrawal blocking
   event BlockWithdrawal(address indexed token);
-  /// @notice Emitted on a change to the feenominators array
-  event SetFee(uint256 indexed index, uint256 indexed feenominator);
+  /// @notice Emitted on fee change blocking
+  event BlockFeeChange();
+  /// @notice Emitted on a change to the fee structure
+  event ChangeFee(uint256 indexed index, uint256 indexed value);
 
   /// @param m Deployed MarketPlace contract address
   /// @param a Address of a deployed Aave contract implementing our interface
@@ -468,14 +474,33 @@ contract Swivel {
     return true;
   }
 
+  /// @notice allows the admin to schedule a change to the fee denominators
+  function scheduleFeeChange() external authorized(admin) returns (bool) {
+    uint256 when = block.timestamp + HOLD;
+    feeChange = when;
+
+    emit ScheduleFeeChange(when);
+
+    return true;
+  }
+
   /// @notice Emergency function to block unplanned withdrawals
   /// @param e Address of token withdrawal to block
   function blockWithdrawal(address e) external authorized(admin) returns (bool) {
-      withdrawals[e] = 0;
+    withdrawals[e] = 0;
 
-      emit BlockWithdrawal(e);
+    emit BlockWithdrawal(e);
 
-      return true;
+    return true;
+  }
+
+  /// @notice Emergency function to block unplanned changes to fee structure
+  function blockFeeChange() external authorized(admin) returns (bool) {
+    feeChange = 0;
+
+    emit BlockFeeChange();
+
+    return true;
   }
 
   /// @notice Allows the admin to withdraw the given token, provided the holding period has been observed
@@ -499,17 +524,35 @@ contract Swivel {
     return true;
   }
 
-  /// @notice Allows the admin to set a new fee denominator
-  /// @param i The index of the new fee denominator
-  /// @param d The new fee denominator
-  function setFee(uint16 i, uint16 d) external authorized(admin) returns (bool) {
-    if (d < MIN_FEENOMINATOR) {
-      revert Exception(18, uint256(d), 0, address(0), address(0));
+  /// @notice allows the admin to set new fee denominators
+  /// @param f array of length 4 holding values which will replace any at the same index in the current feenominators
+  /// @dev note that, since 0 values are allowable the way to leave a feenominator value unchanged is to pass the existing value
+  function changeFee(uint16[4] calldata f) external authorized(admin) returns (bool) {
+    if (feeChange == 0) {
+      revert Exception(35, 0, 0, address(0), address(0));
     }
 
-    feenominators[i] = d;
+    if (block.timestamp < feeChange) {
+      revert Exception(36, block.timestamp, feeChange, address(0), address(0));
+    }
 
-    emit SetFee(i, d);
+    for (uint256 i; i < 4;) {
+      if (f[i] < MIN_FEENOMINATOR) {
+        revert Exception(18, f[i], MIN_FEENOMINATOR, address(0), address(0));
+      }
+
+      // as stated, only set a value different than what exists
+      if (f[i] != feenominators[i]) {
+        feenominators[i] = f[i];
+        emit ChangeFee(i, f[i]);
+      }
+
+      unchecked {
+        i++;
+      }
+    }
+
+    feeChange = 0;
 
     return true;
   }

@@ -36,4 +36,6 @@ The implicit Errors enum:
   'cannot transfer notional to self', 32
   'marketPlace address set', 33
   'marketPlace address not set', 34
+  'fee change not scheduled', 35
+  'fee change on hold', 36
 ]
