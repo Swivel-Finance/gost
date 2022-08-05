@@ -369,8 +369,7 @@ contract MarketPlace {
   /// @param f Owner of the amount
   /// @param a Amount to transfer
   function transferVaultNotionalFee(uint8 p, address u, uint256 m, address f, uint256 a) external authorized(swivel) returns (bool) {
-    IVaultTracker(markets[p][u][m].vaultTracker).transferNotionalFee(f, a);
-    return true;
+    return IVaultTracker(markets[p][u][m].vaultTracker).transferNotionalFee(f, a);
   }
 
   /// @notice Called by admin at any point to pause / unpause market transactions in a specified protocol
