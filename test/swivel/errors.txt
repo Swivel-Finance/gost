@@ -22,6 +22,8 @@ The implicit Errors enum:
   'fee too high', 18
   'underlying and compounding array length not equal', 19
   ...
+  'fee change not scheduled', 35
+  'fee change on hold', 36
 ]
 
 <swivel>
