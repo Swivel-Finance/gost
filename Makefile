@@ -7,6 +7,7 @@
 .PHONY: compile_solidity_mock_euler_token compile_go_mock_euler_token compile_mock_euler_token
 .PHONY: compile_solidity_mock_creator compile_go_mock_creator
 .PHONY: compile_solidity_mock_marketplace compile_go_mock_marketplace
+.PHONY: compile_solidity_mock_swivel compile_go_mock_swivel
 .PHONY: compile_mocks
 
 .PHONY: compile_solidity_sig_fake compile_go_sig_fake compile_sig_fake
@@ -137,7 +138,17 @@ compile_go_mock_marketplace:
 
 compile_mock_marketplace: compile_solidity_mock_marketplace compile_go_mock_marketplace
 
-compile_mocks: compile_mock_erc compile_mock_compound_token compile_mock_erc_4626 compile_mock_yearn_vault compile_mock_aave_token compile_mock_aave_pool compile_mock_euler_token compile_mock_creator compile_mock_marketplace
+compile_solidity_mock_swivel:
+	@echo "compiling Mock Swivel solidity source into abi and bin files"
+	solc -o ./test/mocks --abi --bin --overwrite ./test/mocks/Swivel.sol
+
+compile_go_mock_swivel:
+	@echo "compiling abi and bin files to golang"
+	abigen --abi ./test/mocks/Swivel.abi --bin ./test/mocks/Swivel.bin -pkg mocks -type Swivel -out ./test/mocks/swivel.go 
+
+compile_mock_swivel: compile_solidity_mock_swivel compile_go_mock_swivel
+
+compile_mocks: compile_mock_erc compile_mock_compound_token compile_mock_erc_4626 compile_mock_yearn_vault compile_mock_aave_token compile_mock_aave_pool compile_mock_euler_token compile_mock_creator compile_mock_marketplace compile_mock_swivel
 
 # -------------------------------------------------- FAKES -----------------------------------------------------------------------------------------------
 

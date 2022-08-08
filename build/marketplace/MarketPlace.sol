@@ -166,7 +166,12 @@ contract MarketPlace {
   /// @param t Address of the user receiving underlying
   /// @param a Amount of zcTokens being redeemed
   /// @return Amount of underlying being withdrawn (needed for 5095 return)
-  function authRedeem(uint8 p, address u, uint256 m, address f, address t, uint256 a) public authorized(markets[p][u][m].zcToken) returns (uint256) {
+  function authRedeem(uint8 p, address u, uint256 m, address f, address t, uint256 a) public authorized(markets[p][u][m].zcToken) unpaused(p) returns (uint256) {
+    /// @dev swiv needs to be set or the call to authRedeem there will be faulty
+    if (swivel == address(0)) {
+      revert Exception(21, 0, 0, address(0), address(0));
+    }
+
     Market memory market = markets[p][u][m];
     // if the market has not matured, mature it...
     if (market.maturityRate == 0) {
