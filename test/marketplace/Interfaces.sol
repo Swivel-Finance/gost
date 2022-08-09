@@ -33,6 +33,7 @@ interface IVaultTracker {
   function matureVault(uint256) external returns (bool);
   function transferNotionalFrom(address, address, uint256) external returns (bool);
   function transferNotionalFee(address, uint256) external returns (bool);
+  function rates() external view returns (uint256, uint256);
   function balancesOf(address) external view returns (uint256, uint256);
 }
 

@@ -268,6 +268,16 @@ contract MarketPlace {
     return Compounding.exchangeRate(p, c);
   }
 
+  /// @notice Return current rates (maturity, exchange) for a given vault. See VaultTracker.rates for details
+  /// @dev While it's true that Compounding exchange rate is not strictly affiliated with a vault, the 2 data points are usually needed together.
+  /// @param p Protocol Enum value associated with this market
+  /// @param u Underlying token address associated with the market
+  /// @param m Maturity timestamp of the market
+  /// @return maturityRate, exchangeRate*
+  function rates(uint8 p, address u, uint256 m) external view returns (uint256, uint256) {
+    return IVaultTracker(markets[p][u][m].vaultTracker).rates();
+  }
+
   /// @notice Called by swivel IVFZI && IZFVI
   /// @dev Call with protocol, underlying, maturity, mint-target, add-notional-target and an amount
   /// @param p Protocol Enum value associated with this market

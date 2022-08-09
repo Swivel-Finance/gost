@@ -48,21 +48,15 @@ contract VaultTracker {
   /// @param o Address that owns a vault
   /// @param a Amount of notional added
   function addNotional(address o, uint256 a) external authorized(marketPlace) returns (bool) {
-    uint256 exchangeRate = Compounding.exchangeRate(protocol, cTokenAddr);
+    // note that mRate is is maturityRate if > 0, exchangeRate otherwise
+    (uint256 mRate, uint256 xRate) = rates();
 
     Vault memory vlt = vaults[o];
 
     if (vlt.notional > 0) {
-      uint256 yield;
-
       // if market has matured, calculate marginal interest between the maturity rate and previous position exchange rate
       // otherwise, calculate marginal exchange rate between current and previous exchange rate.
-      if (maturityRate > 0) { // Calculate marginal interest
-        yield = ((maturityRate * 1e26) / vlt.exchangeRate) - 1e26;
-      } else {
-        yield = ((exchangeRate * 1e26) / vlt.exchangeRate) - 1e26;
-      }
-
+      uint256 yield = ((mRate * 1e26) / vlt.exchangeRate) - 1e26;
       uint256 interest = (yield * vlt.notional) / 1e26;
       // add interest and amount to position, reset cToken exchange rate
       vlt.redeemable += interest;
@@ -72,7 +66,7 @@ contract VaultTracker {
     }
 
     // set vault's exchange rate to the lower of (maturityRate, exchangeRate) if vault has matured, otherwise exchangeRate
-    vlt.exchangeRate = (maturityRate > 0 && maturityRate < exchangeRate) ? maturityRate : exchangeRate;
+    vlt.exchangeRate = mRate < xRate ? mRate : xRate;
     vaults[o] = vlt;
 
     return true;
@@ -89,24 +83,18 @@ contract VaultTracker {
       revert Exception(31, a, vlt.notional, address(0), address(0));
     }
 
-    uint256 exchangeRate = Compounding.exchangeRate(protocol, cTokenAddr);
+    // note that mRate is is maturityRate if > 0, exchangeRate otherwise
+    (uint256 mRate, uint256 xRate) = rates();
 
     // if market has matured, calculate marginal interest between the maturity rate and previous position exchange rate
     // otherwise, calculate marginal exchange rate between current and previous exchange rate.
-    uint256 yield;
-    if (maturityRate > 0) { // Calculate marginal interest
-      yield = ((maturityRate * 1e26) / vlt.exchangeRate) - 1e26;
-    } else {
-      // calculate marginal interest
-      yield = ((exchangeRate * 1e26) / vlt.exchangeRate) - 1e26;
-    }
-
+    uint256 yield = ((mRate * 1e26) / vlt.exchangeRate) - 1e26;
     uint256 interest = (yield * vlt.notional) / 1e26;
     // remove amount from position, Add interest to position, reset cToken exchange rate
     vlt.redeemable += interest;
     vlt.notional -= a;
     // set vault's exchange rate to the lower of (maturityRate, exchangeRate) if vault has matured, otherwise exchangeRate
-    vlt.exchangeRate = (maturityRate > 0 && maturityRate < exchangeRate) ? maturityRate : exchangeRate;
+    vlt.exchangeRate = maturityRate < xRate ? mRate : xRate;
     vaults[o] = vlt;
 
     return true;
@@ -119,21 +107,16 @@ contract VaultTracker {
     Vault memory vlt = vaults[o];
 
     uint256 redeemable = vlt.redeemable;
-    uint256 exchangeRate = Compounding.exchangeRate(protocol, cTokenAddr);
+
+    // note that mRate is is maturityRate if > 0, exchangeRate otherwise
+    (uint256 mRate, uint256 xRate) = rates();
 
     // if market has matured, calculate marginal interest between the maturity rate and previous position exchange rate
     // otherwise, calculate marginal exchange rate between current and previous exchange rate.
-    uint256 yield;
-    if (maturityRate > 0) { // Calculate marginal interest
-      yield = ((maturityRate * 1e26) / vlt.exchangeRate) - 1e26;
-    } else {
-      // calculate marginal interest
-      yield = ((exchangeRate * 1e26) / vlt.exchangeRate) - 1e26;
-    }
-
+    uint256 yield = ((mRate * 1e26) / vlt.exchangeRate) - 1e26;
     uint256 interest = (yield * vlt.notional) / 1e26;
 
-    vlt.exchangeRate = (maturityRate > 0 && maturityRate < exchangeRate) ? maturityRate : exchangeRate;
+    vlt.exchangeRate = mRate < xRate ? mRate : xRate;
     vlt.redeemable = 0;
 
     vaults[o] = vlt;
@@ -165,46 +148,32 @@ contract VaultTracker {
       revert Exception(31, a, from.notional, address(0), address(0));
     }
 
-    uint256 exchangeRate = Compounding.exchangeRate(protocol, cTokenAddr);
+    // note that mRate is is maturityRate if > 0, exchangeRate otherwise
+    (uint256 mRate, uint256 xRate) = rates();
 
     // if market has matured, calculate marginal interest between the maturity rate and previous position exchange rate
     // otherwise, calculate marginal exchange rate between current and previous exchange rate.
-    uint256 yield;
-    if (maturityRate > 0) { 
-      // calculate marginal interest
-      yield = ((maturityRate * 1e26) / from.exchangeRate) - 1e26;
-    } else {
-      yield = ((exchangeRate * 1e26) / from.exchangeRate) - 1e26;
-    }
-
+    uint256 yield = ((mRate * 1e26) / from.exchangeRate) - 1e26;
     uint256 interest = (yield * from.notional) / 1e26;
     // remove amount from position, Add interest to position, reset cToken exchange rate
     from.redeemable += interest;
     from.notional -= a;
-    from.exchangeRate = (maturityRate > 0 && maturityRate < exchangeRate) ? maturityRate : exchangeRate;
+    from.exchangeRate = mRate < xRate ? mRate : xRate;
 
     vaults[f] = from;
 
     // transfer notional to address "t", calculate interest if necessary
     if (to.notional > 0) {
-      // if market has matured, calculate marginal interest between the maturity rate and previous position exchange rate
-      // otherwise, calculate marginal exchange rate between current and previous exchange rate.
-      if (maturityRate > 0) { 
-        // calculate marginal interest
-        yield = ((maturityRate * 1e26) / to.exchangeRate) - 1e26;
-      } else {
-        yield = ((exchangeRate * 1e26) / to.exchangeRate) - 1e26;
-      }
-
-      uint256 newVaultInterest = (yield * to.notional) / 1e26;
+      yield = ((mRate * 1e26) / to.exchangeRate) - 1e26;
+      interest = (yield * to.notional) / 1e26;
       // add interest and amount to position, reset cToken exchange rate
-      to.redeemable += newVaultInterest;
+      to.redeemable += interest;
       to.notional += a;
     } else {
       to.notional = a;
     }
 
-    to.exchangeRate = (maturityRate > 0 && maturityRate < exchangeRate) ? maturityRate : exchangeRate;
+    to.exchangeRate = mRate < xRate ? mRate : xRate;
     vaults[t] = to;
 
     return true;
@@ -220,23 +189,19 @@ contract VaultTracker {
     // remove notional from its owner
     oVault.notional -= a;
 
-    uint256 exchangeRate = Compounding.exchangeRate(protocol, cTokenAddr);
+    // note that mRate is is maturityRate if > 0, exchangeRate otherwise
+    (uint256 mRate, uint256 xRate) = rates();
 
     // check if exchangeRate has been stored already this block. If not, calculate marginal interest + store exchangeRate
-    uint256 yield;
-    if (sVault.exchangeRate != exchangeRate) {
+    if (sVault.exchangeRate != xRate) {
       // if market has matured, calculate marginal interest between the maturity rate and previous position exchange rate
       // otherwise, calculate marginal exchange rate between current and previous exchange rate.
-      if (maturityRate > 0) { 
-        // calculate marginal interest
-          yield = ((maturityRate * 1e26) / sVault.exchangeRate) - 1e26;
-      } else {
-          yield = ((exchangeRate * 1e26) / sVault.exchangeRate) - 1e26;
-      }
+      uint256 yield = ((mRate * 1e26) / sVault.exchangeRate) - 1e26;
       uint256 interest = (yield * sVault.notional) / 1e26;
       // add interest and amount, reset cToken exchange rate
       sVault.redeemable += interest;
-      sVault.exchangeRate = (maturityRate > 0 && maturityRate < exchangeRate) ? maturityRate : exchangeRate;
+      // set to maturityRate only if both > 0 && < exchangeRate
+      sVault.exchangeRate = (mRate < xRate) ? mRate : xRate;
     }
     // add notional to swivel's vault
     sVault.notional += a;
@@ -244,6 +209,14 @@ contract VaultTracker {
     vaults[swivel] = sVault;
     vaults[f] = oVault;
     return true;
+  }
+
+  /// @notice Return both the current maturityRate if it's > 0 (or exchangeRate in its place) and the Compounding exchange rate
+  /// @dev While it may seem unnecessarily redundant to return the exchangeRate twice, it prevents many kludges that would otherwise be necessary to guard it
+  /// @return maturityRate, exchangeRate if maturityRate > 0, exchangeRate, exchangeRate if not.
+  function rates() public view returns (uint256, uint256) {
+    uint256 exchangeRate = Compounding.exchangeRate(protocol, cTokenAddr);
+    return maturityRate > 0 ? (maturityRate, exchangeRate) : (exchangeRate, exchangeRate);
   }
 
   /// @notice Returns both relevant balances for a given user's vault

@@ -42,8 +42,10 @@ contract ZcToken is Erc20, IERC5095 {
             return 0;
         }
 
-        // NOTE we weren't even using the pre-hydrated redeemer in most of these anyway...
-        return principalAmount * IRedeemer(redeemer).exchangeRate(protocol, cToken) / IRedeemer(redeemer).markets(protocol, underlying, maturity).maturityRate;
+        // note that maturity rate (mRate) == exchangeRate (xRate) if the mRate would have been 0 (see VaultTracker.rates)
+        (uint256 mRate, uint256 xRate) = IRedeemer(redeemer).rates(protocol, underlying, maturity);
+
+        return principalAmount * xRate / mRate;
     }
 
     /// @notice Post maturity converts a desired amount of underlying tokens returned to principal tokens needed. Returns 0 pre-maturity.
@@ -54,7 +56,10 @@ contract ZcToken is Erc20, IERC5095 {
             return 0;
         }
 
-        return underlyingAmount * IRedeemer(redeemer).markets(protocol, underlying, maturity).maturityRate / IRedeemer(redeemer).exchangeRate(protocol, cToken);
+        // note that maturity rate (mRate) == exchangeRate (xRate) if the mRate would have been 0 (see VaultTracker.rates)
+        (uint256 mRate, uint256 xRate) = IRedeemer(redeemer).rates(protocol, underlying, maturity);
+
+        return underlyingAmount * mRate / xRate;
     }
 
     /// @notice Post maturity calculates the amount of principal tokens that `owner` can redeem. Returns 0 pre-maturity.
@@ -75,7 +80,10 @@ contract ZcToken is Erc20, IERC5095 {
             return 0;
         }
 
-        return principalAmount * IRedeemer(redeemer).exchangeRate(protocol, cToken) / IRedeemer(redeemer).markets(protocol, underlying, maturity).maturityRate;
+        // note that maturity rate (mRate) == exchangeRate (xRate) if the mRate would have been 0 (see VaultTracker.rates)
+        (uint256 mRate, uint256 xRate) = IRedeemer(redeemer).rates(protocol, underlying, maturity);
+
+        return principalAmount * xRate / mRate;
     }
 
     /// @notice Post maturity calculates the amount of underlying tokens that `owner` can withdraw. Returns 0 pre-maturity.
@@ -86,7 +94,10 @@ contract ZcToken is Erc20, IERC5095 {
             return 0;
         }
 
-        return balanceOf[owner] * IRedeemer(redeemer).exchangeRate(protocol, cToken) / IRedeemer(redeemer).markets(protocol, underlying, maturity).maturityRate;
+        // note that maturity rate (mRate) == exchangeRate (xRate) if the mRate would have been 0 (see VaultTracker.rates)
+        (uint256 mRate, uint256 xRate) = IRedeemer(redeemer).rates(protocol, underlying, maturity);
+
+        return balanceOf[owner] * xRate / mRate;
     }
 
     /// @notice Post maturity simulates the effects of withdrawal at the current block. Returns 0 pre-maturity.
@@ -97,7 +108,10 @@ contract ZcToken is Erc20, IERC5095 {
             return 0;
         }
 
-        return underlyingAmount * IRedeemer(redeemer).markets(protocol, underlying, maturity).maturityRate / IRedeemer(redeemer).exchangeRate(protocol, cToken);
+        // note that maturity rate (mRate) == exchangeRate (xRate) if the mRate would have been 0 (see VaultTracker.rates)
+        (uint256 mRate, uint256 xRate) = IRedeemer(redeemer).rates(protocol, underlying, maturity);
+
+        return underlyingAmount * mRate / xRate;
     }
     /// @notice At or after maturity, Burns principalAmount from `owner` and sends exactly `underlyingAmount` of underlying tokens to `receiver`.
     /// @param underlyingAmount The amount of underlying tokens withdrawn
