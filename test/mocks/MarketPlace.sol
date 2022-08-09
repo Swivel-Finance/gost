@@ -45,6 +45,7 @@ contract MarketPlace {
   uint256 private authRedeemReturn;
   uint256 private redeemVaultInterestReturn;
   uint256 private exchangeRateReturn;
+  uint256 private maturityRateReturn;
   // NOTE not implementing authRedeemReturn ATM as the value is not checked in the protocol
 
   /// @param p Protocol enum value
@@ -242,5 +243,13 @@ contract MarketPlace {
     // NOTE: we cant write here as the interface specifies a view...
     // exchangeRateCalled[p] = c;
     return exchangeRateReturn;
+  }
+
+  function maturityRateReturns(uint256 a) external {
+    maturityRateReturn = a;
+  }
+
+  function rates(uint8, address, uint256) external view returns (uint256, uint256) {
+    return (maturityRateReturn, exchangeRateReturn);
   }
 }

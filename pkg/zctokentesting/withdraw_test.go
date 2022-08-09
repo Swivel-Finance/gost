@@ -103,6 +103,11 @@ func (s *zcTokenWithdrawSuite) TestPreviewWithdraw() {
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
 
+	tx, err = s.MarketPlace.MaturityRateReturns(mRate)
+	assert.Nil(err)
+	assert.NotNil(tx)
+	s.Env.Blockchain.Commit()
+
 	tx, err = s.MarketPlace.CreateMarket(s.Protocol, s.Underlying, s.Dep.Maturity, s.CToken, s.ZcTokenAddress, common.HexToAddress("0x34567"), mRate)
 	assert.Nil(err)
 	s.Env.Blockchain.Commit()

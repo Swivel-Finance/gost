@@ -216,7 +216,7 @@ contract VaultTracker {
   /// @return maturityRate, exchangeRate if maturityRate > 0, exchangeRate, exchangeRate if not.
   function rates() public view returns (uint256, uint256) {
     uint256 exchangeRate = Compounding.exchangeRate(protocol, cTokenAddr);
-    return maturityRate > 0 ? (maturityRate, exchangeRate) : (exchangeRate, exchangeRate);
+    return ((maturityRate > 0 ? maturityRate: exchangeRate), exchangeRate);
   }
 
   /// @notice Returns both relevant balances for a given user's vault
