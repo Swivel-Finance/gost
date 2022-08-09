@@ -27,8 +27,9 @@ type Dep struct {
 	Creator              *mocks.Creator
 	MarketPlaceAddress   common.Address
 	MarketPlace          *marketplace.MarketPlace
-	Maturity             *big.Int
 	SwivelAddress        common.Address
+	Swivel               *mocks.Swivel
+	Maturity             *big.Int
 	ZcToken              *mocks.ZcToken
 	ZcTokenAddress       common.Address
 	VaultTracker         *mocks.VaultTracker
@@ -38,94 +39,100 @@ type Dep struct {
 func Deploy(e *Env) (*Dep, error) {
 	maturity := big.NewInt(MATURITY)
 
-	ctAddress, _, ctContract, ctErr := mocks.DeployCompoundToken(e.Owner.Opts, e.Blockchain)
+	ctAddress, _, ctContract, err := mocks.DeployCompoundToken(e.Owner.Opts, e.Blockchain)
 
-	if ctErr != nil {
-		return nil, ctErr
+	if err != nil {
+		return nil, err
 	}
 
 	e.Blockchain.Commit()
 
-	erc4626Address, _, erc4626Contract, erc4626Err := mocks.DeployErc4626(e.Owner.Opts, e.Blockchain)
+	erc4626Address, _, erc4626Contract, err := mocks.DeployErc4626(e.Owner.Opts, e.Blockchain)
 
-	if erc4626Err != nil {
-		return nil, erc4626Err
+	if err != nil {
+		return nil, err
 	}
 
 	e.Blockchain.Commit()
 
-	erc20Address, _, erc20Contract, erc20Err := mocks.DeployErc20(e.Owner.Opts, e.Blockchain)
+	erc20Address, _, erc20Contract, err := mocks.DeployErc20(e.Owner.Opts, e.Blockchain)
 
-	if erc20Err != nil {
-		return nil, erc20Err
+	if err != nil {
+		return nil, err
 	}
 
 	e.Blockchain.Commit()
 
-	yvAddress, _, yvContract, yvErr := mocks.DeployYearnVault(e.Owner.Opts, e.Blockchain)
+	yvAddress, _, yvContract, err := mocks.DeployYearnVault(e.Owner.Opts, e.Blockchain)
 
-	if yvErr != nil {
-		return nil, yvErr
+	if err != nil {
+		return nil, err
 	}
 
 	e.Blockchain.Commit()
 
-	atAddress, _, atContract, atErr := mocks.DeployAaveToken(e.Owner.Opts, e.Blockchain)
+	atAddress, _, atContract, err := mocks.DeployAaveToken(e.Owner.Opts, e.Blockchain)
 
-	if atErr != nil {
-		return nil, atErr
+	if err != nil {
+		return nil, err
 	}
 
 	e.Blockchain.Commit()
 
-	apAddress, _, apContract, apErr := mocks.DeployAavePool(e.Owner.Opts, e.Blockchain)
+	apAddress, _, apContract, err := mocks.DeployAavePool(e.Owner.Opts, e.Blockchain)
 
-	if apErr != nil {
-		return nil, apErr
+	if err != nil {
+		return nil, err
 	}
 
 	e.Blockchain.Commit()
 
-	etAddress, _, etContract, etErr := mocks.DeployEulerToken(e.Owner.Opts, e.Blockchain)
+	etAddress, _, etContract, err := mocks.DeployEulerToken(e.Owner.Opts, e.Blockchain)
 
-	if etErr != nil {
-		return nil, etErr
+	if err != nil {
+		return nil, err
 	}
 
 	e.Blockchain.Commit()
 
-	crAddress, _, crContract, crErr := mocks.DeployCreator(e.Owner.Opts, e.Blockchain)
+	crAddress, _, crContract, err := mocks.DeployCreator(e.Owner.Opts, e.Blockchain)
 
-	if crErr != nil {
-		return nil, crErr
+	if err != nil {
+		return nil, err
 	}
 
 	e.Blockchain.Commit()
 
-	marketAddress, _, marketContract, marketErr := marketplace.DeployMarketPlace(e.Owner.Opts, e.Blockchain, crAddress)
+	swivAddress, _, swivContract, err := mocks.DeploySwivel(e.Owner.Opts, e.Blockchain)
 
-	if marketErr != nil {
-		return nil, marketErr
+	if err != nil {
+		return nil, err
 	}
 
 	e.Blockchain.Commit()
 
-	swivAddress := common.HexToAddress("0x123aBc")
+	marketAddress, _, marketContract, err := marketplace.DeployMarketPlace(e.Owner.Opts, e.Blockchain, crAddress)
+
+	if err != nil {
+		return nil, err
+	}
+
+	e.Blockchain.Commit()
 
 	// NOTE the public properties on the mock can be changed per spec
-	zcAddress, _, zcContract, zcErr := mocks.DeployZcToken(e.Owner.Opts, e.Blockchain, uint8(1), erc20Address, big.NewInt(MATURITY), ctAddress, marketAddress, "", "", uint8(18))
+	zcAddress, _, zcContract, err := mocks.DeployZcToken(e.Owner.Opts, e.Blockchain, uint8(1), erc20Address, big.NewInt(MATURITY), ctAddress, marketAddress, "", "", uint8(18))
 
-	if zcErr != nil {
-		return nil, zcErr
+	if err != nil {
+		return nil, err
 	}
 
 	e.Blockchain.Commit()
 
 	// NOTE same as ZcToken WRT properties...
-	vtAddress, _, vtContract, vtErr := mocks.DeployVaultTracker(e.Owner.Opts, e.Blockchain, uint8(1), big.NewInt(MATURITY), ctAddress, swivAddress, marketAddress)
+	vtAddress, _, vtContract, err := mocks.DeployVaultTracker(e.Owner.Opts, e.Blockchain, uint8(1), big.NewInt(MATURITY), ctAddress, swivAddress, marketAddress)
 
-	if vtErr != nil {
-		return nil, vtErr
+	if err != nil {
+		return nil, err
 	}
 
 	e.Blockchain.Commit()
@@ -149,11 +156,12 @@ func Deploy(e *Env) (*Dep, error) {
 		AavePoolAddress:      apAddress,
 		EulerToken:           etContract,
 		EulerTokenAddress:    etAddress,
-		SwivelAddress:        swivAddress,
 		Maturity:             maturity,
 		ZcToken:              zcContract,
 		ZcTokenAddress:       zcAddress,
 		VaultTracker:         vtContract,
 		VaultTrackerAddress:  vtAddress,
+		SwivelAddress:        swivAddress,
+		Swivel:               swivContract,
 	}, nil
 }

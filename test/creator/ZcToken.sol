@@ -7,6 +7,11 @@
 
 pragma solidity ^0.8.13;
 
+// present so that we can force a call from the mock to the consumer for testing of authRedeem
+interface IRedeemer {
+  function authRedeem(uint8, address, uint256, address, address, uint256) external returns (uint256);
+}
+
 contract ZcToken {
   // a struct to hold the arguments passed to transferFrom
   struct TransferFromArgs {
@@ -101,5 +106,10 @@ contract ZcToken {
 
   function transferFromReturns(bool b) public {
     transferFromReturn = b;
+  }
+
+  // force a call from the mock to the redeemer's auth redeem function
+  function authRedeem(uint8 p, address u, uint256 m, address f, address t, uint256 a) external {
+    IRedeemer(redeemer).authRedeem(p, u, m, f, t, a);
   }
 }
