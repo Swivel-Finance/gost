@@ -22,7 +22,7 @@ interface ICompoundToken {
 interface IYearnVault {
   function pricePerShare() external view returns (uint256);
   /// @dev The address of the underlying asset
-  function underlying() external view returns(address);
+  function token() external view returns(address);
 }
 
 interface IAavePool {
@@ -51,7 +51,7 @@ library Compounding {
     if (p == uint8(Protocols.Compound) || p == uint8(Protocols.Rari)) {
       return ICompoundToken(c).underlying();
     } else if (p == uint8(Protocols.Yearn)) {
-      return IYearnVault(c).underlying();
+      return IYearnVault(c).token();
     } else if (p == uint8(Protocols.Aave)) {
       return IAaveToken(c).UNDERLYING_ASSET_ADDRESS();
     } else if (p == uint8(Protocols.Euler)) {
