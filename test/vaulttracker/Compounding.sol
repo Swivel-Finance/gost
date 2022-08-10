@@ -7,20 +7,14 @@ import './Protocols.sol';
 interface IErc4626 {
   /// @dev Converts the given 'assets' (uint256) to 'shares', returning that amount
   function convertToAssets(uint256) external view returns (uint256);
-  /// @dev The address of the underlying asset
-  function asset() external view returns (address);
 }
 
 interface ICompoundToken {
   function exchangeRateCurrent() external view returns(uint256);
-  /// @dev The address of the underlying asset
-  function underlying() external view returns(address);
 }
 
 interface IYearnVault {
   function pricePerShare() external view returns (uint256);
-  /// @dev The address of the underlying asset
-  function underlying() external view returns(address);
 }
 
 interface IAavePool {
@@ -38,8 +32,6 @@ interface IAaveToken {
 interface IEulerToken {
   /// @notice Convert an eToken balance to an underlying amount, taking into account current exchange rate
   function convertBalanceToUnderlying(uint256) external view returns(uint256);
-  /// @dev The address of the underlying asset
-  function underlyingAsset() external view returns(address);
 }
 
 library Compounding {

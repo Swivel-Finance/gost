@@ -143,7 +143,7 @@ func (s *custodialInitiateSuite) TestCustodialInitiate() {
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
 
-	tx, err = s.YearnVault.UnderlyingReturns(underlying)
+	tx, err = s.YearnVault.TokenReturns(underlying)
 	assert.Nil(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()

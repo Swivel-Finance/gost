@@ -30,8 +30,8 @@ var (
 
 // YearnVaultMetaData contains all meta data concerning the YearnVault contract.
 var YearnVaultMetaData = &bind.MetaData{
-	ABI: "[{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"a\",\"type\":\"uint256\"}],\"name\":\"deposit\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"depositCalled\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"a\",\"type\":\"uint256\"}],\"name\":\"depositReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"pricePerShare\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"p\",\"type\":\"uint256\"}],\"name\":\"pricePerShareReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"underlying\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"a\",\"type\":\"address\"}],\"name\":\"underlyingReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"a\",\"type\":\"uint256\"}],\"name\":\"withdraw\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"withdrawCalled\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"a\",\"type\":\"uint256\"}],\"name\":\"withdrawReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]",
-	Bin: "0x608060405234801561001057600080fd5b506104f0806100206000396000f3fe608060405234801561001057600080fd5b506004361061009e5760003560e01c8063b6b55f2511610066578063b6b55f2514610147578063b79c449b14610177578063d35147e4146101a7578063de7218a6146101d7578063e7ba6774146101f35761009e565b806320a8b9cd146100a357806326cca786146100bf5780632e1a7d4d146100db5780636f307dc31461010b57806399530b0614610129575b600080fd5b6100bd60048036038101906100b891906103ae565b61020f565b005b6100d960048036038101906100d491906103ae565b610219565b005b6100f560048036038101906100f091906103ae565b610223565b60405161010291906103ea565b60405180910390f35b610113610273565b6040516101209190610446565b60405180910390f35b61013161029c565b60405161013e91906103ea565b60405180910390f35b610161600480360381019061015c91906103ae565b6102a6565b60405161016e91906103ea565b60405180910390f35b610191600480360381019061018c919061048d565b6102f6565b60405161019e91906103ea565b60405180910390f35b6101c160048036038101906101bc919061048d565b61030e565b6040516101ce91906103ea565b60405180910390f35b6101f160048036038101906101ec91906103ae565b610326565b005b61020d6004803603810190610208919061048d565b610330565b005b8060048190555050565b8060028190555050565b600081600560003373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020819055506004549050919050565b60008060009054906101000a900473ffffffffffffffffffffffffffffffffffffffff16905090565b6000600154905090565b600081600360003373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020819055506002549050919050565b60056020528060005260406000206000915090505481565b60036020528060005260406000206000915090505481565b8060018190555050565b806000806101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555050565b600080fd5b6000819050919050565b61038b81610378565b811461039657600080fd5b50565b6000813590506103a881610382565b92915050565b6000602082840312156103c4576103c3610373565b5b60006103d284828501610399565b91505092915050565b6103e481610378565b82525050565b60006020820190506103ff60008301846103db565b92915050565b600073ffffffffffffffffffffffffffffffffffffffff82169050919050565b600061043082610405565b9050919050565b61044081610425565b82525050565b600060208201905061045b6000830184610437565b92915050565b61046a81610425565b811461047557600080fd5b50565b60008135905061048781610461565b92915050565b6000602082840312156104a3576104a2610373565b5b60006104b184828501610478565b9150509291505056fea2646970667358221220686c02ab26ad864dd78dd289e65358cc8b6e3483f0e12589af1fa007312645a264736f6c634300080d0033",
+	ABI: "[{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"a\",\"type\":\"uint256\"}],\"name\":\"deposit\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"depositCalled\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"a\",\"type\":\"uint256\"}],\"name\":\"depositReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"pricePerShare\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"p\",\"type\":\"uint256\"}],\"name\":\"pricePerShareReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"token\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"a\",\"type\":\"address\"}],\"name\":\"tokenReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"a\",\"type\":\"uint256\"}],\"name\":\"withdraw\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"withdrawCalled\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"a\",\"type\":\"uint256\"}],\"name\":\"withdrawReturns\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]",
+	Bin: "0x608060405234801561001057600080fd5b506104f0806100206000396000f3fe608060405234801561001057600080fd5b506004361061009e5760003560e01c8063b6b55f2511610066578063b6b55f2514610145578063b79c449b14610175578063d35147e4146101a5578063de7218a6146101d5578063fc0c546a146101f15761009e565b806320a8b9cd146100a357806326cca786146100bf5780632e1a7d4d146100db5780638ad0c3401461010b57806399530b0614610127575b600080fd5b6100bd60048036038101906100b891906103ae565b61020f565b005b6100d960048036038101906100d491906103ae565b610219565b005b6100f560048036038101906100f091906103ae565b610223565b60405161010291906103ea565b60405180910390f35b61012560048036038101906101209190610463565b610273565b005b61012f6102b6565b60405161013c91906103ea565b60405180910390f35b61015f600480360381019061015a91906103ae565b6102c0565b60405161016c91906103ea565b60405180910390f35b61018f600480360381019061018a9190610463565b610310565b60405161019c91906103ea565b60405180910390f35b6101bf60048036038101906101ba9190610463565b610328565b6040516101cc91906103ea565b60405180910390f35b6101ef60048036038101906101ea91906103ae565b610340565b005b6101f961034a565b604051610206919061049f565b60405180910390f35b8060048190555050565b8060028190555050565b600081600560003373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020819055506004549050919050565b806000806101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555050565b6000600154905090565b600081600360003373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020819055506002549050919050565b60056020528060005260406000206000915090505481565b60036020528060005260406000206000915090505481565b8060018190555050565b60008060009054906101000a900473ffffffffffffffffffffffffffffffffffffffff16905090565b600080fd5b6000819050919050565b61038b81610378565b811461039657600080fd5b50565b6000813590506103a881610382565b92915050565b6000602082840312156103c4576103c3610373565b5b60006103d284828501610399565b91505092915050565b6103e481610378565b82525050565b60006020820190506103ff60008301846103db565b92915050565b600073ffffffffffffffffffffffffffffffffffffffff82169050919050565b600061043082610405565b9050919050565b61044081610425565b811461044b57600080fd5b50565b60008135905061045d81610437565b92915050565b60006020828403121561047957610478610373565b5b60006104878482850161044e565b91505092915050565b61049981610425565b82525050565b60006020820190506104b46000830184610490565b9291505056fea26469706673582212203a6d64a9218c55ac9866ff544ea85abc699f519a35db0999f4bc1b03cb0b910e64736f6c634300080d0033",
 }
 
 // YearnVaultABI is the input ABI used to generate the binding from.
@@ -263,12 +263,12 @@ func (_YearnVault *YearnVaultCallerSession) PricePerShare() (*big.Int, error) {
 	return _YearnVault.Contract.PricePerShare(&_YearnVault.CallOpts)
 }
 
-// Underlying is a free data retrieval call binding the contract method 0x6f307dc3.
+// Token is a free data retrieval call binding the contract method 0xfc0c546a.
 //
-// Solidity: function underlying() view returns(address)
-func (_YearnVault *YearnVaultCaller) Underlying(opts *bind.CallOpts) (common.Address, error) {
+// Solidity: function token() view returns(address)
+func (_YearnVault *YearnVaultCaller) Token(opts *bind.CallOpts) (common.Address, error) {
 	var out []interface{}
-	err := _YearnVault.contract.Call(opts, &out, "underlying")
+	err := _YearnVault.contract.Call(opts, &out, "token")
 
 	if err != nil {
 		return *new(common.Address), err
@@ -280,18 +280,18 @@ func (_YearnVault *YearnVaultCaller) Underlying(opts *bind.CallOpts) (common.Add
 
 }
 
-// Underlying is a free data retrieval call binding the contract method 0x6f307dc3.
+// Token is a free data retrieval call binding the contract method 0xfc0c546a.
 //
-// Solidity: function underlying() view returns(address)
-func (_YearnVault *YearnVaultSession) Underlying() (common.Address, error) {
-	return _YearnVault.Contract.Underlying(&_YearnVault.CallOpts)
+// Solidity: function token() view returns(address)
+func (_YearnVault *YearnVaultSession) Token() (common.Address, error) {
+	return _YearnVault.Contract.Token(&_YearnVault.CallOpts)
 }
 
-// Underlying is a free data retrieval call binding the contract method 0x6f307dc3.
+// Token is a free data retrieval call binding the contract method 0xfc0c546a.
 //
-// Solidity: function underlying() view returns(address)
-func (_YearnVault *YearnVaultCallerSession) Underlying() (common.Address, error) {
-	return _YearnVault.Contract.Underlying(&_YearnVault.CallOpts)
+// Solidity: function token() view returns(address)
+func (_YearnVault *YearnVaultCallerSession) Token() (common.Address, error) {
+	return _YearnVault.Contract.Token(&_YearnVault.CallOpts)
 }
 
 // WithdrawCalled is a free data retrieval call binding the contract method 0xb79c449b.
@@ -388,25 +388,25 @@ func (_YearnVault *YearnVaultTransactorSession) PricePerShareReturns(p *big.Int)
 	return _YearnVault.Contract.PricePerShareReturns(&_YearnVault.TransactOpts, p)
 }
 
-// UnderlyingReturns is a paid mutator transaction binding the contract method 0xe7ba6774.
+// TokenReturns is a paid mutator transaction binding the contract method 0x8ad0c340.
 //
-// Solidity: function underlyingReturns(address a) returns()
-func (_YearnVault *YearnVaultTransactor) UnderlyingReturns(opts *bind.TransactOpts, a common.Address) (*types.Transaction, error) {
-	return _YearnVault.contract.Transact(opts, "underlyingReturns", a)
+// Solidity: function tokenReturns(address a) returns()
+func (_YearnVault *YearnVaultTransactor) TokenReturns(opts *bind.TransactOpts, a common.Address) (*types.Transaction, error) {
+	return _YearnVault.contract.Transact(opts, "tokenReturns", a)
 }
 
-// UnderlyingReturns is a paid mutator transaction binding the contract method 0xe7ba6774.
+// TokenReturns is a paid mutator transaction binding the contract method 0x8ad0c340.
 //
-// Solidity: function underlyingReturns(address a) returns()
-func (_YearnVault *YearnVaultSession) UnderlyingReturns(a common.Address) (*types.Transaction, error) {
-	return _YearnVault.Contract.UnderlyingReturns(&_YearnVault.TransactOpts, a)
+// Solidity: function tokenReturns(address a) returns()
+func (_YearnVault *YearnVaultSession) TokenReturns(a common.Address) (*types.Transaction, error) {
+	return _YearnVault.Contract.TokenReturns(&_YearnVault.TransactOpts, a)
 }
 
-// UnderlyingReturns is a paid mutator transaction binding the contract method 0xe7ba6774.
+// TokenReturns is a paid mutator transaction binding the contract method 0x8ad0c340.
 //
-// Solidity: function underlyingReturns(address a) returns()
-func (_YearnVault *YearnVaultTransactorSession) UnderlyingReturns(a common.Address) (*types.Transaction, error) {
-	return _YearnVault.Contract.UnderlyingReturns(&_YearnVault.TransactOpts, a)
+// Solidity: function tokenReturns(address a) returns()
+func (_YearnVault *YearnVaultTransactorSession) TokenReturns(a common.Address) (*types.Transaction, error) {
+	return _YearnVault.Contract.TokenReturns(&_YearnVault.TransactOpts, a)
 }
 
 // Withdraw is a paid mutator transaction binding the contract method 0x2e1a7d4d.
