@@ -198,8 +198,9 @@ func (s *removeNotionalSuite) TestRemoveNotionalMatured() {
 	assert.Nil(err)
 	s.Env.Blockchain.Commit()
 
-	// call AddNotional for Owner which already has vault and market matured
-	tx, err = s.VaultTracker.RemoveNotional(caller, amount1)
+	// call remove notional for Owner which already has vault and market matured
+	// note this amount must be less than the existing vault notional
+	tx, err = s.VaultTracker.RemoveNotional(caller, amount1.Sub(amount1, big.NewInt(1000000)))
 	assert.Nil(err)
 	assert.NotNil(tx)
 
@@ -208,7 +209,7 @@ func (s *removeNotionalSuite) TestRemoveNotionalMatured() {
 	vault, err = s.VaultTracker.Vaults(s.Env.Owner.Opts.From)
 	assert.Nil(err)
 	assert.NotNil(vault)
-	assert.Equal(vault.Notional.Cmp(ZERO), 0)
+	assert.Equal(vault.Notional.Cmp(ZERO), 1) // is still a positive bal
 	// will now be rate 3 (maturity rate) as vault is mature
 	assert.Equal(rate3, vault.ExchangeRate)
 	assert.Equal(big.NewInt(56700000), vault.Redeemable)

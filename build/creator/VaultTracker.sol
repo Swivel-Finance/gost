@@ -79,7 +79,7 @@ contract VaultTracker {
 
     Vault memory vlt = vaults[o];
 
-    if (a > vlt.notional) {
+    if (a >= vlt.notional) {
       revert Exception(31, a, vlt.notional, address(0), address(0));
     }
 
@@ -144,7 +144,7 @@ contract VaultTracker {
     Vault memory from = vaults[f];
     Vault memory to = vaults[t];
 
-    if (a > from.notional) {
+    if (a >= from.notional) {
       revert Exception(31, a, from.notional, address(0), address(0));
     }
 
