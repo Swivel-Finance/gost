@@ -2,12 +2,33 @@
 
 pragma solidity ^0.8.13;
 
+// the behavioral MarketPlace Interface, Implemented by MarketPlace.sol
+interface IMarketPlace {
+  function setSwivel(address) external returns (bool);
+  function setAdmin(address) external returns (bool);
+  function createMarket(uint8, uint256, address, string memory, string memory) external returns (bool);
+  function matureMarket(uint8, address, uint256) external returns (bool);
+  function mintZcTokenAddingNotional(uint8, address, uint256, address, uint256) external returns (bool);
+  function burnZcTokenRemovingNotional(uint8, address, uint256, address, uint256) external returns (bool);
+  function authRedeem(uint8, address, uint256, address, address, uint256) external returns(uint256);
+  function redeemZcToken(uint8, address, uint256, address, uint256) external returns (uint256);
+  function redeemVaultInterest(uint8, address, uint256, address) external returns (uint256);
+  function cTokenAddress(uint8, address, uint256) external returns (address);
+  function exchangeRate(uint8, address) external returns (uint256);
+  function rates(uint8, address, uint256) external returns (uint256, uint256);
+  function custodialExit(uint8, address, uint256, address, address, uint256) external returns (bool);
+  function custodialInitiate(uint8, address, uint256, address, address, uint256) external returns (bool);
+  function p2pZcTokenExchange(uint8, address, uint256, address, address, uint256) external returns (bool);
+  function p2pVaultExchange(uint8, address, uint256, address, address, uint256) external returns (bool);
+  function transferVaultNotional(uint8, address, uint256, address, uint256) external returns (bool);
+  function transferVaultNotionalFee(uint8, address, uint256, address, uint256) external returns (bool);
+}
+
+// methods requried on other contracts which are expected to, at least, implement the following:
 interface IErc20 {
   function decimals() external returns (uint8);
 }
 
-/// @notice The deployed Creator contract creates and deploys instances of the
-/// ZcToken and VaultTracker contracts, returning their addresses
 interface ICreator {
   function create(
     uint8,

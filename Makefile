@@ -272,6 +272,7 @@ clean_build: clean_build_sol clean_build_abi clean_build_bin clean_build_go
 
 copy_creator_to_build:
 	@echo "copying Creator files to creator build"
+	cp test/creator/Interfaces.sol build/creator
 	cp test/creator/Creator.sol build/creator
 
 copy_zctoken_to_build:

@@ -8,7 +8,7 @@ import './Hash.sol';
 import './Sig.sol';
 import './Safe.sol';
 
-contract Swivel {
+contract Swivel is ISwivel {
   /// @dev A single custom error capable of indicating a wide range of detected errors by providing
   /// an error code value whose string representation is documented <here>, and any possible other values
   /// that are pertinent to the error.
