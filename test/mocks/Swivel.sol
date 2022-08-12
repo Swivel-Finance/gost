@@ -13,13 +13,13 @@ contract Swivel {
 
   mapping (uint8 => MethodArgs) public authRedeemCalled;
   
-  uint256 private authRedeemReturn;
+  bool private authRedeemReturn;
 
-  function authRedeemReturns(uint256 a) external {
-    authRedeemReturn = a;
+  function authRedeemReturns(bool b) external {
+    authRedeemReturn = b;
   }
 
-  function authRedeem(uint8 p, address u, address c, address t, uint256 a) external returns (uint256) {
+  function authRedeem(uint8 p, address u, address c, address t, uint256 a) external returns (bool) {
     MethodArgs memory args;
     args.underlying = u;
     args.one = c;

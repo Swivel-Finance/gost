@@ -30,7 +30,7 @@ contract Swivel is ISwivel {
   address public admin;
   
   /// @dev address of a deployed Aave contract implementing IAave
-  address public aaveAddr; // TODO immutable?
+  address public immutable aaveAddr;
 
   uint16 constant public MIN_FEENOMINATOR = 33;
   /// @dev holds the fee demoninators for [zcTokenInitiate, zcTokenExit, vaultInitiate, vaultExit]
@@ -112,8 +112,7 @@ contract Swivel is ISwivel {
       revert Exception(5, amount, o.premium, address(0), address(0));
     }
     
-    // TODO cheaper to assign amount here or keep the ADD?
-    filled[hash] += a;
+    filled[hash] = amount;
 
     // transfer underlying tokens
     IErc20 uToken = IErc20(o.underlying);
@@ -157,8 +156,7 @@ contract Swivel is ISwivel {
       revert Exception(5, amount, o.principal, address(0), address(0));
     }
 
-    // TODO assign amount or keep the ADD?
-    filled[hash] += a;
+    filled[hash] = amount;
 
     IErc20 uToken = IErc20(o.underlying);
 
@@ -198,8 +196,7 @@ contract Swivel is ISwivel {
       revert Exception(5, amount, o.principal, address(0), address(0));
     }
 
-    // TODO assign amount or keep the ADD?
-    filled[hash] += a;
+    filled[hash] = amount;
 
     uint256 premiumFilled = (a * o.premium) / o.principal;
 
@@ -231,8 +228,7 @@ contract Swivel is ISwivel {
       revert Exception(5, amount, o.premium, address(0), address(0));
     }
 
-    // TODO assign amount or keep ADD?
-    filled[hash] += a;
+    filled[hash] = amount;
 
     Safe.transferFrom(IErc20(o.underlying), msg.sender, o.maker, a);
 
@@ -301,8 +297,7 @@ contract Swivel is ISwivel {
       revert Exception(5, amount, o.premium, address(0), address(0));
     }
 
-    // TODO assign amount or keep the ADD?
-    filled[hash] += a;       
+    filled[hash] = amount;       
 
     IErc20 uToken = IErc20(o.underlying);
 
@@ -336,8 +331,7 @@ contract Swivel is ISwivel {
       revert Exception(5, amount, o.principal, address(0), address(0));
     }
     
-    // TODO assign amount or keep the ADD?
-    filled[hash] += a;
+    filled[hash] = amount;
         
     IErc20 uToken = IErc20(o.underlying);
 
@@ -370,8 +364,7 @@ contract Swivel is ISwivel {
       revert Exception(5, amount, o.principal, address(0), address(0));
     }
 
-    // TODO assign amount or keep the ADD?
-    filled[hash] += a;
+    filled[hash] = amount;
 
     // redeem underlying on Compound and burn cTokens
     IMarketPlace mPlace = IMarketPlace(marketPlace);
@@ -411,8 +404,7 @@ contract Swivel is ISwivel {
       revert Exception(5, amount, o.premium, address(0), address(0));
     }
     
-    // TODO assign amount or keep the ADD?
-    filled[hash] += a;
+    filled[hash] = amount;
 
     // redeem underlying on Compound and burn cTokens
     IMarketPlace mPlace = IMarketPlace(marketPlace);
@@ -567,7 +559,7 @@ contract Swivel is ISwivel {
       revert Exception(19, len, c.length, address(0), address(0));
     }
 
-    uint256 max = 2**256 - 1;
+    uint256 max = type(uint256).max;
 
     for (uint256 i; i < len; i++) {
       IErc20 uToken = IErc20(u[i]);
@@ -640,7 +632,7 @@ contract Swivel is ISwivel {
     // transfer underlying back to msg.sender
     Safe.transfer(IErc20(u), t, a);
 
-    return (true);
+    return true;
   }
 
   /// @notice Allows zcToken holders to redeem their tokens for underlying tokens after maturity has been reached (via MarketPlace).
@@ -733,8 +725,7 @@ contract Swivel is ISwivel {
   /// @param c Compounding token address
   /// @param a Amount to deposit
   function deposit(uint8 p, address u, address c, uint256 a) internal returns (bool) {
-    // TODO as stated elsewhere, we may choose to simply return true in all and not attempt to measure against any expected return
-    if (p == uint8(Protocols.Compound)) { // TODO is Rari a drop in here?
+    if (p == uint8(Protocols.Compound) || p == uint8(Protocols.Rari)) {
       return ICompound(c).mint(a) == 0;
     } else if (p == uint8(Protocols.Yearn)) {
       // yearn vault api states that deposit returns shares as uint256
@@ -742,12 +733,10 @@ contract Swivel is ISwivel {
     } else if (p == uint8(Protocols.Aave)) {
       // Aave deposit is void. NOTE the change in pattern here where our interface is not wrapping a compounding token directly, but
       // a specified protocol contract whose address we have set
-      // TODO explain the Aave deposit args
       IAave(aaveAddr).deposit(u, a, address(this), 0);
       return true;
     } else if (p == uint8(Protocols.Euler)) {
       // Euler deposit is void.
-      // TODO explain the 0 (primary account)
       IEuler(c).deposit(0, a);
       return true;
     } else {
@@ -766,19 +755,16 @@ contract Swivel is ISwivel {
   /// @param c Compounding token address
   /// @param a Amount to withdraw
   function withdraw(uint8 p, address u, address c, uint256 a) internal returns (bool) {
-    // TODO as stated elsewhere, we may choose to simply return true in all and not attempt to measure against any expected return
-    if (p == uint8(Protocols.Compound)) { // TODO is Rari a drop in here?
+    if (p == uint8(Protocols.Compound) || p == uint8(Protocols.Rari)) {
       return ICompound(c).redeemUnderlying(a) == 0;
     } else if (p == uint8(Protocols.Yearn)) {
       // yearn vault api states that withdraw returns uint256
       return IYearn(c).withdraw(a) >= 0;
     } else if (p == uint8(Protocols.Aave)) {
       // Aave v2 docs state that withraw returns uint256
-      // TODO explain the withdraw args
       return IAave(aaveAddr).withdraw(u, a, address(this)) >= 0;
     } else if (p == uint8(Protocols.Euler)) {
       // Euler withdraw is void
-      // TODO explain the 0
       IEuler(c).withdraw(0, a);
       return true;
     } else {

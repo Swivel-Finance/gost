@@ -166,7 +166,7 @@ contract MarketPlace is IMarketPlace {
   /// @param t Address of the user receiving underlying
   /// @param a Amount of zcTokens being redeemed
   /// @return Amount of underlying being withdrawn (needed for 5095 return)
-  function authRedeem(uint8 p, address u, uint256 m, address f, address t, uint256 a) public authorized(markets[p][u][m].zcToken) unpaused(p) returns (uint256) {
+  function authRedeem(uint8 p, address u, uint256 m, address f, address t, uint256 a) external authorized(markets[p][u][m].zcToken) unpaused(p) returns (uint256) {
     /// @dev swiv needs to be set or the call to authRedeem there will be faulty
     if (swivel == address(0)) {
       revert Exception(21, 0, 0, address(0), address(0));
@@ -187,8 +187,9 @@ contract MarketPlace is IMarketPlace {
     // depending on initial market maturity status adjust (or don't) the amount to be redemmed/returned
     uint256 amount = market.maturityRate == 0 ? a : calculateReturn(p, u, m, a);
 
-    // TODO do we care about the bool return here? Exception?
-    ISwivel(swivel).authRedeem(p, u, market.cTokenAddr, t, amount);
+    if (!ISwivel(swivel).authRedeem(p, u, market.cTokenAddr, t, amount)) {
+      revert Exception(37, amount, 0, market.cTokenAddr, t);
+    }
 
     emit RedeemZcToken(p, u, m, t, amount);
 
