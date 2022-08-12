@@ -2,9 +2,10 @@
 
 pragma solidity ^0.8.13;
 
+import './Interfaces.sol';
 import './Compounding.sol';
 
-contract VaultTracker {
+contract VaultTracker is IVaultTracker {
   /// @notice A single custom error capable of indicating a wide range of detected errors by providing
   /// an error code value whose string representation is documented <here>, and any possible other values
   /// that are pertinent to the error.
