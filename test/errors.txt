@@ -38,4 +38,5 @@ The implicit Errors enum:
   'marketPlace address not set', 34
   'fee change not scheduled', 35
   'fee change on hold', 36
+  'swivel.authRedeem failed', 37
 ]

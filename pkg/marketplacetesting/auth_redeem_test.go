@@ -141,6 +141,11 @@ func (s *authRedeemSuite) TestAuthRedeemFailsOnPaused() {
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
 
+	tx, err = s.Swivel.AuthRedeemReturns(true)
+	assert.Nil(err)
+	assert.NotNil(tx)
+	s.Env.Blockchain.Commit()
+
 	// a market must be created in order for the zcToken authorized check to succeed
 	tx, err = s.MarketPlace.CreateMarket(
 		uint8(1),
@@ -206,6 +211,11 @@ func (s *authRedeemSuite) TestAuthRedeem() {
 	s.Env.Blockchain.Commit()
 
 	tx, err = s.Creator.CreateReturns(s.Dep.ZcTokenAddress, s.Dep.VaultTrackerAddress)
+	assert.Nil(err)
+	assert.NotNil(tx)
+	s.Env.Blockchain.Commit()
+
+	tx, err = s.Swivel.AuthRedeemReturns(true)
 	assert.Nil(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()

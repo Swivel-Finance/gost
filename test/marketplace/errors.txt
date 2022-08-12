@@ -15,6 +15,8 @@ The implicit Errors enum:
   'zcToken.mint failed', 28
   'zcToken.burn failed', 29
   'matureMarket failed', 30
+  ...,
+  'swivel.authRedeem failed', 37
 ]
 
 <marketplace>
