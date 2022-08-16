@@ -19,6 +19,8 @@ contract Swivel is ISwivel {
   mapping (bytes32 => uint256) public filled;
   /// @dev maps a token address to a point in time, a hold, after which a withdrawal can be made
   mapping (address => uint256) public withdrawals;
+  /// @dev maps a token address to a point in time, a hold, after which an underlying approval can be made
+  mapping (address => uint256) public approvals;
 
   string constant public NAME = 'Swivel Finance';
   string constant public VERSION = '3.0.0';
@@ -48,10 +50,14 @@ contract Swivel is ISwivel {
   event Exit(bytes32 indexed key, bytes32 hash, address indexed maker, bool vault, bool exit, address indexed sender, uint256 amount, uint256 filled);
   /// @notice Emitted on token withdrawal scheduling
   event ScheduleWithdrawal(address indexed token, uint256 hold);
+  /// @notice Emitted on token approval scheduling
+  event ScheduleApproval(address indexed token, uint256 hold);
   /// @notice Emitted on fee change scheduling
   event ScheduleFeeChange(uint256 hold);
   /// @notice Emitted on token withdrawal blocking
   event BlockWithdrawal(address indexed token);
+  /// @notice Emitted on token approval blocking
+  event BlockApproval(address indexed token);
   /// @notice Emitted on fee change blocking
   event BlockFeeChange();
   /// @notice Emitted on a change to the fee structure
@@ -466,6 +472,17 @@ contract Swivel is ISwivel {
     return true;
   }
 
+  /// @notice Allows the admin to schedule the approval of tokens
+  /// @param e Address of (erc20) token to approve
+  function scheduleApproval(address e) external authorized(admin) returns (bool) {
+    uint256 when = block.timestamp + HOLD;
+    approvals[e] = when;
+
+    emit ScheduleApproval(e, when);
+
+    return true;
+  }
+
   /// @notice allows the admin to schedule a change to the fee denominators
   function scheduleFeeChange() external authorized(admin) returns (bool) {
     uint256 when = block.timestamp + HOLD;
@@ -482,6 +499,16 @@ contract Swivel is ISwivel {
     withdrawals[e] = 0;
 
     emit BlockWithdrawal(e);
+
+    return true;
+  }
+
+  /// @notice Emergency function to block unplanned approvals
+  /// @param e Address of token approval to block
+  function blockApproval(address e) external authorized(admin) returns (bool) {
+    approvals[e] = 0;
+
+    emit BlockApproval(e);
 
     return true;
   }
@@ -549,7 +576,8 @@ contract Swivel is ISwivel {
     return true;
   }
 
-  /// @notice Allows the admin to bulk approve given compound addresses at the underlying token, saving marginal approvals
+  /// @notice Allows the admin to bulk approve given compounding addresses at the underlying token, saving marginal approvals,
+  /// providing the holding period has been observed
   /// @param u array of underlying token addresses
   /// @param c array of compound token addresses
   function approveUnderlying(address[] calldata u, address[] calldata c) external authorized(admin) returns (bool) {
@@ -561,9 +589,24 @@ contract Swivel is ISwivel {
 
     uint256 max = type(uint256).max;
 
-    for (uint256 i; i < len; i++) {
+    for (uint256 i; i < len;) {
+      uint256 when = approvals[u[i]];
+
+      if (when == 0) {
+        revert Exception(38, 0, 0, address(0), address(0));
+      }
+
+      if (block.timestamp < when) {
+        revert Exception(39, block.timestamp, when, address(0), address(0));
+      }
+
+      approvals[u[i]] = 0;
       IErc20 uToken = IErc20(u[i]);
       Safe.approve(uToken, c[i], max);
+
+      unchecked {
+        i++;
+      }
     }
 
     return true;

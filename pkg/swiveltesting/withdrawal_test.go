@@ -146,6 +146,8 @@ func (s *withdrawalSuite) TestWithdrawal() {
 
 	// schedule it...
 	tx, err = s.Swivel.ScheduleWithdrawal(s.Dep.Erc20Address)
+	assert.Nil(err)
+	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
 
 	// move, at least, to the hold time
