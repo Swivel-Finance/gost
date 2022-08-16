@@ -3,6 +3,7 @@ package swiveltesting
 import (
 	"math/big"
 	test "testing"
+	"time"
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
@@ -49,6 +50,21 @@ func (s *approveUnderlyingSuite) SetupTest() {
 	}
 }
 
+func (s *approveUnderlyingSuite) TestScheduleApprove() {
+	assert := assert.New(s.T())
+
+	tokenAddress := common.HexToAddress("0xiamatoken") // we don't need an actual token here
+
+	tx, err := s.Swivel.ScheduleApproval(tokenAddress)
+
+	assert.Nil(err)
+	assert.NotNil(tx)
+	s.Env.Blockchain.Commit()
+
+	hold, _ := s.Swivel.Approvals(tokenAddress)
+	assert.Equal(1, hold.Cmp(big.NewInt(259200))) // hold should be greater than the hold constant
+}
+
 func (s *approveUnderlyingSuite) TestApprove() {
 	assert := assert.New(s.T())
 
@@ -61,8 +77,28 @@ func (s *approveUnderlyingSuite) TestApprove() {
 	uTokens := []common.Address{s.Dep.Erc20Address}
 	cTokens := []common.Address{s.Dep.CompoundTokenAddress}
 
-	tx, err = s.Swivel.ApproveUnderlying(uTokens, cTokens)
+	// reset time to 0
+	err = s.Env.Blockchain.AdjustTime(0)
+	if err != nil {
+		panic(err)
+	}
+	s.Env.Blockchain.Commit()
 
+	// schedule the approval
+	tx, err = s.Swivel.ScheduleApproval(s.Dep.Erc20Address) // use the mock here
+	assert.Nil(err)
+	assert.NotNil(tx)
+	s.Env.Blockchain.Commit()
+
+	// move past the hold
+	err = s.Env.Blockchain.AdjustTime(259200 * time.Second)
+	if err != nil {
+		panic(err)
+	}
+	s.Env.Blockchain.Commit()
+
+	// do it
+	tx, err = s.Swivel.ApproveUnderlying(uTokens, cTokens)
 	assert.Nil(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()

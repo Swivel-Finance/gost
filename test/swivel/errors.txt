@@ -24,6 +24,9 @@ The implicit Errors enum:
   ...
   'fee change not scheduled', 35
   'fee change on hold', 36
+  ...
+  'approval not scheduled', 38
+  'approval on hold', 39
 ]
 
 <swivel>

@@ -39,4 +39,6 @@ The implicit Errors enum:
   'fee change not scheduled', 35
   'fee change on hold', 36
   'swivel.authRedeem failed', 37
+  'approval not scheduled', 38
+  'approval on hold', 39
 ]
