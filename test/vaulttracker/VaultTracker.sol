@@ -58,7 +58,7 @@ contract VaultTracker is IVaultTracker {
       // if market has matured, calculate marginal interest between the maturity rate and previous position exchange rate
       // otherwise, calculate marginal exchange rate between current and previous exchange rate.
       uint256 yield = ((mRate * 1e26) / vlt.exchangeRate) - 1e26;
-      uint256 interest = (yield * vlt.notional) / 1e26;
+      uint256 interest = (yield * (vlt.notional + vlt.redeemable)) / 1e26;
       // add interest and amount to position, reset cToken exchange rate
       vlt.redeemable += interest;
       vlt.notional += a;
@@ -90,7 +90,7 @@ contract VaultTracker is IVaultTracker {
     // if market has matured, calculate marginal interest between the maturity rate and previous position exchange rate
     // otherwise, calculate marginal exchange rate between current and previous exchange rate.
     uint256 yield = ((mRate * 1e26) / vlt.exchangeRate) - 1e26;
-    uint256 interest = (yield * vlt.notional) / 1e26;
+    uint256 interest = (yield * (vlt.notional + vlt.redeemable)) / 1e26;
     // remove amount from position, Add interest to position, reset cToken exchange rate
     vlt.redeemable += interest;
     vlt.notional -= a;
@@ -115,7 +115,7 @@ contract VaultTracker is IVaultTracker {
     // if market has matured, calculate marginal interest between the maturity rate and previous position exchange rate
     // otherwise, calculate marginal exchange rate between current and previous exchange rate.
     uint256 yield = ((mRate * 1e26) / vlt.exchangeRate) - 1e26;
-    uint256 interest = (yield * vlt.notional) / 1e26;
+    uint256 interest = (yield * (vlt.notional + vlt.redeemable)) / 1e26;
 
     vlt.exchangeRate = mRate < xRate ? mRate : xRate;
     vlt.redeemable = 0;
@@ -155,7 +155,7 @@ contract VaultTracker is IVaultTracker {
     // if market has matured, calculate marginal interest between the maturity rate and previous position exchange rate
     // otherwise, calculate marginal exchange rate between current and previous exchange rate.
     uint256 yield = ((mRate * 1e26) / from.exchangeRate) - 1e26;
-    uint256 interest = (yield * from.notional) / 1e26;
+    uint256 interest = (yield * (from.notional + from.redeemable)) / 1e26;
     // remove amount from position, Add interest to position, reset cToken exchange rate
     from.redeemable += interest;
     from.notional -= a;
@@ -166,7 +166,7 @@ contract VaultTracker is IVaultTracker {
     // transfer notional to address "t", calculate interest if necessary
     if (to.notional > 0) {
       yield = ((mRate * 1e26) / to.exchangeRate) - 1e26;
-      interest = (yield * to.notional) / 1e26;
+      interest = (yield * (to.notional + to.redeemable)) / 1e26;
       // add interest and amount to position, reset cToken exchange rate
       to.redeemable += interest;
       to.notional += a;
@@ -198,7 +198,7 @@ contract VaultTracker is IVaultTracker {
       // if market has matured, calculate marginal interest between the maturity rate and previous position exchange rate
       // otherwise, calculate marginal exchange rate between current and previous exchange rate.
       uint256 yield = ((mRate * 1e26) / sVault.exchangeRate) - 1e26;
-      uint256 interest = (yield * sVault.notional) / 1e26;
+      uint256 interest = (yield * (sVault.notional + sVault.redeemable)) / 1e26;
       // add interest and amount, reset cToken exchange rate
       sVault.redeemable += interest;
       // set to maturityRate only if both > 0 && < exchangeRate
