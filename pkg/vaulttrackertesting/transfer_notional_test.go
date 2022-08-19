@@ -187,7 +187,8 @@ func (s *transferSuite) TestTransferNotMaturedNotExistingVault() {
 	assert.NotNil(vaultO)
 	assert.Equal(big.NewInt(1500), vaultO.Notional)
 	assert.Equal(rate3, vaultO.ExchangeRate)
-	assert.Equal(vaultO.Redeemable.Cmp(big.NewInt(1705)), 0)
+	// will now be gt due to redeemable accrue
+	assert.Equal(vaultO.Redeemable.Cmp(big.NewInt(1705)), 1)
 
 	vaultU, err = s.VaultTracker.Vaults(s.Env.User1.Opts.From)
 	assert.Nil(err)
@@ -293,7 +294,8 @@ func (s *transferSuite) TestTransferNotMaturedExistingVault() {
 	assert.NotNil(vaultO)
 	assert.Equal(big.NewInt(1500), vaultO.Notional)
 	assert.Equal(rate3, vaultO.ExchangeRate)
-	assert.Equal(vaultO.Redeemable.Cmp(big.NewInt(1705)), 0)
+	// due to change that accrues redeemable this will be gt
+	assert.Equal(vaultO.Redeemable.Cmp(big.NewInt(1705)), 1)
 
 	vaultU, err = s.VaultTracker.Vaults(callerU)
 	assert.Nil(err)
@@ -395,7 +397,8 @@ func (s *transferSuite) TestTransferMaturedNotExistingVault() {
 	assert.NotNil(vaultO)
 	assert.Equal(big.NewInt(1500), vaultO.Notional)
 	assert.Equal(rate3, vaultO.ExchangeRate)
-	assert.Equal(vaultO.Redeemable.Cmp(big.NewInt(6180)), 0)
+	// vault redeemable accrues now, so this will be gt
+	assert.Equal(vaultO.Redeemable.Cmp(big.NewInt(6180)), 1)
 
 	vaultU, err = s.VaultTracker.Vaults(s.Env.User1.Opts.From)
 	assert.Nil(err)
@@ -519,7 +522,8 @@ func (s *transferSuite) TestTransferMaturedExistingVault() {
 	assert.NotNil(vaultO)
 	assert.Equal(big.NewInt(1500), vaultO.Notional)
 	assert.Equal(rate4, vaultO.ExchangeRate)
-	assert.Equal(vaultO.Redeemable.Cmp(big.NewInt(6180)), 0)
+	// this now has accrued redeemable with it - so will be greater
+	assert.Equal(vaultO.Redeemable.Cmp(big.NewInt(6180)), 1)
 
 	vaultU, err = s.VaultTracker.Vaults(callerU)
 	assert.Nil(err)

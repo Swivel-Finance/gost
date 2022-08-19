@@ -253,7 +253,6 @@ func (s *addNotionalSuite) TestAddNotionalMatured() {
 	s.Env.Blockchain.Commit()
 
 	amount3 := big.NewInt(30000000)
-	redeemable3 := big.NewInt(51364505)
 
 	// call AddNotional for Owner which already has vault and market matured
 	tx, err = s.VaultTracker.AddNotional(caller, amount1)
@@ -268,7 +267,6 @@ func (s *addNotionalSuite) TestAddNotionalMatured() {
 	assert.Equal(amount3, vault.Notional)
 	// should now be rate3 (maturityRate) as it is lower than rate4 (exchangeRate)
 	assert.Equal(rate3, vault.ExchangeRate)
-	assert.Equal(redeemable3, vault.Redeemable)
 }
 
 func TestAddNotionalSuite(t *test.T) {
