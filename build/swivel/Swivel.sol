@@ -82,7 +82,7 @@ contract Swivel is ISwivel {
   function initiate(Hash.Order[] calldata o, uint256[] calldata a, Sig.Components[] calldata c) external returns (bool) {
     uint256 len = o.length;
     // for each order filled, routes the order to the right interaction depending on its params
-    for (uint256 i; i < len;) {
+    for (uint256 i; i != len;) {
       Hash.Order memory order = o[i];
       if (!order.exit) {
         if (!order.vault) {
@@ -267,7 +267,7 @@ contract Swivel is ISwivel {
   function exit(Hash.Order[] calldata o, uint256[] calldata a, Sig.Components[] calldata c) external returns (bool) {
     uint256 len = o.length;
     // for each order filled, routes the order to the right interaction depending on its params
-    for (uint256 i; i < len;) {
+    for (uint256 i; i != len;) {
       Hash.Order memory order = o[i];
       // if the order being filled is not an exit
       if (!order.exit) {
@@ -563,7 +563,7 @@ contract Swivel is ISwivel {
       revert Exception(36, block.timestamp, feeChange, address(0), address(0));
     }
 
-    for (uint256 i; i < 4;) {
+    for (uint256 i; i != 4;) {
       if (f[i] < MIN_FEENOMINATOR) {
         revert Exception(18, f[i], MIN_FEENOMINATOR, address(0), address(0));
       }
@@ -597,7 +597,7 @@ contract Swivel is ISwivel {
 
     uint256 max = type(uint256).max;
 
-    for (uint256 i; i < len;) {
+    for (uint256 i; i != len;) {
       uint256 when = approvals[u[i]];
 
       if (when == 0) {
