@@ -134,7 +134,7 @@ contract ZcToken is Erc20, IERC5095 {
             if (allowed < previewAmount) {
                 revert Approvals(allowed, previewAmount);
             }
-            allowance[holder][msg.sender] -= previewAmount;
+            allowance[holder][msg.sender] = allowance[holder][msg.sender] - previewAmount;
             IRedeemer(redeemer).authRedeem(protocol, underlying, maturity, holder, receiver, previewAmount); 
         }
 
@@ -162,7 +162,7 @@ contract ZcToken is Erc20, IERC5095 {
               revert Approvals(allowed, principalAmount);
             }
 
-            allowance[holder][msg.sender] -= principalAmount;  
+            allowance[holder][msg.sender] = allowance[holder][msg.sender] - principalAmount;  
             return IRedeemer(redeemer).authRedeem(protocol, underlying, maturity, holder, receiver, principalAmount);
         }
     }
