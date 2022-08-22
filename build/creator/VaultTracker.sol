@@ -118,7 +118,7 @@ contract VaultTracker is IVaultTracker {
     uint256 interest = (yield * (vlt.notional + vlt.redeemable)) / 1e26;
 
     vlt.exchangeRate = mRate < xRate ? mRate : xRate;
-    vlt.redeemable = 0;
+    delete vlt.redeemable;
 
     vaults[o] = vlt;
 

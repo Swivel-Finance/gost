@@ -82,7 +82,7 @@ contract Swivel is ISwivel {
   function initiate(Hash.Order[] calldata o, uint256[] calldata a, Sig.Components[] calldata c) external returns (bool) {
     uint256 len = o.length;
     // for each order filled, routes the order to the right interaction depending on its params
-    for (uint256 i; i < len; i++) {
+    for (uint256 i; i < len;) {
       Hash.Order memory order = o[i];
       if (!order.exit) {
         if (!order.vault) {
@@ -96,6 +96,10 @@ contract Swivel is ISwivel {
         } else {
           initiateVaultFillingVaultExit(o[i], a[i], c[i]);
         }
+      }
+
+      unchecked {
+        ++i;
       }
     }
 
@@ -263,7 +267,7 @@ contract Swivel is ISwivel {
   function exit(Hash.Order[] calldata o, uint256[] calldata a, Sig.Components[] calldata c) external returns (bool) {
     uint256 len = o.length;
     // for each order filled, routes the order to the right interaction depending on its params
-    for (uint256 i; i < len; i++) {
+    for (uint256 i; i < len;) {
       Hash.Order memory order = o[i];
       // if the order being filled is not an exit
       if (!order.exit) {
@@ -284,7 +288,11 @@ contract Swivel is ISwivel {
           // if filling a vault exit with an exit, one is exiting zcTokens
           exitZcTokenFillingVaultExit(o[i], a[i], c[i]);
         }   
-      }   
+      }  
+
+      unchecked {
+        ++i;
+      }
     }
 
     return true;
@@ -496,7 +504,7 @@ contract Swivel is ISwivel {
   /// @notice Emergency function to block unplanned withdrawals
   /// @param e Address of token withdrawal to block
   function blockWithdrawal(address e) external authorized(admin) returns (bool) {
-    withdrawals[e] = 0;
+    delete withdrawals[e];
 
     emit BlockWithdrawal(e);
 
@@ -506,7 +514,7 @@ contract Swivel is ISwivel {
   /// @notice Emergency function to block unplanned approvals
   /// @param e Address of token approval to block
   function blockApproval(address e) external authorized(admin) returns (bool) {
-    approvals[e] = 0;
+    delete approvals[e];
 
     emit BlockApproval(e);
 
@@ -515,7 +523,7 @@ contract Swivel is ISwivel {
 
   /// @notice Emergency function to block unplanned changes to fee structure
   function blockFeeChange() external authorized(admin) returns (bool) {
-    feeChange = 0;
+    delete feeChange;
 
     emit BlockFeeChange();
 
@@ -535,7 +543,7 @@ contract Swivel is ISwivel {
       revert Exception(17, block.timestamp, when, address(0), address(0));
     }
 
-    withdrawals[e] = 0;
+    delete withdrawals[e];
 
     IErc20 token = IErc20(e);
     Safe.transfer(token, admin, token.balanceOf(address(this)));
@@ -567,11 +575,11 @@ contract Swivel is ISwivel {
       }
 
       unchecked {
-        i++;
+        ++i;
       }
     }
 
-    feeChange = 0;
+    delete feeChange;
 
     return true;
   }
@@ -600,12 +608,12 @@ contract Swivel is ISwivel {
         revert Exception(39, block.timestamp, when, address(0), address(0));
       }
 
-      approvals[u[i]] = 0;
+      delete approvals[u[i]];
       IErc20 uToken = IErc20(u[i]);
       Safe.approve(uToken, c[i], max);
 
       unchecked {
-        i++;
+        ++i;
       }
     }
 
