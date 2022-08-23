@@ -81,7 +81,7 @@ contract VaultTracker is IVaultTracker {
     Vault memory vlt = vaults[o];
 
     if (a >= vlt.notional) {
-      revert Exception(31, a, vlt.notional, address(0), address(0));
+      revert Exception(31, a, vlt.notional, o, address(0));
     }
 
     // note that mRate is is maturityRate if > 0, exchangeRate otherwise
@@ -146,7 +146,7 @@ contract VaultTracker is IVaultTracker {
     Vault memory to = vaults[t];
 
     if (a >= from.notional) {
-      revert Exception(31, a, from.notional, address(0), address(0));
+      revert Exception(31, a, from.notional, f, t);
     }
 
     // note that mRate is is maturityRate if > 0, exchangeRate otherwise
@@ -187,6 +187,9 @@ contract VaultTracker is IVaultTracker {
     Vault memory oVault = vaults[f];
     Vault memory sVault = vaults[swivel];
 
+    if (a >= oVault.notional) {
+      revert Exception(31, a, oVault.notional, f, address(0));
+    }
     // remove notional from its owner
     oVault.notional = oVault.notional - a;
 
