@@ -4,7 +4,7 @@
   YearnVault is a mock yearn vault with stubs of the methods we need for testing.
 */
 
-pragma solidity ^0.8.13;
+pragma solidity 0.8.16;
 
 contract YearnVault {
   /// @dev allows us to dictate return from underlying().

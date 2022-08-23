@@ -4,7 +4,7 @@
   AaveToken is a mock aave token with stubs of the methods we need for testing.
 */
 
-pragma solidity ^0.8.13;
+pragma solidity 0.8.16;
 
 // TODO this could inherit from the ERC20 mock if needed
 contract AaveToken {
