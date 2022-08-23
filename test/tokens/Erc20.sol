@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Inspired on token.sol from DappHub. Natspec adpated from OpenZeppelin.
 
-pragma solidity ^0.8.0;
+pragma solidity 0.8.16;
 
 /// @notice Modern and gas efficient ERC20 + EIP-2612 implementation.
 /// @author Solmate (https://github.com/Rari-Capital/solmate/blob/main/src/tokens/ERC20.sol)

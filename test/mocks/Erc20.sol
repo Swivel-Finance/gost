@@ -5,7 +5,7 @@
   provides setters allowing us to dictate method return values
 */
 
-pragma solidity ^0.8.13;
+pragma solidity 0.8.16;
 
 contract Erc20 {
   // a struct to hold the arguments passed to transferFrom
