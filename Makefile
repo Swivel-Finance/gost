@@ -287,7 +287,6 @@ copy_vaulttracker_to_build:
 	cp test/libraries/ICERC20.sol build/creator
 	cp test/libraries/FixedPointMathLib.sol build/creator
 	cp test/libraries/LibCompound.sol build/creator
-	cp test/libraries/LibFuse.sol build/creator
 	cp test/libraries/Compounding.sol build/creator
 	cp test/vaulttracker/Protocols.sol build/creator
 	cp test/vaulttracker/VaultTracker.sol build/creator
@@ -297,7 +296,6 @@ copy_marketplace_to_build:
 	cp test/libraries/ICERC20.sol build/marketplace
 	cp test/libraries/FixedPointMathLib.sol build/marketplace
 	cp test/libraries/LibCompound.sol build/marketplace
-	cp test/libraries/LibFuse.sol build/marketplace
 	cp test/libraries/Compounding.sol build/marketplace
 	cp test/marketplace/Interfaces.sol build/marketplace
 	cp test/marketplace/Protocols.sol build/marketplace
@@ -318,7 +316,7 @@ copy_to_build: copy_zctoken_to_build copy_vaulttracker_to_build copy_creator_to_
 
 compile_creator_build:
 	@echo "compiling Creator solidity build source into deploy ready files"
-	solc -o ./build/creator --optimize --optimize-runs=7250 --abi --bin --overwrite ./build/creator/Creator.sol
+	solc -o ./build/creator --optimize --optimize-runs=10000 --abi --bin --overwrite ./build/creator/Creator.sol
 	abigen --abi ./build/creator/Creator.abi --bin ./build/creator/Creator.bin -pkg creator -type Creator -out ./build/creator/creator.go 
 
 compile_marketplace_build:

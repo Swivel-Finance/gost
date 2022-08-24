@@ -1,5 +1,7 @@
 // SPDX-License-Identifier: UNLICENSED
 
+// NOTE: this is a variant of the /libraries/Compounding.sol used for testing
+
 pragma solidity ^0.8.13;
 
 import './Protocols.sol';

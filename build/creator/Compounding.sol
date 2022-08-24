@@ -4,7 +4,6 @@ pragma solidity ^0.8.13;
 
 import './Protocols.sol'; // NOTE: if size restrictions become extreme we can use ints (implicit enum)
 import './LibCompound.sol';
-import './LibFuse.sol';
 
 interface IErc4626 {
   /// @dev Converts the given 'assets' (uint256) to 'shares', returning that amount
@@ -64,10 +63,12 @@ library Compounding {
   /// @param p Protocol Enum value
   /// @param c Compounding token address
   function exchangeRate(uint8 p, address c) internal view returns (uint256) {
+      // in contrast to the below, LibCompound provides a lower gas alternative to exchangeRateCurrent()
     if (p == uint8(Protocols.Compound)) {
       return LibCompound.viewExchangeRate(ICERC20(c));
+      // with the removal of LibFuse we will direct Rari to the exposed Compound CToken methodology
     } else if (p == uint8(Protocols.Rari)) { 
-      return LibFuse.viewExchangeRate(ICERC20(c));
+      return ICompoundToken(c).exchangeRateCurrent();
     } else if (p == uint8(Protocols.Yearn)) {
       return IYearnVault(c).pricePerShare();
     } else if (p == uint8(Protocols.Aave)) {
