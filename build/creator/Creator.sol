@@ -15,6 +15,8 @@ contract Creator is ICreator {
   address public admin;
   address public marketPlace;
 
+  event SetAdmin(address indexed admin);
+
   constructor() {
     admin = msg.sender;
   }
@@ -51,11 +53,15 @@ contract Creator is ICreator {
   /// @param a Address of a new admin
   function setAdmin(address a) external authorized(admin) returns (bool) {
     admin = a;
+
+    emit SetAdmin(a);
+
     return true;
   }
 
   /// @param m Address of the deployed marketPlace contract
   /// @notice We only allow this to be set once
+  /// @dev there is no emit here as it's only done once post deploy by the deploying admin
   function setMarketPlace(address m) external authorized(admin) returns (bool) {
     if (marketPlace != address(0)) {
       revert Exception(33, 0, 0, marketPlace, address(0)); 

@@ -53,7 +53,7 @@ contract Swivel is ISwivel {
   /// @notice Emitted on token approval scheduling
   event ScheduleApproval(address indexed token, uint256 hold);
   /// @notice Emitted on fee change scheduling
-  event ScheduleFeeChange(uint256 hold);
+  event ScheduleFeeChange(uint16[4] proposal, uint256 hold);
   /// @notice Emitted on token withdrawal blocking
   event BlockWithdrawal(address indexed token);
   /// @notice Emitted on token approval blocking
@@ -62,6 +62,7 @@ contract Swivel is ISwivel {
   event BlockFeeChange();
   /// @notice Emitted on a change to the fee structure
   event ChangeFee(uint256 indexed index, uint256 indexed value);
+  event SetAdmin(address indexed admin);
 
   /// @param m Deployed MarketPlace contract address
   /// @param a Address of a deployed Aave contract implementing our interface
@@ -466,6 +467,8 @@ contract Swivel is ISwivel {
   function setAdmin(address a) external authorized(admin) returns (bool) {
     admin = a;
 
+    emit SetAdmin(a);
+
     return true;
   }
 
@@ -492,11 +495,12 @@ contract Swivel is ISwivel {
   }
 
   /// @notice allows the admin to schedule a change to the fee denominators
-  function scheduleFeeChange() external authorized(admin) returns (bool) {
+  /// @param f array of length 4 holding values which suggest replacing any at the same index for the current feenominators
+  function scheduleFeeChange(uint16[4] calldata f) external authorized(admin) returns (bool) {
     uint256 when = block.timestamp + HOLD;
     feeChange = when;
 
-    emit ScheduleFeeChange(when);
+    emit ScheduleFeeChange(f, when);
 
     return true;
   }

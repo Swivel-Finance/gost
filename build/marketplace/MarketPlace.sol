@@ -34,6 +34,7 @@ contract MarketPlace is IMarketPlace {
   event P2pZcTokenExchange(uint8 indexed protocol, address indexed underlying, uint256 indexed maturity, address from, address to, uint256 amount);
   event P2pVaultExchange(uint8 indexed protocol, address indexed underlying, uint256 indexed maturity, address from, address to, uint256 amount);
   event TransferVaultNotional(uint8 indexed protocol, address indexed underlying, uint256 indexed maturity, address from, address to, uint256 amount);
+  event SetAdmin(address indexed admin);
 
   /// @param c Address of the deployed creator contract
   constructor(address c) {
@@ -43,6 +44,7 @@ contract MarketPlace is IMarketPlace {
 
   /// @param s Address of the deployed swivel contract
   /// @notice We only allow this to be set once
+  /// @dev there is no emit here as it's only done once post deploy by the deploying admin
   function setSwivel(address s) external authorized(admin) returns (bool) {
     if (swivel != address(0)) {
       revert Exception(20, 0, 0, swivel, address(0)); 
@@ -55,6 +57,9 @@ contract MarketPlace is IMarketPlace {
   /// @param a Address of a new admin
   function setAdmin(address a) external authorized(admin) returns (bool) {
     admin = a;
+    
+    emit SetAdmin(a);
+
     return true;
   }
 
