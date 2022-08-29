@@ -63,8 +63,11 @@ func (s *changeFeeSuite) TestChangeFeeSuccess() {
 	assert.Nil(err)
 	assert.Equal(when.Cmp(big.NewInt(0)), 0)
 
+	// note that indexes 1, 4 won't change
+	fees := [4]uint16{uint16(100), uint16(600), uint16(100), uint16(200)}
+
 	// schedule one
-	tx, err := s.Swivel.ScheduleFeeChange()
+	tx, err := s.Swivel.ScheduleFeeChange(fees)
 	assert.Nil(err)
 	assert.NotNil(tx)
 	s.Env.Blockchain.Commit()
@@ -79,9 +82,6 @@ func (s *changeFeeSuite) TestChangeFeeSuccess() {
 	err = s.Env.Blockchain.AdjustTime(259310 * time.Second)
 	assert.Nil(err)
 	s.Env.Blockchain.Commit()
-
-	// note that indexes 1, 4 won't change
-	fees := [4]uint16{uint16(100), uint16(600), uint16(100), uint16(200)}
 
 	tx, err = s.Swivel.ChangeFee(fees)
 	assert.Nil(err)

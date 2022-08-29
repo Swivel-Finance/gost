@@ -12,7 +12,7 @@ interface ISwivel {
   function cancel(Hash.Order calldata, Sig.Components calldata) external returns (bool);
   function setAdmin(address) external returns (bool);
   function scheduleWithdrawal(address) external returns (bool);
-  function scheduleFeeChange() external returns (bool);
+  function scheduleFeeChange(uint16[4] calldata) external returns (bool);
   function blockWithdrawal(address) external returns (bool);
   function blockFeeChange() external returns (bool);
   function withdraw(address) external returns (bool);
