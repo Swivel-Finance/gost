@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: UNLICENSED
+// SPDX-License-Identifier: AGPL-3.0
 
 // NOTE: this is a variant of the /libraries/Compounding.sol used for testing
 

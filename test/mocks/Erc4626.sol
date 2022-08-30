@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: UNLICENSED
+// SPDX-License-Identifier: AGPL-3.0
 
 /**
   Erc4626 is a mock tokenized vault with stubs of the methods we need for testing.

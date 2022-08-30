@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: UNLICENSED
+// SPDX-License-Identifier: AGPL-3.0
 
 /**
   VaultTracker is a mock which records arguments passed to its methods as well as

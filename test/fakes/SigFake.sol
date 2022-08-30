@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: UNLICENSED
+// SPDX-License-Identifier: AGPL-3.0
 
 /**
   @dev SigFake.sol is written specfically to test the functions which exist in our Sig.sol "embedded" library
