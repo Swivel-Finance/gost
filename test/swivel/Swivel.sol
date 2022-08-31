@@ -35,7 +35,7 @@ contract Swivel is ISwivel {
   address public immutable aaveAddr;
 
   uint16 constant public MIN_FEENOMINATOR = 33;
-  /// @dev holds the fee demoninators for [zcTokenInitiate, zcTokenExit, vaultInitiate, vaultExit]
+  /// @dev holds the fee denominators for [zcTokenInitiate, zcTokenExit, vaultInitiate, vaultExit]
   uint16[4] public feenominators;
 
   /// @notice Emitted on order cancellation
@@ -744,12 +744,12 @@ contract Swivel is ISwivel {
       revert Exception(7, 0, 0, address(0), address(0));
     }
 
-    // NOTE: for swivel reddem there is no transfer out as there is in redeemVaultInterest
+    // NOTE: for swivel redeem there is no transfer out as there is in redeemVaultInterest
 
     return true;
   }
 
-  /// @notice Varifies the validity of an order and it's signature.
+  /// @notice Verifies the validity of an order and it's signature.
   /// @param o An offline Swivel.Order
   /// @param c Components of a valid ECDSA signature
   /// @return the hashed order.
@@ -816,7 +816,7 @@ contract Swivel is ISwivel {
       // yearn vault api states that withdraw returns uint256
       return IYearn(c).withdraw(a) >= 0;
     } else if (p == uint8(Protocols.Aave)) {
-      // Aave v2 docs state that withraw returns uint256
+      // Aave v2 docs state that withdraw returns uint256
       return IAave(aaveAddr).withdraw(u, a, address(this)) >= 0;
     } else if (p == uint8(Protocols.Euler)) {
       // Euler withdraw is void
