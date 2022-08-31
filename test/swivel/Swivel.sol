@@ -36,7 +36,7 @@ contract Swivel is ISwivel {
 
   uint16 constant public MIN_FEENOMINATOR = 33;
   /// @dev holds the fee denominators for [zcTokenInitiate, zcTokenExit, vaultInitiate, vaultExit]
-  uint16[4] public feenominators;
+  uint16[4] public feenominators = [200, 600, 400, 200];
 
   /// @notice Emitted on order cancellation
   event Cancel (bytes32 indexed key, bytes32 hash);
@@ -71,7 +71,6 @@ contract Swivel is ISwivel {
     domain = Hash.domain(NAME, VERSION, block.chainid, address(this));
     marketPlace = m;
     aaveAddr = a;
-    feenominators = [200, 600, 400, 200];
   }
 
   // ********* INITIATING *************
@@ -81,18 +80,16 @@ contract Swivel is ISwivel {
   /// @param a Array of order volume (principal) amounts relative to passed orders
   /// @param c Array of Components from valid ECDSA signatures
   function initiate(Hash.Order[] calldata o, uint256[] calldata a, Sig.Components[] calldata c) external returns (bool) {
-    uint256 len = o.length;
     // for each order filled, routes the order to the right interaction depending on its params
-    for (uint256 i; i != len;) {
-      Hash.Order memory order = o[i];
-      if (!order.exit) {
-        if (!order.vault) {
+    for (uint256 i; i != o.length;) {
+      if (!o[i].exit) {
+        if (!o[i].vault) {
           initiateVaultFillingZcTokenInitiate(o[i], a[i], c[i]);
         } else {
           initiateZcTokenFillingVaultInitiate(o[i], a[i], c[i]);
         }
       } else {
-        if (!order.vault) {
+        if (!o[i].vault) {
           initiateZcTokenFillingZcTokenExit(o[i], a[i], c[i]);
         } else {
           initiateVaultFillingVaultExit(o[i], a[i], c[i]);
@@ -266,14 +263,12 @@ contract Swivel is ISwivel {
   /// @param a Array of order volume (principal) amounts relative to passed orders
   /// @param c Components of a valid ECDSA signature
   function exit(Hash.Order[] calldata o, uint256[] calldata a, Sig.Components[] calldata c) external returns (bool) {
-    uint256 len = o.length;
     // for each order filled, routes the order to the right interaction depending on its params
-    for (uint256 i; i != len;) {
-      Hash.Order memory order = o[i];
+    for (uint256 i; i != o.length;) {
       // if the order being filled is not an exit
-      if (!order.exit) {
+      if (!o[i].exit) {
         // if the order being filled is a vault initiate or a zcToken initiate
-          if (!order.vault) {
+          if (!o[i].vault) {
             // if filling a zcToken initiate with an exit, one is exiting zcTokens
             exitZcTokenFillingZcTokenInitiate(o[i], a[i], c[i]);
           } else {
@@ -282,7 +277,7 @@ contract Swivel is ISwivel {
           }
       } else {
         // if the order being filled is a vault exit or a zcToken exit
-        if (!order.vault) {
+        if (!o[i].vault) {
           // if filling a zcToken exit with an exit, one is exiting vault
           exitVaultFillingZcTokenExit(o[i], a[i], c[i]);
         } else {
@@ -593,15 +588,13 @@ contract Swivel is ISwivel {
   /// @param u array of underlying token addresses
   /// @param c array of compound token addresses
   function approveUnderlying(address[] calldata u, address[] calldata c) external authorized(admin) returns (bool) {
-    uint256 len = u.length;
-
-    if (len != c.length) {
-      revert Exception(19, len, c.length, address(0), address(0));
+    if (u.length != c.length) {
+      revert Exception(19, u.length, c.length, address(0), address(0));
     }
 
     uint256 max = type(uint256).max;
 
-    for (uint256 i; i != len;) {
+    for (uint256 i; i != u.length;) {
       uint256 when = approvals[u[i]];
 
       if (when == 0) {

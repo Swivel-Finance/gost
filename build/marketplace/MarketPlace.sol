@@ -264,8 +264,7 @@ contract MarketPlace is IMarketPlace {
   /// @param u Underlying token address associated with the market
   /// @param m Maturity timestamp of the market
   function cTokenAddress(uint8 p, address u, uint256 m) external view returns (address) {
-    Market memory market = markets[p][u][m];
-    return market.cTokenAddr;
+    return markets[p][u][m].cTokenAddr;
   }
 
   /// @notice Return the exchange rate for a given protocol's compounding token
@@ -338,12 +337,13 @@ contract MarketPlace is IMarketPlace {
   /// @param t Target to be minted to
   /// @param a Amount of zcToken transfer
   function p2pZcTokenExchange(uint8 p, address u, uint256 m, address f, address t, uint256 a) external authorized(swivel) unpaused(p) returns (bool) {
-    Market memory market = markets[p][u][m];
-    if (!IZcToken(market.zcToken).burn(f, a)) {
+    address zct = markets[p][u][m].zcToken;
+
+    if (!IZcToken(zct).burn(f, a)) {
       revert Exception(29, 0, 0, address(0), address(0));
     }
 
-    if (!IZcToken(market.zcToken).mint(t, a)) {
+    if (!IZcToken(zct).mint(t, a)) {
       revert Exception(28, 0, 0, address(0), address(0));
     }
 
