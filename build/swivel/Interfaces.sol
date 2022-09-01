@@ -47,6 +47,7 @@ interface ICompound {
 interface IYearn {
   function deposit(uint256) external returns (uint256);
   function withdraw(uint256) external returns (uint256);
+  function pricePerShare() external returns (uint256);
 }
 
 interface IAave {

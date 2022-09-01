@@ -807,7 +807,9 @@ contract Swivel is ISwivel {
       return ICompound(c).redeemUnderlying(a) == 0;
     } else if (p == uint8(Protocols.Yearn)) {
       // yearn vault api states that withdraw returns uint256
-      return IYearn(c).withdraw(a) >= 0;
+      // NOTE that we must use the price-per-share in Yearn to determine the correct number of underlying assets
+      IYearn vault = IYearn(c);
+      return vault.withdraw(a / vault.pricePerShare()) >= 0;
     } else if (p == uint8(Protocols.Aave)) {
       // Aave v2 docs state that withdraw returns uint256
       return IAave(aaveAddr).withdraw(u, a, address(this)) >= 0;

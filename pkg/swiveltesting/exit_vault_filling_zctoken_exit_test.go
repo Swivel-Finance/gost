@@ -93,6 +93,11 @@ func (s *EVFZESuite) TestEVFZE() {
 	assert.Nil(err)
 	s.Env.Blockchain.Commit()
 
+	tx, err = s.YearnVault.PricePerShareReturns(big.NewInt(2))
+	assert.NotNil(tx)
+	assert.Nil(err)
+	s.Env.Blockchain.Commit()
+
 	// and the marketplace api methods...
 	tx, err = s.MarketPlace.CTokenAddressReturns(s.Dep.YearnVaultAddress)
 	assert.Nil(err)
