@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: UNLICENSED
+// SPDX-License-Identifier: AGPL-3.0
 
 /**
   @dev HashFake.sol is written specfically to test the functions which exist in our Hash.sol "embedded" library

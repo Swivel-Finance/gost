@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: UNLICENSED
+// SPDX-License-Identifier: AGPL-3.0
 
 pragma solidity 0.8.16;
 
@@ -143,7 +143,6 @@ contract VaultTracker is IVaultTracker {
     }
 
     Vault memory from = vaults[f];
-    Vault memory to = vaults[t];
 
     if (a > from.notional) {
       revert Exception(31, a, from.notional, f, t);
@@ -162,6 +161,8 @@ contract VaultTracker is IVaultTracker {
     from.exchangeRate = mRate < xRate ? mRate : xRate;
 
     vaults[f] = from;
+
+    Vault memory to = vaults[t];
 
     // transfer notional to address "t", calculate interest if necessary
     if (to.notional > 0) {
@@ -185,7 +186,6 @@ contract VaultTracker is IVaultTracker {
   /// @param a Amount to transfer
   function transferNotionalFee(address f, uint256 a) external authorized(marketPlace) returns(bool) {
     Vault memory oVault = vaults[f];
-    Vault memory sVault = vaults[swivel];
 
     if (a > oVault.notional) {
       revert Exception(31, a, oVault.notional, f, address(0));
@@ -195,6 +195,8 @@ contract VaultTracker is IVaultTracker {
 
     // note that mRate is is maturityRate if > 0, exchangeRate otherwise
     (uint256 mRate, uint256 xRate) = rates();
+
+    Vault memory sVault = vaults[swivel];
 
     // check if exchangeRate has been stored already this block. If not, calculate marginal interest + store exchangeRate
     if (sVault.exchangeRate != xRate) {
