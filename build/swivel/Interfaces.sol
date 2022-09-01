@@ -9,7 +9,7 @@ import './Sig.sol';
 interface ISwivel {
   function initiate(Hash.Order[] calldata, uint256[] calldata, Sig.Components[] calldata) external returns (bool);
   function exit(Hash.Order[] calldata, uint256[] calldata, Sig.Components[] calldata) external returns (bool);
-  function cancel(Hash.Order calldata, Sig.Components calldata) external returns (bool);
+  function cancel(Hash.Order[] calldata) external returns (bool);
   function setAdmin(address) external returns (bool);
   function scheduleWithdrawal(address) external returns (bool);
   function scheduleFeeChange(uint16[4] calldata) external returns (bool);
