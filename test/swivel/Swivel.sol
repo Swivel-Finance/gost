@@ -440,18 +440,22 @@ contract Swivel is ISwivel {
   }
 
   /// @notice Allows a user to cancel an order, preventing it from being filled in the future
-  /// @param o Order being cancelled
-  /// @param c Components of a valid ECDSA signature
-  function cancel(Hash.Order calldata o, Sig.Components calldata c) external returns (bool) {
-    bytes32 hash = validOrderHash(o, c);
+  /// @param o Array of offline orders being cancelled
+  function cancel(Hash.Order[] calldata o) external returns (bool) {
+    for (uint256 i; i != o.length;) {
+      if (msg.sender != o[i].maker) {
+        revert Exception(15, 0, 0, msg.sender, o[i].maker);
+      }
 
-    if (msg.sender != o.maker) {
-      revert Exception(15, 0, 0, msg.sender, o.maker);
+      bytes32 hash = Hash.order(o[i]); 
+      cancelled[hash] = true;
+
+      emit Cancel(o[i].key, hash);
+
+      unchecked {
+        ++i;
+      }
     }
-
-    cancelled[hash] = true;
-
-    emit Cancel(o.key, hash);
 
     return true;
   }
