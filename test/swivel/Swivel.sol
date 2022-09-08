@@ -791,6 +791,8 @@ contract Swivel is ISwivel {
       // Euler deposit is void.
       IEuler(c).deposit(0, a);
       return true;
+    } else if (p == uint8(Protocols.Lido)) {
+      return ILido(c).wrap(a) >= 0;
     } else {
       // we will allow protocol[0] to also function as a catchall for Erc4626
       // NOTE: deposit, as per the spec, returns 'shares' but it is unknown if 0 would revert, thus we'll check for 0 or greater
