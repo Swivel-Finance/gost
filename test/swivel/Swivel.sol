@@ -823,6 +823,9 @@ contract Swivel is ISwivel {
       // Euler withdraw is void
       IEuler(c).withdraw(0, a);
       return true;
+    } else if (p == uint8(Protocols.Lido)) {
+      ILido wstEth = ILido(c);
+      return wstEth.unwrap(a / wstEth.getStETHByWstETH(1e18)) >= 0;
     } else {
       // we will allow protocol[0] to also function as a catchall for Erc4626
       return IErc4626(c).withdraw(a, address(this), address(this)) >= 0;

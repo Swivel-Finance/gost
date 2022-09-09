@@ -63,6 +63,7 @@ interface IEuler {
 interface ILido {
   function wrap(uint256) external returns (uint256);
   function unwrap(uint256) external returns (uint256);
+  function getStETHByWstETH(uint256) external returns (uint256);
 }
 
 interface IMarketPlace {
