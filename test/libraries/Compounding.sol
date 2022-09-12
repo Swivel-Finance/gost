@@ -46,12 +46,11 @@ interface IEulerToken {
 interface ILidoToken {
   /// @notice Returns amount of stETH for a given amount of wstETH
   function getStETHByWstETH(uint256) external view returns (uint256);
-  /// @dev NOTE there is no underlying asset here as Compounding stores the Lido stETH address directly
+  /// @dev The address of the stETH underlying asset
+  function stETH() external view returns (address);
 }
 
 library Compounding {
-  // TODO can we dynamically fetch this? Other options?
-  address constant LIDO_STETH = '0xae7ab96520de3a18e5e111b5eaab095312d7fe84';
   /// @param p Protocol Enum value
   /// @param c Compounding token address
   function underlying(uint8 p, address c) internal view returns (address) {
@@ -64,7 +63,7 @@ library Compounding {
     } else if (p == uint8(Protocols.Euler)) {
       return IEulerToken(c).underlyingAsset();
     } else if (p == uint8(Protocols.Lido)) {
-      return LIDO_STETH;
+      return ILidoToken(c).stETH();
     } else {
       return IErc4626(c).asset();      
     }

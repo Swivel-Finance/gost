@@ -36,6 +36,11 @@ interface IEulerToken {
   function convertBalanceToUnderlying(uint256) external view returns(uint256);
 }
 
+interface ILidoToken {
+  /// @notice Returns amount of stETH for a given amount of wstETH
+  function getStETHByWstETH(uint256) external view returns (uint256);
+}
+
 library Compounding {
   /// @param p Protocol Enum value
   function exchangeRate(uint8 p, address c) internal view returns (uint256) {
@@ -50,6 +55,8 @@ library Compounding {
     } else if (p == uint8(Protocols.Euler)) {
       // NOTE: the 1e26 const is a degree of precision to enforce on the return
       return IEulerToken(c).convertBalanceToUnderlying(1e26);
+    } else if (p == uint8(Protocols.Lido)) {
+      return ILidoToken(c).getStETHByWstETH(1e18);
     } else {
       // NOTE: the 1e26 const is a degree of precision to enforce on the return
       return IErc4626(c).convertToAssets(1e26);
