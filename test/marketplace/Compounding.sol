@@ -45,10 +45,10 @@ interface IEulerToken {
 }
 
 interface ILidoToken {
-  /// @notice Returns amount of stETH for a given amount of wstETH
-  function getStETHByWstETH(uint256) external view returns (uint256);
   /// @dev The address of the stETH underlying asset
   function stETH() external view returns (address);
+  /// @notice Returns amount of stETH for one wstETH
+  function stEthPerToken() external view returns (uint256);
 }
 
 // Compounding is a mock that returns some psuedo randomized data that we can use in unit testing
@@ -87,7 +87,7 @@ library Compounding {
       // NOTE: the 1e26 const is a degree of precision to enforce on the return
       return IEulerToken(c).convertBalanceToUnderlying(1e26);
     } else if (p == uint8(Protocols.Lido)) {
-      return ILidoToken(c).getStETHByWstETH(1e18);
+      return ILidoToken(c).stEthPerToken();
     } else {
       // NOTE: the 1e26 const is a degree of precision to enforce on the return
       return IErc4626(c).convertToAssets(1e26);
