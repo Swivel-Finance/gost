@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: AGPL-3.0
 
+// NOTE: this is a variant of the /libraries/Compounding.sol used for testing
+
 pragma solidity ^0.8.13;
 
-import './Protocols.sol'; // NOTE: if size restrictions become extreme we can use ints (implicit enum)
-import './LibCompound.sol';
+import './Protocols.sol';
 
 interface IErc4626 {
   /// @dev Converts the given 'assets' (uint256) to 'shares', returning that amount
@@ -43,7 +44,17 @@ interface IEulerToken {
   function underlyingAsset() external view returns(address);
 }
 
+interface ILidoToken {
+  /// @dev The address of the stETH underlying asset
+  function stETH() external view returns (address);
+  /// @notice Returns amount of stETH for one wstETH
+  function stEthPerToken() external view returns (uint256);
+}
+
+// Compounding is a mock that returns some psuedo randomized data that we can use in unit testing
 library Compounding {
+  /// @notice Marketplace's `dep` file deploys mocked tokens for each of the protocols.
+  /// This mocked library simply calls the mock corresponding to the protocol value given
   /// @param p Protocol Enum value
   /// @param c Compounding token address
   function underlying(uint8 p, address c) internal view returns (address) {
@@ -55,20 +66,18 @@ library Compounding {
       return IAaveToken(c).UNDERLYING_ASSET_ADDRESS();
     } else if (p == uint8(Protocols.Euler)) {
       return IEulerToken(c).underlyingAsset();
+    } else if (p == uint8(Protocols.Lido)) {
+      return ILidoToken(c).stETH();
     } else {
       return IErc4626(c).asset();      
     }
   }
 
   /// @param p Protocol Enum value
-  /// @param c Compounding token address
   function exchangeRate(uint8 p, address c) internal view returns (uint256) {
-      // in contrast to the below, LibCompound provides a lower gas alternative to exchangeRateCurrent()
-    if (p == uint8(Protocols.Compound)) {
-      return LibCompound.viewExchangeRate(ICERC20(c));
-      // with the removal of LibFuse we will direct Rari to the exposed Compound CToken methodology
-    } else if (p == uint8(Protocols.Rari)) { 
-      return ICompoundToken(c).exchangeRateCurrent();
+    // NOTE the mock simply uses this stub, not the libFuse / libCompound method of the actual code
+    if (p == uint8(Protocols.Compound) || p == uint8(Protocols.Rari)) {
+      return ICompoundToken(c).exchangeRateCurrent(); 
     } else if (p == uint8(Protocols.Yearn)) {
       return IYearnVault(c).pricePerShare();
     } else if (p == uint8(Protocols.Aave)) {
@@ -77,6 +86,8 @@ library Compounding {
     } else if (p == uint8(Protocols.Euler)) {
       // NOTE: the 1e26 const is a degree of precision to enforce on the return
       return IEulerToken(c).convertBalanceToUnderlying(1e26);
+    } else if (p == uint8(Protocols.Lido)) {
+      return ILidoToken(c).stEthPerToken();
     } else {
       // NOTE: the 1e26 const is a degree of precision to enforce on the return
       return IErc4626(c).convertToAssets(1e26);

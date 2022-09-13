@@ -8,5 +8,6 @@ enum Protocols {
   Rari,
   Yearn,
   Aave,
-  Euler
+  Euler,
+  Lido
 }

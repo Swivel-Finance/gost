@@ -60,6 +60,12 @@ interface IEuler {
   function withdraw(uint256, uint256) external; // void
 }
 
+interface ILido {
+  function wrap(uint256) external returns (uint256);
+  function unwrap(uint256) external returns (uint256);
+  function getStETHByWstETH(uint256) external returns (uint256);
+}
+
 interface IMarketPlace {
   // adds notional and mints zctokens
   function mintZcTokenAddingNotional(uint8, address, uint256, address, uint256) external returns (bool);
