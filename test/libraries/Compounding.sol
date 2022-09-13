@@ -1,10 +1,9 @@
 // SPDX-License-Identifier: AGPL-3.0
 
-// NOTE: this is a variant of the /libraries/Compounding.sol used for testing
-
 pragma solidity ^0.8.13;
 
 import './Protocols.sol';
+import './LibCompound.sol';
 
 interface IErc4626 {
   /// @dev Converts the given 'assets' (uint256) to 'shares', returning that amount
@@ -51,10 +50,7 @@ interface ILidoToken {
   function stEthPerToken() external view returns (uint256);
 }
 
-// Compounding is a mock that returns some psuedo randomized data that we can use in unit testing
 library Compounding {
-  /// @notice Marketplace's `dep` file deploys mocked tokens for each of the protocols.
-  /// This mocked library simply calls the mock corresponding to the protocol value given
   /// @param p Protocol Enum value
   /// @param c Compounding token address
   function underlying(uint8 p, address c) internal view returns (address) {
@@ -74,10 +70,14 @@ library Compounding {
   }
 
   /// @param p Protocol Enum value
+  /// @param c Compounding token address
   function exchangeRate(uint8 p, address c) internal view returns (uint256) {
-    // NOTE the mock simply uses this stub, not the libFuse / libCompound method of the actual code
-    if (p == uint8(Protocols.Compound) || p == uint8(Protocols.Rari)) {
-      return ICompoundToken(c).exchangeRateCurrent(); 
+    // in contrast to the below, LibCompound provides a lower gas alternative to exchangeRateCurrent()
+    if (p == uint8(Protocols.Compound)) {
+      return LibCompound.viewExchangeRate(ICERC20(c));
+      // with the removal of LibFuse we will direct Rari to the exposed Compound CToken methodology
+    } else if (p == uint8(Protocols.Rari)) { 
+      return ICompoundToken(c).exchangeRateCurrent();
     } else if (p == uint8(Protocols.Yearn)) {
       return IYearnVault(c).pricePerShare();
     } else if (p == uint8(Protocols.Aave)) {
